@@ -1,0 +1,117 @@
+dataset:
+  id: LB-QD:GLUTEUS_MAXIMUS
+  version: 0.1.0
+  description: >-
+    First evidence-traceable quantitative observations for gluteus maximus.
+    These observations are population/literature data, not subject-specific measurements.
+
+sources:
+  SRC:WARD_2009:
+    title: Are Current Measurements of Lower Extremity Muscle Architecture Accurate?
+    citation: Ward SR, Eng CM, Smallwood LH, Lieber RL. Clin Orthop Relat Res. 2009;467(4):1074-1082.
+    doi: 10.1007/s11999-008-0594-8
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2650051/
+    evidence_domain: experimental_biomechanics
+    role: primary_experimental_source
+  SRC:ARNOLD_2010:
+    title: A model of the lower limb for analysis of human movement
+    citation: Arnold EM, Ward SR, Lieber RL, Delp SL. Ann Biomed Eng. 2010;38(2):269-279.
+    doi: 10.1007/s10439-009-9852-5
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2903973/
+    evidence_domain: musculotendon_model
+    role: model_translation_source
+
+observations:
+  LB-QD:GMAX:OPTIMAL_FIBER_LENGTH:WARD2009:
+    target:
+      entity_ids:
+        - LB:MUS:GLUTEUS_MAXIMUS_R
+        - LB:MUS:GLUTEUS_MAXIMUS_L
+      anatomical_scope: gluteus_maximus_whole_muscle
+      laterality: not_separately_reported
+      computational_representation: null
+    property_id: optimal_fiber_length
+    property_definition: Muscle fiber length used as the optimal fiber-length parameter under the documented model translation.
+    value_form: scalar
+    value: 0.1569
+    unit: m
+    uncertainty:
+      type: standard_deviation
+      value: 0.0257
+      unit: m
+      confidence_level: null
+      distribution: null
+    datum_kind: literature_derived
+    method:
+      name: cadaveric_muscle_architecture_measurement
+      description: >-
+        Ward et al. measured lower-extremity muscle architecture. Arnold et al.
+        subsequently used the Ward architecture dataset to parameterize Hill-type
+        lower-limb muscle models and identifies optimal fiber length as coming from
+        those measurements.
+      direct_measurement: false
+      derived_from:
+        - Ward et al. reported gluteus maximus fiber length
+    coordinate_context:
+      frame_id: null
+      coordinate_id: null
+      convention_source_id: null
+      axis: null
+      reference_pose: null
+    provenance:
+      source_claims:
+        - source_id: SRC:WARD_2009
+          supports:
+            - reported_gluteus_maximus_fiber_length_mean
+            - reported_gluteus_maximus_fiber_length_standard_deviation
+            - sample_size_for_gluteus_maximus
+          evidence_domain: experimental_biomechanics
+          claim_scope: Table 3, gluteus maximus row
+          value_directly_reported: true
+          notes: Source reports 15.69 +/- 2.57 cm for fiber length and n=18 for gluteus maximus.
+        - source_id: SRC:ARNOLD_2010
+          supports:
+            - translation_of_architecture_data_to_musculotendon_model_parameter
+          evidence_domain: musculotendon_model
+          claim_scope: lower-limb Hill-type muscle parameterization
+          value_directly_reported: false
+          notes: Used to justify the interpretation of the architecture measurement as an optimal-fiber-length model parameter.
+      source_value_location: Ward et al. 2009, Table 3, gluteus maximus row
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - operation: unit_conversion
+          input_value: 15.69
+          input_unit: cm
+          output_value: 0.1569
+          output_unit: m
+          formula: m = cm / 100
+        - operation: uncertainty_unit_conversion
+          input_value: 2.57
+          input_unit: cm
+          output_value: 0.0257
+          output_unit: m
+          formula: m = cm / 100
+    applicability:
+      level: cohort
+      population: human cadaver lower-extremity specimens in Ward et al. 2009
+      sample_size: 18
+      age: source cohort should be consulted before subject-specific use
+      sex: not encoded at this datum level
+      body_mass_kg: null
+      stature_m: null
+      pathology_or_condition: null
+      inclusion_notes: >-
+        This is cohort-level literature evidence. It must not be treated as a direct
+        measurement of a future digital-twin subject or as a universal human constant.
+      model_id: null
+      subject_id: null
+    quality:
+      validation_status: reviewed_for_source_traceability
+      limitations:
+        - cadaver-derived architecture
+        - cohort-level rather than subject-specific
+        - model interpretation depends on the Hill-type formulation
+        - laterality was not encoded as separate right/left values here
+      conflicts_with: []
+      reviewer_notes: First worked quantitative evidence-chain example for LB-AO.
+    status: populated

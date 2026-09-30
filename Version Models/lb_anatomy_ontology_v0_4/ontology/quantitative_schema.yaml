@@ -1,0 +1,290 @@
+schema:
+  id: LB-QPS
+  version: 0.2.0
+  name: Lower-Body Quantitative Property Schema
+  module: pelvis_hip_complex
+  purpose: >-
+    Defines how quantitative biomechanical information is represented without
+    treating population/model-specific values as universal anatomical facts.
+
+controlled_vocabularies:
+  datum_kind:
+    - measured
+    - estimated
+    - literature_derived
+    - model_derived
+    - scaled
+    - assumed
+    - calculated
+  evidence_domain:
+    - anatomy
+    - coordinate_convention
+    - experimental_biomechanics
+    - anthropometry
+    - musculotendon_model
+    - computational_model
+  applicability_level:
+    - individual
+    - cohort
+    - population
+    - generic_model
+  value_form:
+    - scalar
+    - vector
+    - tensor
+    - range
+    - distribution
+    - function
+    - time_series
+    - categorical_parameter
+
+required_datum_fields:
+  - target
+  - property_id
+  - property_definition
+  - value_form
+  - datum_kind
+  - unit
+  - provenance
+  - applicability
+  - status
+
+quantitative_datum_template:
+  target:
+    entity_ids: []
+    anatomical_scope: null
+    laterality: null
+    computational_representation: null
+  property_id: null
+  property_definition: null
+  value_form: scalar
+  value: null
+  unit: null
+  uncertainty:
+    type: null
+    value: null
+    unit: null
+    confidence_level: null
+    distribution: null
+  datum_kind: null
+  method:
+    name: null
+    description: null
+    direct_measurement: null
+    derived_from: []
+  coordinate_context:
+    frame_id: null
+    coordinate_id: null
+    convention_source_id: null
+    axis: null
+    reference_pose: null
+  provenance:
+    source_claims: []
+    source_value_location: null
+    retrieval_date: null
+    transformation_history: []
+  applicability:
+    level: null
+    population: null
+    sample_size: null
+    age: null
+    sex: null
+    body_mass_kg: null
+    stature_m: null
+    pathology_or_condition: null
+    inclusion_notes: null
+    model_id: null
+    subject_id: null
+  quality:
+    validation_status: unreviewed
+    limitations: []
+    conflicts_with: []
+    reviewer_notes: null
+  status: unpopulated
+
+property_classes:
+  segment_inertial:
+    applies_to_classes: [RigidBodySegment]
+    properties:
+      mass:
+        definition: Mass assigned to the represented segment.
+        canonical_unit: kg
+        value_form: scalar
+      center_of_mass_position:
+        definition: Position of segment center of mass expressed in an explicitly identified segment frame.
+        canonical_unit: m
+        value_form: vector
+        requires_coordinate_context: true
+      inertia_tensor:
+        definition: Mass moment-of-inertia tensor about a declared point and expressed in a declared frame.
+        canonical_unit: kg*m^2
+        value_form: tensor
+        requires_coordinate_context: true
+      segment_length:
+        definition: Operationally defined segment length; landmark definitions must accompany the value.
+        canonical_unit: m
+        value_form: scalar
+
+  joint_kinematic:
+    applies_to_classes: [SynovialJoint, JointCoordinate]
+    properties:
+      joint_center_position:
+        definition: Estimated or measured hip joint center expressed in a declared coordinate frame.
+        canonical_unit: m
+        value_form: vector
+        requires_coordinate_context: true
+      coordinate_value:
+        definition: Joint coordinate value under an explicitly declared convention and reference pose.
+        canonical_unit: rad
+        value_form: scalar
+        requires_coordinate_context: true
+      range_of_motion:
+        definition: Observed or reference range for a specified joint coordinate under a defined protocol.
+        canonical_unit: rad
+        value_form: range
+        requires_coordinate_context: true
+      angular_velocity:
+        definition: Time derivative of a declared joint coordinate.
+        canonical_unit: rad/s
+        value_form: scalar
+        requires_coordinate_context: true
+      angular_acceleration:
+        definition: Second time derivative of a declared joint coordinate.
+        canonical_unit: rad/s^2
+        value_form: scalar
+        requires_coordinate_context: true
+
+  joint_kinetic:
+    applies_to_classes: [SynovialJoint, JointCoordinate]
+    properties:
+      net_joint_moment:
+        definition: Net resultant moment associated with a declared joint coordinate and sign convention.
+        canonical_unit: N*m
+        value_form: scalar
+        requires_coordinate_context: true
+      joint_reaction_force:
+        definition: Resultant reaction force reported in a declared coordinate frame and using a declared analysis convention.
+        canonical_unit: N
+        value_form: vector
+        requires_coordinate_context: true
+      joint_reaction_moment:
+        definition: Resultant reaction moment reported in a declared coordinate frame.
+        canonical_unit: N*m
+        value_form: vector
+        requires_coordinate_context: true
+
+  musculotendon:
+    applies_to_classes: [SkeletalMuscle, Tendon]
+    properties:
+      maximum_isometric_force:
+        definition: Maximum isometric force parameter of the specified musculotendon model or experimentally derived representation.
+        canonical_unit: N
+        value_form: scalar
+      optimal_fiber_length:
+        definition: Muscle fiber length associated with the model's optimal active force-length operating point.
+        canonical_unit: m
+        value_form: scalar
+      tendon_slack_length:
+        definition: Tendon length parameter at which the modeled tendon begins to develop tensile force.
+        canonical_unit: m
+        value_form: scalar
+      pennation_angle_at_optimal:
+        definition: Fiber pennation angle at optimal fiber length under the specified model definition.
+        canonical_unit: rad
+        value_form: scalar
+      maximum_contraction_velocity:
+        definition: Maximum shortening velocity under the specified muscle model; normalization convention must be declared.
+        canonical_unit: optimal_fiber_lengths/s
+        value_form: scalar
+      physiological_cross_sectional_area:
+        definition: Physiological cross-sectional area under the source's stated measurement or estimation method.
+        canonical_unit: m^2
+        value_form: scalar
+      muscle_volume:
+        definition: Muscle volume under the source's stated segmentation or estimation method.
+        canonical_unit: m^3
+        value_form: scalar
+      activation_time_constant:
+        definition: Time constant used by a specified activation-dynamics model during activation.
+        canonical_unit: s
+        value_form: scalar
+      deactivation_time_constant:
+        definition: Time constant used by a specified activation-dynamics model during deactivation.
+        canonical_unit: s
+        value_form: scalar
+      musculotendon_length:
+        definition: Length of the modeled musculotendon path at a declared pose.
+        canonical_unit: m
+        value_form: scalar
+        requires_coordinate_context: true
+      moment_arm:
+        definition: Signed moment arm about a specified joint coordinate, generally dependent on pose.
+        canonical_unit: m
+        value_form: function
+        requires_coordinate_context: true
+      muscle_force:
+        definition: Force generated/transmitted by a specified musculotendon representation at a declared state.
+        canonical_unit: N
+        value_form: scalar
+
+  passive_tissue:
+    applies_to_classes: [Ligament, JointCapsule, Labrum, Cartilage, Tendon]
+    properties:
+      reference_length:
+        definition: Reference length defined by the source/model protocol.
+        canonical_unit: m
+        value_form: scalar
+      strain:
+        definition: Dimensionless deformation relative to an explicitly defined reference length.
+        canonical_unit: '1'
+        value_form: scalar
+      tensile_force:
+        definition: Tensile force predicted or measured under a specified loading/state condition.
+        canonical_unit: N
+        value_form: scalar
+      stiffness:
+        definition: Stiffness parameter; linear/nonlinear definition and operating region must be recorded.
+        canonical_unit: N/m
+        value_form: scalar
+      force_length_relationship:
+        definition: Constitutive relationship between tissue length/deformation and tensile force.
+        canonical_unit: null
+        value_form: function
+
+  geometry:
+    applies_to_classes: [Bone, AnatomicalLandmark, ArticularSurface, SkeletalMuscle, Tendon]
+    properties:
+      landmark_position:
+        definition: Landmark position expressed in a declared frame.
+        canonical_unit: m
+        value_form: vector
+        requires_coordinate_context: true
+      attachment_position:
+        definition: Modeled attachment/path point expressed in a declared parent frame.
+        canonical_unit: m
+        value_form: vector
+        requires_coordinate_context: true
+      surface_geometry:
+        definition: Geometric representation of an anatomical or model surface with method and frame explicitly identified.
+        canonical_unit: m
+        value_form: categorical_parameter
+
+source_claim_template:
+  source_id: null
+  supports:
+    - property_definition
+  evidence_domain: null
+  claim_scope: null
+  value_directly_reported: false
+  notes: null
+
+validation_rules:
+  - A populated datum must have a non-null value and unit unless its property definition explicitly permits a unitless or functional representation.
+  - Every populated datum must contain at least one source_claim or be explicitly classified as assumed.
+  - A source claim must state what aspect of the datum it supports; a citation never validates an entire entity by default.
+  - Scaled, calculated, estimated, or model-derived values must preserve their transformation/derivation history.
+  - Coordinate-dependent quantities must identify the coordinate frame/convention and reference pose where applicable.
+  - Population-derived values must not be relabeled as individual measurements.
+  - Model parameters must identify the model/formulation to which their definitions belong.
+  - Conflicting defensible values are retained as separate observations rather than silently averaged or overwritten.
+  - Missing values remain null/unpopulated; no placeholder numerical values are permitted.

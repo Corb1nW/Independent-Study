@@ -1,0 +1,202 @@
+ontology:
+  id: LB-AO
+  version: '0.1.0'
+  module: pelvis_hip_complex
+  description: Reference ontology for pelvis and hip anatomy, biomechanics, and model abstractions.
+  principles:
+    - anatomical_fact_is_separate_from_model_assumption
+    - entities_have_stable_ids
+    - relationships_use_controlled_predicates
+    - numerical_parameters_require_provenance
+
+relationship_types:
+  - IS_A
+  - PART_OF
+  - HAS_PART
+  - ATTACHES_TO
+  - ARTICULATES_WITH
+  - CROSSES
+  - CONNECTS
+  - COVERED_BY
+  - REINFORCES
+  - INNERVATED_BY
+  - GENERATES
+  - TRANSMITS_FORCE_TO
+  - ACTS_ON
+  - CONSTRAINS
+  - STABILIZES
+  - HAS_FRAME
+  - REPRESENTED_BY
+  - MEASURED_BY
+  - ESTIMATED_BY
+
+entities:
+  LB:REG:PELVIS_HIP_COMPLEX:
+    name: Pelvis and Hip Complex
+    class: AnatomicalRegion
+    relationships:
+      HAS_PART: [LB:BONE:PELVIS, LB:JOINT:HIP_R, LB:JOINT:HIP_L]
+
+  LB:BONE:PELVIS:
+    name: Bony Pelvis
+    class: SkeletalComplex
+    relationships:
+      HAS_PART: [LB:BONE:HIP_BONE_R, LB:BONE:HIP_BONE_L, LB:BONE:SACRUM, LB:BONE:COCCYX]
+      REPRESENTED_BY: [LB:SEG:PELVIS]
+
+  LB:BONE:HIP_BONE_R:
+    name: Right Hip Bone
+    class: Bone
+    side: right
+    relationships:
+      HAS_PART: [LB:BONE:ILIUM_R, LB:BONE:ISCHIUM_R, LB:BONE:PUBIS_R, LB:SURF:ACETABULUM_R]
+  LB:BONE:HIP_BONE_L:
+    name: Left Hip Bone
+    class: Bone
+    side: left
+    relationships:
+      HAS_PART: [LB:BONE:ILIUM_L, LB:BONE:ISCHIUM_L, LB:BONE:PUBIS_L, LB:SURF:ACETABULUM_L]
+
+  LB:BONE:ILIUM_R: {name: Right Ilium, class: BoneRegion, side: right, relationships: {PART_OF: [LB:BONE:HIP_BONE_R]}}
+  LB:BONE:ILIUM_L: {name: Left Ilium, class: BoneRegion, side: left, relationships: {PART_OF: [LB:BONE:HIP_BONE_L]}}
+  LB:BONE:ISCHIUM_R: {name: Right Ischium, class: BoneRegion, side: right, relationships: {PART_OF: [LB:BONE:HIP_BONE_R]}}
+  LB:BONE:ISCHIUM_L: {name: Left Ischium, class: BoneRegion, side: left, relationships: {PART_OF: [LB:BONE:HIP_BONE_L]}}
+  LB:BONE:PUBIS_R: {name: Right Pubis, class: BoneRegion, side: right, relationships: {PART_OF: [LB:BONE:HIP_BONE_R]}}
+  LB:BONE:PUBIS_L: {name: Left Pubis, class: BoneRegion, side: left, relationships: {PART_OF: [LB:BONE:HIP_BONE_L]}}
+  LB:BONE:SACRUM: {name: Sacrum, class: Bone}
+  LB:BONE:COCCYX: {name: Coccyx, class: Bone}
+
+  LB:SURF:ACETABULUM_R:
+    name: Right Acetabulum
+    class: ArticularSocket
+    side: right
+    relationships:
+      PART_OF: [LB:BONE:HIP_BONE_R]
+      ARTICULATES_WITH: [LB:LMK:FEMORAL_HEAD_R]
+      HAS_PART: [LB:LAB:ACETABULAR_R, LB:CART:ACETABULAR_R]
+  LB:SURF:ACETABULUM_L:
+    name: Left Acetabulum
+    class: ArticularSocket
+    side: left
+    relationships:
+      PART_OF: [LB:BONE:HIP_BONE_L]
+      ARTICULATES_WITH: [LB:LMK:FEMORAL_HEAD_L]
+      HAS_PART: [LB:LAB:ACETABULAR_L, LB:CART:ACETABULAR_L]
+
+  LB:BONE:FEMUR_R: {name: Right Femur, class: Bone, side: right, relationships: {REPRESENTED_BY: [LB:SEG:THIGH_R]}}
+  LB:BONE:FEMUR_L: {name: Left Femur, class: Bone, side: left, relationships: {REPRESENTED_BY: [LB:SEG:THIGH_L]}}
+  LB:LMK:FEMORAL_HEAD_R: {name: Right Femoral Head, class: AnatomicalLandmark, side: right, relationships: {PART_OF: [LB:BONE:FEMUR_R], ARTICULATES_WITH: [LB:SURF:ACETABULUM_R]}}
+  LB:LMK:FEMORAL_HEAD_L: {name: Left Femoral Head, class: AnatomicalLandmark, side: left, relationships: {PART_OF: [LB:BONE:FEMUR_L], ARTICULATES_WITH: [LB:SURF:ACETABULUM_L]}}
+
+  LB:JOINT:HIP_R:
+    name: Right Hip Joint
+    class: SynovialBallAndSocketJoint
+    side: right
+    anatomical_properties:
+      multiaxial: true
+      motions: [flexion_extension, abduction_adduction, internal_external_rotation]
+    relationships:
+      CONNECTS: [LB:BONE:HIP_BONE_R, LB:BONE:FEMUR_R]
+      HAS_PART: [LB:CAP:HIP_R]
+      HAS_FRAME: [LB:FRAME:HIP_R]
+  LB:JOINT:HIP_L:
+    name: Left Hip Joint
+    class: SynovialBallAndSocketJoint
+    side: left
+    anatomical_properties:
+      multiaxial: true
+      motions: [flexion_extension, abduction_adduction, internal_external_rotation]
+    relationships:
+      CONNECTS: [LB:BONE:HIP_BONE_L, LB:BONE:FEMUR_L]
+      HAS_PART: [LB:CAP:HIP_L]
+      HAS_FRAME: [LB:FRAME:HIP_L]
+
+  LB:LAB:ACETABULAR_R: {name: Right Acetabular Labrum, class: Fibrocartilage, side: right, relationships: {PART_OF: [LB:JOINT:HIP_R], ATTACHES_TO: [LB:SURF:ACETABULUM_R], STABILIZES: [LB:JOINT:HIP_R]}}
+  LB:LAB:ACETABULAR_L: {name: Left Acetabular Labrum, class: Fibrocartilage, side: left, relationships: {PART_OF: [LB:JOINT:HIP_L], ATTACHES_TO: [LB:SURF:ACETABULUM_L], STABILIZES: [LB:JOINT:HIP_L]}}
+  LB:CART:ACETABULAR_R: {name: Right Acetabular Articular Cartilage, class: ArticularCartilage, side: right, relationships: {PART_OF: [LB:JOINT:HIP_R]}}
+  LB:CART:ACETABULAR_L: {name: Left Acetabular Articular Cartilage, class: ArticularCartilage, side: left, relationships: {PART_OF: [LB:JOINT:HIP_L]}}
+
+  LB:CAP:HIP_R:
+    name: Right Hip Joint Capsule
+    class: JointCapsule
+    side: right
+    relationships:
+      PART_OF: [LB:JOINT:HIP_R]
+      REINFORCES: [LB:JOINT:HIP_R]
+      HAS_PART: [LB:LIG:ILIOFEMORAL_R, LB:LIG:PUBOFEMORAL_R, LB:LIG:ISCHIOFEMORAL_R]
+  LB:CAP:HIP_L:
+    name: Left Hip Joint Capsule
+    class: JointCapsule
+    side: left
+    relationships:
+      PART_OF: [LB:JOINT:HIP_L]
+      REINFORCES: [LB:JOINT:HIP_L]
+      HAS_PART: [LB:LIG:ILIOFEMORAL_L, LB:LIG:PUBOFEMORAL_L, LB:LIG:ISCHIOFEMORAL_L]
+
+  LB:LIG:ILIOFEMORAL_R: {name: Right Iliofemoral Ligament, class: Ligament, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], CONSTRAINS: [LB:JOINT:HIP_R], STABILIZES: [LB:JOINT:HIP_R]}}
+  LB:LIG:ILIOFEMORAL_L: {name: Left Iliofemoral Ligament, class: Ligament, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], CONSTRAINS: [LB:JOINT:HIP_L], STABILIZES: [LB:JOINT:HIP_L]}}
+  LB:LIG:PUBOFEMORAL_R: {name: Right Pubofemoral Ligament, class: Ligament, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], CONSTRAINS: [LB:JOINT:HIP_R]}}
+  LB:LIG:PUBOFEMORAL_L: {name: Left Pubofemoral Ligament, class: Ligament, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], CONSTRAINS: [LB:JOINT:HIP_L]}}
+  LB:LIG:ISCHIOFEMORAL_R: {name: Right Ischiofemoral Ligament, class: Ligament, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], CONSTRAINS: [LB:JOINT:HIP_R]}}
+  LB:LIG:ISCHIOFEMORAL_L: {name: Left Ischiofemoral Ligament, class: Ligament, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], CONSTRAINS: [LB:JOINT:HIP_L]}}
+
+  LB:MUS:GLUTEUS_MAXIMUS_R:
+    name: Right Gluteus Maximus
+    class: SkeletalMuscle
+    side: right
+    mechanical_capabilities: [hip_extension, external_rotation, stabilization]
+    relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}
+    model_parameter_schema: [maximum_isometric_force, optimal_fiber_length, tendon_slack_length, pennation_angle, activation_time_constant, deactivation_time_constant]
+  LB:MUS:GLUTEUS_MAXIMUS_L:
+    name: Left Gluteus Maximus
+    class: SkeletalMuscle
+    side: left
+    mechanical_capabilities: [hip_extension, external_rotation, stabilization]
+    relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}
+
+  LB:MUS:GLUTEUS_MEDIUS_R: {name: Right Gluteus Medius, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:GLUTEUS_MEDIUS_L: {name: Left Gluteus Medius, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:GLUTEUS_MINIMUS_R: {name: Right Gluteus Minimus, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:GLUTEUS_MINIMUS_L: {name: Left Gluteus Minimus, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:ILIOPSOAS_R: {name: Right Iliopsoas Complex, class: MuscleGroup, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:ILIOPSOAS_L: {name: Left Iliopsoas Complex, class: MuscleGroup, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:ADDUCTOR_MAGNUS_R: {name: Right Adductor Magnus, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:ADDUCTOR_MAGNUS_L: {name: Left Adductor Magnus, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:RECTUS_FEMORIS_R: {name: Right Rectus Femoris, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:RECTUS_FEMORIS_L: {name: Left Rectus Femoris, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:SEMITENDINOSUS_R: {name: Right Semitendinosus, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:SEMITENDINOSUS_L: {name: Left Semitendinosus, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:SEMIMEMBRANOSUS_R: {name: Right Semimembranosus, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:SEMIMEMBRANOSUS_L: {name: Left Semimembranosus, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+  LB:MUS:BICEPS_FEMORIS_LONG_R: {name: Right Biceps Femoris Long Head, class: SkeletalMuscle, side: right, relationships: {CROSSES: [LB:JOINT:HIP_R], ACTS_ON: [LB:JOINT:HIP_R]}}
+  LB:MUS:BICEPS_FEMORIS_LONG_L: {name: Left Biceps Femoris Long Head, class: SkeletalMuscle, side: left, relationships: {CROSSES: [LB:JOINT:HIP_L], ACTS_ON: [LB:JOINT:HIP_L]}}
+
+  LB:SEG:PELVIS:
+    name: Pelvis Rigid-Body Segment
+    class: RigidBodySegment
+    model_properties: [mass, center_of_mass, inertia_tensor, pose, linear_velocity, angular_velocity]
+    assumptions: [rigid_body]
+  LB:SEG:THIGH_R: {name: Right Thigh Rigid-Body Segment, class: RigidBodySegment, side: right, model_properties: [mass, center_of_mass, inertia_tensor, pose]}
+  LB:SEG:THIGH_L: {name: Left Thigh Rigid-Body Segment, class: RigidBodySegment, side: left, model_properties: [mass, center_of_mass, inertia_tensor, pose]}
+
+  LB:FRAME:PELVIS:
+    name: Pelvic Reference Frame
+    class: CoordinateFrame
+    relationships: {PART_OF: [LB:SEG:PELVIS]}
+    convention: must_be_explicitly_documented
+  LB:FRAME:HIP_R: {name: Right Hip Joint Frame, class: CoordinateFrame, side: right, relationships: {PART_OF: [LB:JOINT:HIP_R]}}
+  LB:FRAME:HIP_L: {name: Left Hip Joint Frame, class: CoordinateFrame, side: left, relationships: {PART_OF: [LB:JOINT:HIP_L]}}
+
+models:
+  squat_v0_1:
+    represents: [LB:JOINT:HIP_R, LB:JOINT:HIP_L, LB:SEG:PELVIS, LB:SEG:THIGH_R, LB:SEG:THIGH_L]
+    assumptions:
+      - sagittal_plane_motion
+      - hip_represented_as_idealized_revolute_joint
+      - rigid_pelvis
+      - rigid_thighs
+      - no_explicit_cartilage_contact
+      - no_explicit_capsular_or_ligament_force
+      - no_explicit_muscle_path_geometry
+    retained_coordinates: [hip_flexion_extension]
+    omitted_coordinates: [hip_abduction_adduction, hip_internal_external_rotation]

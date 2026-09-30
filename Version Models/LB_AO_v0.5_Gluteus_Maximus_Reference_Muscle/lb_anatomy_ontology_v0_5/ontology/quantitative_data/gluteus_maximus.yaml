@@ -1,0 +1,318 @@
+dataset:
+  id: LB-QD:GLUTEUS_MAXIMUS
+  version: 0.2.0
+  description: Evidence-traceable baseline quantitative template for gluteus maximus.
+  bilateral_policy:
+    assumption: symmetric_baseline
+    rationale: Use one generic evidence-backed baseline to initialize both sides for the current model.
+    anatomical_fact: false
+    shared_baseline_targets: [LB:MUS:GLUTEUS_MAXIMUS_R, LB:MUS:GLUTEUS_MAXIMUS_L]
+    independent_override_supported: true
+    override_rule: A side-specific or subject-specific datum may supersede the shared baseline for that target without changing the source observation.
+
+sources:
+  SRC:WARD_2009:
+    title: Are Current Measurements of Lower Extremity Muscle Architecture Accurate?
+    citation: Ward SR, Eng CM, Smallwood LH, Lieber RL. Clin Orthop Relat Res. 2009;467(4):1074-1082.
+    doi: 10.1007/s11999-008-0594-8
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2650051/
+    evidence_domain: experimental_biomechanics
+    role: primary_experimental_source
+  SRC:ARNOLD_2010:
+    title: A model of the lower limb for analysis of human movement
+    citation: Arnold EM, Ward SR, Lieber RL, Delp SL. Ann Biomed Eng. 2010;38(2):269-279.
+    doi: 10.1007/s10439-009-9852-5
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2903973/
+    evidence_domain: musculotendon_model
+    role: model_translation_source
+  SRC:ARNOLD_DELP_2011:
+    title: Fibre operating lengths of human lower limb muscles during walking
+    citation: Arnold EM, Delp SL. Philos Trans R Soc Lond B Biol Sci. 2011;366:1530-1539.
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3130447/
+    evidence_domain: computational_model
+    role: downstream_model_use_and_method_crosscheck
+
+common:
+  target:
+    entity_ids: [LB:MUS:GLUTEUS_MAXIMUS_R, LB:MUS:GLUTEUS_MAXIMUS_L]
+    anatomical_scope: gluteus_maximus_whole_muscle
+    laterality: shared_bilateral_baseline
+    computational_representation: generic_whole_muscle_baseline
+  symmetry_policy:
+    baseline_assumption: symmetric_baseline
+    shared_baseline_group: LB:BASELINE:GMAX:BILATERAL
+    independent_override_supported: true
+  applicability:
+    level: cohort
+    population: human cadaver lower-extremity specimens in Ward et al. 2009
+    sample_size: 18
+    age: source cohort is elderly; Arnold et al. reports overall architecture cohort mean age 82.5 +/- 9.42 years
+    sex: overall architecture cohort reported by Arnold et al. as 12 female and 9 male; muscle-specific sex breakdown not encoded
+    body_mass_kg: null
+    stature_m: null
+    pathology_or_condition: null
+    inclusion_notes: Cohort-level baseline evidence, not a direct measurement of a digital-twin subject.
+    model_id: null
+    subject_id: null
+  quality:
+    validation_status: reviewed_for_source_traceability
+    limitations:
+      - cadaver-derived architecture
+      - elderly source cohort
+      - cohort-level rather than subject-specific
+      - bilateral equality is a current model assumption, not an anatomical claim
+    conflicts_with: []
+    reviewer_notes: Reference-muscle template for LB-AO.
+
+observations:
+  LB-QD:GMAX:MASS:WARD2009:
+    property_id: muscle_mass
+    property_definition: Whole-muscle mass measured in the Ward et al. architecture dataset.
+    property_role: parameter
+    value_form: scalar
+    value: 0.5472
+    unit: kg
+    uncertainty: {type: standard_deviation, value: 0.1622, unit: kg, confidence_level: null, distribution: null}
+    datum_kind: literature_derived
+    method: {name: cadaveric_muscle_architecture_measurement, description: Ward et al. Table 3 whole-muscle mass., direct_measurement: true, derived_from: []}
+    provenance:
+      source_claims:
+        - {source_id: SRC:WARD_2009, supports: [gluteus_maximus_mass_mean, gluteus_maximus_mass_standard_deviation, sample_size], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row', value_directly_reported: true, notes: '547.2 +/- 162.2 g; n=18'}
+      source_value_location: Ward et al. 2009 Table 3
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - {operation: unit_conversion, input_value: 547.2, input_unit: g, output_value: 0.5472, output_unit: kg, formula: 'kg = g / 1000'}
+        - {operation: uncertainty_unit_conversion, input_value: 162.2, input_unit: g, output_value: 0.1622, output_unit: kg, formula: 'kg = g / 1000'}
+    derivation: {inputs: [], formula: null, assumptions: []}
+    status: populated
+
+  LB-QD:GMAX:MUSCLE_LENGTH:WARD2009:
+    property_id: muscle_length
+    property_definition: Whole-muscle length measured under the Ward et al. protocol.
+    property_role: parameter
+    value_form: scalar
+    value: 0.2695
+    unit: m
+    uncertainty: {type: standard_deviation, value: 0.0642, unit: m, confidence_level: null, distribution: null}
+    datum_kind: literature_derived
+    method: {name: cadaveric_muscle_architecture_measurement, description: Ward et al. Table 3 muscle length., direct_measurement: true, derived_from: []}
+    provenance:
+      source_claims:
+        - {source_id: SRC:WARD_2009, supports: [gluteus_maximus_muscle_length_mean, gluteus_maximus_muscle_length_standard_deviation], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row', value_directly_reported: true, notes: '26.95 +/- 6.42 cm'}
+      source_value_location: Ward et al. 2009 Table 3
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - {operation: unit_conversion, input_value: 26.95, input_unit: cm, output_value: 0.2695, output_unit: m, formula: 'm = cm / 100'}
+        - {operation: uncertainty_unit_conversion, input_value: 6.42, input_unit: cm, output_value: 0.0642, output_unit: m, formula: 'm = cm / 100'}
+    derivation: {inputs: [], formula: null, assumptions: []}
+    status: populated
+
+  LB-QD:GMAX:OPTIMAL_FIBER_LENGTH:WARD2009:
+    property_id: optimal_fiber_length
+    property_definition: Fiber length observation interpreted as an optimal-fiber-length model parameter under Arnold et al.'s translation.
+    property_role: parameter
+    value_form: scalar
+    value: 0.1569
+    unit: m
+    uncertainty: {type: standard_deviation, value: 0.0257, unit: m, confidence_level: null, distribution: null}
+    datum_kind: literature_derived
+    method: {name: architecture_to_hill_parameter, description: Ward fiber length with Arnold model-translation evidence., direct_measurement: false, derived_from: [Ward et al. fiber length]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:WARD_2009, supports: [reported_fiber_length_mean, reported_fiber_length_standard_deviation], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row', value_directly_reported: true, notes: '15.69 +/- 2.57 cm'}
+        - {source_id: SRC:ARNOLD_2010, supports: [translation_to_optimal_fiber_length_parameter], evidence_domain: musculotendon_model, claim_scope: Hill-type parameterization, value_directly_reported: false, notes: Optimal fiber length and pennation were taken from cadaver measurements; gluteus maximus compartment measurements were location-specific.}
+      source_value_location: Ward et al. 2009 Table 3; interpretation Arnold et al. 2010
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - {operation: unit_conversion, input_value: 15.69, input_unit: cm, output_value: 0.1569, output_unit: m, formula: 'm = cm / 100'}
+        - {operation: uncertainty_unit_conversion, input_value: 2.57, input_unit: cm, output_value: 0.0257, output_unit: m, formula: 'm = cm / 100'}
+    derivation: {inputs: [Ward et al. reported fiber length], formula: unit conversion only, assumptions: [whole-muscle baseline used before compartment-specific implementation]}
+    status: populated
+
+  LB-QD:GMAX:PENNATION:WARD2009:
+    property_id: pennation_angle_at_optimal
+    property_definition: Pennation-angle observation used as baseline architecture evidence; model interpretation must remain explicit.
+    property_role: parameter
+    value_form: scalar
+    value: 0.382227
+    unit: rad
+    uncertainty: {type: standard_deviation, value: 0.457276, unit: rad, confidence_level: null, distribution: null}
+    datum_kind: literature_derived
+    method: {name: cadaveric_architecture_to_model_parameter, description: Ward angle with Arnold translation evidence., direct_measurement: false, derived_from: [Ward et al. pennation angle]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:WARD_2009, supports: [reported_pennation_mean, reported_pennation_standard_deviation], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row', value_directly_reported: true, notes: '21.9 +/- 26.2 degrees'}
+        - {source_id: SRC:ARNOLD_2010, supports: [use_of_measured_pennation_in_hill_model], evidence_domain: musculotendon_model, claim_scope: Hill-type parameterization, value_directly_reported: false, notes: Pennation angles were taken from cadaver measurements.}
+      source_value_location: Ward et al. 2009 Table 3
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - {operation: unit_conversion, input_value: 21.9, input_unit: deg, output_value: 0.382227, output_unit: rad, formula: 'rad = deg*pi/180'}
+        - {operation: uncertainty_unit_conversion, input_value: 26.2, input_unit: deg, output_value: 0.457276, output_unit: rad, formula: 'rad = deg*pi/180'}
+    derivation: {inputs: [Ward et al. reported pennation angle], formula: unit conversion only, assumptions: [whole-muscle baseline used before compartment-specific implementation]}
+    status: populated
+
+  LB-QD:GMAX:PCSA:WARD2009:
+    property_id: physiological_cross_sectional_area
+    property_definition: Physiological cross-sectional area reported by Ward et al.
+    property_role: parameter
+    value_form: scalar
+    value: 0.00334
+    unit: m^2
+    uncertainty: {type: standard_deviation, value: 0.00088, unit: m^2, confidence_level: null, distribution: null}
+    datum_kind: literature_derived
+    method: {name: cadaveric_muscle_architecture_measurement, description: Ward et al. PCSA architecture result., direct_measurement: false, derived_from: [source architecture protocol]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:WARD_2009, supports: [reported_pcsa_mean, reported_pcsa_standard_deviation], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row', value_directly_reported: true, notes: '33.4 +/- 8.8 cm^2'}
+      source_value_location: Ward et al. 2009 Table 3
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - {operation: unit_conversion, input_value: 33.4, input_unit: 'cm^2', output_value: 0.00334, output_unit: 'm^2', formula: 'm^2 = cm^2 / 10000'}
+        - {operation: uncertainty_unit_conversion, input_value: 8.8, input_unit: 'cm^2', output_value: 0.00088, output_unit: 'm^2', formula: 'm^2 = cm^2 / 10000'}
+    derivation: {inputs: [Ward et al. architecture measurements], formula: as defined by source protocol, assumptions: []}
+    status: populated
+
+  LB-QD:GMAX:FMAX:ARNOLD2010:
+    property_id: maximum_isometric_force
+    property_definition: Whole-muscle maximum isometric force from Arnold et al.'s model derivation, prior to compartment distribution.
+    property_role: parameter
+    value_form: scalar
+    value: 1852.6
+    unit: N
+    uncertainty: {type: null, value: null, unit: N, confidence_level: null, distribution: null}
+    datum_kind: model_derived
+    method: {name: pcsa_times_specific_tension, description: Arnold et al. calculated maximum isometric force from model PCSA and 61 N/cm^2 specific tension., direct_measurement: false, derived_from: [model PCSA, specific tension assumption]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [whole_gluteus_maximus_model_pcsa, peak_force, specific_tension_method], evidence_domain: musculotendon_model, claim_scope: 'Table 1 and muscle-parameter methods', value_directly_reported: true, notes: 'Model PCSA 30.4 cm^2; peak force 1852.6 N; force calculated using 61 N/cm^2.'}
+      source_value_location: Arnold et al. 2010 Table 1 and parameter methods
+      retrieval_date: '2026-09-30'
+      transformation_history:
+        - {operation: model_derivation, input_value: 30.37, input_unit: 'cm^2', output_value: 1852.6, output_unit: N, formula: 'Fmax = PCSA * 61 N/cm^2'}
+    derivation:
+      inputs:
+        - {name: model_pcsa, value: 30.37, unit: 'cm^2', source_id: SRC:ARNOLD_2010}
+        - {name: specific_tension, value: 61.0, unit: 'N/cm^2', source_id: SRC:ARNOLD_2010, role: model_assumption}
+      formula: 'Fmax = PCSA * specific_tension'
+      assumptions:
+        - 61 N/cm^2 specific tension is a modeling choice, not a direct gluteus-maximus force measurement
+        - Arnold et al. notes this specific tension exceeds several previously reported values
+    status: populated
+
+  LB-QD:GMAX:TENDON_SLACK_LENGTH:ARNOLD2010:
+    property_id: tendon_slack_length
+    property_definition: Tendon slack length belongs to a specified musculotendon representation and is calibrated from architecture at a reference configuration.
+    property_role: parameter
+    value_form: scalar
+    value: null
+    unit: m
+    uncertainty: {type: null, value: null, unit: m, confidence_level: null, distribution: null}
+    datum_kind: model_derived
+    method: {name: reference_configuration_calibration, description: Arnold sets tendon slack length so modeled fiber/sarcomere lengths reproduce measurements at the experimental joint configuration., direct_measurement: false, derived_from: [fiber length, sarcomere length, musculotendon geometry, reference pose]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [tendon_slack_length_calibration_method], evidence_domain: musculotendon_model, claim_scope: muscle-parameter methods, value_directly_reported: false, notes: A whole-muscle scalar is intentionally not assigned because gluteus maximus is represented by multiple model compartments.}
+        - {source_id: SRC:ARNOLD_DELP_2011, supports: [reference_configuration_method_crosscheck], evidence_domain: computational_model, claim_scope: methods, value_directly_reported: false, notes: Confirms tendon slack length is set to reproduce measured fiber and sarcomere lengths at equivalent configuration.}
+      source_value_location: Arnold et al. methods
+      retrieval_date: '2026-09-30'
+      transformation_history: []
+    derivation: {inputs: [fiber length, sarcomere length, model path geometry, reference pose], formula: model calibration, assumptions: [requires explicit computational compartment/path]}
+    status: unresolved_model_specific
+
+  LB-QD:GMAX:MAX_CONTRACTION_VELOCITY:
+    property_id: maximum_contraction_velocity
+    property_definition: Maximum shortening velocity for a chosen muscle model.
+    property_role: parameter
+    value_form: scalar
+    value: null
+    unit: optimal_fiber_lengths/s
+    uncertainty: {type: null, value: null, unit: optimal_fiber_lengths/s, confidence_level: null, distribution: null}
+    datum_kind: assumed
+    method: {name: model_selection_required, description: No universal gluteus-maximus-specific value is promoted into the baseline here., direct_measurement: false, derived_from: []}
+    provenance: {source_claims: [], source_value_location: null, retrieval_date: '2026-09-30', transformation_history: []}
+    derivation: {inputs: [], formula: null, assumptions: [must be tied to selected contraction model and evidence before population]}
+    status: unresolved
+
+  LB-QD:GMAX:ACTIVATION_TIME_CONSTANT:
+    property_id: activation_time_constant
+    property_definition: Activation-dynamics time constant for a selected muscle model.
+    property_role: parameter
+    value_form: scalar
+    value: null
+    unit: s
+    uncertainty: {type: null, value: null, unit: s, confidence_level: null, distribution: null}
+    datum_kind: assumed
+    method: {name: activation_model_selection_required, description: Kept unresolved until the activation dynamics formulation is selected., direct_measurement: false, derived_from: []}
+    provenance: {source_claims: [], source_value_location: null, retrieval_date: '2026-09-30', transformation_history: []}
+    derivation: {inputs: [], formula: null, assumptions: [model-specific parameter]}
+    status: unresolved
+
+  LB-QD:GMAX:DEACTIVATION_TIME_CONSTANT:
+    property_id: deactivation_time_constant
+    property_definition: Deactivation-dynamics time constant for a selected muscle model.
+    property_role: parameter
+    value_form: scalar
+    value: null
+    unit: s
+    uncertainty: {type: null, value: null, unit: s, confidence_level: null, distribution: null}
+    datum_kind: assumed
+    method: {name: activation_model_selection_required, description: Kept unresolved until the activation dynamics formulation is selected., direct_measurement: false, derived_from: []}
+    provenance: {source_claims: [], source_value_location: null, retrieval_date: '2026-09-30', transformation_history: []}
+    derivation: {inputs: [], formula: null, assumptions: [model-specific parameter]}
+    status: unresolved
+
+  LB-QD:GMAX:MOMENT_ARM:
+    property_id: moment_arm
+    property_definition: Signed gluteus-maximus moment arm as a function of pose and model path geometry.
+    property_role: function_of_state
+    value_form: function
+    value: null
+    unit: m
+    datum_kind: model_derived
+    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEXION_R, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
+    method: {name: geometry_dependent_function, description: Must be computed from a declared muscle path and joint configuration; no single scalar is stored., direct_measurement: false, derived_from: [musculotendon path geometry, joint state]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [muscle_path_geometry_and_moment_arm_validation_concept], evidence_domain: musculotendon_model, claim_scope: model geometry/validation, value_directly_reported: false, notes: Model uses multiple gluteus-maximus paths; a future implementation must identify the path/compartment.}
+      source_value_location: Arnold et al. model geometry discussion
+      retrieval_date: '2026-09-30'
+      transformation_history: []
+    derivation: {inputs: [muscle path geometry, joint coordinates], formula: 'r(q): geometry-dependent', assumptions: [requires computational path definition]}
+    status: functional_definition
+
+  LB-QD:GMAX:MUSCULOTENDON_LENGTH:
+    property_id: musculotendon_length
+    property_definition: Musculotendon path length as a function of body configuration and path geometry.
+    property_role: function_of_state
+    value_form: function
+    value: null
+    unit: m
+    datum_kind: model_derived
+    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEXION_R, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
+    method: {name: geometry_dependent_function, description: Computed from path geometry and state rather than stored as a universal scalar., direct_measurement: false, derived_from: [path geometry, body state]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [musculotendon_path_representation], evidence_domain: musculotendon_model, claim_scope: model geometry, value_directly_reported: false, notes: Gluteus maximus is represented with multiple paths/compartments.}
+      source_value_location: Arnold et al. model description
+      retrieval_date: '2026-09-30'
+      transformation_history: []
+    derivation: {inputs: [muscle path geometry, joint state], formula: 'L_MT(q)', assumptions: [requires computational path definition]}
+    status: functional_definition
+
+  LB-QD:GMAX:MUSCLE_FORCE:
+    property_id: muscle_force
+    property_definition: Dynamic force output of the selected musculotendon model at a declared state.
+    property_role: state_output
+    value_form: time_series
+    value: null
+    unit: N
+    datum_kind: calculated
+    method: {name: dynamic_model_output, description: Not a fixed anatomical parameter; calculated during simulation from excitation/activation and musculotendon state., direct_measurement: false, derived_from: [activation, fiber length, fiber velocity, tendon state, model parameters]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [hill_type_force_generation_model], evidence_domain: musculotendon_model, claim_scope: Hill-type model description, value_directly_reported: false, notes: Defines the computational context, not a fixed force value.}
+      source_value_location: Arnold et al. Hill-type model description
+      retrieval_date: '2026-09-30'
+      transformation_history: []
+    derivation: {inputs: [activation, fiber state, tendon state, force-length-velocity model], formula: 'F(t) = musculotendon_model(state, parameters)', assumptions: [depends on selected model formulation]}
+    status: dynamic_output_definition
