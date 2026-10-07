@@ -41,6 +41,21 @@ py demo_quantitative.py
 py -m pytest -q
 ```
 
+## Integrity check (Phase A)
+
+Checks every cross-file reference between the ontology, the quantitative schema and the datasets, and validates every observation. Exit code 1 on failure.
+
+```powershell
+py -m src.integrity
+```
+
+Validation runs in layers (DECISIONS.md D-035): structural (`src/datum_model.py`, Pydantic), semantic (vocabularies, property definitions, units via pint, physical bounds, ontology references) and evidence (sources, assumptions, derivations, applicability). `py tools/review_cycle1_probes.py` reruns the Review Cycle 1 probes.
+
+## Project governance
+
+- `docs/DECISIONS.md`: every decision, its defense, and how disagreements between collaborators were resolved.
+- `PROJECT_STATE.md`: what currently exists, what has been verified, and the next task.
+
 ## Important modeling boundary
 
 The current shared left/right values are a **generic baseline initialization policy**, not an assertion of biological symmetry. Future subject-specific or side-specific observations can override either target without altering the original cohort evidence record.

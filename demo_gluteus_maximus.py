@@ -1,30 +1,22 @@
 from pathlib import Path
-from copy import deepcopy
 from src.quantitative import QuantitativeSchema
 
 ROOT = Path(__file__).parent
 q = QuantitativeSchema(ROOT / "ontology" / "quantitative_schema.yaml")
 data = q.load_dataset(ROOT / "ontology" / "quantitative_data" / "gluteus_maximus.yaml")
-common = data["common"]
 
 
-def materialize(obs):
-    d = deepcopy(obs)
-    d.setdefault("target", deepcopy(common["target"]))
-    d.setdefault("symmetry_policy", deepcopy(common["symmetry_policy"]))
-    d.setdefault("applicability", deepcopy(common["applicability"]))
-    d.setdefault("quality", deepcopy(common["quality"]))
-    d.setdefault("coordinate_context", {"frame_id": None, "coordinate_id": None, "convention_source_id": None, "axis": None, "reference_pose": None})
-    return d
+# load_dataset() resolves dataset defaults (QuantitativeSchema.resolve_defaults), so records
+# can be used directly; there is a single defaults implementation (D-024, defect D6).
 
-print("\nLB-AO v0.5 — GLUTEUS MAXIMUS REFERENCE MUSCLE AUDIT")
+print("\nLB-AO — GLUTEUS MAXIMUS REFERENCE MUSCLE AUDIT (dataset " + data["dataset"]["version"] + ")")
 print("=" * 78)
 print("Baseline policy: one evidence-backed generic baseline initializes LEFT and RIGHT.")
 print("This is a MODEL ASSUMPTION, not a claim that human anatomy is perfectly symmetric.")
 print("Each side remains independently overridable for future personalization.\n")
 
 for obs_id, raw in data["observations"].items():
-    d = materialize(raw)
+    d = raw
     print("-" * 78)
     print(obs_id)
     print(f"Property:       {d['property_id']}")

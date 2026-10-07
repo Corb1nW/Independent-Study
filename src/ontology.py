@@ -8,6 +8,8 @@ class AnatomyOntology:
         self.entities=self.data["entities"]
         self.relationship_types=set(self.data["relationship_types"])
         self.sources=self.data.get("sources",{})
+        # IS_A hierarchy between entity classes: {child_class: parent_class} (D-031)
+        self.class_hierarchy=self.data.get("class_hierarchy",{}) or {}
         self.validate()
     def get(self,eid): return self.entities[eid]
     def find(self,*,entity_class=None,side=None,name_contains=None):
@@ -33,6 +35,15 @@ class AnatomyOntology:
         e=self.get(muscle_id); r=e.get("relationships",{})
         return {"origins":r.get("ORIGINATES_FROM",[]),"insertions":r.get("INSERTS_ON",[])}
     def innervation(self,muscle_id): return self.related(muscle_id,"INNERVATED_BY")
+    def class_ancestors(self,entity_class):
+        """Return [entity_class, parent, grandparent, ...] following class_hierarchy (D-031)."""
+        chain=[entity_class]; seen={entity_class}
+        while chain[-1] in self.class_hierarchy:
+            parent=self.class_hierarchy[chain[-1]]
+            if parent in seen: raise ValueError(f"class_hierarchy cycle at {parent}")
+            chain.append(parent); seen.add(parent)
+        return chain
+    def is_a(self,entity_class,ancestor): return ancestor in self.class_ancestors(entity_class)
     def evidence(self,eid): return [self.sources[s] for s in self.get(eid).get("evidence",[]) if s in self.sources]
     def validate(self):
         errors=[]; ids=set(self.entities); src=set(self.sources)
@@ -45,6 +56,11 @@ class AnatomyOntology:
                     if target not in ids: errors.append(f"{eid}: {pred} references missing {target}")
             for s in e.get("evidence",[]):
                 if s not in src: errors.append(f"{eid}: missing evidence source {s}")
+            ref=e.get("convention_reference")
+            if ref and ref not in src: errors.append(f"{eid}: convention_reference {ref} is not a known source")
+        for child in self.class_hierarchy:
+            try: self.class_ancestors(child)
+            except ValueError as exc: errors.append(str(exc))
         if errors: raise ValueError("Ontology validation failed:\n"+"\n".join(errors))
         return True
     def summary(self):

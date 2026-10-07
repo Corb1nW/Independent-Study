@@ -48,14 +48,6 @@ def test_populated_datum_requires_target_entity():
 def _gmax_dataset():
     return q.load_dataset(ROOT / "ontology" / "quantitative_data" / "gluteus_maximus.yaml")
 
-def _mat(obs, data):
-    from copy import deepcopy
-    d=deepcopy(obs)
-    for key in ["target", "symmetry_policy", "applicability", "quality"]:
-        d.setdefault(key, deepcopy(data["common"][key]))
-    d.setdefault("coordinate_context", {"frame_id": None, "coordinate_id": None})
-    return d
-
 def test_property_roles_distinguish_parameter_function_and_output():
     assert q.property_definition("optimal_fiber_length")["property_role"] == "parameter"
     assert q.property_definition("moment_arm")["property_role"] == "function_of_state"
@@ -90,15 +82,17 @@ def test_unresolved_model_specific_values_are_not_faked():
         assert obs[key]["status"] != "populated"
 
 def test_state_dependent_quantities_are_not_scalar_constants():
+    # Phase A (D-024, D1/D8): the bilateral MOMENT_ARM and MUSCULOTENDON_LENGTH records were split
+    # per side; the original IDs remain resolvable through observation_aliases.
     data=_gmax_dataset(); obs=data["observations"]
-    assert obs["LB-QD:GMAX:MOMENT_ARM"]["property_role"] == "function_of_state"
-    assert obs["LB-QD:GMAX:MUSCULOTENDON_LENGTH"]["property_role"] == "function_of_state"
+    for old_id in ["LB-QD:GMAX:MOMENT_ARM", "LB-QD:GMAX:MUSCULOTENDON_LENGTH"]:
+        for obs_id in q.resolve_observation_ids(data, old_id):
+            assert obs[obs_id]["property_role"] == "function_of_state"
+            assert obs[obs_id]["value"] is None
     assert obs["LB-QD:GMAX:MUSCLE_FORCE"]["property_role"] == "state_output"
-    assert obs["LB-QD:GMAX:MOMENT_ARM"]["value"] is None
 
 def test_all_fixed_populated_gmax_records_validate():
     data=_gmax_dataset()
-    for raw in data["observations"].values():
-        d=_mat(raw,data)
+    for d in data["observations"].values():
         if d.get("status") == "populated":
             assert q.validate_datum(d) == []

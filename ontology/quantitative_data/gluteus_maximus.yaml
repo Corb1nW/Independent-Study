@@ -1,6 +1,6 @@
 dataset:
   id: LB-QD:GLUTEUS_MAXIMUS
-  version: 0.2.0
+  version: 0.3.0
   description: Evidence-traceable baseline quantitative template for gluteus maximus.
   bilateral_policy:
     assumption: symmetric_baseline
@@ -31,6 +31,19 @@ sources:
     url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3130447/
     evidence_domain: computational_model
     role: downstream_model_use_and_method_crosscheck
+
+# Observation IDs that existed in an earlier version and were replaced (D-039 Amendment 1).
+observation_aliases:
+  LB-QD:GMAX:MOMENT_ARM:
+    replaced_by: [LB-QD:GMAX:MOMENT_ARM:R, LB-QD:GMAX:MOMENT_ARM:L]
+    since: dataset 0.3.0
+    reason: The bilateral record referenced a right-only coordinate (defect D8) that did not exist in the ontology (defect D1); split into one record per side.
+    decision: D-024
+  LB-QD:GMAX:MUSCULOTENDON_LENGTH:
+    replaced_by: [LB-QD:GMAX:MUSCULOTENDON_LENGTH:R, LB-QD:GMAX:MUSCULOTENDON_LENGTH:L]
+    since: dataset 0.3.0
+    reason: Same as LB-QD:GMAX:MOMENT_ARM.
+    decision: D-024
 
 common:
   target:
@@ -119,7 +132,7 @@ observations:
     method: {name: architecture_to_hill_parameter, description: Ward fiber length with Arnold model-translation evidence., direct_measurement: false, derived_from: [Ward et al. fiber length]}
     provenance:
       source_claims:
-        - {source_id: SRC:WARD_2009, supports: [reported_fiber_length_mean, reported_fiber_length_standard_deviation], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row', value_directly_reported: true, notes: '15.69 +/- 2.57 cm'}
+        - {source_id: SRC:WARD_2009, supports: [reported_fiber_length_mean, reported_fiber_length_standard_deviation, fiber_length_normalized_to_optimal_sarcomere_length], evidence_domain: experimental_biomechanics, claim_scope: 'Table 3, gluteus maximus row; Methods', value_directly_reported: true, notes: '15.69 +/- 2.57 cm. Ward et al. report normalized fiber length, Lf = Lf_raw x Ls / 2.7 um, where 2.7 um is the optimal sarcomere length for human muscle (Methods). Verified by Claude 2026-10-07 against PMC2650051 (D-019 open item).'}
         - {source_id: SRC:ARNOLD_2010, supports: [translation_to_optimal_fiber_length_parameter], evidence_domain: musculotendon_model, claim_scope: Hill-type parameterization, value_directly_reported: false, notes: Optimal fiber length and pennation were taken from cadaver measurements; gluteus maximus compartment measurements were location-specific.}
       source_value_location: Ward et al. 2009 Table 3; interpretation Arnold et al. 2010
       retrieval_date: '2026-09-30'
@@ -189,6 +202,29 @@ observations:
       retrieval_date: '2026-09-30'
       transformation_history:
         - {operation: model_derivation, input_value: 30.37, input_unit: 'cm^2', output_value: 1852.6, output_unit: N, formula: 'Fmax = PCSA * 61 N/cm^2'}
+    applicability:
+      level: generic_model
+      population: Generic lower-limb model of Arnold et al. 2010; architecture from the cadaver specimens reported by Arnold et al. (21 specimens; mean age 82.5 +/- 9.42 years; 12 female, 9 male)
+      model_id: ARNOLD_2010_LOWER_LIMB
+      inclusion_notes: Model parameter published by Arnold et al.; not a direct measurement and not subject-specific. Stated explicitly instead of inheriting the Ward et al. cohort from `common` (D-024, defect D6).
+    quality:
+      validation_status: reviewed_for_source_traceability
+      limitations:
+        - cadaver-derived architecture
+        - elderly source cohort
+        - generic model parameter, not subject-specific
+        - 61 N/cm^2 specific tension is a modeling choice
+      conflicts_with: []
+      value_comparisons:
+        - related_observation: LB-QD:GMAX:PCSA:WARD2009
+          this_value: 30.37 cm^2 (Arnold et al. 2010 model PCSA, input to this datum)
+          other_value: 33.4 cm^2 (Ward et al. 2009, Table 3)
+          relationship: differs_not_reconciled
+          comparability: Not established. The values may differ in muscle aggregation (Arnold et al. represent gluteus maximus with multiple compartments), computation or population; not labeled a conflict until shown to measure the same quantity (D-027).
+          selection_rationale: This datum reproduces the maximum isometric force published by Arnold et al., which was computed from Arnold's model PCSA. Using Ward's PCSA would produce a value no source reports.
+          downstream_effect: Ward's PCSA with the same 61 N/cm^2 specific tension gives 2037.4 N, about 10% above 1852.6 N.
+          decision: D-027
+      reviewer_notes: Reference-muscle template for LB-AO.
     derivation:
       inputs:
         - {name: model_pcsa, value: 30.37, unit: 'cm^2', source_id: SRC:ARNOLD_2010}
@@ -217,6 +253,9 @@ observations:
       retrieval_date: '2026-09-30'
       transformation_history: []
     derivation: {inputs: [fiber length, sarcomere length, model path geometry, reference pose], formula: model calibration, assumptions: [requires explicit computational compartment/path]}
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
     status: unresolved_model_specific
 
   LB-QD:GMAX:MAX_CONTRACTION_VELOCITY:
@@ -231,6 +270,9 @@ observations:
     method: {name: model_selection_required, description: No universal gluteus-maximus-specific value is promoted into the baseline here., direct_measurement: false, derived_from: []}
     provenance: {source_claims: [], source_value_location: null, retrieval_date: '2026-09-30', transformation_history: []}
     derivation: {inputs: [], formula: null, assumptions: [must be tied to selected contraction model and evidence before population]}
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
     status: unresolved
 
   LB-QD:GMAX:ACTIVATION_TIME_CONSTANT:
@@ -245,6 +287,9 @@ observations:
     method: {name: activation_model_selection_required, description: Kept unresolved until the activation dynamics formulation is selected., direct_measurement: false, derived_from: []}
     provenance: {source_claims: [], source_value_location: null, retrieval_date: '2026-09-30', transformation_history: []}
     derivation: {inputs: [], formula: null, assumptions: [model-specific parameter]}
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
     status: unresolved
 
   LB-QD:GMAX:DEACTIVATION_TIME_CONSTANT:
@@ -259,9 +304,12 @@ observations:
     method: {name: activation_model_selection_required, description: Kept unresolved until the activation dynamics formulation is selected., direct_measurement: false, derived_from: []}
     provenance: {source_claims: [], source_value_location: null, retrieval_date: '2026-09-30', transformation_history: []}
     derivation: {inputs: [], formula: null, assumptions: [model-specific parameter]}
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
     status: unresolved
 
-  LB-QD:GMAX:MOMENT_ARM:
+  LB-QD:GMAX:MOMENT_ARM:R:
     property_id: moment_arm
     property_definition: Signed gluteus-maximus moment arm as a function of pose and model path geometry.
     property_role: function_of_state
@@ -269,7 +317,12 @@ observations:
     value: null
     unit: m
     datum_kind: model_derived
-    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEXION_R, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
+    target:
+      entity_ids: [LB:MUS:GLUTEUS_MAXIMUS_R]
+      anatomical_scope: gluteus_maximus_whole_muscle
+      laterality: right
+      computational_representation: generic_whole_muscle_baseline
+    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEX_EXT_R, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
     method: {name: geometry_dependent_function, description: Must be computed from a declared muscle path and joint configuration; no single scalar is stored., direct_measurement: false, derived_from: [musculotendon path geometry, joint state]}
     provenance:
       source_claims:
@@ -277,10 +330,40 @@ observations:
       source_value_location: Arnold et al. model geometry discussion
       retrieval_date: '2026-09-30'
       transformation_history: []
-    derivation: {inputs: [muscle path geometry, joint coordinates], formula: 'r(q): geometry-dependent', assumptions: [requires computational path definition]}
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
+    derivation: {inputs: [muscle path geometry, joint state], formula: 'r(q): geometry-dependent', assumptions: [requires computational path definition]}
     status: functional_definition
 
-  LB-QD:GMAX:MUSCULOTENDON_LENGTH:
+  LB-QD:GMAX:MOMENT_ARM:L:
+    property_id: moment_arm
+    property_definition: Signed gluteus-maximus moment arm as a function of pose and model path geometry.
+    property_role: function_of_state
+    value_form: function
+    value: null
+    unit: m
+    datum_kind: model_derived
+    target:
+      entity_ids: [LB:MUS:GLUTEUS_MAXIMUS_L]
+      anatomical_scope: gluteus_maximus_whole_muscle
+      laterality: left
+      computational_representation: generic_whole_muscle_baseline
+    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEX_EXT_L, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
+    method: {name: geometry_dependent_function, description: Must be computed from a declared muscle path and joint configuration; no single scalar is stored., direct_measurement: false, derived_from: [musculotendon path geometry, joint state]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [muscle_path_geometry_and_moment_arm_validation_concept], evidence_domain: musculotendon_model, claim_scope: model geometry/validation, value_directly_reported: false, notes: Model uses multiple gluteus-maximus paths; a future implementation must identify the path/compartment.}
+      source_value_location: Arnold et al. model geometry discussion
+      retrieval_date: '2026-09-30'
+      transformation_history: []
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
+    derivation: {inputs: [muscle path geometry, joint state], formula: 'r(q): geometry-dependent', assumptions: [requires computational path definition]}
+    status: functional_definition
+
+  LB-QD:GMAX:MUSCULOTENDON_LENGTH:R:
     property_id: musculotendon_length
     property_definition: Musculotendon path length as a function of body configuration and path geometry.
     property_role: function_of_state
@@ -288,7 +371,12 @@ observations:
     value: null
     unit: m
     datum_kind: model_derived
-    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEXION_R, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
+    target:
+      entity_ids: [LB:MUS:GLUTEUS_MAXIMUS_R]
+      anatomical_scope: gluteus_maximus_whole_muscle
+      laterality: right
+      computational_representation: generic_whole_muscle_baseline
+    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEX_EXT_R, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
     method: {name: geometry_dependent_function, description: Computed from path geometry and state rather than stored as a universal scalar., direct_measurement: false, derived_from: [path geometry, body state]}
     provenance:
       source_claims:
@@ -296,6 +384,36 @@ observations:
       source_value_location: Arnold et al. model description
       retrieval_date: '2026-09-30'
       transformation_history: []
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
+    derivation: {inputs: [muscle path geometry, joint state], formula: 'L_MT(q)', assumptions: [requires computational path definition]}
+    status: functional_definition
+
+  LB-QD:GMAX:MUSCULOTENDON_LENGTH:L:
+    property_id: musculotendon_length
+    property_definition: Musculotendon path length as a function of body configuration and path geometry.
+    property_role: function_of_state
+    value_form: function
+    value: null
+    unit: m
+    datum_kind: model_derived
+    target:
+      entity_ids: [LB:MUS:GLUTEUS_MAXIMUS_L]
+      anatomical_scope: gluteus_maximus_whole_muscle
+      laterality: left
+      computational_representation: generic_whole_muscle_baseline
+    coordinate_context: {frame_id: LB:FRAME:PELVIS, coordinate_id: LB:DOF:HIP_FLEX_EXT_L, convention_source_id: null, axis: hip_flexion_extension, reference_pose: null}
+    method: {name: geometry_dependent_function, description: Computed from path geometry and state rather than stored as a universal scalar., direct_measurement: false, derived_from: [path geometry, body state]}
+    provenance:
+      source_claims:
+        - {source_id: SRC:ARNOLD_2010, supports: [musculotendon_path_representation], evidence_domain: musculotendon_model, claim_scope: model geometry, value_directly_reported: false, notes: Gluteus maximus is represented with multiple paths/compartments.}
+      source_value_location: Arnold et al. model description
+      retrieval_date: '2026-09-30'
+      transformation_history: []
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
     derivation: {inputs: [muscle path geometry, joint state], formula: 'L_MT(q)', assumptions: [requires computational path definition]}
     status: functional_definition
 
@@ -310,9 +428,12 @@ observations:
     method: {name: dynamic_model_output, description: Not a fixed anatomical parameter; calculated during simulation from excitation/activation and musculotendon state., direct_measurement: false, derived_from: [activation, fiber length, fiber velocity, tendon state, model parameters]}
     provenance:
       source_claims:
-        - {source_id: SRC:ARNOLD_2010, supports: [hill_type_force_generation_model], evidence_domain: musculotendon_model, claim_scope: Hill-type model description, value_directly_reported: false, notes: Defines the computational context, not a fixed force value.}
+        - {source_id: SRC:ARNOLD_2010, supports: [hill_type_force_generation_model], evidence_domain: musculotendon_model, claim_scope: Hill-type model description, value_directly_reported: false, notes: 'Defines the computational context, not a fixed force value.'}
       source_value_location: Arnold et al. Hill-type model description
       retrieval_date: '2026-09-30'
       transformation_history: []
     derivation: {inputs: [activation, fiber state, tendon state, force-length-velocity model], formula: 'F(t) = musculotendon_model(state, parameters)', assumptions: [depends on selected model formulation]}
+    applicability:
+      level: null
+      inclusion_notes: No value is stored. Applicability is assigned when this quantity is resolved for a specific model (D-021); the Ward et al. 2009 cohort context in `common` does not apply to this record (D-024, defect D6).
     status: dynamic_output_definition

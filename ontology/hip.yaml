@@ -1,6 +1,6 @@
 ontology:
   id: LB-AO
-  version: 0.2.0
+  version: 0.3.0
   module: pelvis_hip_complex
   description: Reference ontology for pelvis and hip anatomy, biomechanics, and model abstractions.
   principles:
@@ -44,6 +44,18 @@ sources:
     - capsular ligaments
     - zona orbicularis
     - capsular mechanics
+  SRC:STATPEARLS_ADDUCTOR_MAGNUS:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Thigh Adductor Magnus Muscle'
+    citation: Jeno SH, Launico MV, Schindler GS. StatPearls. Last update 2023-10-24.
+    url: https://www.ncbi.nlm.nih.gov/books/NBK534842/
+    supports:
+    - adductor magnus innervation (adductor part, obturator nerve posterior division; hamstring part, tibial portion of sciatic nerve)
+    retrieval_date: '2026-10-07'
+# IS_A relationships between entity classes: child_class: parent_class (D-031).
+# Schema properties declared for a parent class apply to its subclasses.
+# Phase A covers only what the hip joint needs; general reconciliation is Phase C.
+class_hierarchy:
+  SynovialBallAndSocketJoint: SynovialJoint
 relationship_types:
 - IS_A
 - PART_OF
@@ -985,6 +997,14 @@ entities:
   LB:NERVE:SCIATIC:
     name: Sciatic Nerve
     class: PeripheralNerveOrNerveSource
+  LB:NERVE:SCIATIC_TIBIAL_PORTION:
+    name: Tibial Portion of the Sciatic Nerve
+    class: PeripheralNerveOrNerveSource
+    relationships:
+      PART_OF:
+      - LB:NERVE:SCIATIC
+    evidence:
+    - SRC:STATPEARLS_ADDUCTOR_MAGNUS
   LB:NERVE:NERVE_TO_PIRIFORMIS:
     name: Nerve to Piriformis
     class: PeripheralNerveOrNerveSource
@@ -1054,7 +1074,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1081,7 +1101,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1109,7 +1129,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1134,7 +1154,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1162,7 +1182,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1187,7 +1207,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1216,7 +1236,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1242,7 +1262,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1268,7 +1288,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1293,7 +1313,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1321,7 +1341,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1348,7 +1368,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1375,7 +1395,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1400,7 +1420,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1427,7 +1447,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1452,7 +1472,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1481,7 +1501,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1508,7 +1528,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1524,6 +1544,7 @@ entities:
       - LB:JOINT:HIP_R
       INNERVATED_BY:
       - LB:NERVE:OBTURATOR
+      - LB:NERVE:SCIATIC_TIBIAL_PORTION
       ORIGINATES_FROM:
       - LB:LMK:INFERIOR_PUBIC_RAMUS_R
       - LB:LMK:ISCHIAL_TUBEROSITY_R
@@ -1537,11 +1558,12 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_ADDUCTOR_MAGNUS
   LB:MUS:ADDUCTOR_MAGNUS_L:
     name: Left Adductor Magnus
     class: SkeletalMuscle
@@ -1553,6 +1575,7 @@ entities:
       - LB:JOINT:HIP_L
       INNERVATED_BY:
       - LB:NERVE:OBTURATOR
+      - LB:NERVE:SCIATIC_TIBIAL_PORTION
       ORIGINATES_FROM:
       - LB:LMK:INFERIOR_PUBIC_RAMUS_L
       - LB:LMK:ISCHIAL_TUBEROSITY_L
@@ -1564,11 +1587,12 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_ADDUCTOR_MAGNUS
   LB:MUS:GRACILIS_R:
     name: Right Gracilis
     class: SkeletalMuscle
@@ -1589,7 +1613,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1613,7 +1637,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1638,7 +1662,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1661,7 +1685,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1687,7 +1711,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1710,7 +1734,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1735,7 +1759,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1758,7 +1782,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1783,7 +1807,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1806,7 +1830,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1831,7 +1855,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1854,7 +1878,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1879,7 +1903,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1902,7 +1926,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1927,7 +1951,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1950,7 +1974,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -1978,7 +2002,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2004,7 +2028,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2031,7 +2055,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2056,7 +2080,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2083,7 +2107,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2108,7 +2132,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2135,7 +2159,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
@@ -2160,7 +2184,7 @@ entities:
     - maximum_isometric_force
     - optimal_fiber_length
     - tendon_slack_length
-    - pennation_angle
+    - pennation_angle_at_optimal
     - activation_time_constant
     - deactivation_time_constant
     evidence:
