@@ -1,0 +1,2314 @@
+ontology:
+  id: LB-AO
+  version: 0.2.0
+  module: pelvis_hip_complex
+  description: Reference ontology for pelvis and hip anatomy, biomechanics, and model abstractions.
+  principles:
+  - anatomical_fact_is_separate_from_model_assumption
+  - entities_have_stable_ids
+  - relationships_use_controlled_predicates
+  - numerical_parameters_require_provenance
+  - laterality_is_explicit
+  - deferred_cross_module_attachments_are_documented
+sources:
+  SRC:STATPEARLS_HIP:
+    title: Anatomy, Bony Pelvis and Lower Limb, Hip
+    publisher: NCBI Bookshelf / StatPearls
+    url: https://www.ncbi.nlm.nih.gov/books/NBK526019/
+    supports:
+    - hip anatomy
+    - major muscle attachments
+    - major muscle innervation
+    - hip stability
+  SRC:ISB_WU_2002:
+    title: 'ISB recommendation on definitions of joint coordinate system: ankle, hip, spine'
+    citation: Wu G, et al. Journal of Biomechanics. 2002;35(4):543-548. PMID 11934426.
+    url: https://pubmed.ncbi.nlm.nih.gov/11934426/
+    supports:
+    - hip joint coordinate system
+    - reporting convention
+  SRC:OPENSIM_GAIT2392:
+    title: Gait2392 and Gait2354 Models
+    publisher: OpenSim Documentation
+    url: https://opensimconfluence.atlassian.net/wiki/spaces/OpenSim/pages/53086215
+    supports:
+    - computational abstraction
+    - pelvic frame example
+    - hip ball-and-socket representation
+    - muscle path representation
+  SRC:HIP_CAPSULE_REVIEW:
+    title: Hip Joint Capsular Anatomy, Mechanics, and Surgical Management
+    citation: Jimenez AE, et al. JBJS Reviews. 2020. PMCID PMC7406151.
+    url: https://pmc.ncbi.nlm.nih.gov/articles/PMC7406151/
+    supports:
+    - capsular ligaments
+    - zona orbicularis
+    - capsular mechanics
+relationship_types:
+- IS_A
+- PART_OF
+- HAS_PART
+- ATTACHES_TO
+- ORIGINATES_FROM
+- INSERTS_ON
+- ARTICULATES_WITH
+- CROSSES
+- CONNECTS
+- COVERED_BY
+- REINFORCES
+- INNERVATED_BY
+- GENERATES
+- TRANSMITS_FORCE_TO
+- ACTS_ON
+- CONSTRAINS
+- STABILIZES
+- HAS_FRAME
+- REPRESENTED_BY
+- MEASURED_BY
+- ESTIMATED_BY
+- HAS_LANDMARK
+- HAS_SURFACE
+- HAS_COORDINATE
+- ASSOCIATED_WITH
+entities:
+  LB:REG:PELVIS_HIP_COMPLEX:
+    name: Pelvis and Hip Complex
+    class: AnatomicalRegion
+    relationships:
+      HAS_PART:
+      - LB:BONE:PELVIS
+      - LB:JOINT:HIP_R
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:BONE:PELVIS:
+    name: Bony Pelvis
+    class: SkeletalComplex
+    relationships:
+      HAS_PART:
+      - LB:BONE:HIP_BONE_R
+      - LB:BONE:HIP_BONE_L
+      - LB:BONE:SACRUM
+      - LB:BONE:COCCYX
+      REPRESENTED_BY:
+      - LB:SEG:PELVIS
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:BONE:SACRUM:
+    name: Sacrum
+    class: Bone
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:BONE:COCCYX:
+    name: Coccyx
+    class: Bone
+  LB:BONE:HIP_BONE_R:
+    name: Right Hip Bone
+    class: Bone
+    side: right
+    relationships:
+      HAS_PART:
+      - LB:BONE:ILIUM_R
+      - LB:BONE:ISCHIUM_R
+      - LB:BONE:PUBIS_R
+      - LB:SURF:ACETABULUM_R
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:BONE:ILIUM_R:
+    name: Right Ilium
+    class: BoneRegion
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_R
+  LB:BONE:ISCHIUM_R:
+    name: Right Ischium
+    class: BoneRegion
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_R
+  LB:BONE:PUBIS_R:
+    name: Right Pubis
+    class: BoneRegion
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_R
+  LB:BONE:FEMUR_R:
+    name: Right Femur
+    class: Bone
+    side: right
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:THIGH_R
+  LB:BONE:HIP_BONE_L:
+    name: Left Hip Bone
+    class: Bone
+    side: left
+    relationships:
+      HAS_PART:
+      - LB:BONE:ILIUM_L
+      - LB:BONE:ISCHIUM_L
+      - LB:BONE:PUBIS_L
+      - LB:SURF:ACETABULUM_L
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:BONE:ILIUM_L:
+    name: Left Ilium
+    class: BoneRegion
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_L
+  LB:BONE:ISCHIUM_L:
+    name: Left Ischium
+    class: BoneRegion
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_L
+  LB:BONE:PUBIS_L:
+    name: Left Pubis
+    class: BoneRegion
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_L
+  LB:BONE:FEMUR_L:
+    name: Left Femur
+    class: Bone
+    side: left
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:THIGH_L
+  LB:LMK:ASIS_R:
+    name: Right Anterior Superior Iliac Spine
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:ASIS_L:
+    name: Left Anterior Superior Iliac Spine
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:AIIS_R:
+    name: Right Anterior Inferior Iliac Spine
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:AIIS_L:
+    name: Left Anterior Inferior Iliac Spine
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:PSIS_R:
+    name: Right Posterior Superior Iliac Spine
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:PSIS_L:
+    name: Left Posterior Superior Iliac Spine
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:PIIS_R:
+    name: Right Posterior Inferior Iliac Spine
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:PIIS_L:
+    name: Left Posterior Inferior Iliac Spine
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:ILIAC_CREST_R:
+    name: Right Iliac Crest
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:ILIAC_CREST_L:
+    name: Left Iliac Crest
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:ILIAC_FOSSA_R:
+    name: Right Iliac Fossa
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:ILIAC_FOSSA_L:
+    name: Left Iliac Fossa
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:GLUTEAL_SURFACE_R:
+    name: Right Gluteal Surface of Ilium
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:GLUTEAL_SURFACE_L:
+    name: Left Gluteal Surface of Ilium
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:ANTERIOR_GLUTEAL_LINE_R:
+    name: Right Anterior Gluteal Line
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:ANTERIOR_GLUTEAL_LINE_L:
+    name: Left Anterior Gluteal Line
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:POSTERIOR_GLUTEAL_LINE_R:
+    name: Right Posterior Gluteal Line
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:POSTERIOR_GLUTEAL_LINE_L:
+    name: Left Posterior Gluteal Line
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:INFERIOR_GLUTEAL_LINE_R:
+    name: Right Inferior Gluteal Line
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:INFERIOR_GLUTEAL_LINE_L:
+    name: Left Inferior Gluteal Line
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:GREATER_SCIATIC_NOTCH_R:
+    name: Right Greater Sciatic Notch
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_R
+  LB:LMK:GREATER_SCIATIC_NOTCH_L:
+    name: Left Greater Sciatic Notch
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ILIUM_L
+  LB:LMK:ISCHIAL_TUBEROSITY_R:
+    name: Right Ischial Tuberosity
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ISCHIUM_R
+  LB:LMK:ISCHIAL_TUBEROSITY_L:
+    name: Left Ischial Tuberosity
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ISCHIUM_L
+  LB:LMK:ISCHIAL_SPINE_R:
+    name: Right Ischial Spine
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ISCHIUM_R
+  LB:LMK:ISCHIAL_SPINE_L:
+    name: Left Ischial Spine
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ISCHIUM_L
+  LB:LMK:ISCHIAL_RAMUS_R:
+    name: Right Ischial Ramus
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:ISCHIUM_R
+  LB:LMK:ISCHIAL_RAMUS_L:
+    name: Left Ischial Ramus
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:ISCHIUM_L
+  LB:LMK:PUBIC_BODY_R:
+    name: Right Body of Pubis
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_R
+  LB:LMK:PUBIC_BODY_L:
+    name: Left Body of Pubis
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_L
+  LB:LMK:SUPERIOR_PUBIC_RAMUS_R:
+    name: Right Superior Pubic Ramus
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_R
+  LB:LMK:SUPERIOR_PUBIC_RAMUS_L:
+    name: Left Superior Pubic Ramus
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_L
+  LB:LMK:INFERIOR_PUBIC_RAMUS_R:
+    name: Right Inferior Pubic Ramus
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_R
+  LB:LMK:INFERIOR_PUBIC_RAMUS_L:
+    name: Left Inferior Pubic Ramus
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_L
+  LB:LMK:PUBIC_CREST_R:
+    name: Right Pubic Crest
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_R
+  LB:LMK:PUBIC_CREST_L:
+    name: Left Pubic Crest
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_L
+  LB:LMK:PUBIC_TUBERCLE_R:
+    name: Right Pubic Tubercle
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_R
+  LB:LMK:PUBIC_TUBERCLE_L:
+    name: Left Pubic Tubercle
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_L
+  LB:LMK:PECTINEAL_LINE_PUBIS_R:
+    name: Right Pectineal Line of Pubis
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_R
+  LB:LMK:PECTINEAL_LINE_PUBIS_L:
+    name: Left Pectineal Line of Pubis
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:PUBIS_L
+  LB:LMK:FEMORAL_HEAD_R:
+    name: Right Femoral Head
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:FEMORAL_HEAD_L:
+    name: Left Femoral Head
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:FOVEA_CAPITIS_R:
+    name: Right Fovea Capitis
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:FOVEA_CAPITIS_L:
+    name: Left Fovea Capitis
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:FEMORAL_NECK_R:
+    name: Right Femoral Neck
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:FEMORAL_NECK_L:
+    name: Left Femoral Neck
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:GREATER_TROCHANTER_R:
+    name: Right Greater Trochanter
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:GREATER_TROCHANTER_L:
+    name: Left Greater Trochanter
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:LESSER_TROCHANTER_R:
+    name: Right Lesser Trochanter
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:LESSER_TROCHANTER_L:
+    name: Left Lesser Trochanter
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:TROCHANTERIC_FOSSA_R:
+    name: Right Trochanteric Fossa
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:TROCHANTERIC_FOSSA_L:
+    name: Left Trochanteric Fossa
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:INTERTROCHANTERIC_LINE_R:
+    name: Right Intertrochanteric Line
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:INTERTROCHANTERIC_LINE_L:
+    name: Left Intertrochanteric Line
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:INTERTROCHANTERIC_CREST_R:
+    name: Right Intertrochanteric Crest
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:INTERTROCHANTERIC_CREST_L:
+    name: Left Intertrochanteric Crest
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:GLUTEAL_TUBEROSITY_R:
+    name: Right Gluteal Tuberosity
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:GLUTEAL_TUBEROSITY_L:
+    name: Left Gluteal Tuberosity
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:PECTINEAL_LINE_FEMUR_R:
+    name: Right Pectineal Line of Femur
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:PECTINEAL_LINE_FEMUR_L:
+    name: Left Pectineal Line of Femur
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:LINEA_ASPERA_R:
+    name: Right Linea Aspera
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:LINEA_ASPERA_L:
+    name: Left Linea Aspera
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:LMK:ADDUCTOR_TUBERCLE_R:
+    name: Right Adductor Tubercle
+    class: AnatomicalLandmark
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_R
+  LB:LMK:ADDUCTOR_TUBERCLE_L:
+    name: Left Adductor Tubercle
+    class: AnatomicalLandmark
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:FEMUR_L
+  LB:SURF:ACETABULUM_R:
+    name: Right Acetabulum
+    class: ArticularSocket
+    side: right
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_R
+      ARTICULATES_WITH:
+      - LB:LMK:FEMORAL_HEAD_R
+      ASSOCIATED_WITH:
+      - LB:LAB:ACETABULAR_R
+      - LB:CART:ACETABULAR_R
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:CART:ACETABULAR_R:
+    name: Right Acetabular Articular Cartilage
+    class: ArticularCartilage
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+  LB:CART:FEMORAL_HEAD_R:
+    name: Right Femoral Head Articular Cartilage
+    class: ArticularCartilage
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+  LB:LAB:ACETABULAR_R:
+    name: Right Acetabular Labrum
+    class: Fibrocartilage
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+      ATTACHES_TO:
+      - LB:SURF:ACETABULUM_R
+      STABILIZES:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:JOINT:HIP_R:
+    name: Right Hip Joint
+    class: SynovialBallAndSocketJoint
+    side: right
+    relationships:
+      CONNECTS:
+      - LB:BONE:HIP_BONE_R
+      - LB:BONE:FEMUR_R
+      HAS_PART:
+      - LB:CAP:HIP_R
+      - LB:LAB:ACETABULAR_R
+      - LB:CART:ACETABULAR_R
+      - LB:CART:FEMORAL_HEAD_R
+      HAS_FRAME:
+      - LB:FRAME:HIP_R
+      HAS_COORDINATE:
+      - LB:DOF:HIP_FLEX_EXT_R
+      - LB:DOF:HIP_AB_AD_R
+      - LB:DOF:HIP_ROTATION_R
+    anatomical_properties:
+      multiaxial: true
+      motions:
+      - flexion_extension
+      - abduction_adduction
+      - internal_external_rotation
+    evidence:
+    - SRC:STATPEARLS_HIP
+    - SRC:ISB_WU_2002
+  LB:SURF:ACETABULUM_L:
+    name: Left Acetabulum
+    class: ArticularSocket
+    side: left
+    relationships:
+      PART_OF:
+      - LB:BONE:HIP_BONE_L
+      ARTICULATES_WITH:
+      - LB:LMK:FEMORAL_HEAD_L
+      ASSOCIATED_WITH:
+      - LB:LAB:ACETABULAR_L
+      - LB:CART:ACETABULAR_L
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:CART:ACETABULAR_L:
+    name: Left Acetabular Articular Cartilage
+    class: ArticularCartilage
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+  LB:CART:FEMORAL_HEAD_L:
+    name: Left Femoral Head Articular Cartilage
+    class: ArticularCartilage
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+  LB:LAB:ACETABULAR_L:
+    name: Left Acetabular Labrum
+    class: Fibrocartilage
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+      ATTACHES_TO:
+      - LB:SURF:ACETABULUM_L
+      STABILIZES:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:JOINT:HIP_L:
+    name: Left Hip Joint
+    class: SynovialBallAndSocketJoint
+    side: left
+    relationships:
+      CONNECTS:
+      - LB:BONE:HIP_BONE_L
+      - LB:BONE:FEMUR_L
+      HAS_PART:
+      - LB:CAP:HIP_L
+      - LB:LAB:ACETABULAR_L
+      - LB:CART:ACETABULAR_L
+      - LB:CART:FEMORAL_HEAD_L
+      HAS_FRAME:
+      - LB:FRAME:HIP_L
+      HAS_COORDINATE:
+      - LB:DOF:HIP_FLEX_EXT_L
+      - LB:DOF:HIP_AB_AD_L
+      - LB:DOF:HIP_ROTATION_L
+    anatomical_properties:
+      multiaxial: true
+      motions:
+      - flexion_extension
+      - abduction_adduction
+      - internal_external_rotation
+    evidence:
+    - SRC:STATPEARLS_HIP
+    - SRC:ISB_WU_2002
+  LB:CAP:HIP_R:
+    name: Right Hip Joint Capsule
+    class: JointCapsule
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+      HAS_PART:
+      - LB:LIG:ILIOFEMORAL_R
+      - LB:LIG:PUBOFEMORAL_R
+      - LB:LIG:ISCHIOFEMORAL_R
+      - LB:LIG:ZONA_ORBICULARIS_R
+      STABILIZES:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:ILIOFEMORAL_R:
+    name: Right Iliofemoral Ligament
+    class: Ligament
+    side: right
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_R
+      ATTACHES_TO:
+      - LB:LMK:AIIS_R
+      - LB:LMK:INTERTROCHANTERIC_LINE_R
+      CROSSES:
+      - LB:JOINT:HIP_R
+      CONSTRAINS:
+      - LB:JOINT:HIP_R
+      STABILIZES:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:PUBOFEMORAL_R:
+    name: Right Pubofemoral Ligament
+    class: Ligament
+    side: right
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_R
+      ATTACHES_TO:
+      - LB:BONE:PUBIS_R
+      - LB:LMK:INTERTROCHANTERIC_LINE_R
+      CROSSES:
+      - LB:JOINT:HIP_R
+      CONSTRAINS:
+      - LB:JOINT:HIP_R
+      STABILIZES:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:ISCHIOFEMORAL_R:
+    name: Right Ischiofemoral Ligament
+    class: Ligament
+    side: right
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_R
+      ATTACHES_TO:
+      - LB:BONE:ISCHIUM_R
+      - LB:LMK:FEMORAL_NECK_R
+      CROSSES:
+      - LB:JOINT:HIP_R
+      CONSTRAINS:
+      - LB:JOINT:HIP_R
+      STABILIZES:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:ZONA_ORBICULARIS_R:
+    name: Right Zona Orbicularis
+    class: Ligament
+    side: right
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_R
+      ATTACHES_TO:
+      - LB:LMK:FEMORAL_NECK_R
+      CROSSES:
+      - LB:JOINT:HIP_R
+      CONSTRAINS:
+      - LB:JOINT:HIP_R
+      STABILIZES:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:FEMORAL_HEAD_R:
+    name: Right Ligament of Head of Femur
+    class: Ligament
+    side: right
+    relationships:
+      ATTACHES_TO:
+      - LB:LMK:FOVEA_CAPITIS_R
+      - LB:SURF:ACETABULUM_R
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ASSOCIATED_WITH:
+      - LB:JOINT:HIP_R
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:CAP:HIP_L:
+    name: Left Hip Joint Capsule
+    class: JointCapsule
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+      HAS_PART:
+      - LB:LIG:ILIOFEMORAL_L
+      - LB:LIG:PUBOFEMORAL_L
+      - LB:LIG:ISCHIOFEMORAL_L
+      - LB:LIG:ZONA_ORBICULARIS_L
+      STABILIZES:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:ILIOFEMORAL_L:
+    name: Left Iliofemoral Ligament
+    class: Ligament
+    side: left
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_L
+      ATTACHES_TO:
+      - LB:LMK:AIIS_L
+      - LB:LMK:INTERTROCHANTERIC_LINE_L
+      CROSSES:
+      - LB:JOINT:HIP_L
+      CONSTRAINS:
+      - LB:JOINT:HIP_L
+      STABILIZES:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:PUBOFEMORAL_L:
+    name: Left Pubofemoral Ligament
+    class: Ligament
+    side: left
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_L
+      ATTACHES_TO:
+      - LB:BONE:PUBIS_L
+      - LB:LMK:INTERTROCHANTERIC_LINE_L
+      CROSSES:
+      - LB:JOINT:HIP_L
+      CONSTRAINS:
+      - LB:JOINT:HIP_L
+      STABILIZES:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:ISCHIOFEMORAL_L:
+    name: Left Ischiofemoral Ligament
+    class: Ligament
+    side: left
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_L
+      ATTACHES_TO:
+      - LB:BONE:ISCHIUM_L
+      - LB:LMK:FEMORAL_NECK_L
+      CROSSES:
+      - LB:JOINT:HIP_L
+      CONSTRAINS:
+      - LB:JOINT:HIP_L
+      STABILIZES:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:ZONA_ORBICULARIS_L:
+    name: Left Zona Orbicularis
+    class: Ligament
+    side: left
+    relationships:
+      PART_OF:
+      - LB:CAP:HIP_L
+      ATTACHES_TO:
+      - LB:LMK:FEMORAL_NECK_L
+      CROSSES:
+      - LB:JOINT:HIP_L
+      CONSTRAINS:
+      - LB:JOINT:HIP_L
+      STABILIZES:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:HIP_CAPSULE_REVIEW
+  LB:LIG:FEMORAL_HEAD_L:
+    name: Left Ligament of Head of Femur
+    class: Ligament
+    side: left
+    relationships:
+      ATTACHES_TO:
+      - LB:LMK:FOVEA_CAPITIS_L
+      - LB:SURF:ACETABULUM_L
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ASSOCIATED_WITH:
+      - LB:JOINT:HIP_L
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:NERVE:FEMORAL:
+    name: Femoral Nerve
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:OBTURATOR:
+    name: Obturator Nerve
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:SUPERIOR_GLUTEAL:
+    name: Superior Gluteal Nerve
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:INFERIOR_GLUTEAL:
+    name: Inferior Gluteal Nerve
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:SCIATIC:
+    name: Sciatic Nerve
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:NERVE_TO_PIRIFORMIS:
+    name: Nerve to Piriformis
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:NERVE_TO_OBTURATOR_INTERNUS:
+    name: Nerve to Obturator Internus
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:NERVE_TO_QUADRATUS_FEMORIS:
+    name: Nerve to Quadratus Femoris
+    class: PeripheralNerveOrNerveSource
+  LB:NERVE:ANTERIOR_RAMUS_L1_L3:
+    name: Anterior Rami L1-L3
+    class: PeripheralNerveOrNerveSource
+  LB:TEN:ILIOTIBIAL_TRACT_R:
+    name: Right Iliotibial Tract
+    class: FascialThickening
+    side: right
+    relationships:
+      ATTACHES_TO:
+      - LB:LMK:ILIAC_CREST_R
+  LB:TEN:ILIOPSOAS_R:
+    name: Right Iliopsoas Tendon
+    class: Tendon
+    side: right
+    relationships:
+      ATTACHES_TO:
+      - LB:LMK:LESSER_TROCHANTER_R
+      TRANSMITS_FORCE_TO:
+      - LB:BONE:FEMUR_R
+  LB:TEN:ILIOTIBIAL_TRACT_L:
+    name: Left Iliotibial Tract
+    class: FascialThickening
+    side: left
+    relationships:
+      ATTACHES_TO:
+      - LB:LMK:ILIAC_CREST_L
+  LB:TEN:ILIOPSOAS_L:
+    name: Left Iliopsoas Tendon
+    class: Tendon
+    side: left
+    relationships:
+      ATTACHES_TO:
+      - LB:LMK:LESSER_TROCHANTER_L
+      TRANSMITS_FORCE_TO:
+      - LB:BONE:FEMUR_L
+  LB:MUS:GLUTEUS_MAXIMUS_R:
+    name: Right Gluteus Maximus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:INFERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:GLUTEAL_SURFACE_R
+      - LB:BONE:SACRUM
+      INSERTS_ON:
+      - LB:LMK:GLUTEAL_TUBEROSITY_R
+      - LB:TEN:ILIOTIBIAL_TRACT_R
+    mechanical_capabilities: &id001
+    - hip_extension
+    - external_rotation
+    - stabilization
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GLUTEUS_MAXIMUS_L:
+    name: Left Gluteus Maximus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:INFERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:GLUTEAL_SURFACE_L
+      - LB:BONE:SACRUM
+      INSERTS_ON:
+      - LB:LMK:GLUTEAL_TUBEROSITY_L
+      - LB:TEN:ILIOTIBIAL_TRACT_L
+    mechanical_capabilities: *id001
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GLUTEUS_MEDIUS_R:
+    name: Right Gluteus Medius
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:SUPERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:GLUTEAL_SURFACE_R
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_R
+    mechanical_capabilities: &id002
+    - hip_abduction
+    - pelvic_stabilization
+    - rotation_depends_on_fiber_region
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GLUTEUS_MEDIUS_L:
+    name: Left Gluteus Medius
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:SUPERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:GLUTEAL_SURFACE_L
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_L
+    mechanical_capabilities: *id002
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GLUTEUS_MINIMUS_R:
+    name: Right Gluteus Minimus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:SUPERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:GLUTEAL_SURFACE_R
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_R
+    mechanical_capabilities: &id003
+    - hip_abduction
+    - pelvic_stabilization
+    - internal_rotation_contribution
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GLUTEUS_MINIMUS_L:
+    name: Left Gluteus Minimus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:SUPERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:GLUTEAL_SURFACE_L
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_L
+    mechanical_capabilities: *id003
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:TENSOR_FASCIAE_LATAE_R:
+    name: Right Tensor Fasciae Latae
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:SUPERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:ASIS_R
+      - LB:LMK:ILIAC_CREST_R
+      INSERTS_ON:
+      - LB:TEN:ILIOTIBIAL_TRACT_R
+    mechanical_capabilities: &id004
+    - hip_flexion
+    - hip_abduction
+    - internal_rotation_contribution
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:TENSOR_FASCIAE_LATAE_L:
+    name: Left Tensor Fasciae Latae
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:SUPERIOR_GLUTEAL
+      ORIGINATES_FROM:
+      - LB:LMK:ASIS_L
+      - LB:LMK:ILIAC_CREST_L
+      INSERTS_ON:
+      - LB:TEN:ILIOTIBIAL_TRACT_L
+    mechanical_capabilities: *id004
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ILIOPSOAS_PSOAS_MAJOR_R:
+    name: Right Psoas Major
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:ANTERIOR_RAMUS_L1_L3
+      INSERTS_ON:
+      - LB:LMK:LESSER_TROCHANTER_R
+      ASSOCIATED_WITH:
+      - LB:TEN:ILIOPSOAS_R
+    mechanical_capabilities: &id005
+    - hip_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ILIOPSOAS_PSOAS_MAJOR_L:
+    name: Left Psoas Major
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:ANTERIOR_RAMUS_L1_L3
+      INSERTS_ON:
+      - LB:LMK:LESSER_TROCHANTER_L
+      ASSOCIATED_WITH:
+      - LB:TEN:ILIOPSOAS_L
+    mechanical_capabilities: *id005
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ILIOPSOAS_ILIACUS_R:
+    name: Right Iliacus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:ILIAC_FOSSA_R
+      INSERTS_ON:
+      - LB:LMK:LESSER_TROCHANTER_R
+      ASSOCIATED_WITH:
+      - LB:TEN:ILIOPSOAS_R
+    mechanical_capabilities: &id006
+    - hip_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ILIOPSOAS_ILIACUS_L:
+    name: Left Iliacus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:ILIAC_FOSSA_L
+      INSERTS_ON:
+      - LB:LMK:LESSER_TROCHANTER_L
+      ASSOCIATED_WITH:
+      - LB:TEN:ILIOPSOAS_L
+    mechanical_capabilities: *id006
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:PECTINEUS_R:
+    name: Right Pectineus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:PECTINEAL_LINE_PUBIS_R
+      INSERTS_ON:
+      - LB:LMK:PECTINEAL_LINE_FEMUR_R
+    mechanical_capabilities: &id007
+    - hip_flexion
+    - hip_adduction
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:PECTINEUS_L:
+    name: Left Pectineus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:PECTINEAL_LINE_PUBIS_L
+      INSERTS_ON:
+      - LB:LMK:PECTINEAL_LINE_FEMUR_L
+    mechanical_capabilities: *id007
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ADDUCTOR_LONGUS_R:
+    name: Right Adductor Longus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:PUBIC_BODY_R
+      INSERTS_ON:
+      - LB:LMK:LINEA_ASPERA_R
+    mechanical_capabilities: &id008
+    - hip_adduction
+    - hip_flexion_contribution
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ADDUCTOR_LONGUS_L:
+    name: Left Adductor Longus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:PUBIC_BODY_L
+      INSERTS_ON:
+      - LB:LMK:LINEA_ASPERA_L
+    mechanical_capabilities: *id008
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ADDUCTOR_BREVIS_R:
+    name: Right Adductor Brevis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:PUBIC_BODY_R
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_R
+      INSERTS_ON:
+      - LB:LMK:PECTINEAL_LINE_FEMUR_R
+      - LB:LMK:LINEA_ASPERA_R
+    mechanical_capabilities: &id009
+    - hip_adduction
+    - hip_flexion_contribution
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ADDUCTOR_BREVIS_L:
+    name: Left Adductor Brevis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:PUBIC_BODY_L
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_L
+      INSERTS_ON:
+      - LB:LMK:PECTINEAL_LINE_FEMUR_L
+      - LB:LMK:LINEA_ASPERA_L
+    mechanical_capabilities: *id009
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ADDUCTOR_MAGNUS_R:
+    name: Right Adductor Magnus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_R
+      - LB:LMK:ISCHIAL_TUBEROSITY_R
+      INSERTS_ON:
+      - LB:LMK:LINEA_ASPERA_R
+      - LB:LMK:ADDUCTOR_TUBERCLE_R
+    mechanical_capabilities: &id010
+    - hip_adduction
+    - fiber_region_dependent_flexion_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:ADDUCTOR_MAGNUS_L:
+    name: Left Adductor Magnus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_L
+      - LB:LMK:ISCHIAL_TUBEROSITY_L
+      INSERTS_ON:
+      - LB:LMK:LINEA_ASPERA_L
+      - LB:LMK:ADDUCTOR_TUBERCLE_L
+    mechanical_capabilities: *id010
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GRACILIS_R:
+    name: Right Gracilis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:PUBIC_BODY_R
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_R
+    mechanical_capabilities: &id011
+    - hip_adduction
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:GRACILIS_L:
+    name: Left Gracilis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:PUBIC_BODY_L
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_L
+    mechanical_capabilities: *id011
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:RECTUS_FEMORIS_R:
+    name: Right Rectus Femoris
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:AIIS_R
+    mechanical_capabilities: &id012
+    - hip_flexion
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:RECTUS_FEMORIS_L:
+    name: Left Rectus Femoris
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:AIIS_L
+    mechanical_capabilities: *id012
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SARTORIUS_R:
+    name: Right Sartorius
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:ASIS_R
+    mechanical_capabilities: &id013
+    - hip_flexion
+    - hip_abduction
+    - external_rotation
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SARTORIUS_L:
+    name: Left Sartorius
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      ORIGINATES_FROM:
+      - LB:LMK:ASIS_L
+    mechanical_capabilities: *id013
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SEMITENDINOSUS_R:
+    name: Right Semitendinosus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:SCIATIC
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_R
+    mechanical_capabilities: &id014
+    - hip_extension
+    - knee_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SEMITENDINOSUS_L:
+    name: Left Semitendinosus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:SCIATIC
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_L
+    mechanical_capabilities: *id014
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SEMIMEMBRANOSUS_R:
+    name: Right Semimembranosus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:SCIATIC
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_R
+    mechanical_capabilities: &id015
+    - hip_extension
+    - knee_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SEMIMEMBRANOSUS_L:
+    name: Left Semimembranosus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:SCIATIC
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_L
+    mechanical_capabilities: *id015
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:BICEPS_FEMORIS_LONG_R:
+    name: Right Biceps Femoris Long Head
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:SCIATIC
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_R
+    mechanical_capabilities: &id016
+    - hip_extension
+    - knee_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:BICEPS_FEMORIS_LONG_L:
+    name: Left Biceps Femoris Long Head
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:SCIATIC
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_L
+    mechanical_capabilities: *id016
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:PIRIFORMIS_R:
+    name: Right Piriformis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_PIRIFORMIS
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_R
+    mechanical_capabilities: &id017
+    - external_rotation
+    - abduction_when_hip_flexed
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:PIRIFORMIS_L:
+    name: Left Piriformis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_PIRIFORMIS
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_L
+    mechanical_capabilities: *id017
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:OBTURATOR_INTERNUS_R:
+    name: Right Obturator Internus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_OBTURATOR_INTERNUS
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_R
+    mechanical_capabilities: &id018
+    - external_rotation
+    - abduction_when_hip_flexed
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:OBTURATOR_INTERNUS_L:
+    name: Left Obturator Internus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_OBTURATOR_INTERNUS
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_L
+    mechanical_capabilities: *id018
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:OBTURATOR_EXTERNUS_R:
+    name: Right Obturator Externus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_R
+      - LB:LMK:ISCHIAL_RAMUS_R
+      INSERTS_ON:
+      - LB:LMK:TROCHANTERIC_FOSSA_R
+    mechanical_capabilities: &id019
+    - external_rotation
+    - stabilization
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:OBTURATOR_EXTERNUS_L:
+    name: Left Obturator Externus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:OBTURATOR
+      ORIGINATES_FROM:
+      - LB:LMK:INFERIOR_PUBIC_RAMUS_L
+      - LB:LMK:ISCHIAL_RAMUS_L
+      INSERTS_ON:
+      - LB:LMK:TROCHANTERIC_FOSSA_L
+    mechanical_capabilities: *id019
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SUPERIOR_GEMELLUS_R:
+    name: Right Superior Gemellus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_OBTURATOR_INTERNUS
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_SPINE_R
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_R
+    mechanical_capabilities: &id020
+    - external_rotation
+    - abduction_when_hip_flexed
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:SUPERIOR_GEMELLUS_L:
+    name: Left Superior Gemellus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_OBTURATOR_INTERNUS
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_SPINE_L
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_L
+    mechanical_capabilities: *id020
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:INFERIOR_GEMELLUS_R:
+    name: Right Inferior Gemellus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_QUADRATUS_FEMORIS
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_R
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_R
+    mechanical_capabilities: &id021
+    - external_rotation
+    - abduction_when_hip_flexed
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:INFERIOR_GEMELLUS_L:
+    name: Left Inferior Gemellus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_QUADRATUS_FEMORIS
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_L
+      INSERTS_ON:
+      - LB:LMK:GREATER_TROCHANTER_L
+    mechanical_capabilities: *id021
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:QUADRATUS_FEMORIS_R:
+    name: Right Quadratus Femoris
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_R
+      ACTS_ON:
+      - LB:JOINT:HIP_R
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_QUADRATUS_FEMORIS
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_R
+      INSERTS_ON:
+      - LB:LMK:INTERTROCHANTERIC_CREST_R
+    mechanical_capabilities: &id022
+    - external_rotation
+    - adduction_contribution
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:MUS:QUADRATUS_FEMORIS_L:
+    name: Left Quadratus Femoris
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:HIP_L
+      ACTS_ON:
+      - LB:JOINT:HIP_L
+      INNERVATED_BY:
+      - LB:NERVE:NERVE_TO_QUADRATUS_FEMORIS
+      ORIGINATES_FROM:
+      - LB:LMK:ISCHIAL_TUBEROSITY_L
+      INSERTS_ON:
+      - LB:LMK:INTERTROCHANTERIC_CREST_L
+    mechanical_capabilities: *id022
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle
+    - activation_time_constant
+    - deactivation_time_constant
+    evidence:
+    - SRC:STATPEARLS_HIP
+  LB:SEG:PELVIS:
+    name: Pelvis Rigid-Body Segment
+    class: RigidBodySegment
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+    - linear_velocity
+    - angular_velocity
+    assumptions:
+    - rigid_body
+  LB:SEG:THIGH_R:
+    name: Right Thigh Rigid-Body Segment
+    class: RigidBodySegment
+    side: right
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+    - linear_velocity
+    - angular_velocity
+  LB:FRAME:HIP_R:
+    name: Right Hip Joint Coordinate Frame
+    class: CoordinateFrame
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+    convention_reference: SRC:ISB_WU_2002
+  LB:LMK:HIP_JOINT_CENTER_R:
+    name: Right Hip Joint Center
+    class: DerivedLandmark
+    side: right
+    relationships:
+      ASSOCIATED_WITH:
+      - LB:JOINT:HIP_R
+    note: Subject-specific location must be measured or estimated; no universal coordinate is stored.
+  LB:DOF:HIP_FLEX_EXT_R:
+    name: Right Hip Flexion/Extension
+    class: JointCoordinate
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+    convention_reference: SRC:ISB_WU_2002
+  LB:DOF:HIP_AB_AD_R:
+    name: Right Hip Abduction/Adduction
+    class: JointCoordinate
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+    convention_reference: SRC:ISB_WU_2002
+  LB:DOF:HIP_ROTATION_R:
+    name: Right Hip Internal/External Rotation
+    class: JointCoordinate
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_R
+    convention_reference: SRC:ISB_WU_2002
+  LB:SEG:THIGH_L:
+    name: Left Thigh Rigid-Body Segment
+    class: RigidBodySegment
+    side: left
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+    - linear_velocity
+    - angular_velocity
+  LB:FRAME:HIP_L:
+    name: Left Hip Joint Coordinate Frame
+    class: CoordinateFrame
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+    convention_reference: SRC:ISB_WU_2002
+  LB:LMK:HIP_JOINT_CENTER_L:
+    name: Left Hip Joint Center
+    class: DerivedLandmark
+    side: left
+    relationships:
+      ASSOCIATED_WITH:
+      - LB:JOINT:HIP_L
+    note: Subject-specific location must be measured or estimated; no universal coordinate is stored.
+  LB:DOF:HIP_FLEX_EXT_L:
+    name: Left Hip Flexion/Extension
+    class: JointCoordinate
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+    convention_reference: SRC:ISB_WU_2002
+  LB:DOF:HIP_AB_AD_L:
+    name: Left Hip Abduction/Adduction
+    class: JointCoordinate
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+    convention_reference: SRC:ISB_WU_2002
+  LB:DOF:HIP_ROTATION_L:
+    name: Left Hip Internal/External Rotation
+    class: JointCoordinate
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:HIP_L
+    convention_reference: SRC:ISB_WU_2002
+  LB:FRAME:PELVIS:
+    name: Pelvic Reference Frame
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:PELVIS
+    convention_reference: SRC:ISB_WU_2002
+    note: Exact implemented origin/axes must be declared by each model; do not assume an OpenSim-specific frame
+      is identical to the ISB recommendation.
+models:
+  squat_v0_1:
+    represents:
+    - LB:JOINT:HIP_R
+    - LB:JOINT:HIP_L
+    - LB:SEG:PELVIS
+    - LB:SEG:THIGH_R
+    - LB:SEG:THIGH_L
+    assumptions:
+    - sagittal_plane_motion
+    - hip_represented_as_idealized_revolute_joint
+    - rigid_pelvis
+    - rigid_thighs
+    - no_explicit_cartilage_contact
+    - no_explicit_capsular_or_ligament_force
+    - no_explicit_muscle_path_geometry
+    retained_coordinates:
+    - LB:DOF:HIP_FLEX_EXT_R
+    - LB:DOF:HIP_FLEX_EXT_L
+    omitted_coordinates:
+    - LB:DOF:HIP_AB_AD_R
+    - LB:DOF:HIP_AB_AD_L
+    - LB:DOF:HIP_ROTATION_R
+    - LB:DOF:HIP_ROTATION_L
