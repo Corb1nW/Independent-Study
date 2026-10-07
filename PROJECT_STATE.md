@@ -2,57 +2,65 @@
 
 **Updated:** 2026-10-07
 **Updated by:** Claude
-**Authoritative snapshot:** branch `main`, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Baseline of the original work: `d04fb78`.
-**Component versions:** ontology `hip.yaml` 0.2.0 · schema LB-QPS 0.3.0 · dataset `gluteus_maximus.yaml` 0.2.0 · README label LB-AO v0.5 · `DECISIONS.md` revision 2
-**Current phase:** Governance base complete; **Phase A (Integrity) not started**
+**Authoritative snapshot:** branch `main`, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`.
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 3
+**Current phase:** **Phase A (Integrity) built; awaiting ChatGPT's review.** Phase B not started.
 
 ## Implemented work
 
-- Original work by ChatGPT (framework, hip ontology, quantitative schema, gluteus maximus dataset, loaders/validator, 18 tests, demos), committed unchanged as baseline `d04fb78` (D-046).
-- Review documents in `docs/reviews/`; design documents in `docs/design/`.
-- `tools/review_cycle1_probes.py`: reproduces Review Cycle 1 defects D1–D8 and the Appendix A validator probes, plus probe 1b for an incompatible unit (D-046).
-- `docs/DECISIONS.md` revision 2: D-001 to D-048, approval record (D-042), three status fields (D-043).
-- This file (D-048).
+**Phase A (`4abb4f1`; D-024, D-025, D-026, D-027, D-031, D-034, D-035; choices in D-050)**
+- **Layered validator:** structural (`src/datum_model.py`, Pydantic) → semantic (vocabularies, property definitions, units via pint, physical bounds, ontology references) → evidence (sources, assumptions, derivations, applicability), in `src/quantitative.py`.
+- **Cross-file integrity check:** `src/integrity.py`, run with `python -m src.integrity`.
+- **Data fixes D1–D9** (D9 found during Phase A: a truncated YAML note). Details are in the D-024 Amendment 1.
+- **Hip joint** now receives joint kinematic and kinetic properties through `class_hierarchy` (D-031).
+- **Adductor magnus dual innervation** added after verification against StatPearls (D-034).
+- **Ward 2009 fiber-length normalization** verified against the primary source and recorded (D-019).
+- **One defaults function** with explicit-field precedence (D6).
+- **47 new tests** in `tests/test_phase_a.py`; 2 baseline tests adapted (listed in D-050).
 
-No code or data has been changed from the baseline.
+**Earlier:** baseline `d04fb78`; review documents in `docs/reviews/`; probe script `tools/review_cycle1_probes.py`; `docs/DECISIONS.md` (D-001 to D-050).
 
 ## Validation
 
+Environment: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1, pydantic 2.13.5, pint 0.26.1 (minimums in `requirements.txt`).
+
 | Check | Snapshot | Run by | Command | Result |
 |---|---|---|---|---|
-| Existing test suite | `d04fb78` | Claude | `python -m pytest -q` | 18 passed |
-| Review Cycle 1 probes | `d04fb78` | Claude | `python tools/review_cycle1_probes.py` | All defects reproduce: 2 unresolved coordinate references (D1); 1 parameter-name mismatch (D2); 11 classes with no properties (D3); 2 form mismatches (D5); all 9 validator probes ACCEPTED (D4) |
+| Test suite | `d04fb78` | Claude | `python -m pytest -q` | 18 passed |
+| Test suite | `4abb4f1` | Claude | `python -m pytest -q` | 65 passed |
+| Mutation check: new tests vs. old validator | `4abb4f1` with the baseline `validate_datum` swapped in | Claude | `python tools/mutation_check_phase_a.py` | 30 of 47 Phase A tests fail (the other 17 test data and structure, not the validator) |
+| Integrity check | `d04fb78` data, Phase A checker | Claude | `python -m src.integrity` | FAILED, 48 problems: 44 deprecated `pennation_angle` names (D2), 2 unresolved coordinates (D1), Fmax without `model_id` (D6), MUSCLE_FORCE junk key (D9) |
+| Integrity check | `4abb4f1` | Claude | `python -m src.integrity` | PASSED |
+| Review Cycle 1 probes | `d04fb78` | Claude | `python tools/review_cycle1_probes.py` | All 9 validator probes ACCEPTED; D1, D2, D3, D5 findings present |
+| Review Cycle 1 probes | `4abb4f1` | Claude | `python tools/review_cycle1_probes.py` | All 9 validator probes **REJECTED**; no D1, D2 or D5 findings; D3 list down from 11 to 10 classes (hip joint fixed; the rest is Phase C per D-031) |
 
-**Reported, not independently reproduced:** ChatGPT has not yet rerun the probes (open item, D-045).
-**Environment:** Python 3 with PyYAML 6.0.3 and pytest (versions per `requirements.txt` minimums).
+**Reported, not independently reproduced:** all Phase A results above (ChatGPT review pending).
 
 ## Accepted but unimplemented
 
-- **D-024** fix defects D1–D8 · **D-025** negative tests for every validator rule (Phase A)
-- **D-036** minimal hip-only model · **D-037** force-to-torque representation recorded before running (Phase B)
-- **D-039 / D-040** phase plan, including the Phase B boundary (Amendment 1)
+- **D-036** minimal hip-only model; **D-037** force-to-torque representation recorded before running (Phase B)
+- **D-039 / D-040** remaining phases B–F, including the Phase B boundary (D-039 Amendment 1)
 
 ## Open proposals and disagreements
 
-- **Awaiting Corbin's decision:** D-026 to D-035 and D-038. Both models agree on each; Corbin has not approved them individually (D-042). Several are Phase A inputs: D-026 (unit validation), D-031 (class reconciliation), D-034 (anatomy corrections), D-035 (structural validation).
+- **D-049 physical bounds:** implemented to close probe 3. The bound values await review, especially pennation < π/2.
+- **Q8 interpretation (`DECISIONS.md` §4):** Claude read Corbin's approval as covering D-026, D-027, D-031, D-034, D-035, plus the build/review roles. Corbin may correct it.
+- **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owner (proposed, awaiting Corbin):** Claude builds Phase A; ChatGPT reviews against the Phase A exit criterion.
-**Prerequisite:** Corbin decides D-026 to D-035 and D-038 (they can be approved as a batch).
-**Task:** Phase A (Integrity) per D-024, D-025 and D-039, within the delegated scope of D-047:
-1. Fix D1–D8.
-2. Add a failing-case test for each validator loophole (including probes 1b and 2 for units).
-3. Add the cross-file reference check.
-4. Enforce status and enum values; require a rationale for `assumed` data.
-5. Use one defaults-merging function.
-6. Give the hip joint its kinematic properties.
-7. Make anatomy corrections after source verification.
-8. Confirm the Ward 2009 fiber-length normalization.
+**Owner:** ChatGPT (reviewer). Roles per Q8.
+**Task:** Review Phase A against its exit criterion (D-024, D-025):
+1. Check out `4abb4f1` or later and confirm the snapshot.
+2. Install the requirements.
+3. Run `python -m pytest -q`, `python -m src.integrity` and `python tools/review_cycle1_probes.py`; compare with the table above.
+4. Review the validator rules, data changes and D-050 choices; check D-049.
+5. Return findings as Agree / Amend / Disagree with evidence. Reproduced results are reported as *independently checked*.
 
-**Completion criterion:** malformed records are rejected with clear messages; legitimate records and conversions pass; all cross-file references resolve; `tools/review_cycle1_probes.py` reports every validator probe as REJECTED except probe 1 (relabeling, see D-026); the existing behavior of the baseline data is preserved.
-**Required inputs:** this repository at the snapshot above; Ward et al. 2009 (Table 3); an anatomy reference for D-034 corrections.
+**Completion criterion:** every Phase A result is either reproduced by ChatGPT or disputed with evidence, and any findings are filed as `Proposed` entries for `DECISIONS.md`.
+**Then:** Phase B (hip-only model), starting with the D-037 force-to-torque choice for Corbin's approval.
+**Required inputs:** this repository (`lbao_repo.zip` with git history); `docs/DECISIONS.md` D-019, D-024 to D-027, D-031, D-034, D-035, D-049, D-050.
 
 ## Handoff protocol (D-048)
 
