@@ -207,6 +207,31 @@ def test_c1_git_input_provenance_post_resolution_change(tmp_path):
                           expected_hashes={"config": "0" * 64})
 
 
+
+def test_d1_crlf_checkout_is_clean_and_raw_resolution_hash_still_checked(tmp_path):
+    """Simulate Windows CRLF with Git text normalization; retain raw SHA256 guard."""
+    root, target, sha = _git_fixture(tmp_path)
+    subprocess.run(["git", "config", "core.autocrlf", "true"], cwd=root,
+                   check=True, capture_output=True)
+    target.write_bytes(b"moment_arm_m: 0.04\r\n")
+    # CRLF is a clean text checkout equivalent to committed LF.
+    status = subprocess.run(["git", "status", "--porcelain", "--", "config.yaml"],
+                            cwd=root, check=True, capture_output=True, text=True)
+    assert status.stdout.strip() == ""
+    assert verify_git_inputs(root, {"config": target}, sha) == "verified_git_head_and_inputs"
+    raw_sha = sha256(target.read_bytes()).hexdigest()
+    assert verify_git_inputs(root, {"config": target}, sha,
+                             expected_hashes={"config": raw_sha}) == "verified_git_head_and_inputs"
+    # The raw-input fingerprint must *not* be normalized or silently ignored.
+    with pytest.raises(ValueError, match="changed since input resolution"):
+        verify_git_inputs(root, {"config": target}, sha,
+                          expected_hashes={"config": sha256(b"moment_arm_m: 0.04\n").hexdigest()})
+    # A genuine value change remains unacceptable, even with CRLF normalization.
+    target.write_bytes(b"moment_arm_m: 0.08\r\n")
+    with pytest.raises(ValueError, match="differs from HEAD"):
+        verify_git_inputs(root, {"config": target}, sha)
+
+
 def test_c1_manifest_rejects_external_config_in_real_checkout(tmp_path):
     x = inputs()
     external = tmp_path / "config.yaml"
