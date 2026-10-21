@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 7 (2026-10-21), Phase A review complete; Phase B roles recorded. See §7 for revision history.
+**Revision:** 8 (2026-10-21), Phase B D-053 force-to-torque representation proposed; not approved. See §7 for revision history.
 **Covers:** Design decisions from the original work through the Phase A review
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -184,6 +184,8 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | **Part V — Shared repository and Phase A review** | | | | | |
 | D-051 | Shared git remote as the handoff medium | Corbin (idea); Claude; amended by ChatGPT | Accepted (Q15) | Implemented | Not applicable |
 | D-052 | Phase A review response: source scope, reference checks, admissibility wording | ChatGPT (A1–A4); Claude | Accepted (Q16) | Implemented | Independently checked (software) |
+| **Part VI — Phase B model choices** | | | | | |
+| D-053 | Constant signed hip-extension moment arm for demonstration | ChatGPT; Claude review pending | Proposed | Not started | Not applicable |
 
 ---
 
@@ -1211,6 +1213,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 ---
 
+## Part VI — Phase B model choices
+
 ### D-053  Phase B demonstration: constant signed hip-extension moment arm
 - **Decision status:** Proposed (Claude independent review and Corbin's explicit approval required before simulation implementation)
 - **Implementation status:** Not started
@@ -1265,7 +1269,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | ~~Decide on D-051~~ Accepted, Q15 | Corbin | Done |
 | ~~Confirm Phase B roles~~ ChatGPT builds, Claude reviews (Q17) | Corbin | Done |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
-| Select and record the force-to-torque representation (D-037, amended) | Phase B builder, approved by Corbin | Start of Phase B |
+| Review and approve or amend proposed D-053 (the D-037 force-to-torque choice), before simulation work | Claude reviewer, Corbin approver | Start of Phase B |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
 
 ## 7. Revision history
@@ -1279,6 +1283,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11; ChatGPT's re-review recorded (D-049 Amendment 1, D-052 review status, open items) | A-4 (merge of PR #4) |
 | 6 | 2026-10-21 | Claude | Q13, Q14 and A-4 added to §4; D-049 Amendments 2 and 3 (pennation ruling, positivity approval; labels stored in the schema); D-049 Accepted; verification statuses of D-024 to D-035, D-049, D-050, D-052 updated after ChatGPT's independent execution (PR #7), scoped to software; Q15, Q16 added: D-051 and D-052 Accepted | Q13 to Q16; pending merge by Corbin |
 | 7 | 2026-10-21 | Claude | Q17 added to §4 (Phase B roles); open item closed | Q17; pending merge by Corbin |
+| 8 | 2026-10-21 | ChatGPT | Added D-053 as Proposed Phase B D-037 force-to-torque choice; linked D-049 revisit; no simulation changes | Claude review and Corbin decision pending |
 
 ## 8. References
 
