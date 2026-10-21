@@ -1,15 +1,15 @@
 # LB-AO Project State
 
 **Updated:** 2026-10-21
-**Updated by:** Claude
+**Updated by:** ChatGPT (Phase B candidate record update)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 10
 **Current phase:** **Phase B build proposed on `phase-b/chatgpt-hip-model` (ChatGPT builder), awaiting Claude's independent review and Corbin's merge.** D-053 representation accepted at `ab082f5` (Q18). Phase B software outputs are NOT accepted results before review.
 
 ## Implemented work
 
-**Phase B candidate (unmerged, builder-submitted, not independently verified):** `src/hip_phase_b.py` resolves Arnold's validated whole-gluteus Fmax and checks a right-only scenario override, implements D-053's constant signed arm and analytic domain-exit detection; `config/phase_b_hip.yaml` documents all demonstration assumptions; two scenario YAML files distinguish baseline and right-side-only perturbation; `tests/test_phase_b.py` covers N2/N3, sign, scaling, bounds, and provenance; `tools/run_phase_b.py` emits a SHA-annotated JSON manifest. No changes to the canonical anatomical dataset. See `PHASE_B_README.md`. The reviewer must verify these implementation claims on the candidate PR head; sample output is unapproved.
+**Phase B candidate (unmerged; initial Claude review AMEND at `bf92dfd`, PR #14; builder applying C1–C6):** `src/hip_phase_b.py` resolves Arnold's validated whole-gluteus Fmax and checks a right-only scenario override, implements D-053's constant signed arm and analytic domain-exit detection; `config/phase_b_hip.yaml` documents all demonstration assumptions; two scenario YAML files distinguish baseline and right-side-only perturbation; `tests/test_phase_b.py` covers N2/N3, sign, scaling, bounds, and provenance; `tools/run_phase_b.py` emits a SHA-annotated JSON manifest. No changes to the canonical anatomical dataset. See `PHASE_B_README.md`. The reviewer must verify these implementation claims on the candidate PR head; sample output is unapproved. C1 adds Git HEAD input-content checks, C2 adds a corrupt-evidence negative test, C3 checks the analytical perturbation ratio, C4 discloses omitted physics, and C5 records the in-memory overlay choice. Re-review is pending.
 
 **Phase A review response (D-052; merged at `29e256e`, PR #3)**
 - **A1:** a datum may cite ontology sources plus its own dataset's sources; loading a dataset no longer widens what other datasets may cite. `validate_datum(datum, dataset=None)`.
@@ -110,7 +110,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Next task
 
-**Owner:** Claude (independent Phase B reviewer, Q17); **approver/merger:** Corbin.
+**Owner:** Claude (Phase B re-review of C1–C6 on PR #13, Q17); **approver/merger:** Corbin.
 **Candidate branch:** `phase-b/chatgpt-hip-model`. **Builder starting SHA:** `cfba5957370d7a676673080039c5d21d179c1ff4`.
 
 1. Review the exact PR head SHA, the provenance/model configuration, signed moment arm and force interpretation, source resolver, scenario overlay loader (N3), boundary-start logic using velocity or acceleration (N2), and event-localization correctness.
