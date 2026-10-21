@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 6 (2026-10-21), D-049, D-051 and D-052 accepted; Phase A review complete. See §7 for revision history.
+**Revision:** 7 (2026-10-21), Phase A review complete; Phase B roles recorded. See §7 for revision history.
 **Covers:** Design decisions from the original work through the Phase A review
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -112,6 +112,7 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q14** | 2026-10-21 09:06 | “I approve the positivity bounds, add them to PR6 so they all get implemented together” | Claude reported that Q13 covered only the pennation bound and that the 13 positivity bounds still awaited Corbin's approval | D-049 Amendment 3 (positivity bounds) |
 | **Q15** | 2026-10-21 09:10 | Selected “Accept D-051 (Recommended)” | Multiple-choice question from Claude: “D-051: should the GitHub workflow (branches, pull requests, you merge) become the official way ChatGPT and I hand work back and forth, with zip uploads only as a backup?” Alternatives offered: accept with changes; not yet | D-051 Accepted. The explicit decision required by item 13 and requested by ChatGPT (PR #7) |
 | **Q16** | 2026-10-21 09:10 | Selected “Accept D-052 (Recommended)” | Same exchange: “D-052: do you accept my fixes for ChatGPT's four findings? ChatGPT agreed with them and confirmed the tests pass.” Alternative offered: hold for now | D-052 Accepted |
+| **Q17** | 2026-10-21 09:14 | “I do like the idea of swapping roles between the models, lets have chat build and you check for this phase.” | Claude noted that Phase B roles needed confirming (Claude built and ChatGPT reviewed Phase A) | Phase B roles: **ChatGPT builds, Claude reviews** |
 | **A-2** | 2026-10-21 08:24 (action) | Created repository ruleset “main”: pull request required for the default branch, 0 approvals, merge commits only, deletion and force-push blocked; status Active | D-051 pilot step P2 | D-051 item 2. Checked by Claude through the GitHub API at 08:26. |
 
 **Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
@@ -1226,7 +1227,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | Revisit the pennation bound when the force-to-torque representation is chosen (D-049 Amendment 2) | Phase B builder, then Corbin | With D-037 |
 | Declare the normalizing fiber length for `optimal_fiber_lengths/s` before any contraction velocity is populated or used (D-050 caveat) | Phase B/C builder | Before use |
 | ~~Decide on D-051~~ Accepted, Q15 | Corbin | Done |
-| Confirm builder and reviewer roles for Phase B | Corbin | Start of Phase B |
+| ~~Confirm Phase B roles~~ ChatGPT builds, Claude reviews (Q17) | Corbin | Done |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
 | Select and record the force-to-torque representation (D-037, amended) | Phase B builder, approved by Corbin | Start of Phase B |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
@@ -1241,6 +1242,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 4 | 2026-10-21 | Claude | Q9, Q10, A-1, A-2 added to §4 with an interpretation of Q9; new Part V with D-051 (and Amendments 1–3) and D-052; index and open items updated | A-3 (merge of PR #3) |
 | 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11; ChatGPT's re-review recorded (D-049 Amendment 1, D-052 review status, open items) | A-4 (merge of PR #4) |
 | 6 | 2026-10-21 | Claude | Q13, Q14 and A-4 added to §4; D-049 Amendments 2 and 3 (pennation ruling, positivity approval; labels stored in the schema); D-049 Accepted; verification statuses of D-024 to D-035, D-049, D-050, D-052 updated after ChatGPT's independent execution (PR #7), scoped to software; Q15, Q16 added: D-051 and D-052 Accepted | Q13 to Q16; pending merge by Corbin |
+| 7 | 2026-10-21 | Claude | Q17 added to §4 (Phase B roles); open item closed | Q17; pending merge by Corbin |
 
 ## 8. References
 
