@@ -5,9 +5,11 @@
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
 **Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
-**Current phase:** **Phase B (hip-only model): force-to-torque representation accepted (D-053 at `ab082f5`, Q18); build not started.** Builder: **ChatGPT**; reviewer: **Claude** (Q17). Phase A complete and reviewed.
+**Current phase:** **Phase B build proposed on `phase-b/chatgpt-hip-model` (ChatGPT builder), awaiting Claude's independent review and Corbin's merge.** D-053 representation accepted at `ab082f5` (Q18). Phase B software outputs are NOT accepted results before review.
 
 ## Implemented work
+
+**Phase B candidate (unmerged, builder-submitted, not independently verified):** `src/hip_phase_b.py` resolves Arnold's validated whole-gluteus Fmax and checks a right-only scenario override, implements D-053's constant signed arm and analytic domain-exit detection; `config/phase_b_hip.yaml` documents all demonstration assumptions; two scenario YAML files distinguish baseline and right-side-only perturbation; `tests/test_phase_b.py` covers N2/N3, sign, scaling, bounds, and provenance; `tools/run_phase_b.py` emits a SHA-annotated JSON manifest. No changes to the canonical anatomical dataset. See `PHASE_B_README.md`. The reviewer must verify these implementation claims on the candidate PR head; sample output is unapproved.
 
 **Phase A review response (D-052; merged at `29e256e`, PR #3)**
 - **A1:** a datum may cite ontology sources plus its own dataset's sources; loading a dataset no longer widens what other datasets may cite. `validate_datum(datum, dataset=None)`.
@@ -108,19 +110,15 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Next task
 
-**Owner:** ChatGPT (builder). Reviewer: Claude. Approver: Corbin (Q17).
-**Task: Phase B build PR**, on a branch named `phase-b/chatgpt-<topic>`, implementing D-053 as accepted at `ab082f5`:
+**Owner:** Claude (independent Phase B reviewer, Q17); **approver/merger:** Corbin.
+**Candidate branch:** `phase-b/chatgpt-hip-model`. **Builder starting SHA:** `cfba5957370d7a676673080039c5d21d179c1ff4`.
 
-1. **Model configuration**, every value with provenance or labelled as an assumption: `r0` (D-053 item 3; cite a primary source with angle and scope, or state that it is a round demonstration value), thigh inertia and any other segment parameters, the neutral pose for `q ≡ LB:DOF:HIP_FLEX_EXT_R` in `LB:FRAME:PELVIS`, activation `a(t)`, initial state, integrator and tolerances, stop time.
-2. **Resolver:** `Fmax` from `LB-QD:GMAX:FMAX:ARNOLD2010` for `LB:MUS:GLUTEUS_MAXIMUS_R` via `effective_baseline` and `validate_datum(…, dataset)`.
-3. **Dynamics:** `τ = −r0·a·Fmax` on a one-DOF hip. Domain `[−π/6, π/3]` with event-terminated `domain_exit` (D-053 Amendment 1, B1). Define “directed outward” at a boundary start (re-review note N2).
-4. **Scenario overlay** for the perturbation (B2), with its loader and validation (note N3). The canonical dataset is never edited.
-5. **Tests:** sign, zero activation, linear scaling, domain exit at both limits and step-size sensitivity, the overlay checks (unchanged canonical hash, unchanged left side, right-side proportion, invalid input rejected).
-6. **Run manifest:** every number used with its source or assumption status, units, the scenario hash, the ≈8% `cos α` disclosure (B4), and the exact commit.
+1. Review the exact PR head SHA, the provenance/model configuration, signed moment arm and force interpretation, source resolver, scenario overlay loader (N3), boundary-start logic using velocity or acceleration (N2), and event-localization correctness.
+2. Reproduce `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py` and inspect numerical test output. Confirm current-base CI results. Builder ran the local new tests on an older `29e256e` archive plus new files; that is **not** an independent run at this branch SHA.
+3. Check whether the run manifest records every numerical assumption, correct source ID and provenance, scenario/hash and commit with accurate verification status. **Do not accept physiological/clinical validity.**
+4. Respond AGREE/AMEND/DISAGREE in a pinned review. Corbin alone approves and merges the reviewed SHA. Only then run baseline/perturbation as project results and record their exact commit, values and status, per D-040 Amendment 1.
 
-New dependencies go in `requirements.txt` and must run in CI; tell Corbin if ChatGPT's sandbox needs offline wheels. **Nothing runs as a result until Claude has reviewed the build PR** (D-053 decision status).
-**Exit criterion (D-040 Amendment 1):** input-resolution record, declared dynamics assumptions, baseline and perturbation results, basic numerical checks, exact commit. No physiological or clinical validity implied.
-**Required inputs:** `docs/DECISIONS.md` D-036, D-037, D-039, D-040, D-053; `docs/reviews/2026-10-21_Claude_ReReview_D-053_ab082f5.md`; `ontology/quantitative_data/gluteus_maximus.yaml`; `ontology/hip.yaml`.
+**Deferred:** full Hill-type force law, compartment resolution, sourced moment-arm geometry, clinical validation, and Phase C schema generalization.
 
 ## Handoff protocol (D-048, as amended by D-051)
 
