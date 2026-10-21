@@ -4,12 +4,12 @@
 **Updated by:** Claude
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 4
-**Current phase:** **Phase A under review.** ChatGPT's source-level review returned AMEND; Claude's response (D-052) is on branch `phase-a/claude-review-response`, awaiting ChatGPT's re-review and Corbin's merge. Phase B not started.
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 5
+**Current phase:** **Phase A under review.** ChatGPT's re-review of `29e256e` (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)): AGREE with the D-052 fixes on source review; AMEND D-049 (pennation domain needs Corbin's ruling) and these records. ChatGPT's attempt to run the checks was blocked (no `pint` and no network in its sandbox); a retry with offline wheels is pending. Phase B not started.
 
 ## Implemented work
 
-**Phase A review response (D-052; branch `phase-a/claude-review-response`)**
+**Phase A review response (D-052; merged at `29e256e`, PR #3)**
 - **A1:** a datum may cite ontology sources plus its own dataset's sources; loading a dataset no longer widens what other datasets may cite. `validate_datum(datum, dataset=None)`.
 - **A2:** reference checks added for `related_observation`, `conflicts_with`, `convention_source_id` and structured derivation-input `source_id`; checked and unchecked fields listed in `src/quantitative.py`.
 - **A3:** report key `ready_for_simulation` is now `admissible_as_simulation_input` (datum-level only).
@@ -59,17 +59,18 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Capability | Claude | ChatGPT |
 |---|---|---|
 | Read files at a given SHA | Yes | Yes (GitHub connector) |
-| Check out an arbitrary SHA | Yes | No (sandbox cannot resolve github.com) |
-| Install requirements and run the checks | Yes | Yes in its sandbox, but only on uploaded files |
-| Push a branch | Yes | Yes, apparently: branch `phase-a/chatgpt-review-4abb4f1` (commit `b10e301`) |
-| Open or comment on a PR | Yes | Yes, apparently: PR #2. Its wording is ChatGPT's, but GitHub attributes the commit and PR to Corbin's account; Corbin to confirm |
+| Check out an arbitrary SHA | Yes | No: native `git clone`/checkout blocked (sandbox cannot resolve github.com) |
+| Extract an uploaded archive | Yes | Yes |
+| Install requirements and run the checks | Yes | **Not verified; blocked.** No network to the package index, and `pint` is not preinstalled (2026-10-21). Retry pending with offline wheels supplied by Corbin |
+| Push a branch / commit files | Yes | Yes: `phase-a/chatgpt-review-4abb4f1` (`b10e301`), `phase-a/chatgpt-rereview-d052-29e256e` (`e7ad2c2`); confirmed by Corbin (Q11) |
+| Open or comment on a PR | Yes | Yes: PRs #2 and #5, created by ChatGPT (Q11); GitHub attributes them to Corbin's account, so reviews name their author in the text |
 | Push tags | No (refused at the connection) | Not reported |
 
-**Fallback for ChatGPT's execution:** Corbin downloads `https://github.com/Corb1nW/Independent-Study/archive/<SHA>.zip` and uploads it; ChatGPT runs the checks on that file snapshot and states the SHA (item 12).
+**Fallback for ChatGPT's execution:** Corbin downloads `https://github.com/Corb1nW/Independent-Study/archive/<SHA>.zip` and uploads it; ChatGPT runs the checks on that file snapshot and states the SHA (item 12). Because ChatGPT's sandbox cannot install packages, Corbin also uploads `pint_offline_wheels.zip`: unmodified PyPI wheels of pint 0.26.2 and its four pure-Python dependencies, with SHA256 sums that Claude matched against PyPI's published hashes. ChatGPT installs them with `pip install --no-index --find-links`. Claude tested this exact setup offline with ChatGPT's reported versions (pydantic 2.13.5, pytest 9.0.2, PyYAML 6.0.3) on a git archive of `29e256e`: 80 passed, integrity PASSED, 9 probes REJECTED. That was Claude's run, not ChatGPT's. `tools/mutation_check_phase_a.py` needs git history and cannot run on an archive.
 
-**Owner-only merging (P2):** ruleset “main” is active: pull request required, merge commits only, deletion and force-push blocked. **Residual risk:** Claude, and apparently ChatGPT, act through Corbin's GitHub account, so “only Corbin merges” is partly procedural, and GitHub's authorship labels do not identify the model (D-051 Amendment 3).
+**Owner-only merging (P2):** ruleset “main” is active: pull request required, merge commits only, deletion and force-push blocked. **Residual risk:** Claude and ChatGPT both act through Corbin's GitHub account, so “only Corbin merges” is partly procedural, and GitHub's authorship labels do not identify the model (D-051 Amendment 3).
 
-**Review record:** ChatGPT's Phase A review enters the repository through PR #2. Merge PR #2 before PR #3.
+**Review records:** ChatGPT's Phase A review via PR #2 (`79eb168`); its re-review in `docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5), open.
 
 **Pass criteria (P7):**
 
@@ -77,10 +78,11 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 |---|---|
 | Remote holds the intended history and commits | Met (`d04fb78`, `4abb4f1` are ancestors of `main`; tags dropped, Amendment 2) |
 | Both models read the same SHA, or a documented fallback was used | Met for reading (`4abb4f1`) |
-| Review pinned to a commit with honest test-execution status | Met (ChatGPT's review states nothing was executed) |
-| Builder responded through new commits | Met (this branch) |
-| Corbin approved a specific SHA and merged it | Pending |
-| `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Pending |
+| Review pinned to a commit with honest test-execution status | Met, twice: `4abb4f1` (nothing executed) and `29e256e` (execution attempted, blocked, reported as such) |
+| Builder responded through new commits | Met (PR #3; this records PR) |
+| Corbin approved a specific SHA and merged it | Met: PR #3 head `603f1e2` merged as `29e256e` (A-3). Merged before the re-review, so D-052 stays Proposed |
+| `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Pending: `main` at `29e256e` is stale (ChatGPT's re-review, MEDIUM finding). Met once this records PR merges, subject to ChatGPT's check |
+| *Not a pilot criterion, but open:* independent execution of the checks by ChatGPT | Blocked; retry with offline wheels pending |
 
 ## Accepted but unimplemented
 
@@ -90,23 +92,22 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 ## Open proposals and disagreements
 
 - **D-051** shared repository: pilot in progress; decided after the pilot.
-- **D-052** Phase A review response: awaiting ChatGPT's re-review and Corbin's merge.
-- **D-049 physical bounds:** implemented to close probe 3. The bound values await review, especially pennation < π/2. Not covered by ChatGPT's 2026-10-21 review.
+- **D-052** Phase A review response: merged; ChatGPT AGREEs on source review; awaiting Corbin's acceptance and ChatGPT's independent run of the checks.
+- **D-049 physical bounds:** ChatGPT AMEND (re-review): the 13 positivity bounds are sensible; the pennation bound `[0, π/2)` is a model convention, not an anatomical law, and its purpose must be stated. **Needs Corbin's ruling** (D-049 Amendment 1). Claude agrees with ChatGPT's framing.
+- **D-050** caveat (ChatGPT): before any contraction velocity is populated or used dynamically, the datum must state which fiber length normalizes `optimal_fiber_lengths/s` (the schema definition already requires the convention to be declared). Open item for Phase B/C.
 - **Q8 and Q9 interpretations (`DECISIONS.md` §4):** Corbin may correct either.
 - **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owner:** ChatGPT (reviewer), then Corbin.
-**Task:**
-1. Re-review the head SHA of the PR for `phase-a/claude-review-response`: the D-052 fixes, `tests/test_phase_a_review.py`, and the record changes. Pin the review to that SHA.
-2. Reproduce the executable checks if Corbin uploads the commit archive (fallback above): `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py`. Report anything not run as not run.
-3. Still outstanding from the Phase A task: review D-049 (bounds) and the D-050 choices.
-4. Return Agree / Amend / Disagree with evidence, as one file in `docs/reviews/` (D-051 item 6).
+**Owners:** Corbin and ChatGPT, in parallel.
+**Tasks:**
+1. **Corbin:** rule on the D-049 pennation bound (D-049 Amendment 1); merge PR #5 (ChatGPT's re-review record) and this records PR.
+2. **ChatGPT:** with the commit archive of `29e256e` and `pint_offline_wheels.zip`, install pint offline and run `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py`. Report the results as an addendum to the re-review on a new branch and PR (one record per review; D-051 item 6). Also check this records PR.
+3. **Then:** with execution reproduced and the records consistent, the pilot's P7 criteria are met and Corbin decides on D-051. D-052 and D-049 are accepted or amended by Corbin. Then Phase B (hip-only model), starting with the D-037 force-to-torque choice.
 
-**Then:** Corbin approves and merges the reviewed SHA (D-051 item 8), completing the pilot; Corbin decides on D-051. Then Phase B (hip-only model), starting with the D-037 force-to-torque choice.
-**Required inputs:** this repository; `docs/DECISIONS.md` D-049 to D-052; `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`.
+**Required inputs:** this repository; `docs/DECISIONS.md` D-049 to D-052; {RR}.
 
 ## Handoff protocol (D-048, as amended by D-051)
 
