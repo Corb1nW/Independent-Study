@@ -5,7 +5,7 @@
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
 **Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
-**Current phase:** **Phase A complete and reviewed.** ChatGPT agreed with the D-052 fixes and independently reproduced the software checks at `29e256e` (PR #7). Corbin accepted D-049 (Q13, Q14), D-051 (Q15) and D-052 (Q16). **Next: Phase B** (hip-only model). Not started.
+**Current phase:** **Phase B (hip-only model) starting.** Builder: **ChatGPT**; reviewer: **Claude** (Q17). Phase A complete and reviewed: ChatGPT agreed with D-052 and independently reproduced the software checks at `29e256e`; Corbin accepted D-049, D-051 and D-052.
 
 ## Implemented work
 
@@ -108,14 +108,16 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Next task
 
-**Owner:** Corbin, then the Phase B builder.
-**Tasks:**
-1. Merge PR #7 (ChatGPT's execution addendum), then PR #6 (these records).
-2. Confirm builder and reviewer roles for Phase B.
-3. **Phase B** (hip-only model, D-036), starting with the D-037 force-to-torque choice for Corbin's approval. Revisit the pennation bound at the same time (D-049 Amendment 2), and declare the contraction-velocity normalization before use (D-050 caveat).
+**Owner:** ChatGPT (builder). Reviewer: Claude. Approver: Corbin (Q17).
+**Task: Phase B, hip-only model** (D-036; effective Phase B row in D-040 Amendment 1; boundary in D-039 Amendment 1).
 
-**Optional (ChatGPT):** reproduce the mutation check and the new-test comparison from a zip that includes `.git`.
-**Required inputs:** this repository; `docs/DECISIONS.md` D-049 to D-052; `docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5); `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7).
+1. **First, D-037 (force-to-torque representation), before any simulation runs.** Propose a constant moment arm or a sourced r(q) curve as a `Proposed` entry in `DECISIONS.md`. Declare the coordinate and torque sign convention, valid angle range, units, applicability, and whether force is whole-muscle or one compartment. Keep it as a model assumption, separate from anatomical observations. Revisit the pennation bound at the same time (D-049 Amendment 2). Open a small PR; Claude reviews; Corbin approves before step 2.
+2. **Build:** pelvis plus thigh, sagittal hip. Resolve gluteus maximus parameters from the YAML through the validator (passing each dataset, D-052). Use an equation of motion and integrator, a perturbation test (a YAML change produces an explainable output change), basic numerical checks, and a lightweight run manifest recording every number used, with its source, units and the commit SHA.
+3. **Inputs not yet in the data** (segment inertia, geometry, initial conditions) need provenance (D-036). Anatomical values go in the data with source claims. Demonstration assumptions go in the model configuration, labelled as assumptions. If contraction velocity is used, declare its normalization first (D-050 caveat).
+
+**Exit criterion (D-040 Amendment 1):** input-resolution record, declared dynamics assumptions, baseline and perturbation results, basic numerical checks, exact commit. Physiological or clinical validity is not implied.
+**Working rules (D-051):** branches `phase-b/chatgpt-<topic>`; PR descriptions carry the handoff minimum (item 4); state what was executed; new dependencies go in `requirements.txt` and must run in CI. Claude reviews each PR at its head SHA and reruns the checks.
+**Required inputs:** this repository; `docs/DECISIONS.md` D-014, D-015, D-021, D-036, D-037, D-039, D-040, D-049, D-050, D-052; `ontology/quantitative_data/gluteus_maximus.yaml`.
 
 ## Handoff protocol (D-048, as amended by D-051)
 
