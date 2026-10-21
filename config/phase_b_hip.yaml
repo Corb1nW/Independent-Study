@@ -1,0 +1,19 @@
+# D-053: every number below is a demonstration assumption, NOT anatomical evidence.
+model_id: PHASE_B_HIP_RIGHT_DEMONSTRATION
+coordinate_id: LB:DOF:HIP_FLEX_EXT_R
+frame_id: LB:FRAME:PELVIS
+neutral_pose: "q=0: chosen sagittal neutral pose; demonstration convention, not measured"
+force_observation_id: LB-QD:GMAX:FMAX:ARNOLD2010
+target_entity_id: LB:MUS:GLUTEUS_MAXIMUS_R
+parameters:
+  moment_arm_m: {value: 0.04, unit: m, kind: demonstration_assumption, rationale: "Round example; not an anatomical estimate"}
+  thigh_inertia_kg_m2: {value: 1.0, unit: 'kg*m^2', kind: demonstration_assumption, rationale: "Round one-DOF rotational inertia; not measured"}
+  activation: {value: 0.02, unit: '1', kind: demonstration_assumption, rationale: "Constant illustrative muscle activation"}
+  external_torque_N_m: {value: 0.0, unit: 'N*m', kind: demonstration_assumption, rationale: "No external torque in baseline"}
+  initial_q_rad: {value: 0.0, unit: rad, kind: demonstration_assumption, rationale: "Initial neutral position"}
+  initial_qdot_rad_s: {value: 0.0, unit: 'rad/s', kind: demonstration_assumption, rationale: "Start at rest"}
+  q_min_rad: {value: -0.5235987755982988, unit: rad, kind: demonstration_assumption, rationale: "D-053 lower demonstration domain -pi/6"}
+  q_max_rad: {value: 1.0471975511965976, unit: rad, kind: demonstration_assumption, rationale: "D-053 upper demonstration domain pi/3"}
+  step_s: {value: 0.01, unit: s, kind: demonstration_assumption, rationale: "Constant time step"}
+  duration_s: {value: 2.0, unit: s, kind: demonstration_assumption, rationale: "Demonstration horizon"}
+  event_tolerance_s: {value: 1.0e-10, unit: s, kind: demonstration_assumption, rationale: "Boundary event tolerance"}
