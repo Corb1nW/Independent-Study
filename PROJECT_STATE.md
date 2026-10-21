@@ -5,7 +5,7 @@
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
 **Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
-**Current phase:** **Phase A reviewed; awaiting Corbin's decisions on D-052 and D-051.** ChatGPT's re-review of `29e256e` (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)): AGREE with D-052 on source review. Its execution addendum (`docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)) **independently reproduced** the software checks at `29e256e`: 80 passed, integrity PASSED, 9/9 probes REJECTED. D-049 accepted (Q13, Q14). Phase B not started.
+**Current phase:** **Phase A complete and reviewed.** ChatGPT agreed with the D-052 fixes and independently reproduced the software checks at `29e256e` (PR #7). Corbin accepted D-049 (Q13, Q14), D-051 (Q15) and D-052 (Q16). **Next: Phase B** (hip-only model). Not started.
 
 ## Implemented work
 
@@ -91,7 +91,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Met by PR #4, which ChatGPT checked and agreed with (PR #7). Its LOW follow-up (execution status superseded) is addressed here (PR #6) |
 | *Not a pilot criterion:* independent execution of the checks by ChatGPT | Done via the D-051 item 12 fallback (archive plus offline wheels) |
 
-**Pilot result:** all P7 criteria are met once PRs #7 and #6 merge. **D-051 now needs Corbin's explicit decision** (item 13). Per ChatGPT, it must not be inferred from a model review or an earlier merge.
+**Pilot result:** all P7 criteria met. **D-051 accepted by Corbin (Q15).** Git handoffs are now the default; a commit archive (plus offline wheels for ChatGPT) is the fallback.
 
 ## Accepted but unimplemented
 
@@ -100,21 +100,19 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Open proposals and disagreements
 
-- **D-051** shared repository: pilot criteria met (after PRs #7 and #6 merge); **awaiting Corbin's explicit decision**.
-- **D-052** Phase A review response: merged; ChatGPT AGREEs; software independently checked; **awaiting Corbin's acceptance**.
 - **D-049 physical bounds:** pennation bound `[0, π/2)` **accepted by Corbin (Q13, Option A)** as the operational domain of Hill-type models with a cos(pennation) projection, not an anatomical limit; label stored in the schema; revisit with D-037 in Phase B. The 13 positivity bounds **approved by Corbin (Q14)**, labelled definitional. D-049 is Accepted.
 - **D-050** caveat (ChatGPT): before any contraction velocity is populated or used dynamically, the datum must state which fiber length normalizes `optimal_fiber_lengths/s` (the schema definition already requires the convention to be declared). Open item for Phase B/C.
-- **Q8 and Q9 interpretations (`DECISIONS.md` §4):** Corbin may correct either.
+- **Q8 interpretation (`DECISIONS.md` §4):** Corbin may correct it. (Q9 was confirmed by Q12 and superseded by the D-051 acceptance, Q15.)
 - **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owner:** Corbin.
+**Owner:** Corbin, then the Phase B builder.
 **Tasks:**
-1. Merge PR #7 (ChatGPT's execution addendum), then PR #6 (D-049 rulings and these records).
-2. Decide on **D-052** (accept or amend) and **D-051** (accept the git workflow as the default handoff, amend, or reject).
-3. **Then:** Phase B (hip-only model), starting with the D-037 force-to-torque choice for Corbin's approval. Builder and reviewer roles for Phase B to be confirmed by Corbin.
+1. Merge PR #7 (ChatGPT's execution addendum), then PR #6 (these records).
+2. Confirm builder and reviewer roles for Phase B.
+3. **Phase B** (hip-only model, D-036), starting with the D-037 force-to-torque choice for Corbin's approval. Revisit the pennation bound at the same time (D-049 Amendment 2), and declare the contraction-velocity normalization before use (D-050 caveat).
 
 **Optional (ChatGPT):** reproduce the mutation check and the new-test comparison from a zip that includes `.git`.
 **Required inputs:** this repository; `docs/DECISIONS.md` D-049 to D-052; `docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5); `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7).
