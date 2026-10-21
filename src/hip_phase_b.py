@@ -39,7 +39,7 @@ def finite(value, field):
 def load_config(path):
     config = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
     required = {"model_id", "coordinate_id", "frame_id", "neutral_pose",
-                "force_observation_id", "target_entity_id", "parameters"}
+                "force_observation_id", "target_entity_id", "parameters", "omitted_physics"}
     if not isinstance(config, dict) or set(config) != required:
         raise ValueError("incorrect configuration fields")
     if (config["coordinate_id"], config["frame_id"], config["target_entity_id"],
@@ -48,6 +48,12 @@ def load_config(path):
     if not all(isinstance(config[k], str) and config[k].strip()
                for k in ("model_id", "neutral_pose")):
         raise ValueError("neutral pose and model ID required")
+    omitted = config["omitted_physics"]
+    if (not isinstance(omitted, dict)
+        or set(omitted) != {"status", "gravity", "pelvis", "passive_structures", "joints", "muscle"}
+        or omitted["status"] != "deliberate_demonstration_simplifications"
+        or any(not isinstance(v, str) or not v.strip() for v in omitted.values())):
+        raise ValueError("omitted physics must be declared explicitly")
     entries = config["parameters"]
     if not isinstance(entries, dict) or set(entries) != set(UNITS):
         raise ValueError("missing or unexpected numerical parameter")
