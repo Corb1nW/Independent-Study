@@ -4,12 +4,12 @@
 **Updated by:** Claude
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 4
-**Current phase:** **Phase A under review.** ChatGPT's source-level review returned AMEND; Claude's response (D-052) is on branch `phase-a/claude-review-response`, awaiting ChatGPT's re-review and Corbin's merge. Phase B not started.
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 5
+**Current phase:** **Phase A under review.** ChatGPT's source-level review returned AMEND; Claude's response (D-052) is merged in `main` (`29e256e`) and awaits ChatGPT's re-review and independent run of the checks (requested 2026-10-21 with the commit archive). Phase B not started.
 
 ## Implemented work
 
-**Phase A review response (D-052; branch `phase-a/claude-review-response`)**
+**Phase A review response (D-052; merged at `29e256e`, PR #3)**
 - **A1:** a datum may cite ontology sources plus its own dataset's sources; loading a dataset no longer widens what other datasets may cite. `validate_datum(datum, dataset=None)`.
 - **A2:** reference checks added for `related_observation`, `conflicts_with`, `convention_source_id` and structured derivation-input `source_id`; checked and unchecked fields listed in `src/quantitative.py`.
 - **A3:** report key `ready_for_simulation` is now `admissible_as_simulation_input` (datum-level only).
@@ -61,15 +61,15 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Read files at a given SHA | Yes | Yes (GitHub connector) |
 | Check out an arbitrary SHA | Yes | No (sandbox cannot resolve github.com) |
 | Install requirements and run the checks | Yes | Yes in its sandbox, but only on uploaded files |
-| Push a branch | Yes | Yes, apparently: branch `phase-a/chatgpt-review-4abb4f1` (commit `b10e301`) |
-| Open or comment on a PR | Yes | Yes, apparently: PR #2. Its wording is ChatGPT's, but GitHub attributes the commit and PR to Corbin's account; Corbin to confirm |
+| Push a branch | Yes | Yes: branch `phase-a/chatgpt-review-4abb4f1` (commit `b10e301`), confirmed by Corbin (Q11) |
+| Open or comment on a PR | Yes | Yes: PR #2, created by ChatGPT (Q11); GitHub attributes it to Corbin's account |
 | Push tags | No (refused at the connection) | Not reported |
 
 **Fallback for ChatGPT's execution:** Corbin downloads `https://github.com/Corb1nW/Independent-Study/archive/<SHA>.zip` and uploads it; ChatGPT runs the checks on that file snapshot and states the SHA (item 12).
 
-**Owner-only merging (P2):** ruleset “main” is active: pull request required, merge commits only, deletion and force-push blocked. **Residual risk:** Claude, and apparently ChatGPT, act through Corbin's GitHub account, so “only Corbin merges” is partly procedural, and GitHub's authorship labels do not identify the model (D-051 Amendment 3).
+**Owner-only merging (P2):** ruleset “main” is active: pull request required, merge commits only, deletion and force-push blocked. **Residual risk:** Claude and ChatGPT both act through Corbin's GitHub account, so “only Corbin merges” is partly procedural, and GitHub's authorship labels do not identify the model (D-051 Amendment 3).
 
-**Review record:** ChatGPT's Phase A review enters the repository through PR #2. Merge PR #2 before PR #3.
+**Review record:** ChatGPT's Phase A review is in the repository via PR #2 (`79eb168`).
 
 **Pass criteria (P7):**
 
@@ -79,8 +79,8 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Both models read the same SHA, or a documented fallback was used | Met for reading (`4abb4f1`) |
 | Review pinned to a commit with honest test-execution status | Met (ChatGPT's review states nothing was executed) |
 | Builder responded through new commits | Met (this branch) |
-| Corbin approved a specific SHA and merged it | Pending |
-| `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Pending |
+| Corbin approved a specific SHA and merged it | Met: PR #3 head `603f1e2` merged as `29e256e` (A-3). Merged before the re-review, so D-052 stays Proposed |
+| `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Pending: this update corrects the records for the merges and Corbin's answers (Q11, Q12) |
 
 ## Accepted but unimplemented
 
@@ -100,8 +100,8 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 **Owner:** ChatGPT (reviewer), then Corbin.
 **Task:**
-1. Re-review the head SHA of the PR for `phase-a/claude-review-response`: the D-052 fixes, `tests/test_phase_a_review.py`, and the record changes. Pin the review to that SHA.
-2. Reproduce the executable checks if Corbin uploads the commit archive (fallback above): `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py`. Report anything not run as not run.
+1. Re-review `29e256e3de1753f04a0a72a9a8bc92bf201f06c2` (`main` after PR #3): the D-052 fixes, `tests/test_phase_a_review.py`, and the record changes. Pin the review to that SHA. Findings go in a new branch and PR, since PR #3 is already merged.
+2. Reproduce the executable checks on the commit archive Corbin uploaded (fallback above): `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py`. Report anything not run as not run.
 3. Still outstanding from the Phase A task: review D-049 (bounds) and the D-050 choices.
 4. Return Agree / Amend / Disagree with evidence, as one file in `docs/reviews/` (D-051 item 6).
 

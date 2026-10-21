@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 4 (2026-10-21), shared repository (D-051) and Phase A review response (D-052). See §7 for revision history.
+**Revision:** 5 (2026-10-21), shared repository (D-051), Phase A review response (D-052), owner confirmations. See §7 for revision history.
 **Covers:** Design decisions from the original work through the Phase A review
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -104,9 +104,14 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q9** | 2026-10-20 14:40 | “You got the approval from both Chat and me, now lets implement this approach” | On D-051 revision 2, which asked Corbin to approve running the pilot and ChatGPT to confirm the narrowing of amendment A | Running the D-051 pilot (see interpretation below). ChatGPT's approval is **reported by Corbin**; no written ChatGPT record of it exists. |
 | **Q10** | 2026-10-20 14:54 | “1) attached 2)public 3) I'd go with your recommendation” | Answers to: (1) upload `lbao_repo.zip`; (2) keep the repository public or make it private; (3) LB-AO code at the repository root with a combined README | Repository stays public (D-051 Amendment 1); import layout |
 | **A-1** | 2026-10-20 15:08:57 (action) | Merged PR #1 with a merge commit: `28142366f4777b3cfc62d28ad3bc7b7adc11408f` | Import of the LB-AO history (head `cfea57c`) | Acceptance of the merged revision, per D-051 item 8. No approval comment was written, so none is quoted. |
+| **A-3** | 2026-10-21 08:48:53 and 08:49:10 (actions) | Merged PR #2 (`79eb168`, ChatGPT's review record) and PR #3 (`29e256e`, head `603f1e2`, Claude's response to it), in that order, with merge commits | D-051 pilot P6 | Acceptance of the merged revisions, per D-051 item 8. PR #3 was merged **before** ChatGPT's re-review; D-052 therefore stays Proposed until that re-review is filed, and any findings are fixed in a new PR. |
+| **Q11** | 2026-10-21 08:51 | “chat created it” | Claude asked whether ChatGPT or Corbin created PR #2, which GitHub attributes to Corbin's account | ChatGPT's capability to push a branch and open a PR (`PROJECT_STATE.md`); D-051 Amendment 3 |
+| **Q12** | 2026-10-21 08:51 | “yes that was an approval” | Claude asked whether Q9 approved running the pilot, with D-051 decided after it, or approved D-051 outright | Confirms the interpretation of Q9 below (Claude's reading of “yes”) |
 | **A-2** | 2026-10-21 08:24 (action) | Created repository ruleset “main”: pull request required for the default branch, 0 approvals, merge commits only, deletion and force-push blocked; status Active | D-051 pilot step P2 | D-051 item 2. Checked by Claude through the GitHub API at 08:26. |
 
 **Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
+
+**Q12 (revision 5).** Claude's question offered two readings of Q9: approval to run the pilot with D-051 decided afterwards (first), or approval of D-051 outright (second). Corbin answered “yes that was an approval”. Claude reads the “yes” as confirming the first reading, so the interpretation above stands. If Corbin meant the second, D-051 becomes Accepted and this note is amended.
 
 ---
 
@@ -1165,7 +1170,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 **Amendment 2 (2026-10-21): no milestone tags.** The pilot checklist (P1) proposed annotated tags `baseline-received` and `phase-a-built`. This session could not push tags (refused at the connection; creating them through the GitHub API is not permitted here). They were dropped as unnecessary: every record identifies commits by SHA. This was Claude's decision, not owner-approved; Corbin may add the tags at any time.
 
-**Amendment 3 (2026-10-21): residual risk in owner-only merging.** Ruleset “main” (A-2) requires a pull request for `main`. Claude acts through Corbin's GitHub account, and ChatGPT's PR #2 is also attributed to that account, so GitHub cannot tell a merge by either model from one by Corbin, and its authorship labels do not identify the model. Models do not merge into `main`; that part of item 2 remains a rule followed, not enforced. Handoffs and reviews must therefore name their author in the text.
+**Amendment 3 (2026-10-21): residual risk in owner-only merging.** Ruleset “main” (A-2) requires a pull request for `main`. Claude acts through Corbin's GitHub account, and ChatGPT's PR #2, created by ChatGPT (Q11), is also attributed to that account, so GitHub cannot tell a merge by either model from one by Corbin, and its authorship labels do not identify the model. Models do not merge into `main`; that part of item 2 remains a rule followed, not enforced. Handoffs and reviews must therefore name their author in the text.
 
 ### D-052  Phase A review response: source scope, reference checks, admissibility wording
 - **Decision status:** Proposed (code change on the standard path; accepted when Corbin approves and merges the reviewed SHA)
@@ -1214,7 +1219,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 1 | 2026-10-07 | Claude | Initial log: D-001 to D-041 | Q5 (request to create the log) |
 | 2 | 2026-10-07 | Claude | Review Cycle 2 applied: new rules (§3); Approval record (§4); three status fields on D-024 onward; D-026 to D-035 and D-038 changed from Accepted to Proposed (D-042); Part I statuses changed from “Revised by” to “revision proposed in” where the revising decision is not yet accepted; Correction **C-1** (D-010); **C-2** rename of “Model A” to “ChatGPT” throughout (label only, no attribution changed); amendments to D-037, D-039, D-040, D-041; new D-042 to D-048 | Q6 |
 | 3 | 2026-10-07 | Claude | Q8 added to §4 with its interpretation; D-024, D-025, D-026, D-027, D-031, D-034, D-035 status fields updated (Accepted / Implemented); amendments to D-019 (verification), D-024 (new defect D9, implementation record), D-034 (verified correction); new Part IV with D-049 and D-050; open items updated | Q8 |
-| 4 | 2026-10-21 | Claude | Q9, Q10, A-1, A-2 added to §4 with an interpretation of Q9; new Part V with D-051 (and Amendments 1–3) and D-052; index and open items updated | Pending: merge of this revision by Corbin (D-051 item 8) |
+| 4 | 2026-10-21 | Claude | Q9, Q10, A-1, A-2 added to §4 with an interpretation of Q9; new Part V with D-051 (and Amendments 1–3) and D-052; index and open items updated | A-3 (merge of PR #3) |
+| 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11 | Pending: merge by Corbin |
 
 ## 8. References
 
