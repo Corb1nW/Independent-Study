@@ -136,6 +136,9 @@ def resolve_inputs(config_path, scenario_path, root=ROOT):
         "baseline_fmax_N": base_value, "right_fmax_N": right_force,
         "left_fmax_N": left, "source_dataset_hash": file_hash(path),
         "config_hash": file_hash(config_path), "scenario_hash": file_hash(scenario_path),
+        "input_paths": {"config": str(Path(config_path).resolve()),
+                        "scenario": str(Path(scenario_path).resolve()),
+                        "dataset": str(path.resolve())},
     }
 
 
@@ -202,23 +205,68 @@ def simulate(inputs, *, step_override_s=None):
     }
 
 
+def verify_git_inputs(root, paths, commit_sha, *, expected_hashes=None):
+    """Fail closed in a Git checkout unless every consumed file equals HEAD.
+
+    Reject external, untracked, modified, or post-resolution-changed inputs.
+    In an archive without git metadata return an explicitly unverified status.
+    Git errors in a checkout are errors, not permission to claim verification.
+    """
+    root = Path(root).resolve()
+    if not (root / ".git").exists():
+        return "caller_supplied_sha_unverified_archive_or_no_git"
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=root, capture_output=True, check=True)
+    try:
+        actual_root = Path(git("rev-parse", "--show-toplevel").stdout.decode().strip()).resolve()
+        head = git("rev-parse", "HEAD").stdout.decode().strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ValueError("cannot verify Git checkout provenance") from exc
+    if actual_root != root or head != commit_sha:
+        raise ValueError("Git root or HEAD differs from claimed snapshot")
+    checked = []
+    for name, value in paths.items():
+        path = Path(value).resolve()
+        if not path.is_relative_to(root):
+            raise ValueError(f"{name}: input path outside repository: {path}")
+        relative = path.relative_to(root).as_posix()
+        try:
+            committed_bytes = git("show", f"HEAD:{relative}").stdout
+            current_bytes = path.read_bytes()
+        except (OSError, subprocess.CalledProcessError) as exc:
+            raise ValueError(f"{name}: not a readable tracked input at HEAD: {relative}") from exc
+        if current_bytes != committed_bytes:
+            raise ValueError(f"{name}: working file differs from HEAD: {relative}")
+        if expected_hashes and name in expected_hashes:
+            if hashlib.sha256(current_bytes).hexdigest() != expected_hashes[name]:
+                raise ValueError(f"{name}: changed since input resolution")
+        checked.append(relative)
+    return "verified_git_head_and_inputs"
+
+
 def run_manifest(inputs, result, commit_sha):
     if not isinstance(commit_sha, str) or len(commit_sha) != 40 or any(
             ch not in "0123456789abcdef" for ch in commit_sha):
         raise ValueError("exact 40-character commit SHA required")
-    try:
-        actual = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
-                                capture_output=True, text=True, check=True).stdout.strip()
-    except (OSError, subprocess.CalledProcessError):
-        status = "caller_supplied_sha_unverified_archive_or_no_git"
-    else:
-        if actual != commit_sha:
-            raise ValueError("supplied SHA differs from Git checkout HEAD")
-        status = "verified_git_head"
+    provenance_paths = dict(inputs["input_paths"])
+    provenance_paths.update({
+        "schema": str(ROOT / "ontology/quantitative_schema.yaml"),
+        "ontology": str(ROOT / "ontology/hip.yaml"),
+        "hip_model": str(ROOT / "src/hip_phase_b.py"),
+        "validator": str(ROOT / "src/quantitative.py"),
+        "ontology_loader": str(ROOT / "src/ontology.py"),
+        "structural_model": str(ROOT / "src/datum_model.py"),
+        "runner": str(ROOT / "tools/run_phase_b.py"),
+    })
+    status = verify_git_inputs(ROOT, provenance_paths, commit_sha, expected_hashes={
+        "config": inputs["config_hash"], "scenario": inputs["scenario_hash"],
+        "dataset": inputs["source_dataset_hash"]})
     obs = inputs["observation"]
     return {
         "status": "UNREVIEWED DEMONSTRATION — NOT CLINICALLY/PHYSIOLOGICALLY VALIDATED",
         "commit_sha": commit_sha, "commit_provenance_status": status,
+        "verified_input_files": sorted(provenance_paths) if status.startswith("verified_") else [],
+        "omitted_physics": inputs["config"]["omitted_physics"],
         "decision": "D-053", "model_id": inputs["config"]["model_id"],
         "coordinate_id": COORD, "frame_id": FRAME,
         "neutral_pose": inputs["config"]["neutral_pose"],
