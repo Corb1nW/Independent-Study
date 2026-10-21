@@ -1,0 +1,7 @@
+scenario_id: baseline
+kind: demonstration_scenario_not_evidence
+target_entity_id: LB:MUS:GLUTEUS_MAXIMUS_R
+base_observation_id: LB-QD:GMAX:FMAX:ARNOLD2010
+parameter: maximum_isometric_force
+scenario_multiplier: 1.0
+reason: "Generic Arnold whole-muscle Fmax unchanged; demonstration input"
