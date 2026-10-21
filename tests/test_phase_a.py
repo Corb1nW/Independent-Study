@@ -27,13 +27,13 @@ def mass(**changes):
 
 
 def errors_contain(d, fragment):
-    errs = q.validate_datum(d)
+    errs = q.validate_datum(d, data)
     assert any(fragment in e for e in errs), f"expected '{fragment}' in {errs}"
 
 
 # ---------------------------------------------------------------- baseline still valid
 def test_valid_record_passes():
-    assert q.validate_datum(OBS[MASS]) == []
+    assert q.validate_datum(OBS[MASS], data) == []
 
 
 def test_project_integrity_passes():
@@ -75,7 +75,7 @@ def test_valid_conversion_passes():
     d["value"], d["uncertainty"]["value"] = value, unc
     d["provenance"]["transformation_history"] = [step, unc_step]
     assert isclose(value, 0.5472, rel_tol=1e-3)
-    assert q.validate_datum(d) == []
+    assert q.validate_datum(d, data) == []
 
 
 def test_uncertainty_unit_must_match_datum_unit():
@@ -137,7 +137,7 @@ def test_invalid_evidence_domain_rejected():
 
 def test_unpopulated_datum_may_have_null_kind():
     d = q.new_datum("maximum_isometric_force", ["LB:MUS:GLUTEUS_MAXIMUS_R"])
-    assert q.validate_datum(d) == []
+    assert q.validate_datum(d, data) == []
 
 
 # ---------------------------------------------------------------- property definition (D5)
@@ -244,7 +244,7 @@ def test_assumed_with_rationale_passes():
     d = mass(datum_kind="assumed")
     d["provenance"]["source_claims"] = []
     d["derivation"]["assumptions"] = ["demonstration value; see DECISIONS.md D-0xx"]
-    assert q.validate_datum(d) == []
+    assert q.validate_datum(d, data) == []
 
 
 def test_model_derived_requires_model_id():

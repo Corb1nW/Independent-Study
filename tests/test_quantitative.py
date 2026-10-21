@@ -32,7 +32,7 @@ def test_coordinate_dependent_property_requires_context():
 def test_gluteus_maximus_evidence_datum_passes():
     dataset = q.load_dataset(ROOT / "ontology" / "quantitative_data" / "gluteus_maximus.yaml")
     d = dataset["observations"]["LB-QD:GMAX:OPTIMAL_FIBER_LENGTH:WARD2009"]
-    assert q.validate_datum(d) == []
+    assert q.validate_datum(d, dataset) == []
     assert d["value"] == 0.1569
     assert d["applicability"]["sample_size"] == 18
     assert len(d["provenance"]["source_claims"]) == 2
@@ -95,4 +95,4 @@ def test_all_fixed_populated_gmax_records_validate():
     data=_gmax_dataset()
     for d in data["observations"].values():
         if d.get("status") == "populated":
-            assert q.validate_datum(d) == []
+            assert q.validate_datum(d, data) == []

@@ -1,7 +1,8 @@
 """Project-wide cross-file integrity check (D-024; DECISIONS.md D1, D2, D3, D8).
 
-Checks that every reference between the ontology, the quantitative schema and the
-quantitative datasets resolves, and that every observation passes validation.
+Checks the cross-file references listed in src/quantitative.py's module docstring
+(review finding A2: the list is explicit, not "every reference"), and that every
+observation passes validation against its own dataset.
 
     python -m src.integrity          # from the repository root; exit code 1 on failure
 """
@@ -55,7 +56,7 @@ def check_project(root=ROOT):
         dataset = schema.load_dataset(path)
         observations = dataset.get("observations", {})
         for obs_id, obs in observations.items():
-            for msg in schema.validate_datum(obs):
+            for msg in schema.validate_datum(obs, dataset):
                 errors.append(f"{path.name}: {obs_id}: {msg}")
         for old_id, alias in (dataset.get("observation_aliases") or {}).items():
             if old_id in observations:
@@ -77,7 +78,7 @@ def main():
         for e in errors:
             print(f"  - {e}")
         sys.exit(1)
-    print("INTEGRITY CHECK PASSED: all cross-file references resolve and all observations validate.")
+    print("INTEGRITY CHECK PASSED: all checked cross-file references resolve and all observations validate.")
 
 
 if __name__ == "__main__":

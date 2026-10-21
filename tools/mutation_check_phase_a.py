@@ -5,6 +5,10 @@ QuantitativeSchema.validate_datum with the baseline (d04fb78) version, runs
 tests/test_phase_a.py, and restores the file. Expected at 4abb4f1: 30 of 47 fail
 (the remaining 17 check data content and structure, not the validator).
 
+Since the Phase A review response, validate_datum takes an optional dataset; the
+baseline version is given the same signature and ignores it, so the comparison
+is unchanged. The script stops with an error if the swap did not happen.
+
     python tools/mutation_check_phase_a.py      # from the repository root; needs git
 """
 import subprocess
@@ -18,9 +22,12 @@ BASELINE = "d04fb78"
 current = TARGET.read_text(encoding="utf-8")
 old = subprocess.run(["git", "show", f"{BASELINE}:src/quantitative.py"], cwd=ROOT,
                      capture_output=True, text=True, check=True).stdout
+CURRENT_SIG = "    def validate_datum(self, datum, dataset=None):"
 old_fn = old[old.index("    def validate_datum(self, datum):"):old.index("    def dataset_observations")]
-mutated = current.replace("    def validate_datum(self, datum):",
-                          old_fn + "\n    def _phase_a_validate_datum(self, datum):", 1)
+old_fn = old_fn.replace("    def validate_datum(self, datum):", CURRENT_SIG, 1)
+if current.count(CURRENT_SIG) != 1:
+    sys.exit(f"mutation check: expected one '{CURRENT_SIG.strip()}' in {TARGET}; update this tool")
+mutated = current.replace(CURRENT_SIG, old_fn + "\n    def _phase_a_validate_datum(self, datum, dataset=None):", 1)
 try:
     TARGET.write_text(mutated, encoding="utf-8")
     result = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider",

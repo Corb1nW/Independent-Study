@@ -5,7 +5,31 @@ Validation runs in layers (D-035):
   2. semantic    - controlled vocabularies, property definition, units (D-026),
                    physical bounds, coordinate context, cross-file references
   3. evidence    - source claims, assumptions, derivations, applicability
-Simulation readiness (layer 4) is reported by validation_report().
+validation_report() states whether a datum is admissible as a candidate simulation
+input. That is a datum-level check only: model-level simulation readiness (geometry,
+dynamics, parameter completeness, force-to-torque representation) is D-035's fourth
+layer and is not implemented before Phase C.
+
+What the evidence layer does and does not establish (review finding A4): it checks
+that provenance metadata is complete and that every cited source is registered.
+It does not check that a cited source actually supports the value; that is
+source-level verification by a reviewer (D-045).
+
+Source registry (review finding A1): a datum may cite sources registered in the
+ontology plus, when validated with its dataset, that dataset's own `sources` block.
+Loading a dataset never changes what other datasets may cite.
+
+Reference fields checked (review finding A2):
+  target.entity_ids[]                         -> ontology entity
+  coordinate_context.frame_id, coordinate_id  -> ontology entity
+  coordinate_context.convention_source_id     -> source registry
+  provenance.source_claims[].source_id        -> source registry
+  derivation.inputs[].source_id (structured)  -> source registry
+  quality.value_comparisons[].related_observation -> observation in the same dataset*
+  quality.conflicts_with[]                    -> observation in the same dataset*
+  (* checked when validate_datum() is given the dataset; integrity check always does)
+Free-text descriptions, not references, and therefore not checked:
+  method.derived_from[], derivation.inputs[] given as plain strings.
 
 Error messages from the baseline validator are kept verbatim where the rule is
 unchanged, so existing tests and documents still match.
@@ -45,7 +69,8 @@ class QuantitativeSchema:
         if ontology is None and self.data.get("ontology"):
             ontology = AnatomyOntology(self.path.parent / self.data["ontology"])
         self.ontology = ontology
-        # Sources that a source_claim may cite: ontology sources + every loaded dataset's sources.
+        # Project-wide sources (the ontology's). Dataset-specific sources are added per
+        # validation call by source_registry(dataset), never accumulated here (A1).
         self.known_sources = set(ontology.sources) if ontology else set()
 
     # ------------------------------------------------------------------ properties
@@ -118,7 +143,6 @@ class QuantitativeSchema:
 
     def load_dataset(self, path):
         dataset = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-        self.known_sources |= set(dataset.get("sources", {}) or {})
         common = dataset.get("common", {})
         if "observations" in dataset:
             dataset["observations"] = {k: self.resolve_defaults(v, common)
@@ -151,7 +175,14 @@ class QuantitativeSchema:
                 if v.get("status") == "populated" and v.get("property_role") == "parameter"}
 
     # ------------------------------------------------------------------ validation
-    def validate_datum(self, datum):
+    def source_registry(self, dataset=None):
+        """Sources a datum may cite: the ontology's, plus the given dataset's own (A1)."""
+        return self.known_sources | set((dataset or {}).get("sources", {}) or {})
+
+    def validate_datum(self, datum, dataset=None):
+        """Validate one datum. Pass the dataset it belongs to so that the dataset's own
+        sources and observation IDs can be resolved; without it, only ontology sources
+        are known and observation cross-references are not checked."""
         errors = []
         required = self.data["required_datum_fields"]
         for field in required:
@@ -167,8 +198,8 @@ class QuantitativeSchema:
                 errors.append(f"structure: {loc}: {e['msg']}")
         if errors:
             return errors  # semantic checks assume a well-formed record
-        errors += self._semantic_errors(datum)
-        errors += self._evidence_errors(datum)
+        errors += self._semantic_errors(datum, dataset)
+        errors += self._evidence_errors(datum, dataset)
         return errors
 
     def _vocab_error(self, field, value, vocab_key, allow_null=False):
@@ -178,7 +209,7 @@ class QuantitativeSchema:
             return [f"invalid {field}: {value}"]
         return []
 
-    def _semantic_errors(self, d):
+    def _semantic_errors(self, d, dataset=None):
         errors = []
         status = d.get("status")
         populated = status == "populated"
@@ -214,6 +245,7 @@ class QuantitativeSchema:
         errors += self._unit_errors(d, definition, populated)
         errors += self._bounds_errors(d, definition, populated)
         errors += self._reference_errors(d, definition, populated)
+        errors += self._observation_reference_errors(d, dataset)
         return errors
 
     def _unit_errors(self, d, definition, populated):
@@ -311,8 +343,34 @@ class QuantitativeSchema:
                               f"{sorted(str(s) for s in other)} entities; split the record per side")
         return errors
 
-    def _evidence_errors(self, d):
+    def _observation_reference_errors(self, d, dataset):
+        """quality.value_comparisons / conflicts_with must name observations in the same
+        dataset, by current ID or documented alias (A2). Skipped without a dataset."""
+        if dataset is None:
+            return []
+        known = set(dataset.get("observations", {})) | set(dataset.get("observation_aliases") or {})
+        quality = d.get("quality") or {}
         errors = []
+        for comp in quality.get("value_comparisons") or []:
+            ref = comp.get("related_observation")
+            if ref and ref not in known:
+                errors.append(f"quality.value_comparisons related_observation {ref} does not exist in the dataset")
+        for ref in quality.get("conflicts_with") or []:
+            if ref not in known:
+                errors.append(f"quality.conflicts_with {ref} does not exist in the dataset")
+        return errors
+
+    def _evidence_errors(self, d, dataset=None):
+        errors = []
+        registry = self.source_registry(dataset)
+        # Source references outside source_claims are checked whatever the status (A2).
+        conv = (d.get("coordinate_context") or {}).get("convention_source_id")
+        if conv and registry and conv not in registry:
+            errors.append(f"coordinate_context.convention_source_id cites unknown source {conv}")
+        for item in (d.get("derivation") or {}).get("inputs") or []:
+            if isinstance(item, dict) and item.get("source_id") and registry \
+                    and item["source_id"] not in registry:
+                errors.append(f"derivation input {item.get('name')} cites unknown source {item['source_id']}")
         if d.get("status") != "populated":
             return errors
         kind = d.get("datum_kind")
@@ -326,9 +384,9 @@ class QuantitativeSchema:
         for claim in claims:
             if not claim.get("source_id"):
                 errors.append("source_claim missing source_id")
-            elif self.known_sources and claim["source_id"] not in self.known_sources:
+            elif registry and claim["source_id"] not in registry:
                 errors.append(f"source_claim cites unknown source {claim['source_id']}")
-            elif not self.known_sources:
+            elif not registry:
                 errors.append(f"cannot verify source {claim['source_id']}: no source registry loaded")
             if not claim.get("supports"):
                 errors.append("source_claim must identify supported claim(s)")
@@ -345,15 +403,18 @@ class QuantitativeSchema:
                 errors.append("model_derived datum must identify its model in applicability.model_id")
         return errors
 
-    def validation_report(self, datum):
-        errors = self.validate_datum(datum)
+    def validation_report(self, datum, dataset=None):
+        """Datum-level report. `admissible_as_simulation_input` means the datum passed
+        structural, semantic and evidence checks and may be offered to a model; it is
+        not model-level simulation readiness (A3; D-035 layer 4, Phase C)."""
+        errors = self.validate_datum(datum, dataset)
         populated = datum.get("status") == "populated"
         if errors:
-            readiness = "NO"
+            admissible = "NO"
         elif populated:
-            readiness = "YES"
+            admissible = "YES (datum-level checks only; not model readiness)"
         else:
-            readiness = "NO — datum is intentionally unpopulated"
+            admissible = "NO — datum is intentionally unpopulated"
 
         missing = []
         if datum.get("value") is None:
@@ -369,18 +430,18 @@ class QuantitativeSchema:
 
         return {
             "status": str(datum.get("status", "unknown")).upper(),
-            "ready_for_simulation": readiness,
+            "admissible_as_simulation_input": admissible,
             "expected_incomplete": not populated,
             "missing_information": missing,
             "validation_errors": errors,
         }
 
-    def print_validation_report(self, datum, title="VALIDATION RESULT"):
-        report = self.validation_report(datum)
+    def print_validation_report(self, datum, title="VALIDATION RESULT", dataset=None):
+        report = self.validation_report(datum, dataset)
         line = "=" * 72
         print(f"\n{line}\n{title}\n{line}")
         print(f"Datum status:         {report['status']}")
-        print(f"Ready for simulation: {report['ready_for_simulation']}")
+        print(f"Admissible as simulation input: {report['admissible_as_simulation_input']}")
         if report["expected_incomplete"]:
             print("Interpretation:        This datum is intentionally incomplete; rejection is expected.")
         else:

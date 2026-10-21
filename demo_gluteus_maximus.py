@@ -45,7 +45,7 @@ for obs_id, raw in data["observations"].items():
         for a in deriv["assumptions"]:
             print(f"  - {a}")
     if d.get("status") == "populated":
-        errors = q.validate_datum(d)
+        errors = q.validate_datum(d, data)
         print("Validation:     " + ("PASS" if not errors else "FAIL"))
         for e in errors:
             print(f"  - {e}")
