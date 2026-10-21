@@ -2,11 +2,13 @@
 from copy import deepcopy
 from hashlib import sha256
 from math import isclose, pi, sqrt
+import shutil
+import subprocess
 import pytest
 import yaml
 from src.hip_phase_b import (ROOT, resolve_inputs, simulate, load_config,
                              load_scenario, run_manifest, serialize_manifest,
-                             first_boundary)
+                             first_boundary, verify_git_inputs)
 from src.quantitative import QuantitativeSchema
 
 CONFIG=ROOT/"config/phase_b_hip.yaml"
@@ -40,6 +42,7 @@ def test_overlay_force_and_canonical_source_integrity():
     assert simulate(changed)["gluteus_torque_N_m"] == pytest.approx(
         1.2*simulate(baseline)["gluteus_torque_N_m"])
     assert simulate(changed)["time_s"] < simulate(baseline)["time_s"]
+    assert simulate(changed)["time_s"]/simulate(baseline)["time_s"] == pytest.approx(1/sqrt(1.2), abs=1e-12)
     assert sha256(DATA.read_bytes()).hexdigest() == before
 
 def test_step_size_and_analytic_boundary_time():
@@ -132,6 +135,90 @@ def test_manifest_pins_provenance_and_assumptions():
     assert manifest["scenario_sha256"]==sha256(CHANGE.read_bytes()).hexdigest()
     assert manifest["configuration"]["parameters"]["moment_arm_m"]["kind"]=="demonstration_assumption"
     assert "7.8%" in manifest["pennation_disclosure"]["conditional_overstatement"]
+    assert manifest["omitted_physics"]["status"] == "deliberate_demonstration_simplifications"
+    assert "gravity" in manifest["omitted_physics"]
     assert serialize_manifest(manifest).startswith("{")
     with pytest.raises(ValueError):
         run_manifest(x,simulate(x),"not-a-full-sha")
+
+
+def test_c2_resolver_rejects_corrupt_source_evidence(tmp_path):
+    """Mutation guard: replacing schema.validate_datum with no-op must break this test."""
+    project = tmp_path / "project"
+    ontology = project / "ontology"
+    (ontology / "quantitative_data").mkdir(parents=True)
+    for path in (ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "quantitative_schema.yaml"):
+        shutil.copy2(path, ontology / path.name)
+    dataset = yaml.safe_load(DATA.read_text(encoding="utf-8"))
+    # Preserve the correct scalar, unit and model ID, but remove its evidence claims:
+    # only the structural/semantic/evidence validator should reject this.
+    record = dataset["observations"]["LB-QD:GMAX:FMAX:ARNOLD2010"]
+    record["provenance"]["source_claims"] = []
+    path = ontology / "quantitative_data" / "gluteus_maximus.yaml"
+    path.write_text(yaml.safe_dump(dataset), encoding="utf-8")
+    with pytest.raises(ValueError, match="source datum fails validation"):
+        resolve_inputs(CONFIG, BASE, root=project)
+
+
+def _git_fixture(tmp_path):
+    """Tiny isolated checkout, never changes the real project working tree."""
+    root = tmp_path / "checkout"
+    root.mkdir()
+    target = root / "config.yaml"
+    target.write_text("moment_arm_m: 0.04\n", encoding="utf-8")
+    commands = [
+        ["git", "init", "-q"],
+        ["git", "config", "user.name", "Fixture"],
+        ["git", "config", "user.email", "fixture@example.invalid"],
+        ["git", "add", "config.yaml"],
+        ["git", "commit", "-qm", "initial model input"]
+    ]
+    for command in commands:
+        subprocess.run(command, cwd=root, capture_output=True, check=True)
+    sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
+                         capture_output=True, check=True, text=True).stdout.strip()
+    return root, target, sha
+
+
+def test_c1_git_input_provenance_clean_and_dirty(tmp_path):
+    root, target, sha = _git_fixture(tmp_path)
+    assert verify_git_inputs(root, {"config": target}, sha) == "verified_git_head_and_inputs"
+    target.write_text("moment_arm_m: 0.08\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="differs from HEAD"):
+        verify_git_inputs(root, {"config": target}, sha)
+
+
+def test_c1_git_input_provenance_external_and_untracked(tmp_path):
+    root, target, sha = _git_fixture(tmp_path)
+    outside = tmp_path / "external.yaml"
+    outside.write_text(target.read_text(encoding="utf-8"), encoding="utf-8")
+    with pytest.raises(ValueError, match="outside repository"):
+        verify_git_inputs(root, {"config": outside}, sha)
+    untracked = root / "untracked.yaml"
+    untracked.write_text(target.read_text(encoding="utf-8"), encoding="utf-8")
+    with pytest.raises(ValueError, match="tracked input"):
+        verify_git_inputs(root, {"config": untracked}, sha)
+
+
+def test_c1_git_input_provenance_post_resolution_change(tmp_path):
+    root, target, sha = _git_fixture(tmp_path)
+    with pytest.raises(ValueError, match="changed since input resolution"):
+        verify_git_inputs(root, {"config": target}, sha,
+                          expected_hashes={"config": "0" * 64})
+
+
+def test_c1_manifest_rejects_external_config_in_real_checkout(tmp_path):
+    x = inputs()
+    external = tmp_path / "config.yaml"
+    external.write_bytes(CONFIG.read_bytes())
+    x["input_paths"]["config"] = str(external)
+    sha_process = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                                 capture_output=True, text=True)
+    sha = sha_process.stdout.strip() if sha_process.returncode == 0 else "a" * 40
+    if sha_process.returncode == 0:
+        with pytest.raises(ValueError, match="outside repository"):
+            run_manifest(x, simulate(x), sha)
+    else:
+        # ZIP fallback must never claim verification for an arbitrary input.
+        manifest = run_manifest(x, simulate(x), sha)
+        assert manifest["commit_provenance_status"].startswith("caller_supplied_sha_unverified")
