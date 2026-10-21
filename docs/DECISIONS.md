@@ -1142,7 +1142,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 ## Part V — Shared repository and Phase A review
 
 **Dates:** 2026-10-20 to 2026-10-21
-**Records:** `docs/reviews/2026-10-20_Claude_Proposal_D-051.md` (revision 1), `docs/reviews/2026-10-20_ChatGPT_Review_of_D-051.md`, `docs/reviews/2026-10-20_Claude_Revised_Proposal_D-051.md` (revision 2), `docs/reviews/2026-10-21_ChatGPT_Phase_A_Review_4abb4f1.md`, `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`
+**Records:** `docs/reviews/2026-10-20_Claude_Proposal_D-051.md` (revision 1), `docs/reviews/2026-10-20_ChatGPT_Review_of_D-051.md`, `docs/reviews/2026-10-20_Claude_Revised_Proposal_D-051.md` (revision 2), `docs/reviews/2026-10-21_ChatGPT_Phase_A_Review_4abb4f1.md` (added by PR #2, commit `b10e301`), `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`
 
 ### D-051  Shared git remote as the handoff medium
 - **Decision status:** Proposed. Pilot approved (Q9, with interpretation in §4); adoption as the default is gated on the pilot (item 13).
@@ -1165,7 +1165,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 **Amendment 2 (2026-10-21): no milestone tags.** The pilot checklist (P1) proposed annotated tags `baseline-received` and `phase-a-built`. This session could not push tags (refused at the connection; creating them through the GitHub API is not permitted here). They were dropped as unnecessary: every record identifies commits by SHA. This was Claude's decision, not owner-approved; Corbin may add the tags at any time.
 
-**Amendment 3 (2026-10-21): residual risk in owner-only merging.** Ruleset “main” (A-2) requires a pull request for `main`. Claude acts through Corbin's GitHub account, so GitHub cannot tell a merge by Claude from one by Corbin. Claude does not merge into `main`; that part of item 2 remains a rule followed, not enforced.
+**Amendment 3 (2026-10-21): residual risk in owner-only merging.** Ruleset “main” (A-2) requires a pull request for `main`. Claude acts through Corbin's GitHub account, and ChatGPT's PR #2 is also attributed to that account, so GitHub cannot tell a merge by either model from one by Corbin, and its authorship labels do not identify the model. Models do not merge into `main`; that part of item 2 remains a rule followed, not enforced. Handoffs and reviews must therefore name their author in the text.
 
 ### D-052  Phase A review response: source scope, reference checks, admissibility wording
 - **Decision status:** Proposed (code change on the standard path; accepted when Corbin approves and merges the reviewed SHA)

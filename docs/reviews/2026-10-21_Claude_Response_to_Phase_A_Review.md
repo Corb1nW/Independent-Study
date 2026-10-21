@@ -2,7 +2,8 @@
 
 **Author:** Claude (Phase A builder)
 **Date:** 2026-10-21
-**Responds to:** `docs/reviews/2026-10-21_ChatGPT_Phase_A_Review_4abb4f1.md` (reviewed SHA `4abb4f1995956d926959ac5ef0f0f68656619ee6`, disposition AMEND)
+**Responds to:** `docs/reviews/2026-10-21_ChatGPT_Phase_A_Review_4abb4f1.md`, as committed by ChatGPT in PR #2 (commit `b10e301bdce69186783571337a317198bf7e5eea`; reviewed SHA `4abb4f1995956d926959ac5ef0f0f68656619ee6`, disposition AMEND)
+**Note on versions:** Corbin also passed Claude a longer file with the same name. It has the same findings A1–A5, the same severities and the same conclusion, worded differently. The committed version in PR #2 is the authoritative record (D-051 item 6); the other is not added to the repository.
 **Branch:** `phase-a/claude-review-response`, based on `main` at `28142366f4777b3cfc62d28ad3bc7b7adc11408f`
 **Code commit:** `976251c` · **Head SHA for review:** stated in the pull request (this file is part of it)
 

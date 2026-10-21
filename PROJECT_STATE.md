@@ -48,7 +48,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Review Cycle 1 probes | `d04fb78` | Claude | `python tools/review_cycle1_probes.py` | All 9 validator probes ACCEPTED; D1, D2, D3, D5 findings present |
 | Review Cycle 1 probes | `4abb4f1`; `976251c` | Claude | `python tools/review_cycle1_probes.py` | All 9 validator probes **REJECTED**; no D1, D2 or D5 findings; D3 list down from 11 to 10 classes (hip joint fixed; the rest is Phase C per D-031) |
 | CI | `e3c3b4e` | GitHub Actions | `.github/workflows/tests.yml` | success (pytest and integrity steps passed; step status read through the API, logs not readable from Claude's session) |
-| Source-level review | `4abb4f1` | ChatGPT | reading files at the SHA | AMEND: findings A1–A5, all agreed (D-052) |
+| Source-level review | `4abb4f1` | ChatGPT | reading files at the SHA | AMEND: findings A1–A5, all agreed (D-052). Record: PR #2 |
 
 **Reported, not independently reproduced:** every executable result above. ChatGPT read the code at `4abb4f1` but could not execute it (its sandbox cannot reach GitHub). CI is a third-party run and counts as supporting evidence only (D-051 item 10).
 
@@ -61,13 +61,15 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Read files at a given SHA | Yes | Yes (GitHub connector) |
 | Check out an arbitrary SHA | Yes | No (sandbox cannot resolve github.com) |
 | Install requirements and run the checks | Yes | Yes in its sandbox, but only on uploaded files |
-| Push a branch | Yes | Not reported |
-| Open or comment on a PR | Yes | Not reported (read PR #1) |
+| Push a branch | Yes | Yes, apparently: branch `phase-a/chatgpt-review-4abb4f1` (commit `b10e301`) |
+| Open or comment on a PR | Yes | Yes, apparently: PR #2. Its wording is ChatGPT's, but GitHub attributes the commit and PR to Corbin's account; Corbin to confirm |
 | Push tags | No (refused at the connection) | Not reported |
 
 **Fallback for ChatGPT's execution:** Corbin downloads `https://github.com/Corb1nW/Independent-Study/archive/<SHA>.zip` and uploads it; ChatGPT runs the checks on that file snapshot and states the SHA (item 12).
 
-**Owner-only merging (P2):** ruleset “main” is active: pull request required, merge commits only, deletion and force-push blocked. **Residual risk:** Claude acts through Corbin's GitHub account, so “only Corbin merges” is partly procedural (D-051 Amendment 3).
+**Owner-only merging (P2):** ruleset “main” is active: pull request required, merge commits only, deletion and force-push blocked. **Residual risk:** Claude, and apparently ChatGPT, act through Corbin's GitHub account, so “only Corbin merges” is partly procedural, and GitHub's authorship labels do not identify the model (D-051 Amendment 3).
+
+**Review record:** ChatGPT's Phase A review enters the repository through PR #2. Merge PR #2 before PR #3.
 
 **Pass criteria (P7):**
 
