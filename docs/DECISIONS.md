@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 9 (2026-10-21), D-053 Amendment 1 responds to Claude's B1–B5 review; still Proposed. See §7 for revision history.
+**Revision:** 10 (2026-10-21), D-053 accepted at `ab082f5` (Q18). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase A and the proposed Phase B force-to-torque representation
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -113,6 +113,7 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q15** | 2026-10-21 09:10 | Selected “Accept D-051 (Recommended)” | Multiple-choice question from Claude: “D-051: should the GitHub workflow (branches, pull requests, you merge) become the official way ChatGPT and I hand work back and forth, with zip uploads only as a backup?” Alternatives offered: accept with changes; not yet | D-051 Accepted. The explicit decision required by item 13 and requested by ChatGPT (PR #7) |
 | **Q16** | 2026-10-21 09:10 | Selected “Accept D-052 (Recommended)” | Same exchange: “D-052: do you accept my fixes for ChatGPT's four findings? ChatGPT agreed with them and confirmed the tests pass.” Alternative offered: hold for now | D-052 Accepted |
 | **Q17** | 2026-10-21 09:14 | “I do like the idea of swapping roles between the models, lets have chat build and you check for this phase.” | Claude noted that Phase B roles needed confirming (Claude built and ChatGPT reviewed Phase A) | Phase B roles: **ChatGPT builds, Claude reviews** |
+| **Q18** | 2026-10-21 09:36 | Selected “Approve D-053 (Recommended)” | Multiple-choice question from Claude: “Do you approve D-053 (the constant moment arm for the hip model) as amended, at ChatGPT's commit ab082f5?” Alternatives offered: approve with changes; not yet. Asked after Claude's re-review (AGREE) | D-053 Accepted **at `ab082f5d3bcc27e5388bda5c6e5bf473513aed31`** (D-051 item 8) |
 | **A-2** | 2026-10-21 08:24 (action) | Created repository ruleset “main”: pull request required for the default branch, 0 approvals, merge commits only, deletion and force-push blocked; status Active | D-051 pilot step P2 | D-051 item 2. Checked by Claude through the GitHub API at 08:26. |
 
 **Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
@@ -165,7 +166,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-034 | Correct false anatomy now; add resolution when needed | ChatGPT (refining Claude) | Accepted | Implemented (Phase A part) | Software independently checked; anatomy source check author-reported |
 | D-035 | Layered validation pipeline | ChatGPT (refining Claude) | Accepted | Implemented (3 layers) | Independently checked (software) |
 | D-036 | Minimal hip-only model before the full squat | ChatGPT | Accepted | Not started | Not checked |
-| D-037 | Force-to-torque representation chosen before Phase B | Claude; amended by ChatGPT | Accepted (amended) | Not started | Not checked |
+| D-037 | Force-to-torque representation chosen before Phase B | Claude; amended by ChatGPT | Accepted (amended) | Representation selected: D-053 | Not checked |
 | D-038 | Conditions limited to what the active model can express | ChatGPT (correcting Claude) | Proposed (models agree) | Not applicable | Not applicable |
 | D-039 | Phase A kept narrow; governance moved to Phase C | Claude; Corbin | Accepted (amended) | Not applicable | Not applicable |
 | D-040 | Revised six-phase development plan | Claude; Corbin | Accepted (amended) | Not applicable | Not applicable |
@@ -185,7 +186,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-051 | Shared git remote as the handoff medium | Corbin (idea); Claude; amended by ChatGPT | Accepted (Q15) | Implemented | Not applicable |
 | D-052 | Phase A review response: source scope, reference checks, admissibility wording | ChatGPT (A1–A4); Claude | Accepted (Q16) | Implemented | Independently checked (software) |
 | **Part VI — Phase B model choices** | | | | | |
-| D-053 | Constant signed hip-extension moment arm for demonstration | ChatGPT; Claude review pending | Proposed | Not started | Not applicable |
+| D-053 | Constant signed hip-extension moment arm for demonstration | ChatGPT; reviewed by Claude | Accepted (Q18) | Not started | Not applicable |
 
 ---
 
@@ -821,7 +822,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 
 ### D-037  Moment-arm representation chosen explicitly before Phase B
 - **Decision status:** Accepted (amended — see Amendment 1)
-- **Implementation status:** Not started
+- **Implementation status:** Representation selected: D-053, accepted 2026-10-21 at `ab082f5` (Q18). Phase B simulation not started.
 - **Verification status:** Not checked
 - **Approval basis:** Q6
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); ChatGPT *Review of DECISIONS.md*, “D-037: Support with amendments”
@@ -1216,12 +1217,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 ## Part VI — Phase B model choices
 
 ### D-053  Phase B demonstration: constant signed hip-extension moment arm
-- **Decision status:** Proposed (Claude independent review and Corbin's explicit approval required before simulation implementation)
+- **Decision status:** Accepted (Q18, 2026-10-21) at `ab082f5`. Approval covers the representation only; numerical values (`r0`, inertia, activation, initial state, integrator settings) need the separate reviewed build PR before any run.
 - **Implementation status:** Not started
 - **Verification status:** Not applicable (design proposal; no simulation executed)
 - **Date:** 2026-10-21
-- **Proposed by:** ChatGPT (Phase B builder, Q17) · **Reviewed by:** pending Claude
-- **Approval basis:** not confirmed
+- **Proposed by:** ChatGPT (Phase B builder, Q17) · **Reviewed by:** Claude: AMEND (minor) at `70f518f`, then AGREE at `ab082f5` (`docs/reviews/2026-10-21_Claude_Review_D-053_70f518f.md`, `docs/reviews/2026-10-21_Claude_ReReview_D-053_ab082f5.md`)
+- **Approval basis:** Q18
 - **Evidence:** D-036, D-037 Amendment 1, D-039 Amendment 1, D-040 Amendment 1, D-049 Amendment 2; `ontology/quantitative_data/gluteus_maximus.yaml` at start SHA `42ca56a540e1d7a2c391175d5f6e767077e089af`
 - **Implementation ref:** not started; future Phase B model configuration, not an anatomical datum
 - **Amends / supersedes:** specifies the Phase B representation required by D-037; revisits D-049 Amendment 2 without changing its accepted validation bound
@@ -1258,6 +1259,10 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - **B4 — Magnitude of omitted pennation projection (LOW; accepted with caveat):** If Arnold's `Fmax` is interpreted as maximal *fiber* force, the simplified `F_MT=aFmax` law is larger than a `F_MT=aFmax cos(alpha)` projection by `1/cos(alpha)-1` when compared at the same activation and arm. Using the **Ward 2009 cohort mean** `alpha=21.9 deg` from the dataset gives `cos(alpha)≈0.928`, or **approximately 7.8% (~8%) larger torque** when omitting the projection. This is **illustrative sensitivity, not a validated Arnold model correction or an experimentally established bias**: the source definitions, compartment aggregation, and whether a cosine factor is already implicit have not been reconciled. No `cos(alpha)` is applied, and the accepted D-049 bound remains the conditional Hill-model operating-domain restriction, not an anatomical fact. A run report must disclose this conditional approximation; actual use of pennation requires a new model decision and source check, not an automatic factor insertion.
 - **B5 — Governance (LOW; accepted):** This log's header scope now includes Phase B. D-037 remains **Accepted as an architectural requirement**, and its implementation status remains **Not started** while D-053 is Proposed. **After** Claude's re-review and Corbin's explicit acceptance of a pinned D-053 SHA, update D-037's implementation status and its index row to reference the accepted D-053 choice as implementation of its *representation-selection step* (not completion of Phase B simulation). Preserve review and approval references and do not backdate acceptance.
 
+**Correction C-3 (2026-10-21, Claude, re-review note N1).** Amendment 1's opening says “without changing the approved status”. At that point D-053 was Proposed, not approved. Read it as “without changing the Proposed status”. The original wording is kept, per Rule 4.
+
+**Acceptance (2026-10-21, Q18).** After Claude's re-review (AGREE), Corbin approved D-053 at `ab082f5d3bcc27e5388bda5c6e5bf473513aed31`. The re-review's notes N2 (define “directed outward” at a boundary start: sign of `qdot`; if zero, sign of net acceleration) and N3 (ship the scenario-overlay loader and its validation with tests) carry into the build PR.
+
 **Amendment rationale and resulting handoff:** B1 makes the numerical stopping rule explicit rather than adding implicit joint-limit physics. B2 proves a YAML-input-to-dynamics perturbation without falsifying bilateral evidence, and confines the extra scenario concept to demonstration configuration. B3 ties the state to existing ontology IDs; B4 states the approximation's scale without claiming biological validation; B5 preserves governance semantics. Claude re-reviews the new branch head; Corbin alone accepts/merges. All proposed numerical values (including `r0`, moment of inertia, activation, initial state and integration tolerances) still require explicit provenance/assumption records and a separate Phase B build PR before execution.
 
 ---
@@ -1280,7 +1285,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | ~~Decide on D-051~~ Accepted, Q15 | Corbin | Done |
 | ~~Confirm Phase B roles~~ ChatGPT builds, Claude reviews (Q17) | Corbin | Done |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
-| Review and approve or amend proposed D-053 (the D-037 force-to-torque choice), before simulation work | Claude reviewer, Corbin approver | Start of Phase B |
+| ~~Review and approve D-053~~ Accepted at `ab082f5`, Q18 | Claude, Corbin | Done |
+| Phase B build PR: `r0`, inertia, activation, initial state, integrator, scenario overlay, tests, run manifest (D-053, notes N2, N3), reviewed by Claude before any run | ChatGPT, then Claude, then Corbin | Next |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
 
 ## 7. Revision history
@@ -1296,6 +1302,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 7 | 2026-10-21 | Claude | Q17 added to §4 (Phase B roles); open item closed | Q17; pending merge by Corbin |
 | 8 | 2026-10-21 | ChatGPT | Added D-053 as Proposed Phase B D-037 force-to-torque choice; linked D-049 revisit; no simulation changes | Claude review and Corbin decision pending |
 | 9 | 2026-10-21 | ChatGPT | D-053 Amendment 1 addresses Claude's PR #11 findings B1–B5 (domain stop, right-only scenario perturbation, ontology IDs, conditional pennation magnitude, log status); no simulation changes | Claude re-review and Corbin decision pending |
+| 10 | 2026-10-21 | Claude | Q18 added to §4; D-053 Accepted at `ab082f5`; D-037 implementation status points to D-053; Correction C-3 (Amendment 1 wording); open items | Q18; pending merge by Corbin |
 
 ## 8. References
 
