@@ -5,7 +5,7 @@
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
 **Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
-**Current phase:** **Phase B (hip-only model) starting.** Builder: **ChatGPT**; reviewer: **Claude** (Q17). Phase A complete and reviewed: ChatGPT agreed with D-052 and independently reproduced the software checks at `29e256e`; Corbin accepted D-049, D-051 and D-052.
+**Current phase:** **Phase B (hip-only model): force-to-torque representation accepted (D-053 at `ab082f5`, Q18); build not started.** Builder: **ChatGPT**; reviewer: **Claude** (Q17). Phase A complete and reviewed.
 
 ## Implemented work
 
@@ -109,15 +109,18 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 ## Next task
 
 **Owner:** ChatGPT (builder). Reviewer: Claude. Approver: Corbin (Q17).
-**Task: Phase B, hip-only model** (D-036; effective Phase B row in D-040 Amendment 1; boundary in D-039 Amendment 1).
+**Task: Phase B build PR**, on a branch named `phase-b/chatgpt-<topic>`, implementing D-053 as accepted at `ab082f5`:
 
-1. **First, D-037 (force-to-torque representation), before any simulation runs.** Propose a constant moment arm or a sourced r(q) curve as a `Proposed` entry in `DECISIONS.md`. Declare the coordinate and torque sign convention, valid angle range, units, applicability, and whether force is whole-muscle or one compartment. Keep it as a model assumption, separate from anatomical observations. Revisit the pennation bound at the same time (D-049 Amendment 2). Open a small PR; Claude reviews; Corbin approves before step 2.
-2. **Build:** pelvis plus thigh, sagittal hip. Resolve gluteus maximus parameters from the YAML through the validator (passing each dataset, D-052). Use an equation of motion and integrator, a perturbation test (a YAML change produces an explainable output change), basic numerical checks, and a lightweight run manifest recording every number used, with its source, units and the commit SHA.
-3. **Inputs not yet in the data** (segment inertia, geometry, initial conditions) need provenance (D-036). Anatomical values go in the data with source claims. Demonstration assumptions go in the model configuration, labelled as assumptions. If contraction velocity is used, declare its normalization first (D-050 caveat).
+1. **Model configuration**, every value with provenance or labelled as an assumption: `r0` (D-053 item 3; cite a primary source with angle and scope, or state that it is a round demonstration value), thigh inertia and any other segment parameters, the neutral pose for `q ≡ LB:DOF:HIP_FLEX_EXT_R` in `LB:FRAME:PELVIS`, activation `a(t)`, initial state, integrator and tolerances, stop time.
+2. **Resolver:** `Fmax` from `LB-QD:GMAX:FMAX:ARNOLD2010` for `LB:MUS:GLUTEUS_MAXIMUS_R` via `effective_baseline` and `validate_datum(…, dataset)`.
+3. **Dynamics:** `τ = −r0·a·Fmax` on a one-DOF hip. Domain `[−π/6, π/3]` with event-terminated `domain_exit` (D-053 Amendment 1, B1). Define “directed outward” at a boundary start (re-review note N2).
+4. **Scenario overlay** for the perturbation (B2), with its loader and validation (note N3). The canonical dataset is never edited.
+5. **Tests:** sign, zero activation, linear scaling, domain exit at both limits and step-size sensitivity, the overlay checks (unchanged canonical hash, unchanged left side, right-side proportion, invalid input rejected).
+6. **Run manifest:** every number used with its source or assumption status, units, the scenario hash, the ≈8% `cos α` disclosure (B4), and the exact commit.
 
-**Exit criterion (D-040 Amendment 1):** input-resolution record, declared dynamics assumptions, baseline and perturbation results, basic numerical checks, exact commit. Physiological or clinical validity is not implied.
-**Working rules (D-051):** branches `phase-b/chatgpt-<topic>`; PR descriptions carry the handoff minimum (item 4); state what was executed; new dependencies go in `requirements.txt` and must run in CI. Claude reviews each PR at its head SHA and reruns the checks.
-**Required inputs:** this repository; `docs/DECISIONS.md` D-014, D-015, D-021, D-036, D-037, D-039, D-040, D-049, D-050, D-052; `ontology/quantitative_data/gluteus_maximus.yaml`.
+New dependencies go in `requirements.txt` and must run in CI; tell Corbin if ChatGPT's sandbox needs offline wheels. **Nothing runs as a result until Claude has reviewed the build PR** (D-053 decision status).
+**Exit criterion (D-040 Amendment 1):** input-resolution record, declared dynamics assumptions, baseline and perturbation results, basic numerical checks, exact commit. No physiological or clinical validity implied.
+**Required inputs:** `docs/DECISIONS.md` D-036, D-037, D-039, D-040, D-053; `docs/reviews/2026-10-21_Claude_ReReview_D-053_ab082f5.md`; `ontology/quantitative_data/gluteus_maximus.yaml`; `ontology/hip.yaml`.
 
 ## Handoff protocol (D-048, as amended by D-051)
 
