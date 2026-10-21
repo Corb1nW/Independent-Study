@@ -223,10 +223,18 @@ def test_d1_crlf_checkout_is_clean_and_raw_resolution_hash_still_checked(tmp_pat
     subprocess.run(["git", "config", "core.autocrlf", "true"], cwd=root,
                    check=True, capture_output=True)
     target.write_bytes(b"moment_arm_m: 0.04\r\n")
-    # CRLF is a clean text checkout equivalent to committed LF.
-    status = subprocess.run(["git", "status", "--porcelain", "--", "config.yaml"],
-                            cwd=root, check=True, capture_output=True, text=True)
-    assert status.stdout.strip() == ""
+    # Git-filtered content (not stat metadata) is identical to committed LF.
+    # On some Git/Linux combinations 'status' may show M after an externally
+    # rewritten CRLF file even though 'git diff' has no content difference.
+    working_oid = subprocess.run(["git", "hash-object", "--", "config.yaml"],
+                                 cwd=root, check=True, capture_output=True,
+                                 text=True).stdout.strip()
+    committed_oid = subprocess.run(["git", "rev-parse", "HEAD:config.yaml"],
+                                   cwd=root, check=True, capture_output=True,
+                                   text=True).stdout.strip()
+    assert working_oid == committed_oid
+    assert subprocess.run(["git", "diff", "--quiet", "--", "config.yaml"],
+                          cwd=root, capture_output=True).returncode == 0
     assert verify_git_inputs(root, {"config": target}, sha) == "verified_git_head_and_inputs"
     raw_sha = sha256(target.read_bytes()).hexdigest()
     assert verify_git_inputs(root, {"config": target}, sha,
