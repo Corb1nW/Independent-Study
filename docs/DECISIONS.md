@@ -173,7 +173,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-047 | Explicit delegation mechanism | ChatGPT (R-06), amended by Claude | Accepted | Implemented | Reported by author |
 | D-048 | `PROJECT_STATE.md` handoff file and protocol | ChatGPT | Accepted | Implemented | Reported by author |
 | **Part IV — Phase A (Integrity)** | | | | | |
-| D-049 | Physical bounds on parameter values | Claude | Proposed | Implemented | Reported by author |
+| D-049 | Physical bounds on parameter values | Claude; amended by ChatGPT | Proposed (owner ruling needed) | Implemented | Reported by author |
 | D-050 | Phase A implementation choices (delegated) | Claude | Accepted (delegated) | Implemented | Reported by author |
 | **Part V — Shared repository and Phase A review** | | | | | |
 | D-051 | Shared git remote as the handoff medium | Corbin (idea); Claude; amended by ChatGPT | Proposed (pilot approved, Q9) | In progress (pilot) | Not applicable |
@@ -1116,6 +1116,9 @@ Anything affecting scope, scientific content (anatomy, sources, parameter values
 
 **Alternatives.** No bounds (rejected: probe 3 would remain accepted). Bounds in code (rejected: they belong with the property definitions, where reviewers can see them).
 
+**Amendment 1 (2026-10-21): ChatGPT's review; owner ruling needed.** ChatGPT's re-review (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)) AMENDs this decision. The thirteen positivity bounds are sensible for the current definitions but should not automatically carry over to future conventions where a zero has a deliberate meaning. The pennation bound `[0, π/2)` is a defensible **acute-angle model convention, not a universal anatomical theorem**: at exactly 90° the axial force projection is zero, which does not by itself show that such a configuration is biologically impossible. The record must state whether the bound expresses biological validity, the model's operational domain, or avoidance of numerical degeneracy, and Corbin must approve it. ChatGPT notes that, depending on the muscle model chosen, allowing the closed endpoint and handling degeneracy in the model may be preferable.
+Claude agrees. This entry's Defense already called the pennation bound “a modeling convention” but did not say which kind. Claude's recommendation: keep `[0, π/2)` and label it as the **operational domain of Hill-type models with a cos α force projection**, revisiting it when D-037 fixes the force-to-torque representation in Phase B. Positivity bounds stay as they are, each recorded as definitional for its current property definition. Decision status remains Proposed until Corbin rules.
+
 ### D-050  Phase A implementation choices (delegated)
 - **Decision status:** Accepted (delegated under D-047)
 - **Implementation status:** Implemented (`4abb4f1`)
@@ -1177,8 +1180,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - **Implementation status:** Implemented (`976251c`)
 - **Verification status:** Reported by author
 - **Date:** 2026-10-21
-- **Proposed by:** ChatGPT (findings A1–A4) · Claude (fixes) · **Reviewed by:** ChatGPT (re-review pending)
-- **Approval basis:** not confirmed
+- **Proposed by:** ChatGPT (findings A1–A4) · Claude (fixes) · **Reviewed by:** ChatGPT: AGREE with A1–A4 on source review (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)); its execution of the checks was blocked and is pending
+- **Approval basis:** not confirmed. PR #3 merge (A-3) accepted the revision into `main`; acceptance of the decision awaits Corbin
 - **Evidence:** `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`; `tests/test_phase_a_review.py` (15 tests; 11 fail against the `4abb4f1` logic, 4 acceptance cases pass both before and after)
 - **Amends / supersedes:** amends D-024 (integrity check scope) and D-035 (layer naming in reports); no change to D-045 statuses
 - **Phase:** A
@@ -1204,9 +1207,11 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 |---|---|---|
 | Decide on D-028, D-029, D-030, D-032, D-033, D-038 when their phase arrives (Q8) | Corbin | Phase C / E |
 | ~~Review Phase A against its exit criterion~~ Source-level review done 2026-10-21 (AMEND); **independent execution of the Phase A checks still outstanding** (D-045) | ChatGPT | Before Phase B |
-| Re-review D-052 at the PR head SHA | ChatGPT | Before merge |
-| Choose how ChatGPT reproduces executable checks (commit archive, CI logs, or a local run by Corbin) | Corbin | Before merge |
-| Review D-049 physical bounds (especially pennation < π/2) and the D-050 choices; not covered by the 2026-10-21 review | ChatGPT, then Corbin | Before Phase B |
+| ~~Re-review D-052~~ Done 2026-10-21 at `29e256e`: AGREE (source review) | ChatGPT | Done |
+| Run the checks independently: commit archive plus offline pint wheels (attempt 1 blocked: no `pint`, no network) | ChatGPT | Before accepting D-052 |
+| ~~Review D-049 and D-050~~ Done 2026-10-21: D-049 AMEND, D-050 AGREE with caveats | ChatGPT | Done |
+| Rule on the D-049 pennation bound: what it expresses, and whether to keep `[0, π/2)` (D-049 Amendment 1) | Corbin | Before Phase B |
+| Declare the normalizing fiber length for `optimal_fiber_lengths/s` before any contraction velocity is populated or used (D-050 caveat) | Phase B/C builder | Before use |
 | Complete the D-051 pilot (P6, P7) and decide on D-051 | Corbin | After this branch merges |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
 | Select and record the force-to-torque representation (D-037, amended) | Phase B builder, approved by Corbin | Start of Phase B |
@@ -1220,7 +1225,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 2 | 2026-10-07 | Claude | Review Cycle 2 applied: new rules (§3); Approval record (§4); three status fields on D-024 onward; D-026 to D-035 and D-038 changed from Accepted to Proposed (D-042); Part I statuses changed from “Revised by” to “revision proposed in” where the revising decision is not yet accepted; Correction **C-1** (D-010); **C-2** rename of “Model A” to “ChatGPT” throughout (label only, no attribution changed); amendments to D-037, D-039, D-040, D-041; new D-042 to D-048 | Q6 |
 | 3 | 2026-10-07 | Claude | Q8 added to §4 with its interpretation; D-024, D-025, D-026, D-027, D-031, D-034, D-035 status fields updated (Accepted / Implemented); amendments to D-019 (verification), D-024 (new defect D9, implementation record), D-034 (verified correction); new Part IV with D-049 and D-050; open items updated | Q8 |
 | 4 | 2026-10-21 | Claude | Q9, Q10, A-1, A-2 added to §4 with an interpretation of Q9; new Part V with D-051 (and Amendments 1–3) and D-052; index and open items updated | A-3 (merge of PR #3) |
-| 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11 | Pending: merge by Corbin |
+| 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11; ChatGPT's re-review recorded (D-049 Amendment 1, D-052 review status, open items) | Pending: merge by Corbin |
 
 ## 8. References
 
