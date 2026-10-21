@@ -4,8 +4,8 @@
 **Updated by:** Claude
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 5
-**Current phase:** **Phase A under review.** ChatGPT's re-review of `29e256e` (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)): AGREE with the D-052 fixes on source review; AMEND D-049 (pennation domain needs Corbin's ruling) and these records. ChatGPT's attempt to run the checks was blocked (no `pint` and no network in its sandbox); a retry with offline wheels is pending. Phase B not started.
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
+**Current phase:** **Phase A under review** (pennation ruling recorded, D-049 Amendment 2). ChatGPT's re-review of `29e256e` (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)): AGREE with the D-052 fixes on source review; AMEND D-049 (pennation domain needs Corbin's ruling) and these records. ChatGPT's attempt to run the checks was blocked (no `pint` and no network in its sandbox); a retry with offline wheels is pending. Phase B not started.
 
 ## Implemented work
 
@@ -93,7 +93,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 - **D-051** shared repository: pilot in progress; decided after the pilot.
 - **D-052** Phase A review response: merged; ChatGPT AGREEs on source review; awaiting Corbin's acceptance and ChatGPT's independent run of the checks.
-- **D-049 physical bounds:** ChatGPT AMEND (re-review): the 13 positivity bounds are sensible; the pennation bound `[0, π/2)` is a model convention, not an anatomical law, and its purpose must be stated. **Needs Corbin's ruling** (D-049 Amendment 1). Claude agrees with ChatGPT's framing.
+- **D-049 physical bounds:** pennation bound `[0, π/2)` **accepted by Corbin (Q13, Option A)** as the operational domain of Hill-type models with a cos(pennation) projection, not an anatomical limit; label stored in the schema; revisit with D-037 in Phase B. The 13 positivity bounds: models agree, Corbin's approval not yet given.
 - **D-050** caveat (ChatGPT): before any contraction velocity is populated or used dynamically, the datum must state which fiber length normalizes `optimal_fiber_lengths/s` (the schema definition already requires the convention to be declared). Open item for Phase B/C.
 - **Q8 and Q9 interpretations (`DECISIONS.md` §4):** Corbin may correct either.
 - **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
@@ -103,7 +103,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 **Owners:** Corbin and ChatGPT, in parallel.
 **Tasks:**
-1. **Corbin:** rule on the D-049 pennation bound (D-049 Amendment 1); merge PR #5 (ChatGPT's re-review record) and this records PR.
+1. **Corbin:** ~~rule on the D-049 pennation bound~~ done (Q13); ~~merge PRs #4 and #5~~ done (A-4). Still open: approve or amend the D-049 positivity bounds.
 2. **ChatGPT:** with the commit archive of `29e256e` and `pint_offline_wheels.zip`, install pint offline and run `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py`. Report the results as an addendum to the re-review on a new branch and PR (one record per review; D-051 item 6). Also check this records PR.
 3. **Then:** with execution reproduced and the records consistent, the pilot's P7 criteria are met and Corbin decides on D-051. D-052 and D-049 are accepted or amended by Corbin. Then Phase B (hip-only model), starting with the D-037 force-to-torque choice.
 

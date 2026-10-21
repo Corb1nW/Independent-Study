@@ -255,7 +255,8 @@ property_classes:
         definition: Fiber pennation angle at optimal fiber length under the specified model definition.
         canonical_unit: rad
         value_form: scalar
-        bounds: {min: 0, min_inclusive: true, max: 1.5707963267948966, max_inclusive: false}
+        bounds: {min: 0, min_inclusive: true, max: 1.5707963267948966, max_inclusive: false,
+                 basis: 'operational domain of Hill-type muscle models with a cos(pennation) force projection; a model convention, not an anatomical limit. Revisit when D-037 fixes the force-to-torque representation (D-049 Amendment 2).'}
       maximum_contraction_velocity:
         property_role: parameter
         definition: Maximum shortening velocity under the specified muscle model; normalization convention must be declared.
