@@ -54,13 +54,13 @@ py -m pytest -q
 
 ### Integrity check (Phase A)
 
-Checks every cross-file reference between the ontology, the quantitative schema and the datasets, and validates every observation. Exit code 1 on failure.
+Checks the cross-file references between the ontology, the quantitative schema and the datasets that are listed in the `src/quantitative.py` module docstring (free-text fields are not references and are not checked), and validates every observation against its own dataset. Exit code 1 on failure.
 
 ```powershell
 py -m src.integrity
 ```
 
-Validation runs in layers (DECISIONS.md D-035): structural (`src/datum_model.py`, Pydantic), semantic (vocabularies, property definitions, units via pint, physical bounds, ontology references) and evidence (sources, assumptions, derivations, applicability). `py tools/review_cycle1_probes.py` reruns the Review Cycle 1 probes.
+Validation runs in layers (DECISIONS.md D-035): structural (`src/datum_model.py`, Pydantic), semantic (vocabularies, property definitions, units via pint, physical bounds, ontology references) and evidence (sources, assumptions, derivations, applicability). The evidence layer checks that provenance is complete and every cited source is registered; it does **not** check that a source actually supports the value, which needs a reviewer to read the source. A datum that passes is reported as *admissible as a simulation input*: a datum-level result, not model-level simulation readiness (Phase C). `py tools/review_cycle1_probes.py` reruns the Review Cycle 1 probes.
 
 ### Project governance
 

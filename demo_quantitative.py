@@ -36,7 +36,7 @@ for claim in obs["provenance"]["source_claims"]:
 print("Transformations:")
 for step in obs["provenance"]["transformation_history"]:
     print(f"  - {step['operation']}: {step['input_value']} {step['input_unit']} -> {step['output_value']} {step['output_unit']}")
-q.print_validation_report(obs, "VALIDATION RESULT — POPULATED LITERATURE DATUM")
+q.print_validation_report(obs, "VALIDATION RESULT — POPULATED LITERATURE DATUM", dataset)
 
 print("\nWORKFLOW SUMMARY")
 print("  Primary measurement -> source claim -> unit-preserving transformation")

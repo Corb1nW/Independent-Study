@@ -63,7 +63,7 @@ base = obs["LB-QD:GMAX:MASS:WARD2009"]
 def probe(label, mutate):
     d = deepcopy(base)
     mutate(d)
-    errs = q.validate_datum(d)
+    errs = q.validate_datum(d, data)
     print(f"  {'REJECTED' if errs else 'ACCEPTED'}  {label}" + (f"  -> {errs}" if errs else ""))
 
 
