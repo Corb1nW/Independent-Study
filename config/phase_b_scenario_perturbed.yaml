@@ -1,0 +1,7 @@
+scenario_id: increased_right_force
+kind: demonstration_scenario_not_evidence
+target_entity_id: LB:MUS:GLUTEUS_MAXIMUS_R
+base_observation_id: LB-QD:GMAX:FMAX:ARNOLD2010
+parameter: maximum_isometric_force
+scenario_multiplier: 1.2
+reason: "Demonstration-only +20% right-side sensitivity, NOT Arnold evidence"
