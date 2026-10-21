@@ -1211,6 +1211,42 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 ---
 
+### D-053  Phase B demonstration: constant signed hip-extension moment arm
+- **Decision status:** Proposed (Claude independent review and Corbin's explicit approval required before simulation implementation)
+- **Implementation status:** Not started
+- **Verification status:** Not applicable (design proposal; no simulation executed)
+- **Date:** 2026-10-21
+- **Proposed by:** ChatGPT (Phase B builder, Q17) · **Reviewed by:** pending Claude
+- **Approval basis:** not confirmed
+- **Evidence:** D-036, D-037 Amendment 1, D-039 Amendment 1, D-040 Amendment 1, D-049 Amendment 2; `ontology/quantitative_data/gluteus_maximus.yaml` at start SHA `42ca56a540e1d7a2c391175d5f6e767077e089af`
+- **Implementation ref:** not started; future Phase B model configuration, not an anatomical datum
+- **Amends / supersedes:** specifies the Phase B representation required by D-037; revisits D-049 Amendment 2 without changing its accepted validation bound
+- **Phase:** B
+- **Open concerns:** the numerical moment-arm magnitude, activation/force assumption, and dynamics inputs must be declared and owner-reviewed before simulation; whether an actual whole-muscle-to-joint effective moment arm needs later calibration is deferred
+
+**Context.** The per-side gluteus maximus moment-arm observations in `gluteus_maximus.yaml` are unresolved because no path geometry is defined (D-014, D-015, D-021). A minimal hip-only demonstration needs an explicit force-to-torque map without pretending to have empirical geometry. Arnold's datum `LB-QD:GMAX:FMAX:ARNOLD2010` is a **whole-muscle model-derived maximum isometric force**, before compartment distribution; it is not a measured compartment force.
+
+**Proposed representation (model assumption, not anatomical fact).**
+1. **Model and side:** a one-degree-of-freedom **right** sagittal hip; pelvis is the reference body, thigh rotates relative to pelvis. Left-side data remain available but are not combined into the right-side torque. This is a demonstration abstraction, not an assertion of unilateral muscle physiology.
+2. **Coordinate and torque signs:** `q = 0 rad` is the chosen neutral reference configuration (must be specified in model configuration); `q > 0` is hip **flexion**, `q < 0` is **extension**. Positive joint torque increases q (flexion); gluteus maximus contributes **negative** (extension) torque.
+3. **Signed moment arm:** `r(q) = -r0`, where `r0 > 0` is a **constant magnitude in meters**, specified in model configuration as an explicit demonstration assumption with its value, rationale and applicability. `r(q)` is *not* populated into the anatomical moment-arm observation or presented as a literature measurement. No numerical `r0` is approved by this entry.
+4. **Force-to-torque relation:** `tau_GMAX(q,t) = r(q) F_MT(t) = -r0 F_MT(t)`, with `F_MT >= 0` in **newtons** and `tau_GMAX` in **N·m**. For the minimal proof-of-data-flow only, propose `F_MT(t) = a(t) Fmax` with `a(t)` dimensionless, bounded `0 <= a <= 1`, and `Fmax` resolved and validated using **dataset context** from `LB-QD:GMAX:FMAX:ARNOLD2010` (currently `1852.6 N`, generic Arnold 2010 model). This deliberately simple gain law does **not** represent Hill force–length/velocity behavior, tendon compliance, or physiological activation dynamics. The whole-muscle `Fmax` is treated as one effective lumped right-hip extensor input; **no compartment division or compartment-specific claim** is made. If force scales are changed, that is a change to the whole-muscle parameter, not an experimental strength estimate.
+5. **Proposed operating angle interval:** `-pi/6 <= q <= pi/3 rad` (−30° extension through +60° flexion), **chosen solely as an explicit bounded demonstration domain**, not an anatomical range-of-motion assertion or a sourced geometry curve. This limit applies to the constant-moment-arm approximation, not to all hip behavior. Phase B config must record it; numerical integration must not silently extrapolate outside it.
+6. **Length consistency:** if `L_MT(q)` is introduced during Phase B, enforce D-037's `r(q) = -dL_MT/dq`. This constant signed moment arm implies `L_MT(q) = L_ref + r0 q` over the declared interval, where `L_ref` needs its own explicit provenance/assumption. Otherwise, leave muscle-tendon length unresolved and unused; never mix this constant moment arm with an incompatible length curve.
+7. **Pennation (D-049 Amendment 2):** The accepted `0 <= alpha < pi/2` in `quantitative_schema.yaml` is a **Hill-type cosine-projection operational domain, not a biological limit**. The proposed Phase B `F_MT = a Fmax` gain law does **not** consume pennation angle or apply an additional `cos(alpha)` factor. This avoids silently double-applying a projection to a force whose source-level interpretation requires separate review. Keep the accepted bound and its basis unchanged for Phase B. Reassess both the bound and whether `Fmax` is fiber-force or already effective tendon force **before** introducing a Hill-style `F_fiber cos(alpha)` law in a later model. No physiological claim is inferred from the bound.
+
+**Acceptance checks proposed for the later build.** Fix `q`, `a`, `r0` and `Fmax > 0`: then `tau_GMAX < 0` whenever `a > 0`; with `a = 0`, torque is zero; doubling an input `Fmax` at constant activation and arm doubles the torque. A perturbation to the YAML `Fmax` must propagate through the validated resolver to a reproducible dynamic output without modifying anatomical or geometry records. Include a sign/unit test, a no-extrapolation/domain test, and a run manifest with the exact YAML observation and source metadata, `r0` assumption, activation value or profile, q definition/range, initial conditions, inertia, equation, integrator settings and code/data commit SHA. This proposal runs no such test.
+
+**Defense.** A constant arm is the lowest-complexity transparent stand-in for the missing muscle path and directly exercises the source-to-force-to-torque-to-dynamics pathway requested by D-036 and D-040. The negative sign is mechanically consistent with hip extension in the chosen flexion-positive coordinate. It is deliberately **not** evidence that the anatomical gluteus maximus has a constant moment arm or that the full muscle acts as a single actuator across the interval. The amplitude and operating interval are inspectable assumptions rather than silent placeholders. Validating the published `Fmax` does not validate the imposed force law.
+
+**Alternatives.** (a) Use a sourced angle-dependent `r(q)` curve: more realistic in principle but requires a comparably defined whole-muscle/compartment curve, angle convention and primary source, which are not established in this repository. (b) Construct an explicit muscle path: premature complexity for the first data-to-dynamics test. (c) Populate the unresolved dataset moment-arm observation with a guessed scalar: rejected under D-015. (d) Insert a pennation cosine factor immediately: rejected until force definitions and compartment aggregation are reconciled, to avoid double counting.
+
+**Challenges / review request.** Claude should examine the coordinate/torque signs, the consistency `r=-dL_MT/dq`, the provisional `Fmax` to line-of-action-force mapping, whole-muscle interpretation, angle interval and D-049 treatment. Corbin must approve or amend **this representation** before any Phase B dynamics code is written. The subsequent implementation must choose and record a defensible numerical `r0` *as an explicitly labeled assumption*, not as a fabricated anatomical measurement.
+
+**Consequences.** This proposal does not modify `gluteus_maximus.yaml`, `quantitative_schema.yaml`, requirements, validation code, or dynamics. Once approved, implementation records every consumed numerical value, units, evidence vs. assumption status, model scope and exact commit. A later source-backed moment-arm curve or muscle path requires a separate decision and verification.
+
+---
+
 ## 6. Open items
 
 | Item | Owner | Due |
