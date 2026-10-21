@@ -211,6 +211,15 @@ def test_c1_git_input_provenance_post_resolution_change(tmp_path):
 def test_d1_crlf_checkout_is_clean_and_raw_resolution_hash_still_checked(tmp_path):
     """Simulate Windows CRLF with Git text normalization; retain raw SHA256 guard."""
     root, target, sha = _git_fixture(tmp_path)
+    # The fixture must opt into normalization *before* simulating Windows EOL.
+    # It is a separate repository; it does not inherit the project's attributes.
+    (root / ".gitattributes").write_text("*.yaml text\n", encoding="utf-8")
+    subprocess.run(["git", "add", ".gitattributes"], cwd=root,
+                   check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-qm", "track normalization"], cwd=root,
+                   check=True, capture_output=True)
+    sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, check=True,
+                         capture_output=True, text=True).stdout.strip()
     subprocess.run(["git", "config", "core.autocrlf", "true"], cwd=root,
                    check=True, capture_output=True)
     target.write_bytes(b"moment_arm_m: 0.04\r\n")
