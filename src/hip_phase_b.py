@@ -237,11 +237,15 @@ def verify_git_inputs(root, paths, commit_sha, *, expected_hashes=None):
             raise ValueError(f"{name}: input path outside repository: {path}")
         relative = path.relative_to(root).as_posix()
         try:
-            committed_bytes = git("show", f"HEAD:{relative}").stdout
+            # Git's working-tree filters (including CRLF -> LF text normalization)
+            # must be used for comparing with the committed object. Raw-byte equality
+            # would reject clean Windows checkouts with core.autocrlf=true (D1).
+            committed_oid = git("rev-parse", f"HEAD:{relative}").stdout.decode().strip()
+            working_oid = git("hash-object", "--", relative).stdout.decode().strip()
             current_bytes = path.read_bytes()
         except (OSError, subprocess.CalledProcessError) as exc:
             raise ValueError(f"{name}: not a readable tracked input at HEAD: {relative}") from exc
-        if current_bytes != committed_bytes:
+        if working_oid != committed_oid:
             raise ValueError(f"{name}: working file differs from HEAD: {relative}")
         if expected_hashes and name in expected_hashes:
             if hashlib.sha256(current_bytes).hexdigest() != expected_hashes[name]:
