@@ -3,9 +3,9 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 3 (2026-10-07), Phase A approvals and implementation recorded. See §7 for revision history.
-**Covers:** Design decisions from the original work through Phase A (Integrity)
-**Repository snapshot at this revision:** baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
+**Revision:** 4 (2026-10-21), shared repository (D-051) and Phase A review response (D-052). See §7 for revision history.
+**Covers:** Design decisions from the original work through the Phase A review
+**Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
 ---
 
@@ -97,6 +97,17 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 
 **Interpretation of Q8 (revision 3).** Q8 approves “the elements that are needed for phase A” and defers the rest “as they come up”. Claude's request named D-026, D-031, D-034 and D-035. Claude also counts **D-027**, because Phase A's accepted defect D7 (D-024) is fixed “per D-027”. Accepted under Q8: D-026, D-027, D-031, D-034, D-035. Still `Proposed (models agree)`, to be decided when their phase arrives: D-028 (Phase E), D-029, D-030, D-032, D-033 (Phase C), D-038 (Phase E). Q8 is also read as confirming the roles in the same request: Claude builds Phase A; ChatGPT reviews. **Corbin may correct this interpretation**; any correction is recorded as an amendment.
 
+**Session of 2026-10-20 to 2026-10-21.** Source: Claude session transcript, America/New_York, `https://claude.ai/code/session_01KQNqyy6jGpUETvZRkrXroV`. Quotes are verbatim.
+
+| ID | Time | Corbin's statement or action | Context | Supports |
+|---|---|---|---|---|
+| **Q9** | 2026-10-20 14:40 | “You got the approval from both Chat and me, now lets implement this approach” | On D-051 revision 2, which asked Corbin to approve running the pilot and ChatGPT to confirm the narrowing of amendment A | Running the D-051 pilot (see interpretation below). ChatGPT's approval is **reported by Corbin**; no written ChatGPT record of it exists. |
+| **Q10** | 2026-10-20 14:54 | “1) attached 2)public 3) I'd go with your recommendation” | Answers to: (1) upload `lbao_repo.zip`; (2) keep the repository public or make it private; (3) LB-AO code at the repository root with a combined README | Repository stays public (D-051 Amendment 1); import layout |
+| **A-1** | 2026-10-20 15:08:57 (action) | Merged PR #1 with a merge commit: `28142366f4777b3cfc62d28ad3bc7b7adc11408f` | Import of the LB-AO history (head `cfea57c`) | Acceptance of the merged revision, per D-051 item 8. No approval comment was written, so none is quoted. |
+| **A-2** | 2026-10-21 08:24 (action) | Created repository ruleset “main”: pull request required for the default branch, 0 approvals, merge commits only, deletion and force-push blocked; status Active | D-051 pilot step P2 | D-051 item 2. Checked by Claude through the GitHub API at 08:26. |
+
+**Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
+
 ---
 
 ## 5. Index
@@ -159,6 +170,9 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | **Part IV — Phase A (Integrity)** | | | | | |
 | D-049 | Physical bounds on parameter values | Claude | Proposed | Implemented | Reported by author |
 | D-050 | Phase A implementation choices (delegated) | Claude | Accepted (delegated) | Implemented | Reported by author |
+| **Part V — Shared repository and Phase A review** | | | | | |
+| D-051 | Shared git remote as the handoff medium | Corbin (idea); Claude; amended by ChatGPT | Proposed (pilot approved, Q9) | In progress (pilot) | Not applicable |
+| D-052 | Phase A review response: source scope, reference checks, admissibility wording | ChatGPT (A1–A4); Claude | Proposed | Implemented | Reported by author |
 
 ---
 
@@ -1125,13 +1139,70 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 ---
 
+## Part V — Shared repository and Phase A review
+
+**Dates:** 2026-10-20 to 2026-10-21
+**Records:** `docs/reviews/2026-10-20_Claude_Proposal_D-051.md` (revision 1), `docs/reviews/2026-10-20_ChatGPT_Review_of_D-051.md`, `docs/reviews/2026-10-20_Claude_Revised_Proposal_D-051.md` (revision 2), `docs/reviews/2026-10-21_ChatGPT_Phase_A_Review_4abb4f1.md`, `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`
+
+### D-051  Shared git remote as the handoff medium
+- **Decision status:** Proposed. Pilot approved (Q9, with interpretation in §4); adoption as the default is gated on the pilot (item 13).
+- **Implementation status:** In progress (pilot). P0–P2 done; P3 recorded in `PROJECT_STATE.md`; P4 review received; P5 is the branch that adds this entry.
+- **Verification status:** Not applicable (process decision). Pilot criteria are tracked in `PROJECT_STATE.md`.
+- **Date:** proposed 2026-10-20
+- **Proposed by:** Corbin (idea: both models get direct access to the project files); refined by Claude; amended by ChatGPT · **Reviewed by:** ChatGPT (conditional approval with amendments, `2026-10-20_ChatGPT_Review_of_D-051.md`)
+- **Approval basis:** Q9 (pilot only); Q10 (public repository, layout); A-1, A-2 (actions)
+- **Evidence:** the five records listed under Part V; PR #1; ruleset “main”
+- **Implementation ref:** `2814236` (import merged); this branch (records, CI)
+- **Amends / supersedes:** amends D-046 and D-048; related to D-042, D-045, D-047
+- **Phase:** All
+- **Open concerns:** independent execution by ChatGPT is not yet possible from GitHub (see `PROJECT_STATE.md`); owner-only merging is partly procedural (Amendment 3)
+
+**Decision.** As stated in revision 2 (`docs/reviews/2026-10-20_Claude_Revised_Proposal_D-051.md`, Part 2, items 1–13), which is incorporated by reference rather than copied, to keep one authoritative text (item 6). Summary: a private GitHub repository (public, per Amendment 1) holds the canonical history; Corbin alone integrates into `main`; changes are pushed commits on branches, with a light path only for documentation wording within D-047; reviews are pinned to a full SHA and kept as one record; approval names a specific revision; only pushed commits are snapshots; repository integrity, software behavior and scientific evidence are separate kinds of verification; access is scoped; tool capabilities are tested and recorded; adoption is gated on a pilot.
+
+**Defense, alternatives, challenges.** In revision 2, Parts 1 and 2. ChatGPT's amendments A–E were all adopted; Claude narrowed amendment A's light path to D-047's delegated documentation scope; ChatGPT's acceptance of that narrowing is reported by Corbin (Q9), not recorded in writing.
+
+**Amendment 1 (2026-10-21): public repository.** Item 1 said *private*. Corbin chose to keep the existing public repository `Corb1nW/Independent-Study` (Q10). Before the import, Claude scanned the full history of both repositories for credentials (text files; `git grep` for key, token, secret and password patterns): 0 matches. Consequence: anyone can read the project, including course details and the design documents. Item 11's scoping applies to write access only.
+
+**Amendment 2 (2026-10-21): no milestone tags.** The pilot checklist (P1) proposed annotated tags `baseline-received` and `phase-a-built`. This session could not push tags (refused at the connection; creating them through the GitHub API is not permitted here). They were dropped as unnecessary: every record identifies commits by SHA. This was Claude's decision, not owner-approved; Corbin may add the tags at any time.
+
+**Amendment 3 (2026-10-21): residual risk in owner-only merging.** Ruleset “main” (A-2) requires a pull request for `main`. Claude acts through Corbin's GitHub account, so GitHub cannot tell a merge by Claude from one by Corbin. Claude does not merge into `main`; that part of item 2 remains a rule followed, not enforced.
+
+### D-052  Phase A review response: source scope, reference checks, admissibility wording
+- **Decision status:** Proposed (code change on the standard path; accepted when Corbin approves and merges the reviewed SHA)
+- **Implementation status:** Implemented (`976251c`)
+- **Verification status:** Reported by author
+- **Date:** 2026-10-21
+- **Proposed by:** ChatGPT (findings A1–A4) · Claude (fixes) · **Reviewed by:** ChatGPT (re-review pending)
+- **Approval basis:** not confirmed
+- **Evidence:** `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`; `tests/test_phase_a_review.py` (15 tests; 11 fail against the `4abb4f1` logic, 4 acceptance cases pass both before and after)
+- **Amends / supersedes:** amends D-024 (integrity check scope) and D-035 (layer naming in reports); no change to D-045 statuses
+- **Phase:** A
+- **Open concerns:** independent reproduction
+
+**Context.** ChatGPT's review of `4abb4f1` found that sources leaked between datasets (A1), four reference fields were unchecked while the documentation claimed all references were checked (A2), the report's `ready_for_simulation` overstated what was checked (A3), and the evidence layer's limits were undocumented (A4). Claude reproduced A1–A3 at `4abb4f1`.
+
+**Decision.** (1) A datum may cite ontology sources plus its own dataset's sources; datasets never widen each other's registry. (2) `related_observation` and `conflicts_with` must resolve to observations (or aliases) in the same dataset; `convention_source_id` and structured derivation-input `source_id` must resolve to the source registry. The checked and deliberately unchecked fields are listed in `src/quantitative.py`. (3) The report states `admissible_as_simulation_input`, scoped to datum-level checks; model-level readiness remains D-035's fourth layer (Phase C). (4) Documentation states that the evidence layer checks registry membership and completeness, not whether a source supports a value.
+
+**Defense.** Each change narrows what the validator accepts or claims to match what it actually checks, which is the project's “no fake completeness” rule applied to the validator itself. Scoping sources per dataset makes a record's validity independent of what else happens to be loaded. Without a dataset, the registry falls back to ontology sources only, so a forgotten argument rejects rather than accepts.
+
+**Alternatives.** A single project-wide source catalog (ChatGPT's other option): rejected for now, because it would move scientific content (source entries) between files; it can be revisited when a second dataset exists. Keeping `ready_for_simulation` with a footnote: rejected, because the key itself is what readers act on.
+
+**Challenges.** None. Claude agreed with all five findings; A5 required no code change.
+
+**Consequences.** `validate_datum` and `validation_report` take an optional `dataset`. Callers that validate dataset observations must pass it, or Ward and Arnold sources are reported unknown. Report consumers must use the new key.
+
+---
+
 ## 6. Open items
 
 | Item | Owner | Due |
 |---|---|---|
 | Decide on D-028, D-029, D-030, D-032, D-033, D-038 when their phase arrives (Q8) | Corbin | Phase C / E |
-| Review Phase A against its exit criterion; rerun tests, probes and integrity check at `4abb4f1` (D-045) | ChatGPT | Before Phase B |
-| Review D-049 physical bounds (especially pennation < π/2) | Corbin, after ChatGPT review | Before Phase B |
+| ~~Review Phase A against its exit criterion~~ Source-level review done 2026-10-21 (AMEND); **independent execution of the Phase A checks still outstanding** (D-045) | ChatGPT | Before Phase B |
+| Re-review D-052 at the PR head SHA | ChatGPT | Before merge |
+| Choose how ChatGPT reproduces executable checks (commit archive, CI logs, or a local run by Corbin) | Corbin | Before merge |
+| Review D-049 physical bounds (especially pennation < π/2) and the D-050 choices; not covered by the 2026-10-21 review | ChatGPT, then Corbin | Before Phase B |
+| Complete the D-051 pilot (P6, P7) and decide on D-051 | Corbin | After this branch merges |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
 | Select and record the force-to-torque representation (D-037, amended) | Phase B builder, approved by Corbin | Start of Phase B |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
@@ -1143,6 +1214,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 1 | 2026-10-07 | Claude | Initial log: D-001 to D-041 | Q5 (request to create the log) |
 | 2 | 2026-10-07 | Claude | Review Cycle 2 applied: new rules (§3); Approval record (§4); three status fields on D-024 onward; D-026 to D-035 and D-038 changed from Accepted to Proposed (D-042); Part I statuses changed from “Revised by” to “revision proposed in” where the revising decision is not yet accepted; Correction **C-1** (D-010); **C-2** rename of “Model A” to “ChatGPT” throughout (label only, no attribution changed); amendments to D-037, D-039, D-040, D-041; new D-042 to D-048 | Q6 |
 | 3 | 2026-10-07 | Claude | Q8 added to §4 with its interpretation; D-024, D-025, D-026, D-027, D-031, D-034, D-035 status fields updated (Accepted / Implemented); amendments to D-019 (verification), D-024 (new defect D9, implementation record), D-034 (verified correction); new Part IV with D-049 and D-050; open items updated | Q8 |
+| 4 | 2026-10-21 | Claude | Q9, Q10, A-1, A-2 added to §4 with an interpretation of Q9; new Part V with D-051 (and Amendments 1–3) and D-052; index and open items updated | Pending: merge of this revision by Corbin (D-051 item 8) |
 
 ## 8. References
 
@@ -1151,4 +1223,4 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - Ward SR, Eng CM, Smallwood LH, Lieber RL. Are current measurements of lower extremity muscle architecture accurate? *Clin Orthop Relat Res.* 2009;467(4):1074–1082.
 - Wu G, et al. ISB recommendation on definitions of joint coordinate system — Part I: ankle, hip, and spine. *J Biomech.* 2002;35(4):543–548.
 - Design documents (`docs/design/`): *Musculoskeletal Digital Twin Ontological Framework*; *LB-AO v0.1 Pelvis & Hip Complex Ontology*; *LB-AO Source & Evidence Standard*; *LB-AO QPS Rationale*.
-- Review documents (`docs/reviews/`): *Technical Review of LB-AO* (Claude); *LB-AO: Response to the Technical Review* (ChatGPT); *Review of DECISIONS.md for Claude* (ChatGPT); *Claude Response to the DECISIONS.md Review* (Claude). All dated 2026-10-07.
+- Review documents (`docs/reviews/`): *Technical Review of LB-AO* (Claude); *LB-AO: Response to the Technical Review* (ChatGPT); *Review of DECISIONS.md for Claude* (ChatGPT); *Claude Response to the DECISIONS.md Review* (Claude), all dated 2026-10-07. D-051 proposal revisions 1 and 2 (Claude) and *D-051 — ChatGPT Review and Recommended Amendments*, dated 2026-10-20. *Phase A Independent Review* (ChatGPT) and *Response to ChatGPT's Phase A Review* (Claude), dated 2026-10-21.
