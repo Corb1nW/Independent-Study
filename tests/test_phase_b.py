@@ -121,7 +121,12 @@ def test_config_rejects_bad_metadata_and_values(tmp_path):
 
 def test_manifest_pins_provenance_and_assumptions():
     x=inputs(CHANGE)
-    manifest=run_manifest(x,simulate(x),"a"*40)
+    # CI checks out a synthetic PR merge commit; use the actual checked-out SHA.
+    import subprocess
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT,
+                            capture_output=True, text=True)
+    sha = commit.stdout.strip() if commit.returncode == 0 else "a"*40
+    manifest=run_manifest(x,simulate(x),sha)
     assert manifest["source"]["observation_id"]=="LB-QD:GMAX:FMAX:ARNOLD2010"
     assert manifest["source"]["dataset_sha256"]==sha256(DATA.read_bytes()).hexdigest()
     assert manifest["scenario_sha256"]==sha256(CHANGE.read_bytes()).hexdigest()
