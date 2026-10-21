@@ -4,8 +4,8 @@
 **Updated by:** Claude
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 5
-**Current phase:** **Phase A under review.** ChatGPT's re-review of `29e256e` (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)): AGREE with the D-052 fixes on source review; AMEND D-049 (pennation domain needs Corbin's ruling) and these records. ChatGPT's attempt to run the checks was blocked (no `pint` and no network in its sandbox); a retry with offline wheels is pending. Phase B not started.
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.4.0 · dataset `gluteus_maximus.yaml` 0.3.0 · `DECISIONS.md` revision 6
+**Current phase:** **Phase A complete and reviewed.** ChatGPT agreed with the D-052 fixes and independently reproduced the software checks at `29e256e` (PR #7). Corbin accepted D-049 (Q13, Q14), D-051 (Q15) and D-052 (Q16). **Next: Phase B** (hip-only model). Not started.
 
 ## Implemented work
 
@@ -49,8 +49,14 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Review Cycle 1 probes | `4abb4f1`; `976251c` | Claude | `python tools/review_cycle1_probes.py` | All 9 validator probes **REJECTED**; no D1, D2 or D5 findings; D3 list down from 11 to 10 classes (hip joint fixed; the rest is Phase C per D-031) |
 | CI | `e3c3b4e` | GitHub Actions | `.github/workflows/tests.yml` | success (pytest and integrity steps passed; step status read through the API, logs not readable from Claude's session) |
 | Source-level review | `4abb4f1` | ChatGPT | reading files at the SHA | AMEND: findings A1–A5, all agreed (D-052). Record: PR #2 |
+| Source-level re-review | `29e256e` | ChatGPT | reading files at the SHA and the archive | AGREE with D-052; AMEND D-049 and records (since resolved). Record: PR #5 |
+| Test suite | `29e256e` archive | **ChatGPT (independent)** | `python -m pytest -q` | **80 passed** (Python 3.13.5, pytest 9.0.2, pydantic 2.13.5, PyYAML 6.0.3, pint 0.26.2 from offline wheels) |
+| Integrity check | `29e256e` archive | **ChatGPT (independent)** | `python -m src.integrity` | **PASSED** |
+| Review Cycle 1 probes | `29e256e` archive | **ChatGPT (independent)** | `python tools/review_cycle1_probes.py` | **9/9 REJECTED**; the 10-class D3 list is the documented Phase C deferral |
+| Archive provenance | `29e256e` archive | ChatGPT | `git hash-object` on 3 files vs GitHub blob SHAs at `29e256e` | 3/3 match (partial corroboration, not full archive verification) |
+| Mutation check; new tests vs `4abb4f1` | — | ChatGPT | — | **Not run**: needs git history, absent from the archive |
 
-**Reported, not independently reproduced:** every executable result above. ChatGPT read the code at `4abb4f1` but could not execute it (its sandbox cannot reach GitHub). CI is a third-party run and counts as supporting evidence only (D-051 item 10).
+**Independently reproduced** (ChatGPT, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)): the test suite, integrity check and probes at `29e256e`, which contains the Phase A code and the D-052 fixes. This upgrades those results from author-reported. **Still author-reported:** the mutation check (30 of 47 Phase A tests fail against the old validator), the 11/4 comparison of the new tests against `4abb4f1`, and all results at other snapshots. Independent execution checks software behavior only, never anatomical or biomechanical validity (D-051 item 10). CI is a third-party run and counts as supporting evidence only. PR #6 adds two label tests (82 total at its head), not covered by ChatGPT's run.
 
 ## D-051 pilot
 
@@ -61,7 +67,8 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Read files at a given SHA | Yes | Yes (GitHub connector) |
 | Check out an arbitrary SHA | Yes | No: native `git clone`/checkout blocked (sandbox cannot resolve github.com) |
 | Extract an uploaded archive | Yes | Yes |
-| Install requirements and run the checks | Yes | **Not verified; blocked.** No network to the package index, and `pint` is not preinstalled (2026-10-21). Retry pending with offline wheels supplied by Corbin |
+| Install requirements and run the checks | Yes | **Yes, with offline wheels** supplied by Corbin (no network to the package index; `pint` not preinstalled). Verified 2026-10-21 (PR #7). The first attempt without wheels was blocked |
+| Run git-history tools (mutation check) | Yes | No: archives lack `.git`. A zip including `.git` would allow it |
 | Push a branch / commit files | Yes | Yes: `phase-a/chatgpt-review-4abb4f1` (`b10e301`), `phase-a/chatgpt-rereview-d052-29e256e` (`e7ad2c2`); confirmed by Corbin (Q11) |
 | Open or comment on a PR | Yes | Yes: PRs #2 and #5, created by ChatGPT (Q11); GitHub attributes them to Corbin's account, so reviews name their author in the text |
 | Push tags | No (refused at the connection) | Not reported |
@@ -81,8 +88,10 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Review pinned to a commit with honest test-execution status | Met, twice: `4abb4f1` (nothing executed) and `29e256e` (execution attempted, blocked, reported as such) |
 | Builder responded through new commits | Met (PR #3; this records PR) |
 | Corbin approved a specific SHA and merged it | Met: PR #3 head `603f1e2` merged as `29e256e` (A-3). Merged before the re-review, so D-052 stays Proposed |
-| `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Pending: `main` at `29e256e` is stale (ChatGPT's re-review, MEDIUM finding). Met once this records PR merges, subject to ChatGPT's check |
-| *Not a pilot criterion, but open:* independent execution of the checks by ChatGPT | Blocked; retry with offline wheels pending |
+| `PROJECT_STATE.md` and `DECISIONS.md` consistent after the merge | Met by PR #4, which ChatGPT checked and agreed with (PR #7). Its LOW follow-up (execution status superseded) is addressed here (PR #6) |
+| *Not a pilot criterion:* independent execution of the checks by ChatGPT | Done via the D-051 item 12 fallback (archive plus offline wheels) |
+
+**Pilot result:** all P7 criteria met. **D-051 accepted by Corbin (Q15).** Git handoffs are now the default; a commit archive (plus offline wheels for ChatGPT) is the fallback.
 
 ## Accepted but unimplemented
 
@@ -91,23 +100,22 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Open proposals and disagreements
 
-- **D-051** shared repository: pilot in progress; decided after the pilot.
-- **D-052** Phase A review response: merged; ChatGPT AGREEs on source review; awaiting Corbin's acceptance and ChatGPT's independent run of the checks.
-- **D-049 physical bounds:** ChatGPT AMEND (re-review): the 13 positivity bounds are sensible; the pennation bound `[0, π/2)` is a model convention, not an anatomical law, and its purpose must be stated. **Needs Corbin's ruling** (D-049 Amendment 1). Claude agrees with ChatGPT's framing.
+- **D-049 physical bounds:** pennation bound `[0, π/2)` **accepted by Corbin (Q13, Option A)** as the operational domain of Hill-type models with a cos(pennation) projection, not an anatomical limit; label stored in the schema; revisit with D-037 in Phase B. The 13 positivity bounds **approved by Corbin (Q14)**, labelled definitional. D-049 is Accepted.
 - **D-050** caveat (ChatGPT): before any contraction velocity is populated or used dynamically, the datum must state which fiber length normalizes `optimal_fiber_lengths/s` (the schema definition already requires the convention to be declared). Open item for Phase B/C.
-- **Q8 and Q9 interpretations (`DECISIONS.md` §4):** Corbin may correct either.
+- **Q8 interpretation (`DECISIONS.md` §4):** Corbin may correct it. (Q9 was confirmed by Q12 and superseded by the D-051 acceptance, Q15.)
 - **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owners:** Corbin and ChatGPT, in parallel.
+**Owner:** Corbin, then the Phase B builder.
 **Tasks:**
-1. **Corbin:** rule on the D-049 pennation bound (D-049 Amendment 1); merge PR #5 (ChatGPT's re-review record) and this records PR.
-2. **ChatGPT:** with the commit archive of `29e256e` and `pint_offline_wheels.zip`, install pint offline and run `python -m pytest -q`, `python -m src.integrity`, `python tools/review_cycle1_probes.py`. Report the results as an addendum to the re-review on a new branch and PR (one record per review; D-051 item 6). Also check this records PR.
-3. **Then:** with execution reproduced and the records consistent, the pilot's P7 criteria are met and Corbin decides on D-051. D-052 and D-049 are accepted or amended by Corbin. Then Phase B (hip-only model), starting with the D-037 force-to-torque choice.
+1. Merge PR #7 (ChatGPT's execution addendum), then PR #6 (these records).
+2. Confirm builder and reviewer roles for Phase B.
+3. **Phase B** (hip-only model, D-036), starting with the D-037 force-to-torque choice for Corbin's approval. Revisit the pennation bound at the same time (D-049 Amendment 2), and declare the contraction-velocity normalization before use (D-050 caveat).
 
-**Required inputs:** this repository; `docs/DECISIONS.md` D-049 to D-052; {RR}.
+**Optional (ChatGPT):** reproduce the mutation check and the new-test comparison from a zip that includes `.git`.
+**Required inputs:** this repository; `docs/DECISIONS.md` D-049 to D-052; `docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5); `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7).
 
 ## Handoff protocol (D-048, as amended by D-051)
 

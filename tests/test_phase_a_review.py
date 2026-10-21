@@ -126,6 +126,24 @@ def test_integrity_check_catches_dangling_observation_reference(tmp_path):
     assert check_project(ROOT) == []
 
 
+# ---------------------------------------------------------------- D-049 Amendment 2 (owner ruling Q13)
+def test_pennation_bound_is_labelled_as_a_model_convention():
+    bounds = q.property_definition("pennation_angle_at_optimal")["bounds"]
+    assert bounds["max_inclusive"] is False
+    assert "operational domain" in bounds["basis"] and "not an anatomical limit" in bounds["basis"]
+
+
+def test_every_bound_states_its_basis():
+    """D-049 Amendment 3: all 14 bounds are owner-approved and say what they express."""
+    bounded = {pid: p["bounds"] for block in q.classes.values()
+               for pid, p in (block.get("properties") or {}).items() if p.get("bounds")}
+    assert len(bounded) == 14
+    positivity = {pid for pid, b in bounded.items() if b.get("min") == 0 and b.get("min_inclusive") is False}
+    assert len(positivity) == 13
+    for pid in positivity:
+        assert bounded[pid]["basis"].startswith("definitional"), pid
+
+
 # ---------------------------------------------------------------- A3 readiness wording
 def test_report_does_not_claim_simulation_readiness():
     report = q.validation_report(OBS[MASS], data)

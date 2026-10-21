@@ -152,7 +152,7 @@ property_classes:
         definition: Mass assigned to the represented segment.
         canonical_unit: kg
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       center_of_mass_position:
         definition: Position of segment center of mass expressed in an explicitly identified segment frame.
         canonical_unit: m
@@ -167,7 +167,7 @@ property_classes:
         definition: Operationally defined segment length; landmark definitions must accompany the value.
         canonical_unit: m
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
 
   joint_kinematic:
     applies_to_classes: [SynovialJoint, JointCoordinate]
@@ -225,67 +225,68 @@ property_classes:
         definition: Whole-muscle mass under the source's stated dissection or imaging protocol.
         canonical_unit: kg
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       muscle_length:
         property_role: parameter
         definition: Whole-muscle length under the source's stated anatomical definition and measurement protocol.
         canonical_unit: m
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       maximum_isometric_force:
         property_role: parameter
         definition: Maximum isometric force parameter of the specified musculotendon model or experimentally derived representation.
         canonical_unit: N
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       optimal_fiber_length:
         property_role: parameter
         definition: Muscle fiber length associated with the model's optimal active force-length operating point.
         canonical_unit: m
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       tendon_slack_length:
         property_role: parameter
         definition: Tendon length parameter at which the modeled tendon begins to develop tensile force.
         canonical_unit: m
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       pennation_angle_at_optimal:
         property_role: parameter
         definition: Fiber pennation angle at optimal fiber length under the specified model definition.
         canonical_unit: rad
         value_form: scalar
-        bounds: {min: 0, min_inclusive: true, max: 1.5707963267948966, max_inclusive: false}
+        bounds: {min: 0, min_inclusive: true, max: 1.5707963267948966, max_inclusive: false,
+                 basis: 'operational domain of Hill-type muscle models with a cos(pennation) force projection; a model convention, not an anatomical limit. Revisit when D-037 fixes the force-to-torque representation (D-049 Amendment 2).'}
       maximum_contraction_velocity:
         property_role: parameter
         definition: Maximum shortening velocity under the specified muscle model; normalization convention must be declared.
         canonical_unit: optimal_fiber_lengths/s
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       physiological_cross_sectional_area:
         property_role: parameter
         definition: Physiological cross-sectional area under the source's stated measurement or estimation method.
         canonical_unit: m^2
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       muscle_volume:
         property_role: parameter
         definition: Muscle volume under the source's stated segmentation or estimation method.
         canonical_unit: m^3
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       activation_time_constant:
         property_role: parameter
         definition: Time constant used by a specified activation-dynamics model during activation.
         canonical_unit: s
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       deactivation_time_constant:
         property_role: parameter
         definition: Time constant used by a specified activation-dynamics model during deactivation.
         canonical_unit: s
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       musculotendon_length:
         property_role: function_of_state
         definition: Length of the modeled musculotendon path as a function of configuration, L_MT(q), or evaluated at a declared pose.
@@ -314,7 +315,7 @@ property_classes:
         definition: Reference length defined by the source/model protocol.
         canonical_unit: m
         value_form: scalar
-        bounds: {min: 0, min_inclusive: false}
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       strain:
         definition: Dimensionless deformation relative to an explicitly defined reference length.
         canonical_unit: '1'

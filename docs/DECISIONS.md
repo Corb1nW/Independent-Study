@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 5 (2026-10-21), shared repository (D-051), Phase A review response (D-052), owner confirmations. See §7 for revision history.
+**Revision:** 6 (2026-10-21), D-049, D-051 and D-052 accepted; Phase A review complete. See §7 for revision history.
 **Covers:** Design decisions from the original work through the Phase A review
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -107,6 +107,11 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **A-3** | 2026-10-21 08:48:53 and 08:49:10 (actions) | Merged PR #2 (`79eb168`, ChatGPT's review record) and PR #3 (`29e256e`, head `603f1e2`, Claude's response to it), in that order, with merge commits | D-051 pilot P6 | Acceptance of the merged revisions, per D-051 item 8. PR #3 was merged **before** ChatGPT's re-review; D-052 therefore stays Proposed until that re-review is filed, and any findings are fixed in a new PR. |
 | **Q11** | 2026-10-21 08:51 | “chat created it” | Claude asked whether ChatGPT or Corbin created PR #2, which GitHub attributes to Corbin's account | ChatGPT's capability to push a branch and open a PR (`PROJECT_STATE.md`); D-051 Amendment 3 |
 | **Q12** | 2026-10-21 08:51 | “yes that was an approval” | Claude asked whether Q9 approved running the pilot, with D-051 decided after it, or approved D-051 outright | Confirms the interpretation of Q9 below (Claude's reading of “yes”) |
+| **Q13** | 2026-10-21 09:03 | “Things approved and message sent out and lets go for aption [sic] A” | Claude asked Corbin to rule on the D-049 pennation bound: Option A, keep `[0, π/2)` labelled as the range where the chosen muscle-model type works, revisited in Phase B; Option B, allow exactly 90° | D-049 Amendment 2 (pennation bound). “Things approved” refers to merging PRs #4 and #5 (A-4). |
+| **A-4** | 2026-10-21 09:01:27 and 09:01:47 (actions) | Merged PR #5 (`9bedf2d`, ChatGPT's re-review) and PR #4 (`e95ae27`, records), in that order | Records after the re-review | Acceptance of the merged revisions (D-051 item 8) |
+| **Q14** | 2026-10-21 09:06 | “I approve the positivity bounds, add them to PR6 so they all get implemented together” | Claude reported that Q13 covered only the pennation bound and that the 13 positivity bounds still awaited Corbin's approval | D-049 Amendment 3 (positivity bounds) |
+| **Q15** | 2026-10-21 09:10 | Selected “Accept D-051 (Recommended)” | Multiple-choice question from Claude: “D-051: should the GitHub workflow (branches, pull requests, you merge) become the official way ChatGPT and I hand work back and forth, with zip uploads only as a backup?” Alternatives offered: accept with changes; not yet | D-051 Accepted. The explicit decision required by item 13 and requested by ChatGPT (PR #7) |
+| **Q16** | 2026-10-21 09:10 | Selected “Accept D-052 (Recommended)” | Same exchange: “D-052: do you accept my fixes for ChatGPT's four findings? ChatGPT agreed with them and confirmed the tests pass.” Alternative offered: hold for now | D-052 Accepted |
 | **A-2** | 2026-10-21 08:24 (action) | Created repository ruleset “main”: pull request required for the default branch, 0 approvals, merge commits only, deletion and force-push blocked; status Active | D-051 pilot step P2 | D-051 item 2. Checked by Claude through the GitHub API at 08:26. |
 
 **Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
@@ -146,18 +151,18 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-022 | Bilateral symmetry as a reversible baseline assumption | ChatGPT | Accepted (baseline) | — | — |
 | D-023 | Squat v0.1 abstraction | ChatGPT | Accepted (baseline) | — | — |
 | **Part II — Review Cycle 1** | | | | | |
-| D-024 | Fix the eight verified integrity defects (D1–D8) | Claude | Accepted | Implemented | Reported by author |
-| D-025 | Validator must be proven with negative tests | Claude | Accepted | Implemented | Reported by author |
-| D-026 | Units validated for dimensional compatibility | ChatGPT (correcting Claude) | Accepted | Implemented | Reported by author |
-| D-027 | Differing values reconciled before being labeled conflicts | ChatGPT (correcting Claude) | Accepted | Implemented | Reported by author |
+| D-024 | Fix the eight verified integrity defects (D1–D8) | Claude | Accepted | Implemented | Independently checked (software) |
+| D-025 | Validator must be proven with negative tests | Claude | Accepted | Implemented | Independently checked (tests pass); mutation check author-reported |
+| D-026 | Units validated for dimensional compatibility | ChatGPT (correcting Claude) | Accepted | Implemented | Independently checked (software) |
+| D-027 | Differing values reconciled before being labeled conflicts | ChatGPT (correcting Claude) | Accepted | Implemented | Independently checked (software) |
 | D-028 | Sampling distributions are explicit assumptions | ChatGPT (correcting Claude) | Proposed (models agree) | Not started | Not checked |
 | D-029 | Unused vocabulary permitted; used vocabulary defined | ChatGPT (correcting Claude) | Proposed (models agree) | Not started | Not checked |
 | D-030 | One canonical relationship direction; inverses derived | Both | Proposed (models agree) | Not started | Not checked |
-| D-031 | Class reconciliation through hierarchy or mapping | Both | Accepted | Implemented (hip joint) | Reported by author |
+| D-031 | Class reconciliation through hierarchy or mapping | Both | Accepted | Implemented (hip joint) | Independently checked (software) |
 | D-032 | Laterality semantics: type vs. instance | ChatGPT (refining Claude) | Proposed (models agree) | Not started | Not checked |
 | D-033 | Version components independently; release together | ChatGPT (correcting Claude) | Proposed (models agree) | Not started | Not checked |
-| D-034 | Correct false anatomy now; add resolution when needed | ChatGPT (refining Claude) | Accepted | Implemented (Phase A part) | Reported by author |
-| D-035 | Layered validation pipeline | ChatGPT (refining Claude) | Accepted | Implemented (3 layers) | Reported by author |
+| D-034 | Correct false anatomy now; add resolution when needed | ChatGPT (refining Claude) | Accepted | Implemented (Phase A part) | Software independently checked; anatomy source check author-reported |
+| D-035 | Layered validation pipeline | ChatGPT (refining Claude) | Accepted | Implemented (3 layers) | Independently checked (software) |
 | D-036 | Minimal hip-only model before the full squat | ChatGPT | Accepted | Not started | Not checked |
 | D-037 | Force-to-torque representation chosen before Phase B | Claude; amended by ChatGPT | Accepted (amended) | Not started | Not checked |
 | D-038 | Conditions limited to what the active model can express | ChatGPT (correcting Claude) | Proposed (models agree) | Not applicable | Not applicable |
@@ -173,11 +178,11 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-047 | Explicit delegation mechanism | ChatGPT (R-06), amended by Claude | Accepted | Implemented | Reported by author |
 | D-048 | `PROJECT_STATE.md` handoff file and protocol | ChatGPT | Accepted | Implemented | Reported by author |
 | **Part IV — Phase A (Integrity)** | | | | | |
-| D-049 | Physical bounds on parameter values | Claude; amended by ChatGPT | Proposed (owner ruling needed) | Implemented | Reported by author |
-| D-050 | Phase A implementation choices (delegated) | Claude | Accepted (delegated) | Implemented | Reported by author |
+| D-049 | Physical bounds on parameter values | Claude; amended by ChatGPT | Accepted (Q13, Q14) | Implemented | Independently checked (software) |
+| D-050 | Phase A implementation choices (delegated) | Claude | Accepted (delegated) | Implemented | Independently checked (software) |
 | **Part V — Shared repository and Phase A review** | | | | | |
-| D-051 | Shared git remote as the handoff medium | Corbin (idea); Claude; amended by ChatGPT | Proposed (pilot approved, Q9) | In progress (pilot) | Not applicable |
-| D-052 | Phase A review response: source scope, reference checks, admissibility wording | ChatGPT (A1–A4); Claude | Proposed | Implemented | Reported by author |
+| D-051 | Shared git remote as the handoff medium | Corbin (idea); Claude; amended by ChatGPT | Accepted (Q15) | Implemented | Not applicable |
+| D-052 | Phase A review response: source scope, reference checks, admissibility wording | ChatGPT (A1–A4); Claude | Accepted (Q16) | Implemented | Independently checked (software) |
 
 ---
 
@@ -540,7 +545,7 @@ These decisions were made by ChatGPT before this log existed. Their rationale is
 ### D-024  Fix the eight verified integrity defects (D1–D8)
 - **Decision status:** Accepted
 - **Implementation status:** Implemented (`4abb4f1`)
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Approval basis:** Q2
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); defects reproduced at `d04fb78` with `python tools/review_cycle1_probes.py` (Claude, 2026-10-07); ChatGPT's independent reproduction pending; Phase A results in `PROJECT_STATE.md` §Validation
 - **Date:** 2026-10-07
@@ -579,7 +584,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 ### D-025  Validator must be proven with negative tests
 - **Decision status:** Accepted
 - **Implementation status:** Implemented (`4abb4f1`)
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7). That the tests fail against the old validator (mutation check) is still author-reported: it needs git history, which ChatGPT's sandbox lacks
 - **Approval basis:** Q2
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); defects reproduced at `d04fb78` with `python tools/review_cycle1_probes.py` (Claude, 2026-10-07); ChatGPT's independent reproduction pending; Phase A results in `PROJECT_STATE.md` §Validation
 - **Date:** 2026-10-07
@@ -595,7 +600,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 ### D-026  Units are validated for dimensional compatibility
 - **Decision status:** Accepted
 - **Implementation status:** Implemented (`4abb4f1`)
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Approval basis:** Q8
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); Claude's concession in session transcript, 08:54; implemented in `src/quantitative.py` `_unit_errors`
 - **Date:** 2026-10-07
@@ -618,7 +623,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 ### D-027  Differing values are reconciled before being labeled conflicts
 - **Decision status:** Accepted
 - **Implementation status:** Implemented (`4abb4f1`)
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Approval basis:** Q8
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); Claude's concession in session transcript, 08:54; implemented as `quality.value_comparisons` on LB-QD:GMAX:FMAX:ARNOLD2010
 - **Date:** 2026-10-07
@@ -699,7 +704,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 ### D-031  Class reconciliation through hierarchy or explicit mapping
 - **Decision status:** Accepted
 - **Implementation status:** Implemented for the hip joint (`4abb4f1`); general reconciliation is Phase C
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Approval basis:** Q8
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); Claude's reply in session transcript, 08:54; implemented as `class_hierarchy` in `hip.yaml`
 - **Date:** 2026-10-07
@@ -756,7 +761,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 ### D-034  Correct false anatomy now; add anatomical resolution when needed
 - **Decision status:** Accepted
 - **Implementation status:** Implemented for Phase A corrections (`4abb4f1`); added resolution deferred until a model needs it
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Software independently checked at `29e256e` (`docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)). The anatomical correction itself (checked against StatPearls) is author-reported: no reviewer has read the source
 - **Approval basis:** Q8
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); Claude's reply in session transcript, 08:54; adductor magnus correction verified against StatPearls NBK534842
 - **Date:** 2026-10-07
@@ -777,7 +782,7 @@ How each defect was fixed: D1/D8 by splitting the moment-arm and musculotendon-l
 ### D-035  Layered validation: structural, semantic, evidence, simulation readiness
 - **Decision status:** Accepted
 - **Implementation status:** Structural, semantic and evidence layers implemented (`4abb4f1`); full pipeline completed in Phase C
-- **Verification status:** Reported by author (ChatGPT review pending)
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Approval basis:** Q8
 - **Evidence:** Claude Technical Review (`docs/reviews/2026-10-07_Claude_Technical_Review.pdf`); ChatGPT Response (`docs/reviews/2026-10-07_ChatGPT_Response_to_Technical_Review.pdf`); structural layer `src/datum_model.py`
 - **Date:** 2026-10-07
@@ -1095,12 +1100,12 @@ Anything affecting scope, scientific content (anatomy, sources, parameter values
 **Date:** 2026-10-07
 **Builder:** Claude · **Reviewer:** ChatGPT (review pending) · **Roles approved:** Q8 (see interpretation in §4)
 **Snapshot:** baseline `d04fb78` → Phase A `4abb4f1`
-**Verification status:** reported by author. Commands and results are in `PROJECT_STATE.md` §Validation.
+**Verification status:** reported by author on 2026-10-07; software checks **independently reproduced by ChatGPT** at `29e256e` on 2026-10-21 (`docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)). Commands and results are in `PROJECT_STATE.md` §Validation. Independent execution checks software behavior only, never anatomical or biomechanical validity (D-051 item 10).
 
 ### D-049  Physical bounds on parameter values
-- **Decision status:** Proposed (implemented to close an accepted requirement; specific bounds await Corbin's review)
+- **Decision status:** Accepted: pennation bound (Q13, Amendment 2) and positivity bounds (Q14, Amendment 3)
 - **Implementation status:** Implemented (`4abb4f1`; `bounds` in `quantitative_schema.yaml`)
-- **Verification status:** Reported by author
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Date:** 2026-10-07
 - **Proposed by:** Claude · **Reviewed by:** ChatGPT (pending)
 - **Approval basis:** the requirement is accepted (D-025, Q2: Review Cycle 1 probe 3, a negative mass, must be rejected); the bound values themselves are not yet approved
@@ -1119,10 +1124,14 @@ Anything affecting scope, scientific content (anatomy, sources, parameter values
 **Amendment 1 (2026-10-21): ChatGPT's review; owner ruling needed.** ChatGPT's re-review (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)) AMENDs this decision. The thirteen positivity bounds are sensible for the current definitions but should not automatically carry over to future conventions where a zero has a deliberate meaning. The pennation bound `[0, π/2)` is a defensible **acute-angle model convention, not a universal anatomical theorem**: at exactly 90° the axial force projection is zero, which does not by itself show that such a configuration is biologically impossible. The record must state whether the bound expresses biological validity, the model's operational domain, or avoidance of numerical degeneracy, and Corbin must approve it. ChatGPT notes that, depending on the muscle model chosen, allowing the closed endpoint and handling degeneracy in the model may be preferable.
 Claude agrees. This entry's Defense already called the pennation bound “a modeling convention” but did not say which kind. Claude's recommendation: keep `[0, π/2)` and label it as the **operational domain of Hill-type models with a cos α force projection**, revisiting it when D-037 fixes the force-to-torque representation in Phase B. Positivity bounds stay as they are, each recorded as definitional for its current property definition. Decision status remains Proposed until Corbin rules.
 
+**Amendment 2 (2026-10-21): owner ruling on the pennation bound (Q13).** Corbin chose Option A. The bound `[0, π/2)` is kept. It expresses the **operational domain of Hill-type muscle models with a cos(pennation) force projection: a model convention, not an anatomical limit**, to be revisited when D-037 fixes the force-to-torque representation in Phase B. The label is stored with the bound (`basis` in `quantitative_schema.yaml`) and checked by `test_pennation_bound_is_labelled_as_a_model_convention`. The thirteen positivity bounds were not part of the question: ChatGPT and Claude agree they are sensible, but per Rule 8 they await Corbin's explicit approval.
+
+**Amendment 3 (2026-10-21): owner approval of the positivity bounds (Q14).** Corbin approved the thirteen positivity bounds. Each is labelled **definitional**: positive under the property's current definition, and, following ChatGPT's caveat in Amendment 1, not carried over automatically to a future convention in which zero has a deliberate meaning. The label is stored with each bound (`basis` in `quantitative_schema.yaml`) and checked by `test_every_bound_states_its_basis`. Bound values and validator behavior are unchanged. The non-negativity rule for uncertainty values is in code (`_bounds_errors`) and was part of the original D-049 text, so it falls under the same approval.
+
 ### D-050  Phase A implementation choices (delegated)
 - **Decision status:** Accepted (delegated under D-047)
 - **Implementation status:** Implemented (`4abb4f1`)
-- **Verification status:** Reported by author
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)
 - **Date:** 2026-10-07
 - **Proposed by:** Claude (builder) · **Reviewed by:** ChatGPT (pending)
 - **Approval basis:** D-047 delegation (Q6); Phase A scope Q8
@@ -1153,12 +1162,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 **Records:** `docs/reviews/2026-10-20_Claude_Proposal_D-051.md` (revision 1), `docs/reviews/2026-10-20_ChatGPT_Review_of_D-051.md`, `docs/reviews/2026-10-20_Claude_Revised_Proposal_D-051.md` (revision 2), `docs/reviews/2026-10-21_ChatGPT_Phase_A_Review_4abb4f1.md` (added by PR #2, commit `b10e301`), `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`
 
 ### D-051  Shared git remote as the handoff medium
-- **Decision status:** Proposed. Pilot approved (Q9, with interpretation in §4); adoption as the default is gated on the pilot (item 13).
-- **Implementation status:** In progress (pilot). P0–P2 done; P3 recorded in `PROJECT_STATE.md`; P4 review received; P5 is the branch that adds this entry.
+- **Decision status:** Accepted (Q15, 2026-10-21), after the pilot passed. Git handoffs are the default; archives are the fallback (item 12).
+- **Implementation status:** Implemented. Pilot steps P0–P7 completed 2026-10-20 to 2026-10-21 (criteria and evidence in `PROJECT_STATE.md`).
 - **Verification status:** Not applicable (process decision). Pilot criteria are tracked in `PROJECT_STATE.md`.
 - **Date:** proposed 2026-10-20
 - **Proposed by:** Corbin (idea: both models get direct access to the project files); refined by Claude; amended by ChatGPT · **Reviewed by:** ChatGPT (conditional approval with amendments, `2026-10-20_ChatGPT_Review_of_D-051.md`)
-- **Approval basis:** Q9 (pilot only); Q10 (public repository, layout); A-1, A-2 (actions)
+- **Approval basis:** Q15 (adoption); Q9 and Q12 (pilot); Q10 (public repository, layout); A-1 to A-4 (actions)
 - **Evidence:** the five records listed under Part V; PR #1; ruleset “main”
 - **Implementation ref:** `2814236` (import merged); this branch (records, CI)
 - **Amends / supersedes:** amends D-046 and D-048; related to D-042, D-045, D-047
@@ -1176,12 +1185,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 **Amendment 3 (2026-10-21): residual risk in owner-only merging.** Ruleset “main” (A-2) requires a pull request for `main`. Claude acts through Corbin's GitHub account, and ChatGPT's PR #2, created by ChatGPT (Q11), is also attributed to that account, so GitHub cannot tell a merge by either model from one by Corbin, and its authorship labels do not identify the model. Models do not merge into `main`; that part of item 2 remains a rule followed, not enforced. Handoffs and reviews must therefore name their author in the text.
 
 ### D-052  Phase A review response: source scope, reference checks, admissibility wording
-- **Decision status:** Proposed (code change on the standard path; accepted when Corbin approves and merges the reviewed SHA)
+- **Decision status:** Accepted (Q16, 2026-10-21)
 - **Implementation status:** Implemented (`976251c`)
-- **Verification status:** Reported by author
+- **Verification status:** Independently checked (software): ChatGPT ran pytest (80 passed), the integrity check (PASSED) and the probes (9/9 REJECTED) at `29e256e`, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7). The 11-fail/4-pass comparison of the new tests against the `4abb4f1` logic is author-reported
 - **Date:** 2026-10-21
 - **Proposed by:** ChatGPT (findings A1–A4) · Claude (fixes) · **Reviewed by:** ChatGPT: AGREE with A1–A4 on source review (`docs/reviews/2026-10-21_ChatGPT_ReReview_D052_29e256e.md` (PR #5)); its execution of the checks was blocked and is pending
-- **Approval basis:** not confirmed. PR #3 merge (A-3) accepted the revision into `main`; acceptance of the decision awaits Corbin
+- **Approval basis:** Q16; the revision itself entered `main` with the PR #3 merge (A-3)
 - **Evidence:** `docs/reviews/2026-10-21_Claude_Response_to_Phase_A_Review.md`; `tests/test_phase_a_review.py` (15 tests; 11 fail against the `4abb4f1` logic, 4 acceptance cases pass both before and after)
 - **Amends / supersedes:** amends D-024 (integrity check scope) and D-035 (layer naming in reports); no change to D-045 statuses
 - **Phase:** A
@@ -1208,11 +1217,16 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | Decide on D-028, D-029, D-030, D-032, D-033, D-038 when their phase arrives (Q8) | Corbin | Phase C / E |
 | ~~Review Phase A against its exit criterion~~ Source-level review done 2026-10-21 (AMEND); **independent execution of the Phase A checks still outstanding** (D-045) | ChatGPT | Before Phase B |
 | ~~Re-review D-052~~ Done 2026-10-21 at `29e256e`: AGREE (source review) | ChatGPT | Done |
-| Run the checks independently: commit archive plus offline pint wheels (attempt 1 blocked: no `pint`, no network) | ChatGPT | Before accepting D-052 |
+| ~~Run the checks independently~~ Done 2026-10-21 at `29e256e`: 80 passed, integrity PASSED, 9/9 probes REJECTED (`docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)) | ChatGPT | Done |
+| ~~Accept or amend D-052~~ Accepted, Q16 | Corbin | Done |
+| Reproduce the mutation check and the 11/4 new-test comparison; both need git history, so a zip that includes `.git` | ChatGPT, optional | Before Phase B |
 | ~~Review D-049 and D-050~~ Done 2026-10-21: D-049 AMEND, D-050 AGREE with caveats | ChatGPT | Done |
-| Rule on the D-049 pennation bound: what it expresses, and whether to keep `[0, π/2)` (D-049 Amendment 1) | Corbin | Before Phase B |
+| ~~Rule on the D-049 pennation bound~~ Option A, Q13 (D-049 Amendment 2) | Corbin | Done |
+| ~~Approve or amend the D-049 positivity bounds~~ Approved, Q14 (D-049 Amendment 3) | Corbin | Done |
+| Revisit the pennation bound when the force-to-torque representation is chosen (D-049 Amendment 2) | Phase B builder, then Corbin | With D-037 |
 | Declare the normalizing fiber length for `optimal_fiber_lengths/s` before any contraction velocity is populated or used (D-050 caveat) | Phase B/C builder | Before use |
-| Complete the D-051 pilot (P6, P7) and decide on D-051 | Corbin | After this branch merges |
+| ~~Decide on D-051~~ Accepted, Q15 | Corbin | Done |
+| Confirm builder and reviewer roles for Phase B | Corbin | Start of Phase B |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
 | Select and record the force-to-torque representation (D-037, amended) | Phase B builder, approved by Corbin | Start of Phase B |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
@@ -1225,7 +1239,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 2 | 2026-10-07 | Claude | Review Cycle 2 applied: new rules (§3); Approval record (§4); three status fields on D-024 onward; D-026 to D-035 and D-038 changed from Accepted to Proposed (D-042); Part I statuses changed from “Revised by” to “revision proposed in” where the revising decision is not yet accepted; Correction **C-1** (D-010); **C-2** rename of “Model A” to “ChatGPT” throughout (label only, no attribution changed); amendments to D-037, D-039, D-040, D-041; new D-042 to D-048 | Q6 |
 | 3 | 2026-10-07 | Claude | Q8 added to §4 with its interpretation; D-024, D-025, D-026, D-027, D-031, D-034, D-035 status fields updated (Accepted / Implemented); amendments to D-019 (verification), D-024 (new defect D9, implementation record), D-034 (verified correction); new Part IV with D-049 and D-050; open items updated | Q8 |
 | 4 | 2026-10-21 | Claude | Q9, Q10, A-1, A-2 added to §4 with an interpretation of Q9; new Part V with D-051 (and Amendments 1–3) and D-052; index and open items updated | A-3 (merge of PR #3) |
-| 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11; ChatGPT's re-review recorded (D-049 Amendment 1, D-052 review status, open items) | Pending: merge by Corbin |
+| 5 | 2026-10-21 | Claude | A-3, Q11, Q12 added to §4; Q12 note on the Q9 interpretation; D-051 Amendment 3 cites Q11; ChatGPT's re-review recorded (D-049 Amendment 1, D-052 review status, open items) | A-4 (merge of PR #4) |
+| 6 | 2026-10-21 | Claude | Q13, Q14 and A-4 added to §4; D-049 Amendments 2 and 3 (pennation ruling, positivity approval; labels stored in the schema); D-049 Accepted; verification statuses of D-024 to D-035, D-049, D-050, D-052 updated after ChatGPT's independent execution (PR #7), scoped to software; Q15, Q16 added: D-051 and D-052 Accepted | Q13 to Q16; pending merge by Corbin |
 
 ## 8. References
 
@@ -1234,4 +1249,4 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - Ward SR, Eng CM, Smallwood LH, Lieber RL. Are current measurements of lower extremity muscle architecture accurate? *Clin Orthop Relat Res.* 2009;467(4):1074–1082.
 - Wu G, et al. ISB recommendation on definitions of joint coordinate system — Part I: ankle, hip, and spine. *J Biomech.* 2002;35(4):543–548.
 - Design documents (`docs/design/`): *Musculoskeletal Digital Twin Ontological Framework*; *LB-AO v0.1 Pelvis & Hip Complex Ontology*; *LB-AO Source & Evidence Standard*; *LB-AO QPS Rationale*.
-- Review documents (`docs/reviews/`): *Technical Review of LB-AO* (Claude); *LB-AO: Response to the Technical Review* (ChatGPT); *Review of DECISIONS.md for Claude* (ChatGPT); *Claude Response to the DECISIONS.md Review* (Claude), all dated 2026-10-07. D-051 proposal revisions 1 and 2 (Claude) and *D-051 — ChatGPT Review and Recommended Amendments*, dated 2026-10-20. *Phase A Independent Review* (ChatGPT) and *Response to ChatGPT's Phase A Review* (Claude), dated 2026-10-21.
+- Review documents (`docs/reviews/`): *Technical Review of LB-AO* (Claude); *LB-AO: Response to the Technical Review* (ChatGPT); *Review of DECISIONS.md for Claude* (ChatGPT); *Claude Response to the DECISIONS.md Review* (Claude), all dated 2026-10-07. D-051 proposal revisions 1 and 2 (Claude) and *D-051 — ChatGPT Review and Recommended Amendments*, dated 2026-10-20. *Phase A Independent Review* (ChatGPT), *Response to ChatGPT's Phase A Review* (Claude), *re-review of D-052* and its *execution addendum* (ChatGPT), all dated 2026-10-21.
