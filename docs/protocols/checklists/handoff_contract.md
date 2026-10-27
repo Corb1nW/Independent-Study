@@ -1,5 +1,7 @@
 # Builder PR handoff contract — v0.2 candidate
 
+*Author: ChatGPT; two lines amended by Claude [G2, G4].*
+
 Fill this template **in the PR description** (authoritative copy). For a no-PR fallback, state the exact fallback artifact and location.
 
 ```text
@@ -12,6 +14,7 @@ Verified main SHA / base branch and full base SHA:
 Working branch and full review-candidate SHA:
 Working tree state / uncommitted, untracked or external inputs:
 Changed files and requirement-to-change map:
+Choices made under D-047 delegation, with basis:
 Decisions consulted / proposed IDs / collisions checked:
 Scientific assumptions, units, provenance, demo-data labels:
 Compatibility, interfaces and limitations:
@@ -21,7 +24,7 @@ Checks not run and why:
 Scientific validation status and evidence gaps:
 Artifacts / manifests / PR or authoritative fallback location:
 Open issues, blockers and reviewer questions:
-Requested action: ACCEPT / AMEND / REJECT at exact SHA
+Requested reviewer verdict: AGREE / AMEND / DISAGREE at exact SHA (owner decides Accept/Reject)
 Status: READY FOR REVIEW, NOT APPROVED
 ```
 
