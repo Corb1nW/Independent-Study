@@ -1,6 +1,6 @@
 schema:
   id: LB-QPS
-  version: 0.4.0
+  version: 0.5.0
   name: Lower-Body Quantitative Property Schema
   module: pelvis_hip_complex
   purpose: >-
@@ -259,8 +259,12 @@ property_classes:
                  basis: 'operational domain of Hill-type muscle models with a cos(pennation) force projection; a model convention, not an anatomical limit. Revisit when D-037 fixes the force-to-torque representation (D-049 Amendment 2).'}
       maximum_contraction_velocity:
         property_role: parameter
-        definition: Maximum shortening velocity under the specified muscle model; normalization convention must be declared.
+        definition: Maximum shortening velocity under the specified muscle model, in optimal fiber lengths per second; the datum must name the optimal fiber length that normalizes it.
         canonical_unit: optimal_fiber_lengths/s
+        # D-050 caveat, D-055 C3: a populated value must declare its normalizing length.
+        normalization_required:
+          length_property: optimal_fiber_length
+          basis: 'D-050 caveat (ChatGPT review, 2026-10-21); D-055 item C3. A velocity in optimal fiber lengths per second is only meaningful with the fiber length that defines one unit.'
         value_form: scalar
         bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
       physiological_cross_sectional_area:

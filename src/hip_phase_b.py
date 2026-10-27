@@ -3,14 +3,14 @@
 Constant signed moment arm, fixed activation, constant angular acceleration.
 No anatomical/clinical validity is claimed.
 """
-import hashlib
-import json
 import math
-import subprocess
 from pathlib import Path
 
 import yaml
+from .input_gate import require_traceable
 from .quantitative import QuantitativeSchema
+from .run_manifest import (file_hash, manifest_header, serialize_manifest,  # noqa: F401
+                           verify_inputs)
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = "LB:MUS:GLUTEUS_MAXIMUS_R"
@@ -24,10 +24,6 @@ UNITS = {
     "q_min_rad": "rad", "q_max_rad": "rad",
     "step_s": "s", "duration_s": "s", "event_tolerance_s": "s",
 }
-
-
-def file_hash(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def finite(value, field):
@@ -129,6 +125,7 @@ def resolve_inputs(config_path, scenario_path, root=ROOT):
         or datum["unit"] != "N"
         or datum["applicability"].get("model_id") != "ARNOLD_2010_LOWER_LIMB"):
         raise ValueError("incorrect source force scope, unit or definition")
+    traceability = require_traceable(schema, dataset, [BASE_ID])  # D-055 C4
     base_value = finite(datum["value"], "Fmax")
     if base_value <= 0:
         raise ValueError("Fmax must be positive")
@@ -140,7 +137,8 @@ def resolve_inputs(config_path, scenario_path, root=ROOT):
     return {
         "config": config, "params": p, "scenario": scenario, "observation": datum,
         "baseline_fmax_N": base_value, "right_fmax_N": right_force,
-        "left_fmax_N": left, "source_dataset_hash": file_hash(path),
+        "left_fmax_N": left, "input_traceability": traceability,
+        "source_dataset_hash": file_hash(path),
         "config_hash": file_hash(config_path), "scenario_hash": file_hash(scenario_path),
         "input_paths": {"config": str(Path(config_path).resolve()),
                         "scenario": str(Path(scenario_path).resolve()),
@@ -212,52 +210,11 @@ def simulate(inputs, *, step_override_s=None):
 
 
 def verify_git_inputs(root, paths, commit_sha, *, expected_hashes=None):
-    """Fail closed in a Git checkout unless every consumed file equals HEAD.
-
-    Reject external, untracked, modified, or post-resolution-changed inputs.
-    In an archive without git metadata return an explicitly unverified status.
-    Git errors in a checkout are errors, not permission to claim verification.
-    """
-    root = Path(root).resolve()
-    if not (root / ".git").exists():
-        return "caller_supplied_sha_unverified_archive_or_no_git"
-    def git(*args):
-        return subprocess.run(["git", *args], cwd=root, capture_output=True, check=True)
-    try:
-        actual_root = Path(git("rev-parse", "--show-toplevel").stdout.decode().strip()).resolve()
-        head = git("rev-parse", "HEAD").stdout.decode().strip()
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise ValueError("cannot verify Git checkout provenance") from exc
-    if actual_root != root or head != commit_sha:
-        raise ValueError("Git root or HEAD differs from claimed snapshot")
-    checked = []
-    for name, value in paths.items():
-        path = Path(value).resolve()
-        if not path.is_relative_to(root):
-            raise ValueError(f"{name}: input path outside repository: {path}")
-        relative = path.relative_to(root).as_posix()
-        try:
-            # Git's working-tree filters (including CRLF -> LF text normalization)
-            # must be used for comparing with the committed object. Raw-byte equality
-            # would reject clean Windows checkouts with core.autocrlf=true (D1).
-            committed_oid = git("rev-parse", f"HEAD:{relative}").stdout.decode().strip()
-            working_oid = git("hash-object", "--", relative).stdout.decode().strip()
-            current_bytes = path.read_bytes()
-        except (OSError, subprocess.CalledProcessError) as exc:
-            raise ValueError(f"{name}: not a readable tracked input at HEAD: {relative}") from exc
-        if working_oid != committed_oid:
-            raise ValueError(f"{name}: working file differs from HEAD: {relative}")
-        if expected_hashes and name in expected_hashes:
-            if hashlib.sha256(current_bytes).hexdigest() != expected_hashes[name]:
-                raise ValueError(f"{name}: changed since input resolution")
-        checked.append(relative)
-    return "verified_git_head_and_inputs"
+    """Status-only wrapper kept for Phase B callers; see ``run_manifest.verify_inputs``."""
+    return verify_inputs(root, paths, commit_sha, expected_hashes=expected_hashes)[0]
 
 
 def run_manifest(inputs, result, commit_sha):
-    if not isinstance(commit_sha, str) or len(commit_sha) != 40 or any(
-            ch not in "0123456789abcdef" for ch in commit_sha):
-        raise ValueError("exact 40-character commit SHA required")
     provenance_paths = dict(inputs["input_paths"])
     provenance_paths.update({
         "schema": str(ROOT / "ontology/quantitative_schema.yaml"),
@@ -267,15 +224,14 @@ def run_manifest(inputs, result, commit_sha):
         "ontology_loader": str(ROOT / "src/ontology.py"),
         "structural_model": str(ROOT / "src/datum_model.py"),
         "runner": str(ROOT / "tools/run_phase_b.py"),
+        "run_manifest": str(ROOT / "src/run_manifest.py"),
+        "input_gate": str(ROOT / "src/input_gate.py"),
     })
-    status = verify_git_inputs(ROOT, provenance_paths, commit_sha, expected_hashes={
+    manifest = manifest_header(ROOT, provenance_paths, commit_sha, expected_hashes={
         "config": inputs["config_hash"], "scenario": inputs["scenario_hash"],
         "dataset": inputs["source_dataset_hash"]})
     obs = inputs["observation"]
-    return {
-        "status": "UNREVIEWED DEMONSTRATION — NOT CLINICALLY/PHYSIOLOGICALLY VALIDATED",
-        "commit_sha": commit_sha, "commit_provenance_status": status,
-        "verified_input_files": sorted(provenance_paths) if status.startswith("verified_") else [],
+    manifest.update({
         "omitted_physics": inputs["config"]["omitted_physics"],
         "decision": "D-053", "model_id": inputs["config"]["model_id"],
         "coordinate_id": COORD, "frame_id": FRAME,
@@ -307,9 +263,7 @@ def run_manifest(inputs, result, commit_sha):
             "illustrative_ward_mean_deg": 21.9,
             "conditional_overstatement": "about 7.8% if Fmax denotes fiber force; NOT a verified Arnold correction",
             "status": "pennation not consumed in dynamics"},
+        "input_traceability": inputs["input_traceability"],
         "simulation": result,
-    }
-
-
-def serialize_manifest(value):
-    return json.dumps(value, indent=2, sort_keys=True, allow_nan=False)+"\n"
+    })
+    return manifest

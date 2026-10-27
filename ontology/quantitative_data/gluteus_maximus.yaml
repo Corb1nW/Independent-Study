@@ -1,6 +1,6 @@
 dataset:
   id: LB-QD:GLUTEUS_MAXIMUS
-  version: 0.3.0
+  version: 0.3.1
   description: Evidence-traceable baseline quantitative template for gluteus maximus.
   bilateral_policy:
     assumption: symmetric_baseline
@@ -224,7 +224,19 @@ observations:
           selection_rationale: This datum reproduces the maximum isometric force published by Arnold et al., which was computed from Arnold's model PCSA. Using Ward's PCSA would produce a value no source reports.
           downstream_effect: Ward's PCSA with the same 61 N/cm^2 specific tension gives 2037.4 N, about 10% above 1852.6 N.
           decision: D-027
-      reviewer_notes: Reference-muscle template for LB-AO.
+      reviewer_notes: >-
+        Reference-muscle template for LB-AO. Source check of what this force means
+        (D-055 C2; Claude, 2026-10-27, against PMC2903973; recorded in D-056, Proposed):
+        Arnold et al. compute peak force as PCSA x 61 N/cm^2 with PCSA = volume /
+        optimal fiber length (no pennation term; Table 1, note a), and use a Zajac
+        Hill-type model with pennation angle as a separate parameter (Methods). The
+        paper does not say explicitly whether peak force acts along the fibers or the
+        tendon. In OpenSim's Hill-type muscle models maximum isometric force is a fiber
+        property and fiber force is projected onto the tendon by cos(pennation); read
+        together, this value is interpreted as a whole-muscle maximum FIBER force. In the
+        model it is split over three compartments by Delp 1990 proportions (glmax1-3:
+        546.1, 780.5, 526.1 N; pennation 21.1, 21.9, 22.8 deg; Table 1, note g). Those
+        compartment values are NOT stored in this dataset.
     derivation:
       inputs:
         - {name: model_pcsa, value: 30.37, unit: 'cm^2', source_id: SRC:ARNOLD_2010}

@@ -27,6 +27,8 @@ Reference fields checked (review finding A2):
   derivation.inputs[].source_id (structured)  -> source registry
   quality.value_comparisons[].related_observation -> observation in the same dataset*
   quality.conflicts_with[]                    -> observation in the same dataset*
+  normalization.reference_observation         -> observation in the same dataset* whose
+                                                 property is normalization.length_property (C3)
   (* checked when validate_datum() is given the dataset; integrity check always does)
 Free-text descriptions, not references, and therefore not checked:
   method.derived_from[], derivation.inputs[] given as plain strings.
@@ -246,6 +248,7 @@ class QuantitativeSchema:
         errors += self._bounds_errors(d, definition, populated)
         errors += self._reference_errors(d, definition, populated)
         errors += self._observation_reference_errors(d, dataset)
+        errors += self._normalization_errors(d, definition, populated, dataset)
         return errors
 
     def _unit_errors(self, d, definition, populated):
@@ -341,6 +344,44 @@ class QuantitativeSchema:
             if other:
                 errors.append(f"coordinate {coord} is {ids[coord]['side']}-sided but the record also targets "
                               f"{sorted(str(s) for s in other)} entities; split the record per side")
+        return errors
+
+    def _normalization_errors(self, d, definition, populated, dataset):
+        """Normalized quantities name their normalizing length (D-050 caveat, D-055 C3).
+
+        A populated datum of a property with `normalization_required` must state
+        `normalization.length_property` (as the schema requires) and
+        `normalization.reference_observation`. The reference must resolve in the same
+        dataset (current ID or alias) to an observation of that length property;
+        resolution is checked when the dataset is given. Properties without the
+        requirement may not carry a normalization block.
+        """
+        required = definition.get("normalization_required")
+        norm = d.get("normalization")
+        if not required:
+            return [f"normalization is not defined for {definition['property_id']}"] if norm else []
+        errors = []
+        if norm is None:
+            if populated:
+                errors.append(f"populated {definition['property_id']} must declare normalization "
+                              f"(length_property: {required['length_property']})")
+            return errors
+        if norm.get("length_property") != required["length_property"]:
+            errors.append(f"normalization.length_property must be {required['length_property']}, "
+                          f"not {norm.get('length_property')}")
+        ref = norm.get("reference_observation")
+        if populated and not ref:
+            errors.append("populated normalized datum must name normalization.reference_observation")
+        if ref and dataset is not None:
+            try:
+                ids = self.resolve_observation_ids(dataset, ref)
+            except KeyError:
+                return errors + [f"normalization.reference_observation {ref} does not exist in the dataset"]
+            for oid in ids:
+                pid = dataset["observations"][oid].get("property_id")
+                if self.canonical_property_id(pid) != required["length_property"]:
+                    errors.append(f"normalization.reference_observation {oid} is {pid}, "
+                                  f"not {required['length_property']}")
         return errors
 
     def _observation_reference_errors(self, d, dataset):
