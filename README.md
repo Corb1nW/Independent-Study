@@ -9,9 +9,11 @@ The goal is to take my experience with dynamic system and control theory and app
 - **`Notes`, `Research Materials`, `References/`:** course notes, research links and the design documents.
 - **`Version Models/`:** the original v0.1 to v0.5 uploads (September 2026), kept as history. The root code supersedes them.
 
-## LB-AO v0.5 — Gluteus Maximus Reference Muscle
+**Current status:** see `PROJECT_STATE.md` (Phase B, the hip-only model, is complete; Phase C is next). The section below is the v0.5 release description the root code grew from; its install, demo, test and integrity commands still apply.
 
-This release turns gluteus maximus into the reference template for future LB-AO muscle modules.
+## LB-AO v0.5 — Gluteus Maximus Reference Muscle (origin of the root code)
+
+This release turned gluteus maximus into the reference template for future LB-AO muscle modules.
 
 ### Core rules implemented
 

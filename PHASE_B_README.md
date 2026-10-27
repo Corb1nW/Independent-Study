@@ -1,5 +1,7 @@
 # Phase B — right-hip data-to-dynamics proof (D-036 / D-053)
 
+> **Status (added 2026-10-27 by Claude, records cleanup):** this file is the builder's original Phase B submission text and is kept as written. The build has since been reviewed by Claude (AMEND, AMEND, AGREE), accepted by Corbin at `354984c` (Q19) and merged (A-5). The official run is `results/phase_b/2026-10-27_phase_b_runs_6c8b6ef.json`. Statements below that the build is unreviewed describe the state at submission. Validity limits still apply: these are not anatomical, physiological or clinical predictions.
+
 **Builder submission; unreviewed by Claude. Outputs are NOT validated anatomical, physiological or clinical predictions.** Corbin controls merge.
 
 The pelvis is a fixed reference frame (LB:FRAME:PELVIS); thigh is the single moving effective body in the sagittal plane. The right hip angle (LB:DOF:HIP_FLEX_EXT_R) has flexion-positive q and an explicit model-neutral reference pose. All numbers in config/phase_b_hip.yaml, including the constant 0.04 m extension arm, 1 kg*m^2 effective thigh inertia and activation 0.02, are **round demonstration assumptions** and each has a rationale and unit. No source claims support them as anatomical measurements. The actual force source is the validated Arnold 2010 whole-gluteus model observation (LB-QD:GMAX:FMAX:ARNOLD2010); whether Arnold Fmax means fiber or effective tendon force needs later scientific verification. The Phase B law is a deliberately simplified gain, not a Hill force-length-velocity formulation.
