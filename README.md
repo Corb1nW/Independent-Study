@@ -66,6 +66,7 @@ Validation runs in layers (DECISIONS.md D-035): structural (`src/datum_model.py`
 
 - `docs/DECISIONS.md`: every decision, its defense, and how disagreements between collaborators were resolved.
 - `PROJECT_STATE.md`: what currently exists, what has been verified, and the next task.
+- `docs/skills/`: the Builder and Reviewer role skills that both AI models follow, whichever role each holds.
 
 ### Important modeling boundary
 
