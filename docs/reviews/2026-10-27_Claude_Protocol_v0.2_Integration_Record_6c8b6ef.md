@@ -86,7 +86,7 @@ These are not yet in `docs/DECISIONS.md` because open PR #15 edits that file (G6
 | Q24 | 2026-10-27 18:54 −04:00 | “Q-A — APPROVED: Use AGREE / AMEND / DISAGREE as the reviewer verdict terminology.” | Q-A (G4) | Reviewer verdicts AGREE / AMEND / DISAGREE; Accept and Reject reserved for owner decisions (CORE) |
 | Q25 | 2026-10-27 18:54 −04:00 | “Q-B — APPROVED WITH CLARIFICATION: Either model may prepare records updates. Owner confirmation applies to the specific quoted approval or decision reviewed in context and does not automatically establish independent verification of unrelated technical claims, implementation statuses, or test results.” | Q-B (G10) | CORE “Records updates” rule, as amended with this clarification |
 
-**Correction C-P1 (2026-10-27, Claude): unconfirmed quotes in `772dce9`.** Commit `772dce9` (18:53:22 −04:00) put two statements dated 18:53 in these rows: “1) we should keep the semantics as clear as possible, only I can accpet [sic] or reject” and “2) I approve”. It names Claude as author and this session as its source. This session's transcript has no such statements: the only owner message at 18:53 was “v”, and this session did not create that commit. Its source is therefore **not confirmed** (D-042), and Claude did not independently check its content. The rows above now quote Corbin's 18:54 message verbatim. The 18:53 text is kept here, not deleted (D-044). **Corbin: please say whether you wrote those statements, and where.**
+**Correction C-P1 (2026-10-27, Claude).** Commit `772dce9` recorded two statements as Corbin's that this session could not confirm. At Corbin's direction (2026-10-27 19:05 −04:00: “Delete those two statements”), they are removed from this record. The rows above quote his 18:54 message verbatim. The earlier text remains only in git history.
 
 **Scope of Q24 and Q25.** They approve these two rules inside the candidate. They do not adopt the protocol: that still needs ChatGPT's review and Corbin's approval of a pinned SHA (D-054).
 
@@ -130,7 +130,8 @@ All source files use LF line endings, so the Git blobs equal the source bytes un
 
 - ~~**Q-A (owner):** reviewer verdicts AGREE / AMEND / DISAGREE (G4)?~~ Approved: Q24.
 - ~~**Q-B (owner):** approve the records-update rule (G10)?~~ Approved with clarification: Q25; CORE amended.
-- **Provenance of `772dce9`:** not confirmed (Correction C-P1). Open until Corbin answers.
+- **`772dce9` statements:** removed at Corbin's direction (Correction C-P1). Closed.
+- **Simplified skill (2026-10-27 19:05 −04:00):** Corbin asked for “a straightforward document to give to both the models under the skill tab for the building skill”. It is `docs/skills/independent-study-builder/SKILL.md`, a self-contained condensation of this candidate. The full candidate stays here as history and reference.
 - **Observation (G3):** at `6c8b6ef`, `PROJECT_STATE.md` still describes Phase B as awaiting review, and the D-036/D-053 index rows say "Not started". Open PR #15 corrects both. This does not affect this task, so under the amended rule it is reported, not fixed here.
 - **Merge order:** PR #15 first. Then the proposed records in §4 go in a records PR, with IDs rechecked.
 - **Not done:** no protocol file is installed as a skill or as project instructions; no decision status changed.
