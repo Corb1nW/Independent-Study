@@ -3,8 +3,8 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 11 (2026-10-27), Phase B build accepted and merged (Q19, A-5); official Phase B run recorded. See §7 for revision history.
-**Covers:** Design decisions from the original work through Phase B (hip-only model)
+**Revision:** 12 (2026-10-27), role skills recorded (D-054); slim Phase C scope proposed (D-055); Q20–Q28 and A-6 added. See §7 for revision history.
+**Covers:** Design decisions from the original work through Phase B (hip-only model) and the proposed Phase C scope
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
 ---
@@ -117,6 +117,26 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q19** | 2026-10-21, shortly after 10:14 (exact minute not captured) | Selected “Approve and I'll merge (Recommended)” | Multiple-choice question from Claude: “Do you approve ChatGPT's Phase B hip model build (PR #13) at commit 354984c?” Alternatives offered: approve with changes; not yet. Asked after Claude's second re-review (AGREE) | Phase B build accepted **at `354984c20a09aa406f8b1020675e70318d728f93`**; D-036 and D-053 implemented |
 | **A-5** | 2026-10-27 18:17:43 and 18:17:58 (actions) | Merged PR #13 (`29e10d0`, Phase B build, head `354984c`) and PR #14 (`6c8b6ef`, Claude's three build reviews) | Phase B build | Acceptance of the merged revisions (D-051 item 8) |
 | **A-2** | 2026-10-21 08:24 (action) | Created repository ruleset “main”: pull request required for the default branch, 0 approvals, merge commits only, deletion and force-push blocked; status Active | D-051 pilot step P2 | D-051 item 2. Checked by Claude through the GitHub API at 08:26. |
+| **Q20** | 2026-10-27 18:27 | “I want to generate a set skill that both ChatGPT and Clause [sic] can use to keep our building and checking roles consistent as we chnage [sic] who does them. Here is the proposal for the builder role” | Shared ChatGPT's Builder Skill draft v0.1 | Origin of the role-skill work (D-054) |
+| **Q21** | 2026-10-27 18:36 | “Chat built it and claude reviewed it” | Claude asked who authored the v0.1 draft | v0.1 authored by ChatGPT |
+| **Q22** | 2026-10-27 18:36 | “yes” | Claude: “Should [v0.2] follow the same pattern, with ChatGPT drafting and me reviewing?” | v0.2: ChatGPT drafts, Claude reviews |
+| **Q23** | 2026-10-27 18:40 | “I want you to proceed with repository implementation and develop the complementary Reviewer Skill.” … “ChatGPT will independently review your Reviewer Skill, your changes to shared governance, and the integrated protocol. Neither model should classify its own work as independently verified.” … “Important: Do not merge or activate the new protocol yet.” … “Final adoption remains subject to my approval.” | Delivery of ChatGPT's v0.2 candidate | Claude integrates and drafts the Reviewer skill; no activation without Corbin |
+| **Q24** | 2026-10-27 18:54 | “Q-A — APPROVED: Use AGREE / AMEND / DISAGREE as the reviewer verdict terminology.” | Owner question Q-A | Reviewer verdicts AGREE / AMEND / DISAGREE; Accept and Reject reserved for Corbin (D-054) |
+| **Q25** | 2026-10-27 18:54 | “Q-B — APPROVED WITH CLARIFICATION: Either model may prepare records updates. Owner confirmation applies to the specific quoted approval or decision reviewed in context and does not automatically establish independent verification of unrelated technical claims, implementation statuses, or test results.” | Owner question Q-B | Records-update rule (D-054) |
+| **Q26** | 2026-10-27 19:05 | “Delete those two statements” and, in the same exchange, a request for “a straightforward document to give to both the models under the skill tab for the building skill” (fragment as recorded; the full message is not available to this log) | Two statements in commit `772dce9` that the recording session could not confirm; the long protocol candidate | Correction C-P1 in the integration record; the one-page Builder skill (D-054). The Reviewer skill followed at Corbin's request at 19:07 (reported in commit `0a1d78d`; not quoted) |
+| **A-6** | 2026-10-27 19:25:52 and 19:26:31 (actions) | Merged PR #15 (`ea22835`, Phase B official run and close-out) and PR #17 (`9cc3963`, role skills in `docs/skills/`). PR #16 (protocol candidate) was closed without merging | Phase B close-out; role skills | Acceptance of the merged revisions (D-051 item 8); D-054 |
+| **Q27** | 2026-10-27 19:28 | “Alright now that we have the skills handled lets do quick re-group. I want you to go through the github to make sure everything makes sense and then we will discuss how we move forward” | Opening of the regroup session. Direct: this session | Repository audit at `9cc3963`; treats the skills as settled (D-054) |
+| **Q28** | 2026-10-27 19:35 | “For the cleanup I would say a lot of it housekeeping stuff, so I would do whatever  you need to preserve the right amount of information for you to effectively work. If something could be importnat it should be preserved. Moving forward with phase c with you as the builder and I approve a slimer phase c as I want to get closer to actually having a model to show off” (spelling as typed: “importnat” = important, “slimer” = slimmer; double space after “whatever” as typed) | Claude's audit findings and its suggestion to narrow Phase C to what Phase B consumed and Phase D needs. Direct: this session | Housekeeping delegated with a preservation rule; **Phase C roles: Claude builds**; a slimmer Phase C approved in principle (D-055) |
+| **Q29** | 2026-10-27, between 19:35 and 19:43 (exact minute not captured) | Selected “Not yet” · “Include it (Recommended)” · “Build in parallel (Recommended)” | Three multiple-choice questions from Claude: (1) “Do you approve the slim Phase C scope (D-055, items C1–C5) as written in PR #18?” (alternatives: approve; approve with changes); (2) “Include C6, a plot of hip angle over time comparing the baseline and perturbed Phase B runs?” (alternative: skip); (3) “Should I build Phase C while ChatGPT reviews PR #18, or wait until it's reviewed and merged?” (alternative: wait). Direct: this session | D-055 stays Proposed; **C6 is in the proposed scope**; answers (1) and (3) conflict, so Claude has asked which applies (interpretation below) |
+| **Q30** | 2026-10-27 19:43 | “check chats response” | After Claude asked Corbin to resolve the conflict in Q29 | Claude responds to ChatGPT's PR #18 review (R18-01 to R18-04). Does not resolve the Q29 conflict. Direct: this session |
+
+**Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
+
+**Editorial marks.** The “[sic]” marks in Q7, Q13 and Q20 are editorial insertions made when those quotes were first recorded; they are kept as history (Rule 4). From revision 12, spelling notes go outside the quotation marks (ChatGPT review R18-01).
+
+**Interpretation of Q29 (revision 12).** Answer (1) keeps D-055 Proposed until ChatGPT has reviewed it; answer (3) asks Claude to build while ChatGPT reviews. Claude has not started the Phase C build and has asked Corbin which applies (Rule 8; Builder skill rule 2). Until he answers, D-055 stays Proposed and no Phase C code is written.
+
+**Interpretation of Q28 (revision 12).** (1) Claude builds Phase C. The reviewer is not named; Claude reads it as ChatGPT, following the alternation of Q17. (2) “I approve a slimer phase c” approves narrowing Phase C in principle; the exact scope is D-055, which stays Proposed until Corbin approves it. (3) Housekeeping is delegated, with the rule that anything possibly important is preserved. **Corbin may correct this interpretation.**
 
 **Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
 
@@ -189,6 +209,9 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-052 | Phase A review response: source scope, reference checks, admissibility wording | ChatGPT (A1–A4); Claude | Accepted (Q16) | Implemented | Independently checked (software) |
 | **Part VI — Phase B model choices** | | | | | |
 | D-053 | Constant signed hip-extension moment arm for demonstration | ChatGPT; reviewed by Claude | Accepted (Q18) | Implemented (PR #13, Q19) | Independently checked (software) |
+| **Part VII — Role skills and Phase C scope** | | | | | |
+| D-054 | Shared one-page role skills (Builder, Reviewer) | ChatGPT (draft); Claude; Corbin | Proposed (in use since A-6; confirmation requested) | Implemented (`docs/skills/`, PR #17) | Not applicable |
+| D-055 | Slim Phase C: only what Phase B consumed and Phase D needs | Claude (builder, Q28) | Proposed | Not started | Not checked |
 
 ---
 
@@ -1269,12 +1292,76 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 ---
 
+## Part VII — Role skills and Phase C scope
+
+**Date:** 2026-10-27
+**Records:** protocol candidate and its reviews, kept as history in `docs/archive/protocol-v0.2-candidate/` and `docs/reviews/2026-10-27_*` (from closed PR #16, branch `protocol/claude-v0.2-integration`, head `0a1d78d`); role skills in `docs/skills/` (PR #17).
+
+### D-054  Shared one-page role skills (Builder, Reviewer)
+- **Decision status:** Proposed. Three facts are kept separate: (1) the files were merged by Corbin (A-6); (2) Q27 calls the skills “handled”; (3) no statement on record adopts them as a decision, or approves their two new rules (open concerns). Corbin's explicit confirmation is requested (Rule 2; ChatGPT review R18-02).
+- **Implementation status:** Implemented: `docs/skills/independent-study-builder/SKILL.md`, `docs/skills/independent-study-reviewer/SKILL.md`, `docs/skills/README.md` (merged as `9cc3963`)
+- **Verification status:** Not applicable (process rules)
+- **Date:** 2026-10-27
+- **Proposed by:** ChatGPT (Builder draft v0.1, Q21; protocol v0.2 candidate, Q22); Claude (Reviewer skill, integration, condensation, Q23, Q26) · **Reviewed by:** Claude reviewed ChatGPT's Builder drafts (`docs/reviews/2026-10-27_Claude_Review_Builder_Skill_v0.1.md`, `…_Claude_ReReview_Builder_Skill_Response.md`, `…_Claude_Review_Builder_Protocol_v0.2_629e66d.md`). ChatGPT's review of Claude's Reviewer skill and the condensed skills is **not on record**.
+- **Approval basis:** Q24 and Q25 (two rules, approved verbatim); Q26 (request for the one-page form); A-6 (merge of PR #17). Adoption of the whole: pending, requested by this entry.
+- **Evidence:** the records above. Installation: Claude's installed copies in session `session_01QzLsFRiqiXchuYRz3fgwnr` were compared with the repository on 2026-10-27 (Builder identical; Reviewer differs only by quote marks around `name` in the front matter). ChatGPT's installation is not observable from the repository or from Claude's session and is not claimed.
+- **Amends / supersedes:** supplements D-041 (build/review protocol), D-047 (delegation), D-048 (handoff). Supersedes the protocol v0.2 candidate, which was never adopted (Q23).
+- **Phase:** All
+- **Open concerns:** (1) ChatGPT has not reviewed Claude's Reviewer skill. (2) Two rules in the skills are new and should be confirmed explicitly: the `Authored by (model)` / `Reviewed by (model)` line in commits and PRs, and the exemption from review for small documentation wording fixes.
+
+**Context.** Roles alternate between ChatGPT and Claude (Q17, Q28). Each phase so far re-negotiated how to build and review. Corbin wanted one set of rules both models follow (Q20). A long protocol was drafted and reviewed (`docs/archive/protocol-v0.2-candidate/`); Corbin found that process had become a loop and asked for one-page documents for the models' skill sections (Q26).
+
+**Decision.** `docs/skills/` holds the master copies of a Builder skill and a Reviewer skill. Corbin installs the same files in both models. The skills restate existing decisions (D-041, D-045, D-047, D-048, D-051) as a checklist and add: reviewer verdicts **AGREE / AMEND / DISAGREE**, with Accept and Reject reserved for Corbin (Q24); either model may prepare records updates, and owner confirmation covers only the quoted approval it was given for, not unrelated technical claims (Q25); each commit, PR and review names its model; a review is pinned to one full SHA and recorded in one file; small wording fixes to ordinary documentation may skip review when stated, never for `DECISIONS.md`, schemas, data or the skills. If a skill conflicts with an accepted decision, the decision wins.
+
+**Defense.** Every rule except the last two new ones traces to an accepted decision or to Q24/Q25. One page per role is short enough to be followed every time, which the long candidate was not (judgment, Corbin's: Q26). Keeping master copies in the repository makes skill changes reviewable through PRs like any other change.
+
+**Alternatives.** (a) Adopt the full v0.2 protocol (rejected by Corbin as too elaborate: Q26). (b) No written role rules (rejected: Q20). The full candidate is kept in the archive as reference for any rule the one-page skills leave implicit.
+
+**Consequences.** Skill changes go through a PR and are reinstalled in both models. Process questions are answered from the skills first, then from the decisions they cite.
+
+### D-055  Slim Phase C: only what Phase B consumed and Phase D needs
+- **Decision status:** Proposed (Corbin approved narrowing in principle, Q28; this exact scope needs his approval)
+- **Implementation status:** Not started
+- **Verification status:** Not checked
+- **Date:** 2026-10-27
+- **Proposed by:** Claude (Phase C builder, Q28) · **Reviewed by:** ChatGPT (requested)
+- **Approval basis:** pending; Q28 for the direction
+- **Evidence:** `PROJECT_STATE.md` “Carried into Phase C from Phase B”; Phase B re-review notes (N4); D-049 Amendment 2; D-050 caveat; D-053 Amendment 1 B4; `src/hip_phase_b.py` (manifest status string, SHA256 raw-byte hashes)
+- **Amends:** D-040, Phase C row (contents and exit criterion); D-039 (what “Phase C” covers)
+- **Phase:** C
+- **Open concerns:** C2 is a source check whose result may change how Phase D's force law is written. C4 narrowed after ChatGPT's review (R18-03): it checks traceability, not source support. C6 included by Corbin (Q29).
+
+**Context.** D-040's Phase C lists nine governance items (release manifest, changelog, compatibility policy, ID migrations, claim-level anatomy evidence, canonical relations, laterality semantics, applicability, four-stage validation, generalized provenance). Most have no consumer yet. Corbin wants to reach a model he can demonstrate (Q28), and asked for a slimmer Phase C. D-039's own defense says Phase C should be grounded in what the running model actually depends on.
+
+**Decision.** Phase C contains only:
+
+| # | Item | Why now | Done when |
+|---|---|---|---|
+| C1 | **Reusable run manifest.** Move manifest code out of `hip_phase_b.py` into a shared module; record git blob IDs for each input next to SHA256 (N4); replace the fixed `status` string with factual fields (what the run is; that physiological and clinical validity is not established; review state is recorded in `DECISIONS.md`, not asserted by the run) | Phase D needs the same manifest; N4 makes hashes platform-dependent | Phase B runner produces an equivalent manifest through the shared module; tests cover blob IDs on LF and CRLF checkouts; the Phase B official run is reproduced at the new commit with identical numbers |
+| C2 | **What Arnold 2010's `Fmax` means.** Check the primary source: is it a fiber force (so a Hill-type law multiplies by cos(pennation)) or already along the tendon, and how are gluteus maximus compartments aggregated | Any Hill-type force law in Phase D depends on it (D-049 Amendment 2, D-053 B4) | A source-verified note recorded on the datum and in a D-049/D-053 amendment, proposed to Corbin. No parameter value changes in Phase C |
+| C3 | **Contraction-velocity normalization declared** in the schema before use (D-050 caveat) | Phase D's force-velocity relation will use it | Schema states the normalizing length; validator rejects a populated velocity without it; tests |
+| C4 | **Traceability gate for model inputs.** Given the observations a model consumes, check per input: (a) the ID resolves (directly or by alias) and the datum passes `validate_datum` with its dataset; (b) it has a usable value (not `unresolved`; `assumed` only with its rationale, as validation already requires); (c) at least one source claim whose `source_id` resolves in the registry and whose `supports` list is non-empty; (d) the stored value is tied to that claim, either `value_directly_reported: true` or a `transformation_history` whose last step outputs the stored value and unit; (e) applicability is declared, including `model_id` for `model_derived` data. **Scope limit:** this establishes traceability to a declared source claim, not that the source actually supports the value; `supports` labels are free text with no machine link to the value. Whether a source supports a value stays a human source check (as in D-019 and C2), recorded on the datum | Applies D-039's condition (claim-specific provenance for consumed inputs) as far as software can, without migrating the whole anatomy layer | Function returns pass/fail with a reason per input; a failing test for each of (a)–(e); Phase B inputs pass; the report states the scope limit |
+| C5 | **Growth test.** A test adds a small knee module (segment, joint DOF, a biarticular muscle reference) in a temporary copy and checks that existing IDs, aliases, evidence, validators, the integrity check and the Phase B results are unchanged | Tests D-040's exit criterion directly instead of building governance for it | Test passes; anything it shows would break is fixed or proposed |
+| C6 | **Result plot** (included by Corbin, Q29). A script that draws hip angle against time for baseline and perturbed runs from a manifest | Something to show (Q28); presentation only, no new science | Figure generated from the official manifest, with the manifest's validity statement on it |
+
+**Deferred, each to the point where something first needs it:** release manifest, changelog and compatibility policy (D-033) to the first versioned release; broad claim-level anatomy evidence migration (only consumed inputs are gated, C4); canonical relations and derived inverses (D-030), domain/range rules (D-029) and laterality type/instance semantics (D-032) to the first query or one-sided condition that needs them (Phase E at the latest); deferred-attachment records to when the knee is added (Phase D); entity-ID aliases to the first renamed entity (C5 checks the existing observation and property aliases); the full simulation-readiness stage (C4 is its minimal form). D-028 and D-038 remain Phase E.
+
+**Exit criterion.** C1–C6 done with tests; the growth test passes; the Arnold `Fmax` meaning is recorded with its source; reviewed by ChatGPT and accepted by Corbin. Phase D (planar squat) may then start.
+
+**Defense.** Each item has a named consumer in Phase B or Phase D. Deferred items keep the scheduled home D-039 promised (“nothing is dropped”); only their trigger changes from a phase to a first use. This follows D-034's principle (resolution added when a model needs it) and D-039's own defense of Phase C (grounded in what the simulation depends on).
+
+**Alternatives.** (a) D-040's full Phase C: delays Phase D by governance with no consumer (rejected by Corbin's direction, Q28). (b) Skip Phase C and start Phase D: the manifest, force definition and velocity convention would be decided inside the squat build under time pressure, and N4 would carry into every new run.
+
+**Consequences.** Phase C should take one build PR (plus C2's source note). Some D-040 Phase C items have no fixed phase any more; each is listed above with its trigger, and the open-items table tracks them.
+
+---
+
 ## 6. Open items
 
 | Item | Owner | Due |
 |---|---|---|
-| Decide on D-028, D-029, D-030, D-032, D-033, D-038 when their phase arrives (Q8) | Corbin | Phase C / E |
-| ~~Review Phase A against its exit criterion~~ Source-level review done 2026-10-21 (AMEND); **independent execution of the Phase A checks still outstanding** (D-045) | ChatGPT | Before Phase B |
+| Decide on D-028, D-029, D-030, D-032, D-033, D-038 when their phase arrives (Q8). If D-055 is approved, D-029, D-030, D-032 and D-033 are decided on first use (see the D-055 row below); D-028 and D-038 stay in Phase E | Corbin | First use / Phase E (Phase C / E if D-055 is not approved) |
+| ~~Review Phase A against its exit criterion~~ Source-level review done 2026-10-21 (AMEND); independent execution done 2026-10-21 (next rows, PR #7) | ChatGPT | Done |
 | ~~Re-review D-052~~ Done 2026-10-21 at `29e256e`: AGREE (source review) | ChatGPT | Done |
 | ~~Run the checks independently~~ Done 2026-10-21 at `29e256e`: 80 passed, integrity PASSED, 9/9 probes REJECTED (`docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)) | ChatGPT | Done |
 | ~~Accept or amend D-052~~ Accepted, Q16 | Corbin | Done |
@@ -1282,15 +1369,19 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | ~~Review D-049 and D-050~~ Done 2026-10-21: D-049 AMEND, D-050 AGREE with caveats | ChatGPT | Done |
 | ~~Rule on the D-049 pennation bound~~ Option A, Q13 (D-049 Amendment 2) | Corbin | Done |
 | ~~Approve or amend the D-049 positivity bounds~~ Approved, Q14 (D-049 Amendment 3) | Corbin | Done |
-| Revisit the pennation bound when the force-to-torque representation is chosen (D-049 Amendment 2) | Phase B builder, then Corbin | With D-037 |
-| Declare the normalizing fiber length for `optimal_fiber_lengths/s` before any contraction velocity is populated or used (D-050 caveat) | Phase B/C builder | Before use |
+| ~~Revisit the pennation bound when the force-to-torque representation is chosen (D-049 Amendment 2)~~ D-053 consumes no pennation; carried to Phase C item C2 (D-055) | Phase C builder, then Corbin | Phase C |
+| Declare the normalizing fiber length for `optimal_fiber_lengths/s` before any contraction velocity is populated or used (D-050 caveat); Phase C item C3 (D-055) | Phase C builder | Phase C |
 | ~~Decide on D-051~~ Accepted, Q15 | Corbin | Done |
 | ~~Confirm Phase B roles~~ ChatGPT builds, Claude reviews (Q17) | Corbin | Done |
 | Confirm or correct the interpretation of Q8 (§4) | Corbin | Any time |
 | ~~Review and approve D-053~~ Accepted at `ab082f5`, Q18 | Claude, Corbin | Done |
 | ~~Phase B build PR~~ Accepted at `354984c` (Q19), merged (A-5); official run recorded | ChatGPT, Claude, Corbin | Done |
-| Phase C (Foundations, D-040): confirm builder and reviewer roles | Corbin | Start of Phase C |
-| Phase C items carried from Phase B: manifest hashes are raw bytes and so platform-dependent (re-review note N4); the manifest's `status` string is fixed text (“UNREVIEWED DEMONSTRATION…”) that does not reflect review state; revisit the pennation bound and the meaning of Arnold `Fmax` before any Hill-type law (D-049 Amendment 2, D-053 item 7) | Phase C builder | Phase C |
+| ~~Phase C (Foundations, D-040): confirm builder and reviewer roles~~ Claude builds (Q28); reviewer read as ChatGPT (interpretation of Q28) | Corbin | Done |
+| Phase C items carried from Phase B: manifest hashes are raw bytes and so platform-dependent (re-review note N4); the manifest's `status` string is fixed text (“UNREVIEWED DEMONSTRATION…”) that does not reflect review state; revisit the pennation bound and the meaning of Arnold `Fmax` before any Hill-type law (D-049 Amendment 2, D-053 item 7). Now D-055 items C1 and C2 | Phase C builder | Phase C |
+| Approve, amend or reject the slim Phase C scope (D-055; C6 included, Q29) | Corbin, after ChatGPT's re-review | Before the Phase C build |
+| Resolve the Q29 conflict: wait for review, or build Phase C as a BLOCKED draft in parallel | Corbin | Now |
+| Confirm D-054 (role skills), including the two new rules in its open concerns; ChatGPT to review Claude's Reviewer skill | Corbin; ChatGPT | Any time |
+| Items deferred by D-055 to their first use: D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases | Builder of the phase that first needs each | On first use |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
 
 ## 7. Revision history
@@ -1308,6 +1399,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 9 | 2026-10-21 | ChatGPT | D-053 Amendment 1 addresses Claude's PR #11 findings B1–B5 (domain stop, right-only scenario perturbation, ontology IDs, conditional pennation magnitude, log status); no simulation changes | Claude re-review and Corbin decision pending |
 | 10 | 2026-10-21 | Claude | Q18 added to §4; D-053 Accepted at `ab082f5`; D-037 implementation status points to D-053; Correction C-3 (Amendment 1 wording); open items | Q18 |
 | 11 | 2026-10-27 | Claude | Q19 and A-5 added to §4; D-036 and D-053 marked Implemented and Independently checked (software); official Phase B run recorded; Phase C items carried | Q19, A-5; pending merge by Corbin |
+| 12 | 2026-10-27 | Claude | Q20–Q28 and A-6 added to §4, with sources and an interpretation of Q28; new Part VII with D-054 (role skills, Proposed) and D-055 (slim Phase C, Proposed); open items updated (two stale rows corrected) | Q28 (records and housekeeping); pending ChatGPT review and merge by Corbin |
+| 12a | 2026-10-27 | Claude | Same PR, after ChatGPT's review (AMEND, R18-01 to R18-04): Q28 quote made literal with spelling notes outside it; editorial-marks note; Q29, Q30 and an interpretation of Q29; D-054 status and evidence separate merge, adoption and installation; D-055 C4 narrowed to traceability with a pass/fail contract; C6 included (Q29); open items aligned with D-055 | Q29; pending ChatGPT re-review and merge by Corbin |
 
 ## 8. References
 
