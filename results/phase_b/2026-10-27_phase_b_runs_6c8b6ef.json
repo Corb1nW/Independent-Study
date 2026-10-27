@@ -1,0 +1,420 @@
+[
+  {
+    "commit_provenance_status": "verified_git_head_and_inputs",
+    "commit_sha": "6c8b6ef96b2a8f41667fb7e80ae002d068b0fbfb",
+    "configuration": {
+      "coordinate_id": "LB:DOF:HIP_FLEX_EXT_R",
+      "force_observation_id": "LB-QD:GMAX:FMAX:ARNOLD2010",
+      "frame_id": "LB:FRAME:PELVIS",
+      "model_id": "PHASE_B_HIP_RIGHT_DEMONSTRATION",
+      "neutral_pose": "q=0: chosen sagittal neutral pose; demonstration convention, not measured",
+      "omitted_physics": {
+        "gravity": "Omitted: no gravitational torque or thigh orientation-dependent load",
+        "joints": "Omitted: knee, ankle, foot and contact constraints",
+        "muscle": "Omitted: force-length-velocity, tendon compliance, muscle path and activation dynamics",
+        "passive_structures": "Omitted: passive joint torques, ligaments and joint limits",
+        "pelvis": "Fixed reference; global pelvis orientation and positioning not defined",
+        "status": "deliberate_demonstration_simplifications"
+      },
+      "parameters": {
+        "activation": {
+          "kind": "demonstration_assumption",
+          "rationale": "Constant illustrative activation deliberately tuned to reach domain boundary within ~0.84 s; not a physiological estimate",
+          "unit": "1",
+          "value": 0.02
+        },
+        "duration_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Demonstration horizon",
+          "unit": "s",
+          "value": 2.0
+        },
+        "event_tolerance_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Boundary event tolerance",
+          "unit": "s",
+          "value": 1e-10
+        },
+        "external_torque_N_m": {
+          "kind": "demonstration_assumption",
+          "rationale": "No external torque in baseline",
+          "unit": "N*m",
+          "value": 0.0
+        },
+        "initial_q_rad": {
+          "kind": "demonstration_assumption",
+          "rationale": "Initial neutral position",
+          "unit": "rad",
+          "value": 0.0
+        },
+        "initial_qdot_rad_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Start at rest",
+          "unit": "rad/s",
+          "value": 0.0
+        },
+        "moment_arm_m": {
+          "kind": "demonstration_assumption",
+          "rationale": "Round example; not an anatomical estimate",
+          "unit": "m",
+          "value": 0.04
+        },
+        "q_max_rad": {
+          "kind": "demonstration_assumption",
+          "rationale": "D-053 upper demonstration domain pi/3",
+          "unit": "rad",
+          "value": 1.0471975511965976
+        },
+        "q_min_rad": {
+          "kind": "demonstration_assumption",
+          "rationale": "D-053 lower demonstration domain -pi/6",
+          "unit": "rad",
+          "value": -0.5235987755982988
+        },
+        "step_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Constant time step",
+          "unit": "s",
+          "value": 0.01
+        },
+        "thigh_inertia_kg_m2": {
+          "kind": "demonstration_assumption",
+          "rationale": "Round one-DOF rotational inertia; not measured",
+          "unit": "kg*m^2",
+          "value": 1.0
+        }
+      },
+      "target_entity_id": "LB:MUS:GLUTEUS_MAXIMUS_R"
+    },
+    "configuration_sha256": "0090b123fc4fec4cd3aa90d8adf734adb792c1225f89dbcab208eb6ab390a7bc",
+    "coordinate_id": "LB:DOF:HIP_FLEX_EXT_R",
+    "decision": "D-053",
+    "effective_values": {
+      "baseline_Fmax_N": 1852.6,
+      "left_baseline_Fmax_N": 1852.6,
+      "right_Fmax_N": 1852.6,
+      "scenario_multiplier": 1.0
+    },
+    "equations": {
+      "dynamics": "I * qdd = tau_GMAX + external_torque",
+      "force": "F_MT = activation * effective_right_Fmax",
+      "length_if_used": "L_MT = L_ref + r0*q; r=-dL_MT/dq",
+      "muscle_torque": "tau_GMAX = -r0 * F_MT",
+      "sign": "q positive flexion; gluteus extension torque negative"
+    },
+    "frame_id": "LB:FRAME:PELVIS",
+    "model_id": "PHASE_B_HIP_RIGHT_DEMONSTRATION",
+    "neutral_pose": "q=0: chosen sagittal neutral pose; demonstration convention, not measured",
+    "omitted_physics": {
+      "gravity": "Omitted: no gravitational torque or thigh orientation-dependent load",
+      "joints": "Omitted: knee, ankle, foot and contact constraints",
+      "muscle": "Omitted: force-length-velocity, tendon compliance, muscle path and activation dynamics",
+      "passive_structures": "Omitted: passive joint torques, ligaments and joint limits",
+      "pelvis": "Fixed reference; global pelvis orientation and positioning not defined",
+      "status": "deliberate_demonstration_simplifications"
+    },
+    "pennation_disclosure": {
+      "conditional_overstatement": "about 7.8% if Fmax denotes fiber force; NOT a verified Arnold correction",
+      "illustrative_ward_mean_deg": 21.9,
+      "rule": "No additional cos(pennation) projection",
+      "status": "pennation not consumed in dynamics"
+    },
+    "scenario": {
+      "base_observation_id": "LB-QD:GMAX:FMAX:ARNOLD2010",
+      "kind": "demonstration_scenario_not_evidence",
+      "parameter": "maximum_isometric_force",
+      "reason": "Generic Arnold whole-muscle Fmax unchanged; demonstration input",
+      "scenario_id": "baseline",
+      "scenario_multiplier": 1.0,
+      "target_entity_id": "LB:MUS:GLUTEUS_MAXIMUS_R"
+    },
+    "scenario_sha256": "1e4b8076573ac391a1a8694a616799d9e2c3b3c79cf26d4aa311e643307d8d45",
+    "simulation": {
+      "angular_acceleration_rad_s2": -1.48208,
+      "event_method": "analytic_quadratic_step_root",
+      "event_tolerance_s": 1e-10,
+      "gluteus_torque_N_m": -1.48208,
+      "last_valid_state": {
+        "q_rad": -0.5228778240000003,
+        "qdot_rad_per_s": -1.2449472000000006,
+        "time_s": 0.8400000000000005
+      },
+      "net_torque_N_m": -1.48208,
+      "outcome": "domain_exit",
+      "q_rad": -0.5235987755982988,
+      "qdot_rad_per_s": -1.2458051800652676,
+      "steps_before_exit": 84,
+      "time_s": 0.8405789026673781,
+      "which_limit": "lower"
+    },
+    "source": {
+      "applicability": {
+        "inclusion_notes": "Model parameter published by Arnold et al.; not a direct measurement and not subject-specific. Stated explicitly instead of inheriting the Ward et al. cohort from `common` (D-024, defect D6).",
+        "level": "generic_model",
+        "model_id": "ARNOLD_2010_LOWER_LIMB",
+        "population": "Generic lower-limb model of Arnold et al. 2010; architecture from the cadaver specimens reported by Arnold et al. (21 specimens; mean age 82.5 +/- 9.42 years; 12 female, 9 male)"
+      },
+      "dataset_sha256": "fa7ed612bfc19fbb095e1b682fe06bec1f6b60103960686798dbe28550603312",
+      "datum_kind": "model_derived",
+      "observation_id": "LB-QD:GMAX:FMAX:ARNOLD2010",
+      "source_claims": [
+        {
+          "claim_scope": "Table 1 and muscle-parameter methods",
+          "evidence_domain": "musculotendon_model",
+          "notes": "Model PCSA 30.4 cm^2; peak force 1852.6 N; force calculated using 61 N/cm^2.",
+          "source_id": "SRC:ARNOLD_2010",
+          "supports": [
+            "whole_gluteus_maximus_model_pcsa",
+            "peak_force",
+            "specific_tension_method"
+          ],
+          "value_directly_reported": true
+        }
+      ],
+      "source_value_location": "Arnold et al. 2010 Table 1 and parameter methods",
+      "target": {
+        "anatomical_scope": "gluteus_maximus_whole_muscle",
+        "computational_representation": "generic_whole_muscle_baseline",
+        "entity_ids": [
+          "LB:MUS:GLUTEUS_MAXIMUS_R",
+          "LB:MUS:GLUTEUS_MAXIMUS_L"
+        ],
+        "laterality": "shared_bilateral_baseline"
+      },
+      "transformation_history": [
+        {
+          "formula": "Fmax = PCSA * 61 N/cm^2",
+          "input_unit": "cm^2",
+          "input_value": 30.37,
+          "operation": "model_derivation",
+          "output_unit": "N",
+          "output_value": 1852.6
+        }
+      ],
+      "unit": "N",
+      "value_N": 1852.6
+    },
+    "status": "UNREVIEWED DEMONSTRATION \u2014 NOT CLINICALLY/PHYSIOLOGICALLY VALIDATED",
+    "verified_input_files": [
+      "config",
+      "dataset",
+      "hip_model",
+      "ontology",
+      "ontology_loader",
+      "runner",
+      "scenario",
+      "schema",
+      "structural_model",
+      "validator"
+    ]
+  },
+  {
+    "commit_provenance_status": "verified_git_head_and_inputs",
+    "commit_sha": "6c8b6ef96b2a8f41667fb7e80ae002d068b0fbfb",
+    "configuration": {
+      "coordinate_id": "LB:DOF:HIP_FLEX_EXT_R",
+      "force_observation_id": "LB-QD:GMAX:FMAX:ARNOLD2010",
+      "frame_id": "LB:FRAME:PELVIS",
+      "model_id": "PHASE_B_HIP_RIGHT_DEMONSTRATION",
+      "neutral_pose": "q=0: chosen sagittal neutral pose; demonstration convention, not measured",
+      "omitted_physics": {
+        "gravity": "Omitted: no gravitational torque or thigh orientation-dependent load",
+        "joints": "Omitted: knee, ankle, foot and contact constraints",
+        "muscle": "Omitted: force-length-velocity, tendon compliance, muscle path and activation dynamics",
+        "passive_structures": "Omitted: passive joint torques, ligaments and joint limits",
+        "pelvis": "Fixed reference; global pelvis orientation and positioning not defined",
+        "status": "deliberate_demonstration_simplifications"
+      },
+      "parameters": {
+        "activation": {
+          "kind": "demonstration_assumption",
+          "rationale": "Constant illustrative activation deliberately tuned to reach domain boundary within ~0.84 s; not a physiological estimate",
+          "unit": "1",
+          "value": 0.02
+        },
+        "duration_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Demonstration horizon",
+          "unit": "s",
+          "value": 2.0
+        },
+        "event_tolerance_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Boundary event tolerance",
+          "unit": "s",
+          "value": 1e-10
+        },
+        "external_torque_N_m": {
+          "kind": "demonstration_assumption",
+          "rationale": "No external torque in baseline",
+          "unit": "N*m",
+          "value": 0.0
+        },
+        "initial_q_rad": {
+          "kind": "demonstration_assumption",
+          "rationale": "Initial neutral position",
+          "unit": "rad",
+          "value": 0.0
+        },
+        "initial_qdot_rad_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Start at rest",
+          "unit": "rad/s",
+          "value": 0.0
+        },
+        "moment_arm_m": {
+          "kind": "demonstration_assumption",
+          "rationale": "Round example; not an anatomical estimate",
+          "unit": "m",
+          "value": 0.04
+        },
+        "q_max_rad": {
+          "kind": "demonstration_assumption",
+          "rationale": "D-053 upper demonstration domain pi/3",
+          "unit": "rad",
+          "value": 1.0471975511965976
+        },
+        "q_min_rad": {
+          "kind": "demonstration_assumption",
+          "rationale": "D-053 lower demonstration domain -pi/6",
+          "unit": "rad",
+          "value": -0.5235987755982988
+        },
+        "step_s": {
+          "kind": "demonstration_assumption",
+          "rationale": "Constant time step",
+          "unit": "s",
+          "value": 0.01
+        },
+        "thigh_inertia_kg_m2": {
+          "kind": "demonstration_assumption",
+          "rationale": "Round one-DOF rotational inertia; not measured",
+          "unit": "kg*m^2",
+          "value": 1.0
+        }
+      },
+      "target_entity_id": "LB:MUS:GLUTEUS_MAXIMUS_R"
+    },
+    "configuration_sha256": "0090b123fc4fec4cd3aa90d8adf734adb792c1225f89dbcab208eb6ab390a7bc",
+    "coordinate_id": "LB:DOF:HIP_FLEX_EXT_R",
+    "decision": "D-053",
+    "effective_values": {
+      "baseline_Fmax_N": 1852.6,
+      "left_baseline_Fmax_N": 1852.6,
+      "right_Fmax_N": 2223.12,
+      "scenario_multiplier": 1.2
+    },
+    "equations": {
+      "dynamics": "I * qdd = tau_GMAX + external_torque",
+      "force": "F_MT = activation * effective_right_Fmax",
+      "length_if_used": "L_MT = L_ref + r0*q; r=-dL_MT/dq",
+      "muscle_torque": "tau_GMAX = -r0 * F_MT",
+      "sign": "q positive flexion; gluteus extension torque negative"
+    },
+    "frame_id": "LB:FRAME:PELVIS",
+    "model_id": "PHASE_B_HIP_RIGHT_DEMONSTRATION",
+    "neutral_pose": "q=0: chosen sagittal neutral pose; demonstration convention, not measured",
+    "omitted_physics": {
+      "gravity": "Omitted: no gravitational torque or thigh orientation-dependent load",
+      "joints": "Omitted: knee, ankle, foot and contact constraints",
+      "muscle": "Omitted: force-length-velocity, tendon compliance, muscle path and activation dynamics",
+      "passive_structures": "Omitted: passive joint torques, ligaments and joint limits",
+      "pelvis": "Fixed reference; global pelvis orientation and positioning not defined",
+      "status": "deliberate_demonstration_simplifications"
+    },
+    "pennation_disclosure": {
+      "conditional_overstatement": "about 7.8% if Fmax denotes fiber force; NOT a verified Arnold correction",
+      "illustrative_ward_mean_deg": 21.9,
+      "rule": "No additional cos(pennation) projection",
+      "status": "pennation not consumed in dynamics"
+    },
+    "scenario": {
+      "base_observation_id": "LB-QD:GMAX:FMAX:ARNOLD2010",
+      "kind": "demonstration_scenario_not_evidence",
+      "parameter": "maximum_isometric_force",
+      "reason": "Demonstration-only +20% right-side sensitivity, NOT Arnold evidence",
+      "scenario_id": "increased_right_force",
+      "scenario_multiplier": 1.2,
+      "target_entity_id": "LB:MUS:GLUTEUS_MAXIMUS_R"
+    },
+    "scenario_sha256": "a8c6daed347647ac9555d4a350438bbd9b13f2385a49b0a924d03158845baceb",
+    "simulation": {
+      "angular_acceleration_rad_s2": -1.778496,
+      "event_method": "analytic_quadratic_step_root",
+      "event_tolerance_s": 1e-10,
+      "gluteus_torque_N_m": -1.778496,
+      "last_valid_state": {
+        "q_rad": -0.5136296448,
+        "qdot_rad_per_s": -1.3516569599999986,
+        "time_s": 0.7600000000000005
+      },
+      "net_torque_N_m": -1.778496,
+      "outcome": "domain_exit",
+      "q_rad": -0.5235987755982988,
+      "qdot_rad_per_s": -1.3647111987570633,
+      "steps_before_exit": 76,
+      "time_s": 0.7673400439231044,
+      "which_limit": "lower"
+    },
+    "source": {
+      "applicability": {
+        "inclusion_notes": "Model parameter published by Arnold et al.; not a direct measurement and not subject-specific. Stated explicitly instead of inheriting the Ward et al. cohort from `common` (D-024, defect D6).",
+        "level": "generic_model",
+        "model_id": "ARNOLD_2010_LOWER_LIMB",
+        "population": "Generic lower-limb model of Arnold et al. 2010; architecture from the cadaver specimens reported by Arnold et al. (21 specimens; mean age 82.5 +/- 9.42 years; 12 female, 9 male)"
+      },
+      "dataset_sha256": "fa7ed612bfc19fbb095e1b682fe06bec1f6b60103960686798dbe28550603312",
+      "datum_kind": "model_derived",
+      "observation_id": "LB-QD:GMAX:FMAX:ARNOLD2010",
+      "source_claims": [
+        {
+          "claim_scope": "Table 1 and muscle-parameter methods",
+          "evidence_domain": "musculotendon_model",
+          "notes": "Model PCSA 30.4 cm^2; peak force 1852.6 N; force calculated using 61 N/cm^2.",
+          "source_id": "SRC:ARNOLD_2010",
+          "supports": [
+            "whole_gluteus_maximus_model_pcsa",
+            "peak_force",
+            "specific_tension_method"
+          ],
+          "value_directly_reported": true
+        }
+      ],
+      "source_value_location": "Arnold et al. 2010 Table 1 and parameter methods",
+      "target": {
+        "anatomical_scope": "gluteus_maximus_whole_muscle",
+        "computational_representation": "generic_whole_muscle_baseline",
+        "entity_ids": [
+          "LB:MUS:GLUTEUS_MAXIMUS_R",
+          "LB:MUS:GLUTEUS_MAXIMUS_L"
+        ],
+        "laterality": "shared_bilateral_baseline"
+      },
+      "transformation_history": [
+        {
+          "formula": "Fmax = PCSA * 61 N/cm^2",
+          "input_unit": "cm^2",
+          "input_value": 30.37,
+          "operation": "model_derivation",
+          "output_unit": "N",
+          "output_value": 1852.6
+        }
+      ],
+      "unit": "N",
+      "value_N": 1852.6
+    },
+    "status": "UNREVIEWED DEMONSTRATION \u2014 NOT CLINICALLY/PHYSIOLOGICALLY VALIDATED",
+    "verified_input_files": [
+      "config",
+      "dataset",
+      "hip_model",
+      "ontology",
+      "ontology_loader",
+      "runner",
+      "scenario",
+      "schema",
+      "structural_model",
+      "validator"
+    ]
+  }
+]
