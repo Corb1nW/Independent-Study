@@ -11,7 +11,7 @@ Use D-043's three separate status fields, with the values listed in `docs/DECISI
 - Implementation: `Not started`, `In progress`, `Implemented`, `Not applicable`.
 - Verification: `Not checked`, `Reported by author`, `Independently checked`, `Failed`, `Not applicable`.
 
-A value may carry a qualifier in parentheses, such as an approval ID (`Accepted (Q18)`) or a scope (`Independently checked (software)`), but never a new value. Only the owner confers `Accepted` or `Rejected`. Reviewer verdicts are therefore **AGREE / AMEND / DISAGREE**, as in existing review records [G4; owner answer Q24, provisional ID].
+A value may carry a qualifier in parentheses, such as an approval ID (`Accepted (Q18)`) or a scope (`Independently checked (software)`), but never a new value. Only the owner confers `Accepted` or `Rejected`. Reviewer verdicts are therefore **AGREE / AMEND / DISAGREE**, as in existing review records [G4; approved by the owner, Q24, provisional ID].
 
 Software verification never implies scientific validation. Do not invent facts, anatomical values, citations, commands, test outcomes, access, or Git SHAs. Clearly label demonstration parameters and prevent them being mistaken for clinical evidence.
 
@@ -33,6 +33,6 @@ A change qualifies only if limited to documentation formatting or wording within
 ## Role permissions and changes to protocol
 Builder changes are bounded by D-047 and approved scope. Reviewer may author review records and update `PROJECT_STATE.md` where D-048 permits, without separate approval; other edits are proposals unless explicitly authorized (scope detailed in `REVIEWER.md`).
 
-**Records updates [G10; approved, owner answer Q25, provisional ID].** Any model may prepare a records update (verbatim approval quotes, status fields and index rows per D-044) on a `records/<model>-<topic>` branch. It takes the full path, except that the owner's merge is sufficient confirmation of his own quoted words; the other model checks the rest at its next review. While another open PR edits `docs/DECISIONS.md` or `PROJECT_STATE.md`, put proposed record changes in your PR and apply them after that PR merges [G6].
+**Records updates [G10; approved with clarification by the owner, Q25, provisional ID].** Either model may prepare a records update (verbatim approval quotes, status fields and index rows per D-044) on a `records/<model>-<topic>` branch. It takes the full path, with one exception: the owner's confirmation suffices for **the specific quoted approval or decision he reviewed in context**. That confirmation does not establish independent verification of any other technical claim, implementation status or test result in the same update. Each of those keeps the status its own evidence supports, and the other model checks them at its next review. While another open PR edits `docs/DECISIONS.md` or `PROJECT_STATE.md`, put proposed record changes in your PR and apply them after that PR merges [G6].
 
 **Protocol changes [G7].** Protocol changes take the full review path and owner approval at a pinned SHA. They are recorded as dated amendments to the protocol's adoption decision (D-044); a change that substantially alters a governing rule may instead get its own decision. No role may activate or modify governing rules unilaterally. Review and adoption must reference a verified full repository SHA.

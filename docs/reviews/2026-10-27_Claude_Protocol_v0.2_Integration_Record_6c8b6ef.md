@@ -83,10 +83,10 @@ These are not yet in `docs/DECISIONS.md` because open PR #15 edits that file (G6
 | Q21 | 2026-10-27 18:36 −04:00 | “Chat built it and claude reviewed it” | Claude's R6: who authored v0.1? | v0.1 authored by ChatGPT |
 | Q22 | 2026-10-27 18:36 −04:00 | “yes” | Claude: “Should [v0.2] follow the same pattern, with ChatGPT drafting and me reviewing?” | v0.2: ChatGPT drafts, Claude reviews |
 | Q23 | 2026-10-27 18:40 −04:00 | “I want you to proceed with repository implementation and develop the complementary Reviewer Skill.” … “ChatGPT will independently review your Reviewer Skill, your changes to shared governance, and the integrated protocol. Neither model should classify its own work as independently verified.” … “Important: Do not merge or activate the new protocol yet.” … “Final adoption remains subject to my approval.” | Delivery of ChatGPT's v0.2 candidate | Claude integrates and authors the Reviewer skill; ChatGPT reviews Claude's material; no activation |
-| Q24 | 2026-10-27 18:53 −04:00 | “1) we should keep the semantics as clear as possible, only I can accpet [sic] or reject” | Q-A: reviewer verdicts AGREE / AMEND / DISAGREE, with Accept/Reject reserved for Corbin? (G4) | Reviewer verdicts AGREE / AMEND / DISAGREE; Accept and Reject used only for owner decisions (interpretation below) |
-| Q25 | 2026-10-27 18:53 −04:00 | “2) I approve” | Q-B: approve the records-update rule? (G10) | CORE “Records updates” rule (G10) approved as drafted |
+| Q24 | 2026-10-27 18:54 −04:00 | “Q-A — APPROVED: Use AGREE / AMEND / DISAGREE as the reviewer verdict terminology.” | Q-A (G4) | Reviewer verdicts AGREE / AMEND / DISAGREE; Accept and Reject reserved for owner decisions (CORE) |
+| Q25 | 2026-10-27 18:54 −04:00 | “Q-B — APPROVED WITH CLARIFICATION: Either model may prepare records updates. Owner confirmation applies to the specific quoted approval or decision reviewed in context and does not automatically establish independent verification of unrelated technical claims, implementation statuses, or test results.” | Q-B (G10) | CORE “Records updates” rule, as amended with this clarification |
 
-**Interpretation of Q24.** Corbin did not name the three verdict words. Claude reads “only I can accept or reject” as approving G4: reviewers say AGREE / AMEND / DISAGREE, and the words Accept and Reject are reserved for his decisions. **Corbin may correct this interpretation.**
+**Correction C-P1 (2026-10-27, Claude): unconfirmed quotes in `772dce9`.** Commit `772dce9` (18:53:22 −04:00) put two statements dated 18:53 in these rows: “1) we should keep the semantics as clear as possible, only I can accpet [sic] or reject” and “2) I approve”. It names Claude as author and this session as its source. This session's transcript has no such statements: the only owner message at 18:53 was “v”, and this session did not create that commit. Its source is therefore **not confirmed** (D-042), and Claude did not independently check its content. The rows above now quote Corbin's 18:54 message verbatim. The 18:53 text is kept here, not deleted (D-044). **Corbin: please say whether you wrote those statements, and where.**
 
 **Scope of Q24 and Q25.** They approve these two rules inside the candidate. They do not adopt the protocol: that still needs ChatGPT's review and Corbin's approval of a pinned SHA (D-054).
 
@@ -128,8 +128,9 @@ All source files use LF line endings, so the Git blobs equal the source bytes un
 
 ## 6. Unresolved questions and observations
 
-- ~~**Q-A (owner):** reviewer verdicts AGREE / AMEND / DISAGREE (G4)?~~ Answered: Q24 (see interpretation in §4).
-- ~~**Q-B (owner):** approve the records-update rule (G10)?~~ Answered: Q25, approved.
+- ~~**Q-A (owner):** reviewer verdicts AGREE / AMEND / DISAGREE (G4)?~~ Approved: Q24.
+- ~~**Q-B (owner):** approve the records-update rule (G10)?~~ Approved with clarification: Q25; CORE amended.
+- **Provenance of `772dce9`:** not confirmed (Correction C-P1). Open until Corbin answers.
 - **Observation (G3):** at `6c8b6ef`, `PROJECT_STATE.md` still describes Phase B as awaiting review, and the D-036/D-053 index rows say "Not started". Open PR #15 corrects both. This does not affect this task, so under the amended rule it is reported, not fixed here.
 - **Merge order:** PR #15 first. Then the proposed records in §4 go in a records PR, with IDs rechecked.
 - **Not done:** no protocol file is installed as a skill or as project instructions; no decision status changed.
