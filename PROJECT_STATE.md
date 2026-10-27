@@ -9,7 +9,7 @@
 
 ## Implemented work
 
-**Role skills (D-054, Proposed; merged as `9cc3963`, A-6):** one-page Builder and Reviewer skills in `docs/skills/`, installed in both models. The longer protocol candidate they replaced is archived, not in force, in `docs/archive/protocol-v0.2-candidate/` (closed PR #16).
+**Role skills (D-054, Proposed; merged as `9cc3963`, A-6):** one-page Builder and Reviewer skills in `docs/skills/`, meant to be installed in both models by Corbin (Claude's installed copies checked against the repository; ChatGPT's not observable). The longer protocol candidate they replaced is archived, not in force, in `docs/archive/protocol-v0.2-candidate/` (closed PR #16).
 
 **Phase B (D-036, D-053; PR #13 merged `29e10d0`, accepted at `354984c`, Q19):** `src/hip_phase_b.py` resolves the Arnold 2010 whole-muscle `Fmax` through the validated resolver, applies D-053's constant signed moment arm `τ = −r0·a·F` to a one-DOF right hip (`LB:DOF:HIP_FLEX_EXT_R` in `LB:FRAME:PELVIS`), and integrates exactly, with event-terminated exits from `[−π/6, π/3]`. `config/phase_b_hip.yaml` labels every number a demonstration assumption (`r0` = 0.04 m, `I` = 1 kg·m², activation 0.02, tuned for an observable exit time) and declares the omitted physics. The scenario overlays (×1.0, ×1.2 right only) never edit the evidence. `tools/run_phase_b.py` writes a manifest that verifies the commit and all 10 consumed files and refuses dirty or external inputs (Windows and Linux). `tests/test_phase_b.py` holds 22 tests. Official run: `results/phase_b/2026-10-27_phase_b_runs_6c8b6ef.json`.
 
@@ -110,7 +110,8 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **Q8 interpretation (`DECISIONS.md` §4):** Corbin may correct it. (Q9 was confirmed by Q12 and superseded by the D-051 acceptance, Q15.)
 - **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
 - **D-054 role skills:** in use since A-6; Corbin's explicit confirmation requested, including two new rules (model-name line in commits and PRs; review exemption for small wording fixes). ChatGPT has not yet reviewed Claude's Reviewer skill.
-- **D-055 slim Phase C:** scope proposed (C1 reusable run manifest with git blob IDs; C2 meaning of Arnold `Fmax`; C3 velocity normalization; C4 input gate; C5 growth test; C6 optional result plot). Awaiting ChatGPT's review and Corbin's approval.
+- **D-055 slim Phase C:** scope proposed (C1 reusable run manifest with git blob IDs; C2 meaning of Arnold `Fmax`; C3 velocity normalization; C4 input gate; C5 growth test; C6 result plot, included by Corbin, Q29). C4 narrowed to traceability after ChatGPT's review (R18-03). Awaiting ChatGPT's re-review and Corbin's approval.
+- **Q29 conflict:** Corbin answered both “Not yet” (D-055) and “Build in parallel”. Claude has asked which applies and has not started the build.
 - **Q28 interpretation (`DECISIONS.md` §4):** reviewer for Phase C read as ChatGPT; Corbin may correct it.
 - **No open disagreements between models.**
 
@@ -118,8 +119,8 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 **Owner:** Corbin, then Claude (Phase C builder, Q28).
 1. **Merge the records PR** for revision 12 (cleanup, D-054, D-055) after ChatGPT's review, or approve D-055 directly so the build can start while ChatGPT reviews.
-2. **Approve, amend or reject D-055** (slim Phase C scope), including whether to include C6 (result plot).
-3. **Claude builds Phase C** on a `phase-c/claude-…` branch: C1–C5 (and C6 if chosen), tests, a reproduced Phase B run at the new commit. ChatGPT reviews the pinned head SHA with the Reviewer skill.
+2. **Approve, amend or reject D-055** (slim Phase C scope; C6 included, Q29), and say whether Claude builds now as a BLOCKED draft or waits.
+3. **Claude builds Phase C** on a `phase-c/claude-…` branch: C1–C6, tests, a reproduced Phase B run at the new commit. ChatGPT reviews the pinned head SHA with the Reviewer skill.
 
 **Exit criterion (D-055):** C1–C5 done with tests; growth test passes; Arnold `Fmax` meaning recorded with its source; reviewed and accepted. Then Phase D (planar squat).
 **Deferred by D-055 to first use:** D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases. D-028 and D-038 stay in Phase E.
