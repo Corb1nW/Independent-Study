@@ -9,7 +9,7 @@
 
 ## Implemented work
 
-**Phase C build (D-055 Amendment 1; pending review):** shared run manifest with git blob IDs and a fixed validity block (`src/run_manifest.py`); Arnold `Fmax` source check recorded on the datum and proposed as D-056; contraction-velocity normalization required by the schema (LB-QPS 0.5.0); traceability gate for model inputs (`src/input_gate.py`), enforced in the Phase B resolver; growth test with a knee stub; result plot (`tools/plot_phase_b.py`). Tests in `tests/test_phase_c.py`.
+**Phase C build (D-055 Amendment 1; pending review):** shared run manifest with git blob IDs and a fixed validity block (`src/run_manifest.py`); Arnold `Fmax` source check recorded on the datum and proposed as D-056; contraction-velocity normalization required by the schema (LB-QPS 0.5.0); traceability gate for model inputs (`src/input_gate.py`), enforced in the Phase B resolver; growth test with a knee stub; result plot (`tools/plot_phase_b.py`). Tests in `tests/test_phase_c.py`. **Source list (D-057, requested by Corbin, Q34):** `sources/SOURCES.md` lists every unique source; rule in `sources/README.md`; enforced for registered IDs and notes links by `tests/test_sources.py`.
 
 **Role skills (D-054, Accepted Q32; merged as `9cc3963`, A-6):** one-page Builder and Reviewer skills in `docs/skills/`, meant to be installed in both models by Corbin (Claude's installed copies checked against the repository; ChatGPT's not observable). The longer protocol candidate they replaced is archived, not in force, in `docs/archive/protocol-v0.2-candidate/` (closed PR #16).
 
@@ -118,6 +118,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **D-054 role skills:** Accepted with both new rules (Q32). ChatGPT has not yet reviewed Claude's Reviewer skill.
 - **D-055 slim Phase C:** Accepted at `2877ed9` (Q32); built (Amendment 1), awaiting ChatGPT's review.
 - **D-056 meaning of Arnold `Fmax`:** proposed: whole-muscle maximum fiber force; Phase D's force law projects by cos(pennation) once. Needs ChatGPT's independent source check and Corbin's decision.
+- **D-057 source list:** implemented at Corbin's request (Q34); awaiting acceptance with PR #19. Whether to add the rule to the role skills is Corbin's call.
 - **Q29 conflict:** resolved by Q31 (wait for review).
 - **Q28 interpretation (`DECISIONS.md` §4):** reviewer for Phase C read as ChatGPT; Corbin may correct it.
 - **No open disagreements between models.**
@@ -126,8 +127,9 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 **Owner:** ChatGPT (reviewer, Phase C); then Corbin.
 1. **Review the Phase C build PR** at its pinned head SHA with the Reviewer skill: C1–C6 against D-055's “Done when” column, the C4 scope limit, the D-055 Amendment 1 choices, and the reproduced Phase B run and figure.
-2. **Independently check D-056's source reading** (Arnold et al. 2010, PMC2903973; quotes against the PDF).
-3. **Corbin** accepts or amends the build and decides D-056.
+2. **Check `sources/SOURCES.md`** (D-057) for completeness against the sources cited in this PR.
+3. **Independently check D-056's source reading** (Arnold et al. 2010, PMC2903973; quotes against the PDF).
+4. **Corbin** accepts or amends the build and decides D-056 and D-057.
 
 **Then:** Phase D (planar squat). Inputs carried from Phase C: multi-file ontology loading (C5 finding 1), a knee coordinate convention source (C5 finding 3), the D-056 force-law consequence, and the items D-055 deferred to first use.
 **Required inputs:** this repository; `docs/DECISIONS.md` D-053, D-055 (with Amendment 1), D-056; `tests/test_phase_c.py`; the reproduced Phase B run in `results/phase_b/`.
