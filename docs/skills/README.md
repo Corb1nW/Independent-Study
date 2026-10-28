@@ -11,4 +11,6 @@ Both AI models (ChatGPT and Claude) follow these skills on this project. Each mo
 
 If a skill conflicts with an accepted decision in `docs/DECISIONS.md`, the decision wins.
 
+Both skills include the source-list rule (`sources/README.md`, D-057): the builder lists every new source in `sources/SOURCES.md` in the same PR; the reviewer checks it.
+
 History: the skills were condensed on 2026-10-27 from a longer protocol drafted and reviewed in PR #16, which was closed without merging. That protocol is kept, not in force, in `docs/archive/protocol-v0.2-candidate/`; its review records are in `docs/reviews/2026-10-27_*`. The decision record is D-054.

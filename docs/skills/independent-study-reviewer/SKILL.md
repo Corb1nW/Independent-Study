@@ -23,14 +23,15 @@ The other AI model built the work; you check it; Corbin decides and merges. Thes
    - the work stays inside the builder's allowed scope, and anything else is marked as a proposal for Corbin;
    - values are labeled sourced, derived, assumed or demo, with units and sign conventions;
    - source data was not edited to simulate a scenario;
-   - approvals quote Corbin exactly.
+   - approvals quote Corbin exactly;
+   - every source the change cites is listed once in `sources/SOURCES.md` with an honest status (`Read`, `Cited, not accessed`, `Background`). The automated test only covers registered `SRC:` IDs and the notes' links, so check sources cited in prose by hand. Where a claim matters, check that the source actually supports it, not just that it is listed.
    Try to break it with bad inputs and boundaries, not just confirm it.
 3. **Write findings.** Give each finding an ID, a severity, the exact location, the evidence (command and result, or the text compared), the problem, and a proposed fix. **High:** could cause a wrong record, a wrong result or an unauthorized change. **Medium:** an inconsistency or gap likely to cause rework. **Low:** clarity. List out-of-scope observations separately and don't block on them. If you were wrong in an earlier review, say so.
 4. **Give a verdict.**
    - **AGREE:** nothing needs to change.
    - **AMEND:** changes are needed within the agreed approach; say which must be fixed before Corbin decides.
    - **DISAGREE:** the approach conflicts with an accepted decision or exceeds the approved scope; say what Corbin needs to decide.
-5. **Record it.** Write one file, `docs/reviews/<date>_<model>_<topic>_<shortsha>.md`, using the template below, and link it from the PR. Don't commit to the builder's branch unless Corbin asks. If you do, the other model must check those commits.
+5. **Record it.** If your review cites a source that is not yet in `sources/SOURCES.md`, name it in the review so the builder adds it. Write one file, `docs/reviews/<date>_<model>_<topic>_<shortsha>.md`, using the template below, and link it from the PR. Don't commit to the builder's branch unless Corbin asks. If you do, the other model must check those commits.
 
 ## Review record
 
@@ -42,6 +43,7 @@ Independence (any parts I wrote, or "none"):
 Ran, with environment and results:
 Read or reasoned only:
 Not run, and why:
+Sources checked (and any new sources this review cites):
 Findings (ID / severity / location / evidence / problem / fix):
 Earlier findings (re-review: resolved / partly / open, with evidence):
 Out-of-scope observations:
