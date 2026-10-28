@@ -27,7 +27,8 @@ LEFT, RIGHT, TOP, BOTTOM = 72, 40, 76, 128
 def validity_text(run):
     validity = run.get("validity")
     if validity:
-        return (f"{validity['kind']}. Physiological validity: {validity['physiological_validity']}; "
+        kind = validity["kind"][:1].upper() + validity["kind"][1:]
+        return (f"{kind}. Physiological validity: {validity['physiological_validity']}; "
                 f"clinical validity: {validity['clinical_validity']}.")
     return run.get("status", "validity not stated")  # manifests made before Phase C
 
