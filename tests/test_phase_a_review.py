@@ -112,7 +112,7 @@ def test_integrity_check_catches_dangling_observation_reference(tmp_path):
     """The project-wide check validates each observation against its own dataset."""
     for sub in ("ontology", "ontology/quantitative_data"):
         (tmp_path / sub).mkdir(parents=True, exist_ok=True)
-    for name in ("hip.yaml", "quantitative_schema.yaml"):
+    for name in ("hip.yaml", "lower_limb_sagittal.yaml", "quantitative_schema.yaml"):  # module file added in D-058
         (tmp_path / "ontology" / name).write_text((ROOT / "ontology" / name).read_text(encoding="utf-8"),
                                                  encoding="utf-8")
     raw = yaml.safe_load(GMAX.read_text(encoding="utf-8"))
@@ -133,15 +133,23 @@ def test_pennation_bound_is_labelled_as_a_model_convention():
     assert "operational domain" in bounds["basis"] and "not an anatomical limit" in bounds["basis"]
 
 
+D058_BOUNDED = {"mass_fraction", "center_of_mass_fraction", "radius_of_gyration_fraction", "body_mass", "stature"}
+
+
 def test_every_bound_states_its_basis():
-    """D-049 Amendment 3: all 14 bounds are owner-approved and say what they express."""
+    """D-049 Amendment 3: the 14 owner-approved bounds say what they express. Schema 0.6.0
+    (D-058) adds five bounds for new properties, each stating its own basis; they are a
+    proposal for Corbin, recorded in D-058 Amendment 2, and are counted separately."""
     bounded = {pid: p["bounds"] for block in q.classes.values()
                for pid, p in (block.get("properties") or {}).items() if p.get("bounds")}
-    assert len(bounded) == 14
-    positivity = {pid for pid, b in bounded.items() if b.get("min") == 0 and b.get("min_inclusive") is False}
+    d049 = {pid: b for pid, b in bounded.items() if pid not in D058_BOUNDED}
+    assert len(d049) == 14 and set(bounded) - set(d049) == D058_BOUNDED
+    positivity = {pid for pid, b in d049.items() if b.get("min") == 0 and b.get("min_inclusive") is False}
     assert len(positivity) == 13
     for pid in positivity:
         assert bounded[pid]["basis"].startswith("definitional"), pid
+    for pid in D058_BOUNDED:
+        assert "D-058" in bounded[pid]["basis"] or "D-049" in bounded[pid]["basis"], pid
 
 
 # ---------------------------------------------------------------- A3 readiness wording

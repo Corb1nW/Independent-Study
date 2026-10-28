@@ -69,11 +69,17 @@ class QuantitativeSchema:
         self.vocab = self.data["controlled_vocabularies"]
         self.property_aliases = self.data.get("property_aliases", {}) or {}
         if ontology is None and self.data.get("ontology"):
-            ontology = AnatomyOntology(self.path.parent / self.data["ontology"])
+            ontology = AnatomyOntology(self.ontology_paths())
         self.ontology = ontology
         # Project-wide sources (the ontology's). Dataset-specific sources are added per
         # validation call by source_registry(dataset), never accumulated here (A1).
         self.known_sources = set(ontology.sources) if ontology else set()
+
+    def ontology_paths(self):
+        """Ontology files this schema's data may reference: one name or a list (D-058)."""
+        names = self.data.get("ontology") or []
+        names = [names] if isinstance(names, str) else list(names)
+        return [self.path.parent / name for name in names]
 
     # ------------------------------------------------------------------ properties
     def canonical_property_id(self, property_id):

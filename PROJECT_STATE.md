@@ -1,13 +1,15 @@
 # LB-AO Project State
 
 **Updated:** 2026-10-28
-**Updated by:** Claude (Phase D scope proposal, D-058)
+**Updated by:** Claude (Phase D Stage D1 build)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.5.0 · dataset `gluteus_maximus.yaml` 0.3.1 · `DECISIONS.md` revision 15
-**Current phase:** **Phase D (planar squat), scope proposed.** Claude builds (Q38); reviewer ChatGPT. Corbin chose two stages, an animated visual and switchable female/male bodies (Q39). D-058 proposes Stage D1: a planar inverse-dynamics squat with de Leva 1996 segment parameters, a prescribed demonstration motion, mechanics checks and an animated stick-figure page. Stage D2 (muscles) follows in its own proposal. Phase C complete (A-8); source rule in both skills (A-9).
+**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.1.0 · schema LB-QPS 0.6.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0 · `DECISIONS.md` revision 16
+**Current phase:** **Phase D, Stage D1 built** (planar inverse-dynamics squat; D-058 accepted at `787e5a6`, Q40, with Amendments 1 and 2). Claude built it on `phase-d/claude-d1-squat`; ChatGPT reviewed (AMEND at `0aa4651`); Claude responded (D-058 Amendment 3: runner fails closed, separate statuses, provisional de Leva labels, short-horizon forward check, sensitivity analysis); awaiting ChatGPT's re-review and Corbin's acceptance. Three bodies: female and male (de Leva fractions, Gait2392 geometry scaled by height) and the Gait2392 reference. All mechanics checks pass for all three; the demonstration motion is contact-feasible. Stage D2 (muscles) follows in its own proposal and needs D-056 decided.
 
 ## Implemented work
+
+**Phase D, Stage D1 (D-058; pending review):** `src/squat_d1.py` (Newton–Euler inverse dynamics; independent symbolic Lagrange formulation; static, energy, Newton, one-step forward and closed-form checks; contact feasibility), `config/phase_d1_squat.yaml` (all values labeled), two generated segment datasets from kept source copies, a second ontology module and multi-file loading, `tools/run_phase_d1.py` (manifest), `tools/build_squat_page.py` (animated page), `tests/test_phase_d1.py` (33 tests). Results in `results/phase_d/`.
 
 **Phase C (D-055 Amendment 1; accepted at `506ece5`, Q36; merged `fe705de`, A-8):** shared run manifest with git blob IDs and a fixed validity block (`src/run_manifest.py`); Arnold `Fmax` source check recorded on the datum and proposed as D-056; contraction-velocity normalization required by the schema (LB-QPS 0.5.0); traceability gate for model inputs (`src/input_gate.py`), enforced in the Phase B resolver; growth test with a knee stub; result plot (`tools/plot_phase_b.py`). Tests in `tests/test_phase_c.py`. **Source list (D-057, Accepted Q37):** `sources/SOURCES.md` lists every unique source; rule in `sources/README.md`; enforced for registered IDs and notes links by `tests/test_sources.py`.
 
@@ -67,6 +69,12 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Mutation check, Phase C rules | `fa2e8fb` in a temporary worktree | Claude | normalization rule disabled; C4 check (d) disabled | 6 of 9 C3 tests fail; 1 of 8 C4 tests fails (the (d) test); the remaining tests cover other rules |
 | Phase B run reproduced through the shared manifest (D-055 C1) | `fa2e8fb` | Claude | `python -m tools.run_phase_b --commit-sha fa2e8fbfb0300e49a8e97e7ba272b9b820dfefe9 --output results/phase_b/2026-10-27_phase_b_runs_fa2e8fb.json` | Provenance `verified_git_head_and_inputs` (12 files, each with a git blob ID); traceability gate passed; `simulation` and `effective_values` **identical** to the official run at `6c8b6ef` (exits 0.840578902667 s and 0.767340043923 s). A builder's reproduction, not a new official run |
 | Figure (D-055 C6) | manifest at `fa2e8fb` | Claude | `python -m tools.plot_phase_b --manifest results/phase_b/2026-10-27_phase_b_runs_fa2e8fb.json --output results/phase_b/2026-10-27_phase_b_hip_angle_fa2e8fb.svg` | Rendered and inspected; carries the manifest's validity statement and commit |
+| Test suite, integrity, probes | `38d5bdf` (Stage D1 build) | Claude | `python -m pytest -q`; `python -m src.integrity`; `python tools/review_cycle1_probes.py` (Python 3.13.18, numpy 2.5.3, sympy 1.14.0, pydantic 2.13.5, pint 0.26.2, PyYAML 6.0.3, pytest 9.1.1) | **169 passed** (33 new in `tests/test_phase_d1.py`); integrity PASSED; 9/9 REJECTED |
+| Stage D1 run (D-058) | `38d5bdf` | Claude | `python -m tools.run_phase_d1 --commit-sha 38d5bdf98b1ef73162c96344b3a5fa32fc7e621a --output results/phase_d/2026-10-28_d1_squat_runs_38d5bdf.json` | Provenance `verified_git_head_and_inputs` (17 files). Female, male and Gait2392: every mechanics check passed (residuals about 1e-13 against tolerances of 1e-8 or tighter; one-step forward error falls 32-fold per halving); contact feasible throughout (centre of pressure −2.3 to 4.2 cm from the ankle within the heel–ball support; grip needed about 0.02). Peak knee torque per leg about −74 (female), −87 (male), −91 N·m (Gait2392). Idealized mechanics verified; not validated against measured squats |
+| Phase B reproduced after the D1 changes | `38d5bdf` | Claude | `python -m tools.run_phase_b --commit-sha 38d5bdf…` | `simulation` and `effective_values` identical to the official run at `6c8b6ef`; provenance verified (now also lists `lower_limb_sagittal.yaml`) |
+| Squat viewer page (D-058 item 11) | manifest at `38d5bdf` | Claude | `python -m tools.build_squat_page --manifest results/phase_d/2026-10-28_d1_squat_runs_38d5bdf.json --output results/phase_d/2026-10-28_d1_squat_viewer_38d5bdf.html` | Rendered at desktop (light) and phone (dark) widths and inspected; no horizontal scroll; no script errors |
+| After ChatGPT's review (D-058 Amendment 3) | `9988620` | Claude | pytest; integrity; probes; `python -m tools.build_segment_datasets --check`; `python -m tools.run_phase_d1 --commit-sha 9988620c3351608ab78dd951d5378e2b261e0da9 --output results/phase_d/2026-10-28_d1_squat_runs_9988620.json`; `python -m tools.sensitivity_d1 --output results/phase_d/2026-10-28_d1_sensitivity_9988620.json`; page builder; Phase B runner | **175 passed** (39 in D1); integrity PASSED; 9/9 REJECTED; datasets current. D1 run: exit 0; mechanics PASSED, contact FEASIBLE, sources provisional for all three bodies; short-horizon forward error 5e-11 rad at 1 ms. Sensitivity table in `results/phase_d/2026-10-28_d1_sensitivity_9988620.md`. Phase B output identical. Page rendered, no script errors |
+| Re-review follow-up (D1-R07, D1-R08) | `0146e42` | Claude | `python -m pytest -q`; `python -m src.integrity`; `python tools/review_cycle1_probes.py`; `python -m tools.build_segment_datasets --check`; `python -m tools.run_phase_d1 --commit-sha 0146e425769e0c0d5d9782ef2e3a0cfcf11e7e5a …`; `python -m tools.run_phase_b --commit-sha 0146e42… …`; `python -m tools.sensitivity_d1 --commit-sha 0146e42… --output results/phase_d/2026-10-28_d1_sensitivity_0146e42.json --markdown …md` | **178 passed**; integrity PASSED; 9/9 REJECTED; datasets current. D1 runner exit 0, series and statuses identical to the `9988620` run. Phase B runner identical to the official run. Sensitivity output provenance `verified_git_head_and_inputs` (18 files); knee-centre case now +7.7% (female), +7.8% (male), +8.9% (Gait2392) knee peak, margin 12–13 mm, feasible |
 
 **Independently reproduced** (ChatGPT, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)): the test suite, integrity check and probes at `29e256e`, which contains the Phase A code and the D-052 fixes. This upgrades those results from author-reported. **Still author-reported:** the mutation check (30 of 47 Phase A tests fail against the old validator), the 11/4 comparison of the new tests against `4abb4f1`, and all results at other snapshots. Independent execution checks software behavior only, never anatomical or biomechanical validity (D-051 item 10). CI is a third-party run and counts as supporting evidence only. PR #6 adds two label tests (82 total at its head), not covered by ChatGPT's run.
 
@@ -121,19 +129,19 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **D-057 source list:** Accepted (Q37); in both role skills (A-9), reinstalled in both models (Q38, reported by Corbin).
 - **Q29 conflict:** resolved by Q31 (wait for review).
 - **Q28 interpretation (`DECISIONS.md` §4):** reviewer for Phase C read as ChatGPT; Corbin may correct it.
-- **D-058 Phase D scope:** Proposed; amended after ChatGPT's review (Amendment 1: mass inventory, HAT pose, checks as verification of idealized mechanics with independent oracles, contact feasibility, source gates). Awaiting ChatGPT's re-review and Corbin's decision.
+- **D-058 Phase D:** Accepted at `787e5a6` (Q40). Amendment 2 (Q41–Q44): Gait2392 geometry, de Leva fractions via the BMC open data, three bodies. Open concerns 6–9: de Leva values not checked against the paper; Gait2392 stature (1.8 m documented, about 1.66 m measured by a forum user); radius-of-gyration column is an interpretation; de Leva bodies borrow Gait2392's HAT shape and foot. Six proposals in the build need Corbin's decision (Amendment 2, build record). Amendment 3 (Q45–Q47): HAT shape from Gait2392 approved; de Leva values provisional; whole-motion forward check replaced. Sensitivity: Gait2392 stature 1.66 m instead of 1.8 m raises knee torque about 9%; knee-centre location 8–9%; HAT position changes hip torque by about 4–5 N·m.
+- **Q40 interpretation:** read as acceptance of D-058; Corbin may correct it.
 - **Q38 interpretation:** Phase D reviewer read as ChatGPT; Corbin may correct it.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owner:** ChatGPT (review D-058); then Corbin.
-1. **Review D-058** at the pinned head SHA of its PR: is Stage D1 the right size, are the assumptions labeled, are the mechanics checks enough for “mechanics validated” (D-040)?
-2. **Corbin approves, amends or rejects D-058.**
-3. **Claude builds Stage D1** on a `phase-d/claude-…` branch; ChatGPT reviews, including an independent check of the de Leva Table 4 transcription against the paper.
+**Owner:** ChatGPT (reviewer, Stage D1); then Corbin.
+1. **Review the Stage D1 PR** at its pinned head SHA with the Reviewer skill: the mechanics checks and their tolerances; the generator against the kept source files in `sources/vendor/`; sign conventions; the six proposals listed in D-058 Amendment 2; the adapted earlier tests.
+2. **Corbin** accepts or amends the build and the six proposals.
+3. **Then Stage D2 (muscles):** decide D-056 first; Claude writes the D2 proposal.
 
-**Inputs carried into Phase D:** multi-file ontology loading (C5 finding 1); knee convention source (C5 finding 3; D-058 item 6); D-056 decided before Stage D2's muscle law; items D-055 deferred to first use.
-**Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-040, D-053, D-055, D-056, D-058; `sources/SOURCES.md`.
+**Required inputs:** this repository; `docs/DECISIONS.md` D-056, D-058 (with Amendments 1 and 2); `config/phase_d1_squat.yaml`; the D1 manifest and page in `results/phase_d/`; `sources/SOURCES.md`.
 
 ## Handoff protocol (D-048, as amended by D-051)
 

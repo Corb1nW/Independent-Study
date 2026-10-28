@@ -1,6 +1,6 @@
 schema:
   id: LB-QPS
-  version: 0.5.0
+  version: 0.6.0
   name: Lower-Body Quantitative Property Schema
   module: pelvis_hip_complex
   purpose: >-
@@ -8,7 +8,7 @@ schema:
     treating population/model-specific values as universal anatomical facts.
 
 # Ontology module whose entity IDs, classes and sources this schema's data may reference.
-ontology: hip.yaml
+ontology: [hip.yaml, lower_limb_sagittal.yaml]   # several module files from 0.6.0 (D-058)
 
 controlled_vocabularies:
   datum_kind:
@@ -168,12 +168,42 @@ property_classes:
         canonical_unit: m
         value_form: scalar
         bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
+      # D-058: dimensionless segment parameters as published in anthropometric tables.
+      mass_fraction:
+        definition: Mass of ONE segment as a fraction of whole-body mass (paired limbs counted once per side). target.computational_representation names the segment and its endpoints.
+        canonical_unit: '1'
+        value_form: scalar
+        bounds: {min: 0, min_inclusive: false, max: 1, max_inclusive: false, basis: 'definitional: a part of the body has positive mass smaller than the whole body (D-058).'}
+      center_of_mass_fraction:
+        definition: Distance of the segment centre of mass from the FIRST named endpoint, along the line joining the two endpoints named in target.computational_representation, as a fraction of the distance between them.
+        canonical_unit: '1'
+        value_form: scalar
+        bounds: {min: 0, min_inclusive: true, max: 1, max_inclusive: true, basis: 'operational: tabulated centres of mass of limb and trunk segments lie between their endpoints; a value outside would need a different definition (D-058).'}
+      radius_of_gyration_fraction:
+        definition: Radius of gyration about the axis through the segment centre of mass perpendicular to the sagittal plane (rotation within the sagittal plane), as a fraction of the distance between the endpoints named in target.computational_representation.
+        canonical_unit: '1'
+        value_form: scalar
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
+
+  whole_body_anthropometric:
+    applies_to_classes: [WholeBody]
+    properties:
+      body_mass:
+        definition: Whole-body mass of a stated individual, sample or model.
+        canonical_unit: kg
+        value_form: scalar
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
+      stature:
+        definition: Standing height (vertex to floor) of a stated individual, sample or model.
+        canonical_unit: m
+        value_form: scalar
+        bounds: {min: 0, min_inclusive: false, basis: 'definitional: positive under the current property definition; does not carry over to a future convention in which zero has a deliberate meaning (D-049 Amendment 3).'}
 
   joint_kinematic:
-    applies_to_classes: [SynovialJoint, JointCoordinate]
+    applies_to_classes: [SynovialJoint, JointCoordinate, ModelJoint]
     properties:
       joint_center_position:
-        definition: Estimated or measured hip joint center expressed in a declared coordinate frame.
+        definition: Estimated or measured joint centre (hip, knee, ankle or other joint) expressed in a declared coordinate frame. Wording generalized from hip only in schema 0.6.0 (D-058).
         canonical_unit: m
         value_form: vector
         requires_coordinate_context: true

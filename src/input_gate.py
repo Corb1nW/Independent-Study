@@ -28,6 +28,15 @@ SCOPE_LIMIT = ("Traceability to a declared source claim only. Does not establish
                "is a human source check recorded on the datum (D-055 C4).")
 
 
+def _same_value(a, b):
+    """Scalars, or vectors of equal length (D-058), equal within floating-point rounding."""
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return isclose(a, b, rel_tol=1e-9, abs_tol=1e-12)
+    if isinstance(a, list) and isinstance(b, list) and len(a) == len(b) and a:
+        return all(_same_value(x, y) for x, y in zip(a, b))
+    return False
+
+
 def check_input(schema, dataset, observation_id):
     """Return ``{"observation_id", "resolved_id", "passed", "failures"}`` for one input."""
     result = {"observation_id": observation_id, "resolved_id": None,
@@ -67,9 +76,7 @@ def check_input(schema, dataset, observation_id):
         last = history[-1]
         value = datum.get("value")
         out = last.get("output_value")
-        traced = (isinstance(value, (int, float)) and isinstance(out, (int, float))
-                  and isclose(out, value, rel_tol=1e-9, abs_tol=1e-12)
-                  and last.get("output_unit") == datum.get("unit"))
+        traced = _same_value(out, value) and last.get("output_unit") == datum.get("unit")
     if claims and not (direct or traced):
         fail("(d) value not tied to a claim: no claim has value_directly_reported: true and "
              "the last transformation_history step does not output the stored value and unit")
