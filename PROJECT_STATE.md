@@ -1,6 +1,6 @@
 # LB-AO Project State
 
-**Updated:** 2026-10-27
+**Updated:** 2026-10-28
 **Updated by:** Claude (Phase D scope proposal, D-058)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
@@ -121,7 +121,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **D-057 source list:** Accepted (Q37); in both role skills (A-9), reinstalled in both models (Q38, reported by Corbin).
 - **Q29 conflict:** resolved by Q31 (wait for review).
 - **Q28 interpretation (`DECISIONS.md` §4):** reviewer for Phase C read as ChatGPT; Corbin may correct it.
-- **D-058 Phase D scope:** Proposed; awaiting ChatGPT's review and Corbin's decision. Five open concerns, chiefly hand transcription of de Leva Table 4 (machine extractions disagree).
+- **D-058 Phase D scope:** Proposed; amended after ChatGPT's review (Amendment 1: mass inventory, HAT pose, checks as verification of idealized mechanics with independent oracles, contact feasibility, source gates). Awaiting ChatGPT's re-review and Corbin's decision.
 - **Q38 interpretation:** Phase D reviewer read as ChatGPT; Corbin may correct it.
 - **No open disagreements between models.**
 
