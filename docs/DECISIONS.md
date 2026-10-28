@@ -3,8 +3,8 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 14 (2026-10-27), Phase C accepted and merged (Q36, A-8); D-057 accepted (Q37); source rule in the role skills. See §7 for revision history.
-**Covers:** Design decisions from the original work through Phase B (hip-only model) and the proposed Phase C scope
+**Revision:** 15 (2026-10-28), Phase D roles (Q38) and direction (Q39); D-058 proposed. See §7 for revision history.
+**Covers:** Design decisions from the original work through Phase C and the proposed Phase D scope
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
 ---
@@ -138,6 +138,9 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q36** | 2026-10-27, between 20:55 and 20:58 (exact minute not captured) | Selected “Accept and I'll merge (Recommended)” · “Not yet” · “Leave open for now (Recommended)” | Three multiple-choice questions from Claude after ChatGPT's re-review of PR #19 (AGREE at `506ece5`): (1) “Do you accept the Phase C build (C1–C6) at that commit?” (alternative: not yet); (2) “Do you accept D-057, the source list folder and its rule?” (alternative: accept); (3) on D-056: leave open, accept, or reject. Direct: this session | **Phase C build accepted at `506ece5ea88efa2194a3931028d000099ac3bee3`**; D-056 stays Proposed until Phase D; answer (2) superseded by Q37 |
 | **A-8** | 2026-10-27 20:58:01 (action) | Merged PR #19 (`fe705de`, head `506ece5`, Phase C build) | After ChatGPT's re-review (AGREE) and Q36 | Acceptance of the merged revision (D-051 item 8) |
 | **Q37** | 2026-10-27 21:01 | “I merged it and my bad playa bout the confusion. I was also confused on my end. I want to overide my answer of "not yet" with a yes. Lets add the sourcing to the skills” | Claude asked how to reconcile Q35 (update the skills) with Q36 answer (2) (D-057 “Not yet”). Direct: this session | **D-057 Accepted**, replacing the Q36 answer (2); skills PR goes ahead |
+| **A-9** | 2026-10-27 21:06:04 (action) | Merged PR #20 (`bdfc0e3`, head `724f194`, source rule in both role skills) | After ChatGPT's review (reported by Corbin, Q38: “reviewed, approved, and merged”) | Acceptance of the merged revision (D-051 item 8); D-057 Amendment 1 implemented |
+| **Q38** | 2026-10-28 08:19 | “Alright every agent should have the updated skills. Lets move on to the next phase with you as the  builder” (double space as typed) | After Claude sent the packaged skills (PR #20 merged) and asked for Phase D roles. Direct: this session | Skills reinstalled in both models (reported by Corbin, not observable by Claude); **Phase D: Claude builds**; reviewer read as ChatGPT (interpretation below) |
+| **Q39** | 2026-10-28, between 08:19 and 08:40 (exact minute not captured) | Selected “Two stages (Recommended)” · “Animated stick figure + torque plots (Recommended)” · “Both, switchable (Recommended)” | Three multiple-choice questions from Claude: (1) “How should Phase D (planar squat) be built?” (alternative: all at once, muscle-driven, needs D-056 now); (2) “Should Phase D include a visual you can show people?” (alternatives: static plots only; no visuals); (3) “Body segment sizes come from published tables (de Leva 1996), which give separate values for men and women. Which body should the model represent?” (alternatives: male only; female only). Direct: this session | Direction for D-058 (Proposed): staged Phase D; animated visual; female and male bodies switchable |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
@@ -148,6 +151,8 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 **Resolution of Q29 (revision 13).** Q31 resolves the conflict: wait for review. Claude wrote no Phase C code until D-055 was approved (Q32) and PR #18 merged (A-7, Q33).
 
 **Q36 and Q37 (revision 14).** Q36 answer (2) (“Not yet” on D-057) conflicted with Q35. Claude asked before acting (Q31); Corbin replaced it with acceptance in Q37. The original answer is kept above as history (Rule 4).
+
+**Interpretation of Q38 (revision 15).** Q38 names Claude as Phase D builder but not the reviewer. Claude reads the reviewer as ChatGPT, the only other model on the project (D-041 item 1), as in Q28. Phases C and D are both built by Claude, so the alternation of Q17 does not apply here; that is Corbin's choice. **Corbin may correct this interpretation.**
 
 **Interpretation of Q28 (revision 12).** (1) Claude builds Phase C. The reviewer is not named; Claude reads it as ChatGPT, following the alternation of Q17. (2) “I approve a slimer phase c” approves narrowing Phase C in principle; the exact scope is D-055, which stays Proposed until Corbin approves it. (3) Housekeeping is delegated, with the rule that anything possibly important is preserved. **Corbin may correct this interpretation.**
 
@@ -227,6 +232,8 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-055 | Slim Phase C: only what Phase B consumed and Phase D needs | Claude (builder, Q28) | Accepted (Q32, at `2877ed9`) | Implemented (PR #19, accepted at `506ece5`, Q36; merged A-8) | Software reviewed by ChatGPT (source level, AGREE); execution author-reported |
 | D-056 | Arnold 2010 maximum isometric force is a fiber force | Claude (D-055 C2) | Proposed | Recorded on datum | Reported by author |
 | D-057 | One source list for the whole project (`sources/`) | Corbin (Q34); Claude | Accepted (Q37) | Implemented (PR #19); in both role skills (Amendment 1) | Reported by author |
+| **Part VIII — Phase D (planar squat)** | | | | | |
+| D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Proposed | Not started | Not checked |
 
 ---
 
@@ -1435,6 +1442,59 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 ---
 
+## Part VIII — Phase D (planar squat)
+
+**Date:** 2026-10-28
+
+### D-058  Phase D in two stages; Stage D1: planar inverse-dynamics squat
+- **Decision status:** Proposed (direction approved by Corbin, Q39; this scope needs his approval)
+- **Implementation status:** Not started
+- **Verification status:** Not checked
+- **Date:** 2026-10-28
+- **Proposed by:** Claude (Phase D builder, Q38) · **Reviewed by:** ChatGPT (requested)
+- **Approval basis:** pending; Q39 for the direction
+- **Evidence:** D-040 (Phase D row); D-055 Amendment 1 (C5 findings); de Leva 1996 (segment parameters); Wu et al. 2002 (hip and ankle conventions); Grood & Suntay 1983 (knee convention); see `sources/SOURCES.md`
+- **Amends:** D-040, Phase D row (split into Stages D1 and D2; exit criterion of D1 stated below)
+- **Phase:** D
+- **Open concerns:** see the list at the end of this entry.
+
+**Context.** D-040's Phase D is “ankle, knee, hip, trunk; knee/shank added as needed; contact constraints; a specific muscle formulation with its parameters resolved; numerical checks”, exit criterion “mechanics validated before conditions are added”. Doing all of it at once couples three uncertain things: segment parameters, the motion, and a muscle model whose force definition (D-056) is still open. Corbin chose two stages, an animated visual, and both sexes, switchable (Q39), and wants a model he can show (Q28).
+
+**Decision (proposed).**
+
+*Stage D1: planar inverse-dynamics squat (this build).*
+
+1. **Model.** Sagittal plane. Four rigid segments: foot, shank, thigh, and HAT (head, arms and trunk lumped). Revolute ankle, knee and hip. The foot is fixed flat on the ground (no foot motion; the ground reaction acts on it). Symmetric squat: one leg is modeled and carries half the HAT; reported joint torques are per leg (D-022 bilateral symmetry, as a declared assumption).
+2. **Motion is prescribed, not simulated.** The three joint angles follow smooth profiles from standing to a target depth and back. Target angles, timing and profile shape are **demonstration assumptions**, labeled as such. Inverse dynamics then computes the net joint torques, the ground reaction force and the centre of pressure needed to produce that motion.
+3. **Segment parameters are sourced.** Mass fraction, centre-of-mass location, sagittal radius of gyration and segment endpoints come from de Leva 1996, Table 4, female and male columns, entered as observations with source claims in a new dataset. Values are transcribed from the primary paper and checked by the reviewer against it (copies found online disagree with each other; see open concerns). Absolute masses, lengths and inertias are derived at run time from body mass and stature, with each derivation recorded in the manifest.
+4. **Body.** Female and male are switchable by configuration. Stature and body mass default to de Leva's reference values for each sex, so segment lengths and mass fractions come from the same source. Any other body size is a demonstration input.
+5. **HAT.** Combined from de Leva's head, trunk and arm segments with the parallel-axis theorem under a declared arm posture (arms crossed on the chest, a common squat-test posture). The combination is a derived datum with its formula recorded.
+6. **Conventions.** Hip flexion positive (existing, ISB/Wu 2002), knee flexion positive (Grood & Suntay 1983), ankle dorsiflexion positive (ISB/Wu 2002). Angles in radians and SI units throughout. Torque sign follows the coordinate. Each sign is tested.
+7. **Ontology.** The knee, ankle, shank, foot and HAT entities and the knee and ankle coordinates are added in a separate module file. That needs the loader to read several ontology files (C5 finding 1), with IDs unique across files and existing IDs unchanged. Left-side entities are added with the right-side ones (D-008), even though D1 uses one leg.
+8. **Schema.** Segment properties used in D1 that the schema cannot yet express (mass as a fraction of body mass, centre-of-mass location and radius of gyration as fractions of segment length) are added as dimensionless properties of `segment_inertial`, with definitions that name their reference length and endpoints. Schema version bump.
+9. **Run record.** The shared manifest (D-055 C1), the traceability gate on every sourced input (C4), and the omitted physics declared, as in Phase B.
+10. **Mechanics checks** (“mechanics validated”, D-040), each a test: (a) static poses: computed joint torques equal the gravitational moments computed independently; (b) Newton: ground reaction force equals body weight plus mass times centre-of-mass acceleration at every sample; (c) energy: sum of joint powers equals the rate of change of mechanical energy; (d) convergence: results stable as the sampling step is reduced; (e) balance: the centre of pressure stays within the foot, otherwise the run is flagged, not hidden; (f) a two-segment case checked against a closed-form solution.
+11. **Visual.** A self-contained web page that plays the squat as a stick figure next to the hip, knee and ankle torque curves, drawn from the run manifest and carrying its validity statement. Published as an artifact for Corbin to share, and kept in the repository.
+
+*Stage D2: muscles (separate proposal, after D1 is accepted).* Hill-type muscles for the main hip and knee extensors, their parameters, and moment arms or paths. Needs D-056 decided first. Outline only; D2 gets its own decision entry and review.
+
+**Exit criterion for D1.** All mechanics checks (10a–f) pass at stated tolerances for both sexes; every sourced value traces to de Leva Table 4 and was checked by the reviewer against the paper; the run manifest and the animated page are produced from one commit; reviewed by ChatGPT and accepted by Corbin. Physiological and clinical validity are not claimed; the motion is a demonstration.
+
+**Defense.** Inverse dynamics with a prescribed motion separates the mechanics from the muscles: it can be checked exactly (10a–f), it needs no muscle force definition (so D-056 can wait), and it produces the joint-torque curves a squat analysis starts from. Sourced segment parameters replace Phase B's round demonstration numbers where a published source exists (D-015). The animation answers Corbin's goal (Q28) without adding new science.
+
+**Alternatives.** (a) Muscle-driven squat in one build: declined by Corbin (Q39). (b) Forward dynamics with joint torque controllers: adds a controller design with no evidence behind it. (c) Winter's anthropometric table instead of de Leva: Winter gives a ready-made HAT but no separate female values, which Corbin chose (Q39). (d) Keep the knee in `hip.yaml`: avoids the loader change but mixes modules, against the ontology's modular design.
+
+**Consequences.** One new dataset, one new ontology module, a loader change, a schema bump, a model, a runner, tests, and a web page. D2 starts from D1's segments and conventions.
+
+**Open concerns.**
+1. **Transcription risk.** Two machine extractions of de Leva Table 4 (from the paper PDF and from a secondary wiki page) disagree on some rows, including trunk and head centre-of-mass positions, likely because the wiki measures from different endpoints. Values must be transcribed by hand from the paper's Table 4 with its endpoint definitions, and checked independently by the reviewer.
+2. **Reference body sizes.** The extraction of de Leva's reference stature and mass was unclear; they will be read from the paper during transcription, not assumed.
+3. **Arm posture** for HAT (item 5) is an assumption; another posture changes HAT inertia and the hip torque.
+4. **Foot fixed flat** means D1 cannot show heel lift; the balance check (10e) reports when the motion would need it.
+5. **Knee convention.** Grood & Suntay 1983 has not been accessed yet; it will be read before the knee coordinate is defined, or the convention will be marked as a demonstration choice.
+
+---
+
 ## 6. Open items
 
 | Item | Owner | Due |
@@ -1462,8 +1522,9 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | ~~Confirm D-054~~ Accepted with both new rules, Q32 | Corbin | Done |
 | Review Claude's Reviewer skill (D-054 open concern 1) | ChatGPT | Any time |
 | ~~Phase C build (D-055, C1–C6)~~ Accepted at `506ece5` (Q36), merged (A-8) | Claude; ChatGPT; Corbin | Done |
-| Phase D (planar squat): confirm builder and reviewer roles | Corbin | Start of Phase D |
-| Source-list rule in the role skills (D-057 Amendment 1): skills PR reviewed by ChatGPT, merged by Corbin, then **reinstalled in both models** | ChatGPT; Corbin | Now |
+| ~~Phase D (planar squat): confirm builder and reviewer roles~~ Claude builds (Q38); reviewer read as ChatGPT (interpretation of Q38) | Corbin | Done |
+| Approve, amend or reject D-058 (Phase D stages; Stage D1 scope) | ChatGPT review, then Corbin | Before the D1 build |
+| ~~Source-list rule in the role skills (D-057 Amendment 1)~~ Merged (A-9); reinstalled in both models (Q38, reported by Corbin) | ChatGPT; Corbin | Done |
 | Decide D-056 (meaning of Arnold `Fmax`). Quotes checked against the PDF by Claude (D-056 Amendment 1); ChatGPT could not open the source (P19-01) | Corbin | Before Phase D's force law |
 | Ontology loader accepts only one module file (`ontology: hip.yaml`); a separate knee module needs multi-file loading (C5 finding 1). Knee coordinate convention source needed (C5 finding 3) | Phase D builder | Start of Phase D |
 | Items deferred by D-055 to their first use: D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases | Builder of the phase that first needs each | On first use |
@@ -1488,6 +1549,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 12a | 2026-10-27 | Claude | Same PR, after ChatGPT's review (AMEND, R18-01 to R18-04): Q28 quote made literal with spelling notes outside it; editorial-marks note; Q29, Q30 and an interpretation of Q29; D-054 status and evidence separate merge, adoption and installation; D-055 C4 narrowed to traceability with a pass/fail contract; C6 included (Q29); open items aligned with D-055 | Q29; pending ChatGPT re-review and merge by Corbin |
 | 13 | 2026-10-27 | Claude | Q31–Q33 and A-7 added to §4; Q29 conflict resolved (Q31); D-054 and D-055 Accepted (Q32); D-040 Amendment 2 (Phase C row superseded by D-055); open items; D-055 Amendment 1 (implementation record, C5 findings); new D-056 (Proposed); Q34 and D-057 (source list, Proposed); D-056 Amendment 1 and D-057 open concerns after ChatGPT's review of PR #19 (P19-01 to P19-03) | Q32, A-7; Phase C PR pending ChatGPT review and merge by Corbin |
 | 14 | 2026-10-27 | Claude | Q35–Q37 and A-8 added to §4 with a note on the Q36/Q37 change; D-055 implementation and review status (accepted at `506ece5`); D-057 Accepted (Q37) and Amendment 1 (rule in both skills); open items | Q36, Q37, A-8; skills PR pending ChatGPT review and merge by Corbin |
+| 15 | 2026-10-28 | Claude | A-9, Q38, Q39 added to §4 with an interpretation of Q38; new Part VIII with D-058 (Proposed); open items | Q38, Q39; pending ChatGPT review and Corbin's decision |
 
 ## 8. References
 

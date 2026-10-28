@@ -1,11 +1,11 @@
 # LB-AO Project State
 
 **Updated:** 2026-10-27
-**Updated by:** Claude (Phase C close-out; source rule in the skills)
+**Updated by:** Claude (Phase D scope proposal, D-058)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.5.0 · dataset `gluteus_maximus.yaml` 0.3.1 · `DECISIONS.md` revision 14
-**Current phase:** **Phase C complete.** Built by Claude, reviewed by ChatGPT (AMEND, AGREE; AMEND, AGREE), accepted by Corbin at `506ece5` (Q36) and merged as `fe705de` (A-8). D-057 (source list) accepted (Q37); its rule is being added to both role skills (open PR). D-056 (meaning of Arnold `Fmax`) stays Proposed until Phase D. **Next: Phase D (planar squat)**; roles to be confirmed.
+**Component versions:** ontology `hip.yaml` 0.3.0 · schema LB-QPS 0.5.0 · dataset `gluteus_maximus.yaml` 0.3.1 · `DECISIONS.md` revision 15
+**Current phase:** **Phase D (planar squat), scope proposed.** Claude builds (Q38); reviewer ChatGPT. Corbin chose two stages, an animated visual and switchable female/male bodies (Q39). D-058 proposes Stage D1: a planar inverse-dynamics squat with de Leva 1996 segment parameters, a prescribed demonstration motion, mechanics checks and an animated stick-figure page. Stage D2 (muscles) follows in its own proposal. Phase C complete (A-8); source rule in both skills (A-9).
 
 ## Implemented work
 
@@ -118,20 +118,22 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **D-054 role skills:** Accepted with both new rules (Q32). ChatGPT has not yet reviewed Claude's Reviewer skill.
 - **D-055 slim Phase C:** Accepted (Q32); implemented and accepted at `506ece5` (Q36).
 - **D-056 meaning of Arnold `Fmax`:** proposed: whole-muscle maximum fiber force; Phase D's force law projects by cos(pennation) once. Left open by Corbin until Phase D (Q36); quotes checked against the PDF by Claude; ChatGPT could not open the source.
-- **D-057 source list:** Accepted (Q37). Rule added to both role skills on `skills/claude-source-rule` (PR pending ChatGPT's review); Corbin reinstalls the skills in both models after merge.
+- **D-057 source list:** Accepted (Q37); in both role skills (A-9), reinstalled in both models (Q38, reported by Corbin).
 - **Q29 conflict:** resolved by Q31 (wait for review).
 - **Q28 interpretation (`DECISIONS.md` §4):** reviewer for Phase C read as ChatGPT; Corbin may correct it.
+- **D-058 Phase D scope:** Proposed; awaiting ChatGPT's review and Corbin's decision. Five open concerns, chiefly hand transcription of de Leva Table 4 (machine extractions disagree).
+- **Q38 interpretation:** Phase D reviewer read as ChatGPT; Corbin may correct it.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owner:** ChatGPT (reviewer of the skills PR); then Corbin.
-1. **Review the skills PR** (source-list rule in both role skills, D-057 Amendment 1) at its pinned head SHA.
-2. **Corbin merges it and reinstalls** the Builder and Reviewer skills in both ChatGPT and Claude.
-3. **Confirm Phase D roles** (planar squat). Phase A: Claude built; Phase B: ChatGPT built; Phase C: Claude built.
+**Owner:** ChatGPT (review D-058); then Corbin.
+1. **Review D-058** at the pinned head SHA of its PR: is Stage D1 the right size, are the assumptions labeled, are the mechanics checks enough for “mechanics validated” (D-040)?
+2. **Corbin approves, amends or rejects D-058.**
+3. **Claude builds Stage D1** on a `phase-d/claude-…` branch; ChatGPT reviews, including an independent check of the de Leva Table 4 transcription against the paper.
 
-**Phase D inputs from Phase C:** multi-file ontology loading (C5 finding 1); a knee coordinate convention source (C5 finding 3); decide D-056 before writing the muscle force law; items D-055 deferred to first use (deferred-attachment records when the knee arrives; D-029, D-030, D-032, D-033 on first use).
-**Required inputs:** this repository; `docs/DECISIONS.md` D-040, D-053, D-055, D-056, D-057; `sources/SOURCES.md`.
+**Inputs carried into Phase D:** multi-file ontology loading (C5 finding 1); knee convention source (C5 finding 3; D-058 item 6); D-056 decided before Stage D2's muscle law; items D-055 deferred to first use.
+**Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-040, D-053, D-055, D-056, D-058; `sources/SOURCES.md`.
 
 ## Handoff protocol (D-048, as amended by D-051)
 
