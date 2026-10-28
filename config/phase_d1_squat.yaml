@@ -1,0 +1,36 @@
+# Stage D1 squat (D-058, Amendments 1 and 2). Every value here is labeled:
+# demonstration_assumption = chosen for the demonstration, not measured; defined_constant = a conventional value.
+# Segment parameters are NOT here: they come from the two segment datasets in ontology/quantitative_data/.
+model_id: PHASE_D1_PLANAR_SQUAT_DEMONSTRATION
+decision: D-058
+bodies: [female, male, gait2392]
+parameters:
+  gravity: {value: 9.80665, unit: m/s^2, kind: defined_constant, rationale: "Standard acceleration of gravity, a conventional value (BIPM SI Brochure); local gravity differs by up to about 0.3%"}
+  period: {value: 3.0, unit: s, kind: demonstration_assumption, rationale: "One squat, 1.5 s down and 1.5 s up; a moderate pace chosen for viewing, not measured"}
+  samples: {value: 301, unit: '1', kind: demonstration_assumption, rationale: "Output every 10 ms over the 3 s squat; results are evaluated exactly at each sample, so this sets resolution, not accuracy"}
+  start_angles: {value: [0.0, 0.0, 0.0], unit: rad, kind: demonstration_assumption, rationale: "Start and end standing in the Gait2392 default pose (ankle, knee, hip all zero)"}
+  depth_angles: {value: [0.6981317007977318, 1.7453292519943295, 1.2915436464758039], unit: rad, kind: demonstration_assumption, rationale: "Ankle dorsiflexion 40 deg, knee flexion 100 deg, hip flexion 74 deg at the bottom. Chosen by a search so that the centre of pressure stays at least 24 mm inside the heel-to-ball support for all three bodies throughout; NOT taken from measured squats (real squats also move the pelvis and spine, and lift the heel when needed)"}
+  friction_coefficient: {value: 0.6, unit: '1', kind: demonstration_assumption, rationale: "Threshold for flagging samples that would need more grip; a round value for shoe on a dry floor, not measured. The maximum required ratio is reported whatever the threshold"}
+assumptions:
+  - "Sagittal plane only; both legs move identically and each carries half of the HAT (bilateral symmetry, D-022)"
+  - "Foot fixed flat on the ground: the heel ground point is the Gait2392 calcaneus origin and the ground passes through it; the support runs from that heel point to the MTP joint (toes excluded, a conservative choice)"
+  - "Ankle, knee and hip are revolute joints with fixed centres; the Gait2392 knee translation is frozen at knee angle zero"
+  - "HAT = Gait2392 pelvis + torso with the low-back joint locked; for the de Leva bodies its mass comes from de Leva and its shape (centre of mass, radius of gyration) is scaled from Gait2392 by stature"
+  - "de Leva bodies: Gait2392 joint positions and foot points scaled by stature / 1.8 m (documented Gait2392 stature)"
+  - "de Leva radius of gyration: the 'transverse' column is taken as the radius for rotation in the sagittal plane (interpretation, D-058 Amendment 2)"
+  - "Motion prescribed; inverse dynamics returns the net joint torques needed. No muscles (Stage D2)"
+omitted_physics:
+  status: deliberate_demonstration_simplifications
+  muscles: "Omitted: net joint torques only; no muscle forces, activation or co-contraction (Stage D2)"
+  passive_structures: "Omitted: ligaments, joint capsules and passive joint limits"
+  contact: "Idealized rigid foot fixed to the ground; ground force and centre of pressure are computed, not modeled; heel lift and sliding are flagged, not simulated"
+  three_dimensional: "Omitted: frontal and transverse plane motion, knee rotation and translation, foot joints"
+  spine: "Omitted: spinal motion; pelvis and torso move as one body"
+tolerances:
+  newton_euler_vs_lagrange_N_m: 1.0e-8
+  static_oracle_N_m: 1.0e-9
+  energy_W: 1.0e-8
+  newton_identity_N: 1.0e-8
+  closed_form_N_m: 1.0e-10
+  round_trip_one_step_rad_at_1ms: 1.0e-10
+  mass_fraction_sum: 2.0e-4

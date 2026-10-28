@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 15 (2026-10-28), Phase D roles (Q38) and direction (Q39); D-058 proposed. See §7 for revision history.
+**Revision:** 16 (2026-10-28), D-058 accepted (Q40) and Amendment 2 (sources, Q41–Q44); Stage D1 built. See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase C and the proposed Phase D scope
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -141,12 +141,22 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **A-9** | 2026-10-27 21:06:04 (action) | Merged PR #20 (`bdfc0e3`, head `724f194`, source rule in both role skills) | After ChatGPT's review (reported by Corbin, Q38: “reviewed, approved, and merged”) | Acceptance of the merged revision (D-051 item 8); D-057 Amendment 1 implemented |
 | **Q38** | 2026-10-28 08:19 | “Alright every agent should have the updated skills. Lets move on to the next phase with you as the  builder” (double space as typed) | After Claude sent the packaged skills (PR #20 merged) and asked for Phase D roles. Direct: this session | Skills reinstalled in both models (reported by Corbin, not observable by Claude); **Phase D: Claude builds**; reviewer read as ChatGPT (interpretation below) |
 | **Q39** | 2026-10-28, between 08:19 and 08:40 (exact minute not captured) | Selected “Two stages (Recommended)” · “Animated stick figure + torque plots (Recommended)” · “Both, switchable (Recommended)” | Three multiple-choice questions from Claude: (1) “How should Phase D (planar squat) be built?” (alternative: all at once, muscle-driven, needs D-056 now); (2) “Should Phase D include a visual you can show people?” (alternatives: static plots only; no visuals); (3) “Body segment sizes come from published tables (de Leva 1996), which give separate values for men and women. Which body should the model represent?” (alternatives: male only; female only). Direct: this session | Direction for D-058 (Proposed): staged Phase D; animated visual; female and male bodies switchable |
+| **A-10** | 2026-10-28 08:34:42 and 08:34:58 (actions) | Merged PR #21 (`a14238e`, head `787e5a6`, D-058 proposal with Amendment 1) and PR #22 (`ce0acce`, ChatGPT's re-review record, AGREE at `787e5a6`) | After ChatGPT's re-review | Acceptance of the merged revisions (D-051 item 8) |
+| **Q40** | 2026-10-28 08:35 | “Everything should be set for you to start building stage D1” | After A-10. Direct: this session | **D-058 Accepted at `787e5a64f22d00bae736d086d97cd0256dd6125b`** (interpretation below); Stage D1 build starts |
+| **Q41** | 2026-10-28 08:38 | “If you cannot access the paper for Table 4 then find a different source to support what you need” | Claude reported that the de Leva PDF could not be downloaded in its environment and asked Corbin to attach it. Direct: this session | Authorizes replacing the A4 hand-transcription gate with another source (D-058 Amendment 2) |
+| **Q42** | 2026-10-28, between 08:38 and 09:00 (exact minute not captured) | Selected “Use OpenSim model lengths” | Multiple-choice question from Claude: “I found an open, machine-readable copy of de Leva's mass, centre-of-mass and radius values for women and men (Marcos Duarte's BMC biomechanics course data, CC BY 4.0). It matches a second independent copy. What it lacks is the segment LENGTHS (8 per sex) and the reference body sizes, which I can only read in garbled form. How should I get those?” Alternatives: Corbin reads them from the PDF (recommended); lengths as demonstration inputs. Direct: this session | Superseded in part by Q43 and Q44: Claude then found that OpenSim covers only thigh and shank lengths |
+| **Q43** | 2026-10-28, between 08:38 and 09:00 (exact minute not captured) | Selected “OpenSim body + de Leva for women” | Multiple-choice question from Claude after correcting Q42's premise: “OpenSim covers only thigh and shank lengths. The model also needs foot, trunk, head, upper arm, forearm and hand lengths, plus the reference body sizes. Which way?” Alternatives: Corbin reads the lengths from the PDF (recommended); OpenSim legs plus demonstration values. Direct: this session | Gait2392 geometry as the basis; de Leva fractions for the female body. Its “male = Gait2392” part superseded by Q44 |
+| **Q44** | 2026-10-28, between 08:38 and 09:00 (exact minute not captured) | Selected “Both sexes from de Leva (Recommended)” | Multiple-choice question from Claude after finding that the Gait2392 documentation does not state its subject's sex: “OpenSim Gait2392 doesn't state its subject's sex, so it can't honestly be the 'male' body. The open de Leva data has both female and male fractions. How should the two bodies be built?” Alternative: Gait2392 plus de Leva female, labeled honestly, no male body. Direct: this session | **Female and male bodies from de Leva fractions with geometry scaled from Gait2392 by stature; Gait2392 as published kept as a third, reference body** (D-058 Amendment 2) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
 **Editorial marks.** The “[sic]” marks in Q7, Q13 and Q20 are editorial insertions made when those quotes were first recorded; they are kept as history (Rule 4). From revision 12, spelling notes go outside the quotation marks (ChatGPT review R18-01).
 
 **Interpretation of Q29 (revision 12).** Answer (1) keeps D-055 Proposed until ChatGPT has reviewed it; answer (3) asks Claude to build while ChatGPT reviews. Claude has not started the Phase C build and has asked Corbin which applies (Rule 8; Builder skill rule 2). Until he answers, D-055 stays Proposed and no Phase C code is written.
+
+**Interpretation of Q40 (revision 16).** Q40 is read, together with the merge of PR #21 after ChatGPT's AGREE (A-10), as acceptance of D-058 with Amendment 1 at `787e5a6`. Claude stated this reading to Corbin in the session at once and invited correction. **Corbin may correct this interpretation.**
+
+**Q42 to Q44 (revision 16).** Each later answer replaced part of an earlier one after Claude found that the earlier question's premise was incomplete (Q42: OpenSim does not define foot, trunk, head or arm lengths) or wrong (Q43: Gait2392 is not documented as male). Claude reported each correction before asking again (Q31). The earlier answers stay above as history (Rule 4).
 
 **Resolution of Q29 (revision 13).** Q31 resolves the conflict: wait for review. Claude wrote no Phase C code until D-055 was approved (Q32) and PR #18 merged (A-7, Q33).
 
@@ -233,7 +243,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-056 | Arnold 2010 maximum isometric force is a fiber force | Claude (D-055 C2) | Proposed | Recorded on datum | Reported by author |
 | D-057 | One source list for the whole project (`sources/`) | Corbin (Q34); Claude | Accepted (Q37) | Implemented (PR #19); in both role skills (Amendment 1) | Reported by author |
 | **Part VIII — Phase D (planar squat)** | | | | | |
-| D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Proposed | Not started | Not checked |
+| D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44) | Stage D1 implemented on `phase-d/claude-d1-squat`, pending review | Reported by author |
 
 ---
 
@@ -1447,12 +1457,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 **Date:** 2026-10-28
 
 ### D-058  Phase D in two stages; Stage D1: planar inverse-dynamics squat
-- **Decision status:** Proposed (direction approved by Corbin, Q39; this scope needs his approval)
+- **Decision status:** **Accepted (Q40, 2026-10-28) at `787e5a64f22d00bae736d086d97cd0256dd6125b`**, with Amendment 1; Amendment 2 records Corbin's source decisions (Q41–Q44). Status before acceptance: Proposed (direction Q39)
 - **Implementation status:** Not started
 - **Verification status:** Not checked
 - **Date:** 2026-10-28
 - **Proposed by:** Claude (Phase D builder, Q38) · **Reviewed by:** ChatGPT (requested)
-- **Approval basis:** pending; Q39 for the direction
+- **Approval basis:** Q40 (with A-10); Q39 for the direction; Q41–Q44 for Amendment 2
 - **Evidence:** D-040 (Phase D row); D-055 Amendment 1 (C5 findings); de Leva 1996 (segment parameters); Wu et al. 2002 (hip and ankle conventions); Grood & Suntay 1983 (knee convention); see `sources/SOURCES.md`
 - **Amends:** D-040, Phase D row (split into Stages D1 and D2; exit criterion of D1 stated below)
 - **Phase:** D
@@ -1522,6 +1532,28 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 *Revised D1 exit criterion.* All A3 checks pass at the stated tolerances for both sexes; all A3 contact-feasibility results are reported for the demonstration motion; every sourced value traces to a page and row of de Leva Table 4 and its check status is recorded (A4); every demonstration assumption (motion, HAT pose, ankle position on the foot, friction threshold) is labeled in the configuration and the manifest; the run manifest and animated page come from one commit; reviewed by ChatGPT and accepted by Corbin. The page states that the mechanics are verified for an idealized model and are not validated against measured squats.
 
+**Amendment 2 (2026-10-28, sources; approval: §4 Q41–Q44).** The de Leva paper could not be downloaded in Claude's environment, and its Table 4 could be read only through a machine text extraction whose rows are scrambled. Corbin authorized another source (Q41) and chose the bodies (Q42–Q44). This replaces items 3–5 and the de Leva part of A4.
+
+- *Geometry: OpenSim Gait2392* (`opensim-org/opensim-models`, commit `d9b05d4`, CC BY 3.0; a copy of the model file is kept in `sources/vendor/`). Joint centres, foot points, and the pelvis and torso inertial parameters come from the model file. The knee centre is the Gait2392 knee translation at knee angle zero, by linear interpolation between the two spline knots next to zero, and is held fixed. The documented stature (“about 1.8 m”) and mass (75.16 kg) are used; the documentation does not state the subject's sex, and a user on the SimTK forum measured the default geometry at about 1.66 m (unanswered).
+- *Fractions: de Leva (1996) through the BMC open data* (Duarte, `BMClab/BMC`, commit `4d0c2a2`, CC BY 4.0; copies kept in `sources/vendor/`). Mass fractions for all eight segments, and centre-of-mass and radius-of-gyration fractions for the thigh (HJC–KJC) and shank (KJC–AJC), female and male. This is a secondary, machine-readable reproduction; the values were not checked against the paper. Where they overlap, they agree with the HAS-Motion wiki's reproduction (whose head and trunk rows use the alternative CERV endpoints, which explains the disagreement noted in open concern 1).
+- *Reference body sizes:* female 61.9 kg and 1.735 m, male 73.0 kg and 1.741 m, from the caption of de Leva's Table 4. Read through the machine extraction; the female values are also given as the “standard female” of a SimTK lab handout citing de Leva. The male values have one reading only.
+- *Three bodies.* **Female** and **male**: segment masses = de Leva fraction × body mass; joint positions, foot points and the HAT's centre of mass and radius of gyration = Gait2392 values × (stature / 1.8 m); thigh and shank centre of mass and inertia from the de Leva fractions along the scaled joint-to-joint lines; HAT mass from de Leva head, trunk and both arms. **Gait2392 reference**: the model as published. This replaces A2: the HAT is Gait2392's pelvis plus torso with the low-back joint locked, so no arm pose is declared (the torso's arm posture is the model's own).
+- *Radius of gyration (interpretation, A4).* de Leva gives sagittal, transverse and longitudinal radii. The **transverse** radius (about the transverse, i.e. mediolateral, axis) is taken as the radius for rotation in the sagittal plane, following the usual anatomical naming of axes. The paper's own definitions were not checked. The two columns differ by at most 2% for the thigh and shank.
+- *Foot (demonstration assumptions).* Heel ground point = calcaneus origin; the ground passes through it; support runs from it to the MTP joint (toes excluded, conservatively).
+- *Data handling.* `tools/build_segment_datasets.py` generates both datasets from the kept copies; a test regenerates them and checks they match, and checks each copy's SHA-256.
+- *Consequences for the exit criterion.* “Every sourced value traces to a page and row of de Leva Table 4 and was checked by the reviewer against the paper” becomes: every sourced value traces to a row and column of the kept source files, or to the model file's XML path, and the reviewer checks the generator against those files. Checking against the paper itself stays open (open concern 6).
+
+*Amendment 2 open concerns.* 6. de Leva values not checked against the paper; male reference sizes from one machine reading. 7. Gait2392 stature: documented 1.8 m, measured geometry possibly about 1.66 m; this sets the female and male scale. 8. The radius-of-gyration column choice is an interpretation. 9. The de Leva bodies borrow Gait2392's HAT shape and foot geometry.
+
+*Build record and proposals for Corbin (Stage D1, `phase-d/claude-d1-squat`).*
+- **New files:** `ontology/lower_limb_sagittal.yaml` (module 0.1.0: knee, ankle, subtalar and MTP joints, knee and ankle coordinates, tibia, talus, calcaneus, shank, foot, head, trunk, arm and HAT segments, whole body, Gait2392 body frames, model view `squat_d1`); `ontology/quantitative_data/segments_gait2392.yaml` (29 observations) and `segments_de_leva_1996.yaml` (28), generated by `tools/build_segment_datasets.py`; `sources/vendor/` (three source files, hashes recorded); `src/squat_d1.py`; `config/phase_d1_squat.yaml`; `tools/run_phase_d1.py`; `tools/build_squat_page.py`; `tests/test_phase_d1.py` (33 tests).
+- **Loader (C5 finding 1, resolved):** `AnatomyOntology` reads several module files; a module must name the ontology it extends, may not redefine any key, and is validated with the others. The schema's `ontology` field takes a list. LB-QPS 0.6.0.
+- **Proposals in this build (scientific content or interfaces; Corbin decides with the PR):** (a) five new bounds: mass fraction in (0, 1), centre-of-mass fraction in [0, 1], radius of gyration fraction > 0, body mass > 0, stature > 0; (b) new properties `mass_fraction`, `center_of_mass_fraction`, `radius_of_gyration_fraction` (segment) and `body_mass`, `stature` (new class `WholeBody`); (c) `joint_center_position` definition generalized from “hip joint center” to any joint, and applicable to the new class `ModelJoint` (the Gait2392 low-back joint); (d) new class `SynovialHingeJoint` under `SynovialJoint` for knee and ankle; (e) a transformation step may output a vector, and the traceability gate's check (d) compares vectors; (f) the Phase B manifest now lists the second ontology file among its inputs, because the validator loads it.
+- **Earlier tests adapted (no change to what they protect):** two fixtures copy the new module file with `hip.yaml`; the D-049 bound test counts the 14 approved bounds separately from the five D-058 bounds; the Phase C growth test (C5) now adds a stub module file, because the knee stub it used now exists.
+
+*A3 change found while building.* A single forward integration over the whole squat is unstable (an upright chain driven open-loop amplifies rounding errors exponentially, time constant of order 0.2 s), so the forward round trip is checked one RK4 step at a time from the exact state at 60 times over the motion; the one-step error falls 32-fold per halving of the step, as fourth-order theory predicts.
+
+
 ---
 
 ## 6. Open items
@@ -1552,10 +1584,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | Review Claude's Reviewer skill (D-054 open concern 1) | ChatGPT | Any time |
 | ~~Phase C build (D-055, C1–C6)~~ Accepted at `506ece5` (Q36), merged (A-8) | Claude; ChatGPT; Corbin | Done |
 | ~~Phase D (planar squat): confirm builder and reviewer roles~~ Claude builds (Q38); reviewer read as ChatGPT (interpretation of Q38) | Corbin | Done |
-| Approve, amend or reject D-058 (Phase D stages; Stage D1 scope) | ChatGPT review, then Corbin | Before the D1 build |
+| ~~Approve, amend or reject D-058~~ Accepted at `787e5a6` (Q40, A-10) | ChatGPT review, then Corbin | Done |
+| Review the Stage D1 build (D-058 with Amendments 1 and 2), including the generator against the kept source files | ChatGPT; then Corbin | Next |
+| Check the de Leva values and reference sizes against the paper itself (D-058 open concern 6) | Anyone with access to the paper | Before results are cited |
 | ~~Source-list rule in the role skills (D-057 Amendment 1)~~ Merged (A-9); reinstalled in both models (Q38, reported by Corbin) | ChatGPT; Corbin | Done |
 | Decide D-056 (meaning of Arnold `Fmax`). Quotes checked against the PDF by Claude (D-056 Amendment 1); ChatGPT could not open the source (P19-01) | Corbin | Before Phase D's force law |
-| Ontology loader accepts only one module file (`ontology: hip.yaml`); a separate knee module needs multi-file loading (C5 finding 1). Knee coordinate convention source needed (C5 finding 3) | Phase D builder | Start of Phase D |
+| ~~Ontology loader accepts only one module file (C5 finding 1)~~ Multi-file loading added (D-058 Amendment 2). Knee coordinate convention: declared model convention (D-058 A4) | Phase D builder | Done |
 | Items deferred by D-055 to their first use: D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases | Builder of the phase that first needs each | On first use |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
 
@@ -1580,6 +1614,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 14 | 2026-10-27 | Claude | Q35–Q37 and A-8 added to §4 with a note on the Q36/Q37 change; D-055 implementation and review status (accepted at `506ece5`); D-057 Accepted (Q37) and Amendment 1 (rule in both skills); open items | Q36, Q37, A-8; skills PR pending ChatGPT review and merge by Corbin |
 | 15 | 2026-10-28 | Claude | A-9, Q38, Q39 added to §4 with an interpretation of Q38; new Part VIII with D-058 (Proposed); open items | Q38, Q39; pending ChatGPT review and Corbin's decision |
 | 15a | 2026-10-28 | Claude | D-058 Amendment 1 after ChatGPT's review (AMEND, P21-01 to P21-05): mass inventory and normalization; HAT pose as declared assumptions; checks restated as verification of idealized mechanics with independent oracles, residuals and tolerances; contact feasibility; source gates and reference axes; revised D1 exit criterion | Pending ChatGPT re-review and Corbin's decision |
+| 16 | 2026-10-28 | Claude | A-10, Q40–Q44 added to §4 with notes; D-058 Accepted (Q40) and Amendment 2 (sources, three bodies, radius column, foot assumptions, one-step round trip); open items | Q40–Q44; Stage D1 PR pending ChatGPT review and merge by Corbin |
 
 ## 8. References
 

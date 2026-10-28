@@ -59,7 +59,8 @@ class TransformationStep(Strict):
     operation: StrictStr
     input_value: Optional[Number] = None
     input_unit: Optional[StrictStr] = None
-    output_value: Optional[Number] = None
+    # A vector-valued datum may end with a step whose output is the vector (D-058).
+    output_value: Optional[Union[Number, List[Number]]] = None
     output_unit: Optional[StrictStr] = None
     formula: Optional[StrictStr] = None
 

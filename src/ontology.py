@@ -1,15 +1,46 @@
 from pathlib import Path
 import yaml
 
+MERGED_BLOCKS=("entities","sources","class_hierarchy","models")
+
+
 class AnatomyOntology:
+    """The LB-AO ontology, from one file or several module files (D-058 item 7).
+
+    The first file is the primary module: it carries the `ontology` header and the
+    controlled relationship vocabulary. Each further module file contributes entities,
+    sources, class_hierarchy entries and model views. An ID defined in two files is an
+    error, so adding a module can never silently replace an existing entity. References
+    are validated across all files together.
+    """
     def __init__(self,path):
-        self.path=Path(path)
+        paths=[Path(p) for p in path] if isinstance(path,(list,tuple)) else [Path(path)]
+        if not paths: raise ValueError("at least one ontology file required")
+        self.paths=paths
+        self.path=paths[0]
         self.data=yaml.safe_load(self.path.read_text(encoding="utf-8"))
+        for block in MERGED_BLOCKS:
+            self.data[block]=dict(self.data.get(block) or {})
+        self.modules=[{"file":self.path.name,"module":self.data["ontology"].get("module")}]
+        for extra in paths[1:]:
+            module=yaml.safe_load(extra.read_text(encoding="utf-8"))
+            header=module.get("ontology_module") or {}
+            if header.get("extends")!=self.data["ontology"]["id"]:
+                raise ValueError(f"{extra.name}: ontology_module.extends must be {self.data['ontology']['id']}")
+            unknown=set(module)-set(MERGED_BLOCKS)-{"ontology_module"}
+            if unknown:
+                raise ValueError(f"{extra.name}: unsupported blocks {sorted(unknown)}")
+            for block in MERGED_BLOCKS:
+                for key,value in (module.get(block) or {}).items():
+                    if key in self.data[block]:
+                        raise ValueError(f"{extra.name}: {block} key {key} is already defined")
+                    self.data[block][key]=value
+            self.modules.append({"file":extra.name,"module":header.get("module")})
         self.entities=self.data["entities"]
         self.relationship_types=set(self.data["relationship_types"])
-        self.sources=self.data.get("sources",{})
+        self.sources=self.data["sources"]
         # IS_A hierarchy between entity classes: {child_class: parent_class} (D-031)
-        self.class_hierarchy=self.data.get("class_hierarchy",{}) or {}
+        self.class_hierarchy=self.data["class_hierarchy"]
         self.validate()
     def get(self,eid): return self.entities[eid]
     def find(self,*,entity_class=None,side=None,name_contains=None):
