@@ -274,14 +274,23 @@ def test_closed_form_double_pendulum():
     assert np.max(np.abs(tau[1] - Q2)) < TOL["closed_form_N_m"]
 
 
-def test_forward_round_trip_converges(bodies, motion):
-    """Torques from Newton-Euler drive the Lagrange equations one RK4 step forward and land
-    on the prescribed motion. The one-step error should fall about 32-fold per halving of
-    the step (local error of order step^5); 16 is required, leaving margin."""
+def test_local_one_step_consistency(bodies, motion):
+    """Newton-Euler torques drive the Lagrange equations one RK4 step from the exact state;
+    the local error falls about 32-fold per halving (order step^5); 16 is required."""
     for b in bodies.values():
-        errors = [sq.rk4_round_trip(b, motion, G, h) for h in (0.004, 0.002, 0.001)]
-        assert errors[2] < TOL["round_trip_one_step_rad_at_1ms"]
+        errors = [sq.local_step_error(b, motion, G, h) for h in (0.004, 0.002, 0.001)]
+        assert errors[2] < TOL["local_one_step_rad_at_1ms"]
         assert errors[0] / errors[1] > 16 and errors[1] / errors[2] > 16, errors
+
+
+def test_short_horizon_forward_reproduction(bodies, motion):
+    """0.1 s forward runs from exact states reproduce the motion; global error falls about
+    16-fold per halving (order step^4); 12 is required. Replaces whole-motion recovery
+    (D-058 Amendment 3, Q47)."""
+    for name in ("female", "gait2392"):
+        errors = [sq.short_horizon_error(bodies[name], motion, G, h, starts=6) for h in (0.004, 0.002, 0.001)]
+        assert errors[2] < TOL["short_horizon_0p1s_rad_at_1ms"]
+        assert errors[0] / errors[1] > 12 and errors[1] / errors[2] > 12, errors
 
 
 # ----------------------------------------------------------- contact and config
@@ -326,3 +335,63 @@ def test_config_rejects_bad_input(tmp_path, change, message):
 def test_unknown_body_rejected(schema):
     with pytest.raises(ValueError, match="unknown body"):
         sq.build_body("child", schema)
+
+
+# ------------------------------------------------- review D1-R01, D1-R05, D1-R06
+def test_lift_off_is_flagged_and_serializable(bodies):
+    """A motion fast enough to unload the foot: no centre of pressure there, flagged, and the
+    manifest series still serializes (non-finite values become null)."""
+    from tools.run_phase_d1 import _round
+    params = dict(PARAMS, period=0.35)
+    r = sq.run(bodies["female"], params)
+    c = r["contact"]
+    assert c["lift_off_samples"] > 0 and not c["feasible"]
+    assert c["required_friction_max"] is None
+    series = _round(r["cop_x"])
+    assert None in series and all(x is None or math.isfinite(x) for x in series)
+
+
+def test_zero_or_reversed_support_rejected(bodies):
+    b = deepcopy(bodies["female"])
+    b.foot.ball = b.foot.heel.copy()
+    with pytest.raises(ValueError, match="foot support"):
+        sq.run(b, PARAMS)
+
+
+def test_runner_fails_closed_when_a_check_fails(bodies, schema):
+    from tools import run_phase_d1 as rp
+    strict = {k: 0.0 for k in TOL}
+    run = rp.run_body("female", schema, PARAMS, strict)
+    assert run["status"]["mechanics_verification"] == "failed"
+    manifest = {"runs": [run], "status": rp.aggregate_status([run])}
+    assert manifest["status"]["mechanics_verification"] == "failed"
+    assert rp.exit_code(manifest) == 1
+    text = "\n".join(rp.summary_lines(manifest))
+    assert "MECHANICS CHECKS FAILED" in text and "verified" not in text.lower().replace("verification", "")
+
+
+def test_runner_statuses_are_separate(bodies, schema):
+    from tools import run_phase_d1 as rp
+    ok = rp.run_body("female", schema, PARAMS, TOL)
+    assert ok["status"] == {"mechanics_verification": "passed", "contact_feasibility": "feasible",
+                            "source_validation": "provisional"}
+    flagged = rp.run_body("female", schema, dict(PARAMS, depth_angles=np.array([0.2, 1.6, 0.6])), TOL)
+    assert flagged["status"]["mechanics_verification"] == "passed"
+    assert flagged["status"]["contact_feasibility"] == "flagged"
+    manifest = {"runs": [ok, flagged], "status": rp.aggregate_status([ok, flagged])}
+    assert manifest["status"]["contact_feasibility"] == "flagged" and rp.exit_code(manifest) == 0
+    assert any("Contact flagged" in line for line in rp.summary_lines(manifest))
+    with pytest.raises(ValueError):
+        rp.aggregate_status([])
+
+
+def test_sensitivity_analysis(schema):
+    from tools import sensitivity_d1 as sens
+    result = sens.analyse()
+    for name, rows in result["bodies"].items():
+        base = rows[0]
+        assert base["case"] == "baseline" and all(v == 0 for v in base["largest_change_at_any_instant_N_m"].values())
+        assert all(r["contact_feasible"] for r in rows), name
+    female = {r["case"]: r for r in result["bodies"]["female"]}
+    assert female["gait2392_stature_1.66m"]["knee_peak_change_pct"] > 5      # shorter reference: larger body scale
+    assert female["hat_com_+2cm"]["largest_change_at_any_instant_N_m"]["hip"] > 1

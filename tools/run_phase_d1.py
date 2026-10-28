@@ -9,6 +9,8 @@ residual of every mechanics check for this run. The checks verify idealized mech
 they are not validation against measured squats (D-058 Amendment 1, A3).
 """
 import argparse
+import math
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -41,7 +43,18 @@ INPUTS = {
 
 
 def _round(a, digits=9):
-    return np.round(np.asarray(a, float), digits).tolist()
+    """Rounded list; values that are not finite (e.g. no centre of pressure without contact) become null."""
+    return [None if not math.isfinite(x) else x for x in np.round(np.asarray(a, float), digits).tolist()]
+
+
+SOURCE_VALIDATION = {
+    "status": "provisional",
+    "de_leva_values": ("taken from the BMC open-data reproduction and matched by a second reproduction (HAS-Motion "
+                       "wiki); NOT checked against the paper. Male reference size has a single machine reading "
+                       "(D-058 Amendment 3, Q46)"),
+    "gait2392_values": "read from the OpenSim model file and its documentation; documented stature 'about 1.8 m'",
+    "biological_validity": "not established; the model is not validated against measured squats",
+}
 
 
 def check_residuals(body, params, result):
@@ -60,7 +73,8 @@ def check_residuals(body, params, result):
         "energy_W": float(np.max(np.abs(np.sum(tau * qd, axis=0) - sq.energy_rate(body, q, qd, qdd, g)))),
         "newton_identity_per_leg_N": float(np.max(np.abs(res["grf"][1] - per_leg))),
         "newton_identity_whole_body_N": float(np.max(np.abs(2 * res["grf"][1] - m * (g + acc[1])))),
-        "round_trip_one_step_rad_at_1ms": sq.rk4_round_trip(body, result["motion"], g, 0.001),
+        "local_one_step_rad_at_1ms": sq.local_step_error(body, result["motion"], g, 0.001),
+        "short_horizon_0p1s_rad_at_1ms": sq.short_horizon_error(body, result["motion"], g, 0.001),
         "mass_bookkeeping_relative": float(2 * body.per_leg_mass() / body.body_mass - 1),
     }
 
@@ -75,14 +89,20 @@ def run_body(name, schema, params, tolerances):
     passed["newton_identity_per_leg_N"] = checks["newton_identity_per_leg_N"] <= limits["newton_identity_N"]
     passed["newton_identity_whole_body_N"] = checks["newton_identity_whole_body_N"] <= limits["newton_identity_N"]
     passed["mass_bookkeeping_relative"] = abs(checks["mass_bookkeeping_relative"]) <= limits["mass_fraction_sum"]
+    if set(passed) != set(checks):  # every check must have a tolerance; none is skipped silently
+        raise ValueError(f"checks without a tolerance: {sorted(set(checks) - set(passed))}")
     seg = {n: {"mass_kg": s.mass, "inertia_kg_m2": s.inertia, "com_m": _round(s.com), "upper_joint_m": _round(s.upper)}
            for n, s in body.segments.items()}
     pts = result["points"]
     hat_top = pts["hip"] + np.einsum("ijn,j->in", np.stack([
         np.stack([np.cos(result["phi"][2]), -np.sin(result["phi"][2])]),
         np.stack([np.sin(result["phi"][2]), np.cos(result["phi"][2])])]), 2 * body.segments["hat"].com)
+    mechanics = "passed" if all(passed.values()) else "failed"
+    contact = "feasible" if result["contact"]["feasible"] else "flagged"
     return {
         "body": name, "body_mass_kg": body.body_mass, "stature_m": body.stature,
+        "status": {"mechanics_verification": mechanics, "contact_feasibility": contact,
+                   "source_validation": SOURCE_VALIDATION["status"]},
         "segments_per_leg": seg,
         "foot": {"mass_kg": body.foot.mass, "com_m": _round(body.foot.com), "heel_m": _round(body.foot.heel),
                  "ball_m": _round(body.foot.ball), "ground_y_m": body.foot.ground_y},
@@ -108,6 +128,7 @@ def build_manifest(commit_sha, config_path=CONFIG):
     paths = dict(INPUTS, config=config_path)
     manifest = manifest_header(ROOT, {k: str(v) for k, v in paths.items()}, commit_sha)
     manifest.update({
+        "status": None,  # filled in below from the runs
         "decision": "D-058 (Amendments 1 and 2)", "model_id": cfg["model_id"],
         "what_the_checks_show": ("Verification of idealized mechanics: the equations of the stated model are solved "
                                  "correctly. Not validation against measured squats."),
@@ -117,9 +138,45 @@ def build_manifest(commit_sha, config_path=CONFIG):
                         "points": "positions relative to the ankle centre, metres"},
         "configuration": cfg,
         "runs": [run_body(name, schema, params, cfg["tolerances"]) for name in cfg["bodies"]],
+        "source_validation": SOURCE_VALIDATION,
         "hat_drawing_note": "hat_drawing_top = hip + 2 x HAT centre-of-mass vector: for drawing the upper body only, not a landmark",
     })
+    manifest["status"] = aggregate_status(manifest["runs"])
     return manifest
+
+
+def aggregate_status(runs):
+    """Top-level status from the runs: any failed or flagged run makes the whole manifest so."""
+    if not runs:
+        raise ValueError("no runs")
+    return {
+        "mechanics_verification": "passed" if all(r["status"]["mechanics_verification"] == "passed" for r in runs) else "failed",
+        "contact_feasibility": "feasible" if all(r["status"]["contact_feasibility"] == "feasible" for r in runs) else "flagged",
+        "source_validation": SOURCE_VALIDATION["status"],
+    }
+
+
+def summary_lines(manifest):
+    lines = []
+    for r in manifest["runs"]:
+        s = r["status"]
+        failed = [k for k, ok in r["checks"]["passed"].items() if not ok]
+        lines.append(f"{r['body']}: mechanics {s['mechanics_verification'].upper()}"
+                     + (f" ({', '.join(failed)})" if failed else "")
+                     + f"; contact {s['contact_feasibility'].upper()}; sources {s['source_validation']}")
+    s = manifest["status"]
+    if s["mechanics_verification"] == "passed":
+        lines.append("Idealized mechanics verified for every body. Not validated against measured squats.")
+    else:
+        lines.append("MECHANICS CHECKS FAILED: this manifest must not be used as a result.")
+    if s["contact_feasibility"] != "feasible":
+        lines.append("Contact flagged for at least one body: the motion is not feasible as an idealized flat-foot squat there.")
+    return lines
+
+
+def exit_code(manifest):
+    """1 when any mechanics check failed; 0 otherwise (contact flags are reported, not errors)."""
+    return 0 if manifest["status"]["mechanics_verification"] == "passed" else 1
 
 
 def main():
@@ -131,10 +188,10 @@ def main():
     manifest = build_manifest(args.commit_sha, args.config)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(serialize_manifest(manifest), encoding="utf-8")
-    for run in manifest["runs"]:
-        print(f"{run['body']}: checks {'passed' if run['checks']['all_passed'] else 'FAILED'}, "
-              f"contact {'feasible' if run['contact']['feasible'] else 'FLAGGED'}")
-    print("Manifest written to", args.output, "(idealized mechanics verified; not validated against measured squats)")
+    for line in summary_lines(manifest):
+        print(line)
+    print("Manifest written to", args.output)
+    sys.exit(exit_code(manifest))
 
 
 if __name__ == "__main__":

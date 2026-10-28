@@ -22,10 +22,11 @@ def compact(manifest):
             "mass": r["body_mass_kg"], "stature": r["stature_m"],
             "t": s["t_s"], "q": s["q_rad"], "tau": s["tau_per_leg_N_m"], "grf": s["grf_per_leg_N"],
             "cop": s["cop_x_m"], "pts": s["points_m"], "foot": r["foot"],
-            "contact": r["contact"], "checks": r["checks"],
+            "contact": r["contact"], "checks": r["checks"], "status": r["status"],
         })
     return {"commit": manifest["commit_sha"], "provenance": manifest["commit_provenance_status"],
-            "validity": manifest["validity"], "runs": runs}
+            "validity": manifest["validity"], "status": manifest["status"],
+            "source_validation": manifest["source_validation"], "runs": runs}
 
 
 TEMPLATE = r"""<title>LB-AO Squat Viewer</title>
@@ -62,6 +63,8 @@ h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 
 .badge { justify-self: start; display: inline-flex; gap: 8px; align-items: center; font-size: 13px; padding: 4px 10px;
   border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-2) }
 .badge b { color: var(--ok); font-weight: 700 }
+.badge b.flag { color: var(--flag) }
+.badge b.prov { color: var(--ink-2) }
 .controls { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center }
 .seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 8px; overflow: hidden }
 .seg button { font: inherit; font-size: 14px; padding: 7px 12px; border: 0; background: var(--surface); color: var(--ink-2); cursor: pointer }
@@ -142,7 +145,8 @@ footer a { color: var(--accent) }
       <ul class="notes">
         <li>The checks show the equations are solved correctly for an idealized model. They do not validate it against measured squats.</li>
         <li>The squat motion is a demonstration, chosen so the foot stays balanced; it is not taken from motion capture.</li>
-        <li>Segment masses and proportions: de Leva (1996) for the female and male bodies, scaled to their height from the OpenSim Gait2392 geometry; Gait2392 as published for the reference body.</li>
+        <li>Segment masses and proportions: de Leva (1996) for the female and male bodies, scaled to their height from the OpenSim Gait2392 geometry; Gait2392 as published for the reference body. The de Leva values are provisional: two independent copies agree, but they have not been checked against the paper.</li>
+        <li>The largest uncertainties: Gait2392's true height (1.8 m documented, about 1.66 m measured by one user) changes knee torque by about 9%, and where the knee centre sits changes it by about 8%. Details in the sensitivity analysis.</li>
         <li>No muscles yet. A net joint torque is the sum of everything acting at the joint (Stage D2 adds muscles).</li>
         <li>The upper body is drawn as a line through its centre of mass, for illustration only.</li>
       </ul>
@@ -289,9 +293,14 @@ function tick(ts) {
 }
 document.getElementById("scrub").max = N() - 1;
 const fv = DATA.validity;
-document.getElementById("badge").innerHTML = `<b>Mechanics verified</b> for an idealized model · not validated against measured squats`;
+const st = DATA.status;
+document.getElementById("badge").innerHTML = (st.mechanics_verification === "passed"
+    ? `<b>Mechanics verified</b> for an idealized model` : `<b class="flag">Mechanics checks FAILED</b> do not use these results`)
+  + ` · ` + (st.contact_feasibility === "feasible" ? `<b>Contact feasible</b>` : `<b class="flag">Contact flagged</b>`)
+  + ` · <b class="prov">Sources provisional</b> · not validated against measured squats`;
 document.getElementById("foot").innerHTML = `
   <div>${fv.kind.charAt(0).toUpperCase() + fv.kind.slice(1)}. Physiological validity: ${fv.physiological_validity}. Clinical validity: ${fv.clinical_validity}.</div>
+  <div>Status: mechanics ${st.mechanics_verification}; contact ${st.contact_feasibility}; sources ${st.source_validation} (${DATA.source_validation.de_leva_values}).</div>
   <div>Run manifest at commit <code>${DATA.commit.slice(0, 12)}</code> · provenance <code>${DATA.provenance}</code> · decision D-058.</div>
   <div>Sources: de Leva P (1996) J Biomech 29(9):1223–1230, via the open data of Duarte M, <a href="https://github.com/BMClab/BMC" target="_blank" rel="noopener">BMClab/BMC</a> (CC BY 4.0); OpenSim Gait2392, <a href="https://github.com/opensim-org/opensim-models" target="_blank" rel="noopener">opensim-org/opensim-models</a> (CC BY 3.0).</div>`;
 syncPlay(); buildCharts(); facts(); draw(); requestAnimationFrame(tick);

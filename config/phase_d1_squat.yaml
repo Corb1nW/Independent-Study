@@ -32,5 +32,6 @@ tolerances:
   energy_W: 1.0e-8
   newton_identity_N: 1.0e-8
   closed_form_N_m: 1.0e-10
-  round_trip_one_step_rad_at_1ms: 1.0e-10
+  local_one_step_rad_at_1ms: 1.0e-10
+  short_horizon_0p1s_rad_at_1ms: 1.0e-9
   mass_fraction_sum: 2.0e-4

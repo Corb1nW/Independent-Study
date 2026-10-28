@@ -138,10 +138,16 @@ def assemble_hat(parts):
     return m, c, inertia
 
 
-def build_body(name, schema=None):
-    """Return the per-leg Body for 'gait2392', 'female' or 'male'."""
+def build_body(name, schema=None, gait2392_stature=None):
+    """Return the per-leg Body for 'gait2392', 'female' or 'male'.
+
+    `gait2392_stature` replaces the documented Gait2392 stature in the scale factor of the
+    female and male bodies; it exists only for the sensitivity analysis (D1-R05).
+    """
     schema = schema or QuantitativeSchema(ROOT / "ontology" / "quantitative_schema.yaml")
     g, g_used = gait2392_geometry(schema)
+    if gait2392_stature is not None:
+        g["stature"] = float(gait2392_stature)
     knee, ankle = g["KNEE_R"], g["ANKLE_R"]
     if name == "gait2392":
         thigh = Segment(g["FEMUR_R"]["m"], g["FEMUR_R"]["I"], g["FEMUR_R"]["c"] - knee, -knee)
@@ -405,36 +411,68 @@ def static_torques(body, q, gravity):
     return np.array(out)
 
 
-def rk4_round_trip(body, motion, gravity, step, starts=60):
-    """One-step round trip: Newton-Euler torques drive the Lagrange equations forward.
-
-    From the exact state at `starts` times spread over the motion, take one RK4 step of
-    the Lagrange equations driven by the Newton-Euler torques, and return the largest
-    joint-angle error against the exact motion at the end of the step. A correct pair
-    of formulations gives an error of order step^5 (about 32 times smaller per halving).
-
-    A single integration over the whole squat is not used: an upright chain driven
-    open-loop is unstable, so rounding errors grow exponentially (time constant of
-    order 0.2 s) and swamp the comparison. That growth is real dynamics, not a fault.
-    """
+def _driven_rhs(body, motion, gravity):
     def torque(t):
         q, qd, qdd = motion(np.array([t]))
         return inverse_dynamics(body, q, qd, qdd, gravity)["tau"][:, 0]
 
     def rhs(t, y):
         return np.concatenate([y[3:], forward_step_accel(body, y[:3], y[3:], torque(t), gravity)])
+    return rhs
 
+
+def _rk4(rhs, t, y, step):
+    k1 = rhs(t, y)
+    k2 = rhs(t + step / 2, y + step / 2 * k1)
+    k3 = rhs(t + step / 2, y + step / 2 * k2)
+    k4 = rhs(t + step, y + step * k3)
+    return y + step / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+
+
+def _exact_state(motion, t):
+    q, qd, _ = motion(np.array([t]))
+    return np.concatenate([q[:, 0], qd[:, 0]])
+
+
+def local_step_error(body, motion, gravity, step, starts=60):
+    """Local one-step consistency: Newton-Euler torques drive the Lagrange equations.
+
+    From the exact state at `starts` times spread over the motion, take ONE RK4 step and
+    return the largest joint-angle error against the exact motion at the end of the step.
+    Consistent formulations give an error of order step^5 (about 32 times smaller per
+    halving). This is a local check: it does not by itself show that the whole motion is
+    reproduced (see short_horizon_error and D-058 Amendment 3).
+    """
+    rhs = _driven_rhs(body, motion, gravity)
     err = 0.0
     for t in np.linspace(0.0, motion.period - step, starts):
-        q0, qd0, _ = motion(np.array([t]))
-        y = np.concatenate([q0[:, 0], qd0[:, 0]])
-        k1 = rhs(t, y)
-        k2 = rhs(t + step / 2, y + step / 2 * k1)
-        k3 = rhs(t + step / 2, y + step / 2 * k2)
-        k4 = rhs(t + step, y + step * k3)
-        y = y + step / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
-        q_true, _, _ = motion(np.array([t + step]))
-        err = max(err, float(np.max(np.abs(y[:3] - q_true[:, 0]))))
+        y = _rk4(rhs, t, _exact_state(motion, t), step)
+        err = max(err, float(np.max(np.abs(y[:3] - _exact_state(motion, t + step)[:3]))))
+    return err
+
+
+def short_horizon_error(body, motion, gravity, step, horizon=0.1, starts=12):
+    """Short-horizon forward reproduction: integrate for `horizon` seconds from exact states.
+
+    From `starts` exact states spread over the motion, integrate the Lagrange equations
+    driven by the Newton-Euler torques for `horizon` seconds with RK4, and return the
+    largest joint-angle error along the way. Consistent formulations give a global error of
+    order step^4 (about 16 times smaller per halving).
+
+    The whole 3 s squat is not integrated in one run: an upright chain driven open-loop is
+    unstable, so errors grow exponentially (time constant of order 0.2 s) and the run
+    would test the instability rather than the equations. A 0.1 s horizon is short enough
+    for that growth to stay small (D-058 Amendment 3, approved by Corbin, Q47).
+    """
+    rhs = _driven_rhs(body, motion, gravity)
+    n = int(round(horizon / step))
+    err = 0.0
+    for t0 in np.linspace(0.0, motion.period - horizon, starts):
+        y, t = _exact_state(motion, t0), t0
+        for _ in range(n):
+            y = _rk4(rhs, t, y, step)
+            t += step
+            err = max(err, float(np.max(np.abs(y[:3] - _exact_state(motion, t)[:3]))))
     return err
 
 
@@ -476,19 +514,26 @@ def run(body, params):
     t = np.linspace(0.0, params["period"], int(params["samples"]))
     q, qd, qdd = motion(t)
     g = params["gravity"]
+    foot = body.foot
+    if not float(foot.ball[0]) > float(foot.heel[0]):
+        raise ValueError("foot support must run forward from heel to ball (positive length)")
     res = inverse_dynamics(body, q, qd, qdd, g)
     grf, cop = res["grf"], res["cop_x"]
-    foot = body.foot
+    in_contact = grf[1] > 0                     # zero or negative normal force: no contact
+    cop = np.where(in_contact & np.isfinite(cop), cop, np.nan)
     with np.errstate(divide="ignore", invalid="ignore"):
-        friction = np.abs(grf[0]) / grf[1]
+        friction = np.where(in_contact, np.abs(grf[0]) / grf[1], np.inf)
     k = res["kinematics"]
+    outside = ~np.isfinite(cop) | (cop < foot.heel[0]) | (cop > foot.ball[0])
+    finite_cop = cop[np.isfinite(cop)]
     contact = {
         "normal_force_min_N": float(np.min(grf[1])),
-        "lift_off_samples": int(np.sum(grf[1] < 0)),
-        "cop_min_m": float(np.min(cop)), "cop_max_m": float(np.max(cop)),
+        "lift_off_samples": int(np.sum(~in_contact)),
+        "cop_min_m": float(np.min(finite_cop)) if finite_cop.size else None,
+        "cop_max_m": float(np.max(finite_cop)) if finite_cop.size else None,
         "support_heel_m": float(foot.heel[0]), "support_ball_m": float(foot.ball[0]),
-        "cop_outside_support_samples": int(np.sum((cop < foot.heel[0]) | (cop > foot.ball[0]))),
-        "required_friction_max": float(np.nanmax(friction)),
+        "cop_outside_support_samples": int(np.sum(outside)),
+        "required_friction_max": float(np.max(friction)) if np.all(np.isfinite(friction)) else None,
         "friction_coefficient_assumed": params["friction_coefficient"],
         "friction_exceeded_samples": int(np.sum(friction > params["friction_coefficient"])),
     }
