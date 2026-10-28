@@ -125,6 +125,13 @@ class Derivation(Strict):
     assumptions: List[StrictStr] = []
 
 
+class Normalization(Strict):
+    """Normalizing length of a normalized quantity (D-055 C3)."""
+    length_property: StrictStr
+    reference_observation: Optional[StrictStr] = None
+    basis: Optional[StrictStr] = None
+
+
 class Datum(Strict):
     target: Target
     property_id: StrictStr
@@ -142,6 +149,7 @@ class Datum(Strict):
     quality: Optional[Quality] = None
     symmetry_policy: Optional[SymmetryPolicy] = None
     derivation: Optional[Derivation] = None
+    normalization: Optional[Normalization] = None
     status: StrictStr
 
 
