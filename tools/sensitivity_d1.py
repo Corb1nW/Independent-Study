@@ -1,6 +1,12 @@
 """Sensitivity of the Stage D1 results to its modeling assumptions (D-058 Amendment 3, review D1-R05).
 
-    python -m tools.sensitivity_d1 --output results/phase_d/<date>_d1_sensitivity_<shortsha>.json
+    python -m tools.sensitivity_d1 --commit-sha FULL_40_CHAR_SHA \
+        --output results/phase_d/<date>_d1_sensitivity_<shortsha>.json \
+        --markdown results/phase_d/<date>_d1_sensitivity_<shortsha>.md
+
+The output carries the same verified commit and input header as the run manifest
+(D-055 C1; review D1-R08): the commit must be HEAD of a clean checkout and every
+consumed file must equal its committed version, or the tool stops.
 
 Each case changes ONE assumption and reruns the same prescribed squat. The size of each
 change is stated with its basis; sizes marked "demonstration" are round values chosen to
@@ -10,31 +16,36 @@ pressure to the edge of the support, and whether the squat stays contact-feasibl
 """
 import argparse
 import copy
-import json
-import math
+import xml.etree.ElementTree as ET
 
 import numpy as np
 
 from src import squat_d1 as sq
 from src.quantitative import QuantitativeSchema
+from src.run_manifest import manifest_header, serialize_manifest
 from tools import build_segment_datasets as bsd
+from tools.run_phase_d1 import INPUTS
 
 ROOT = sq.ROOT
 CONFIG = ROOT / "config" / "phase_d1_squat.yaml"
-
-# Knee centre at 100 deg flexion (the squat's depth) from the Gait2392 knee spline:
-# translation2 knots (-2.0944, -0.4226) and (-1.22173, -0.4082), evaluated at -1.745329 rad.
-KNEE_Y_100 = -0.4082 + (-0.4226 + 0.4082) * ((-1.7453292519943295 + 1.22173) / (-2.0944 + 1.22173))
+SENSITIVITY_INPUTS = dict(INPUTS, sensitivity_tool=ROOT / "tools/sensitivity_d1.py")
 
 
-def _with_thigh_length_change(body, delta):
-    b = copy.deepcopy(body)
-    s = b.segments["thigh"]
-    length = float(np.hypot(*s.upper))
-    new_upper = s.upper * (1 + delta / length)
-    s.com = new_upper - (s.upper - s.com)   # centre of mass keeps its distance from the hip
-    s.upper = new_upper
-    return b
+def knee_in_femur(knee_angle_rad):
+    """Gait2392 knee centre (tibia origin) in the femur frame at a knee angle, metres.
+
+    Read from the kept model file: the knee_r translation1 (x) and translation2 (y)
+    splines, linearly interpolated between the two knots next to the angle, exactly as the
+    dataset generator does for 0 rad. Gait2392's knee angle is negative in flexion.
+    """
+    root = ET.parse(bsd.OSIM).getroot()
+    knee = [j for j in root.iter("CustomJoint") if j.get("name") == "knee_r"][0]
+    out = []
+    for axis in ("translation1", "translation2"):
+        ta = [a for a in knee.iter("TransformAxis") if a.get("name") == axis][0]
+        xs, ys = bsd._vec(ta.find(".//SimmSpline/x").text), bsd._vec(ta.find(".//SimmSpline/y").text)
+        out.append(bsd._interp(xs, ys, knee_angle_rad)[0])
+    return np.array(out)
 
 
 def _with_hat(body, dx=0.0, inertia_factor=1.0):
@@ -71,11 +82,14 @@ def cases(name, schema, base):
         yield ("radius_sagittal_column",
                "thigh and shank inertia from de Leva's 'sagittal' radius instead of the 'transverse' one",
                _with_sagittal_radius(base, name))
-    delta = abs(KNEE_Y_100) - 0.39590120267799883
-    scale = base.stature / sq.gait2392_geometry(schema)[0]["stature"] if name != "gait2392" else 1.0
+    k0, k100 = knee_in_femur(0.0), knee_in_femur(-np.radians(100.0))
+    moved = sq.build_body(name, schema, knee_in_femur=k100)
+    l0, l1 = (float(np.hypot(*b.segments["thigh"].upper)) for b in (base, moved))
     yield ("knee_centre_at_100deg",
-           f"thigh {1000 * delta * scale:.1f} mm longer: Gait2392 knee centre at 100 deg flexion instead of 0 deg",
-           _with_thigh_length_change(base, delta * scale))
+           f"knee centre fixed at its Gait2392 location for 100 deg flexion instead of 0 deg "
+           f"(femur frame, unscaled: x {1000 * (k100[0] - k0[0]):+.1f} mm, y {1000 * (k100[1] - k0[1]):+.1f} mm; "
+           f"this body's thigh {1000 * (l1 - l0):+.1f} mm); thigh rebuilt as usual around the new knee",
+           moved)
     for dx in (-0.02, 0.02):
         yield (f"hat_com_{'+' if dx > 0 else '-'}2cm", f"HAT centre of mass {dx * 100:+.0f} cm anterior (demonstration)",
                _with_hat(base, dx=dx))
@@ -102,6 +116,7 @@ def summarize(body, params, ref_tau=None):
 
 
 def analyse():
+    """Sensitivity rows only (no provenance); see sensitivity_manifest()."""
     cfg, params = sq.load_config(CONFIG)
     schema = QuantitativeSchema(ROOT / "ontology" / "quantitative_schema.yaml")
     out = {"what": __doc__.strip().splitlines()[0], "bodies": {}}
@@ -123,8 +138,20 @@ def analyse():
     return out
 
 
+def sensitivity_manifest(commit_sha):
+    """Sensitivity results under the verified commit and input header (D1-R08)."""
+    manifest = manifest_header(ROOT, {k: str(v) for k, v in SENSITIVITY_INPUTS.items()}, commit_sha)
+    manifest.update(analyse())
+    manifest["note"] = ("Each case changes one assumption. Perturbation sizes marked 'demonstration' show "
+                        "sensitivity; they are not estimates of real uncertainty.")
+    return manifest
+
+
 def markdown(result):
     lines = []
+    if "commit_sha" in result:
+        lines += [f"Commit `{result['commit_sha']}` · provenance `{result['commit_provenance_status']}` · "
+                  f"{len(result['verified_input_files'])} verified input files", ""]
     for name, rows in result["bodies"].items():
         lines += [f"**{name}**", "", "| Case | Change | Largest change at any instant, ankle / knee / hip (N·m) | Knee peak (N·m) | Knee peak change | Smallest support margin | Feasible |",
                   "|---|---|---|---|---|---|---|"]
@@ -141,13 +168,18 @@ def markdown(result):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    p.add_argument("--commit-sha", required=True)
     p.add_argument("--output", required=True)
+    p.add_argument("--markdown")
     args = p.parse_args()
-    result = analyse()
+    result = sensitivity_manifest(args.commit_sha)
     with open(args.output, "w", encoding="utf-8") as fh:
-        json.dump(result, fh, indent=2, allow_nan=False)
-        fh.write("\n")
-    print(markdown(result))
+        fh.write(serialize_manifest(result))
+    text = markdown(result)
+    if args.markdown:
+        with open(args.markdown, "w", encoding="utf-8") as fh:
+            fh.write(text + "\n")
+    print(text)
 
 
 if __name__ == "__main__":

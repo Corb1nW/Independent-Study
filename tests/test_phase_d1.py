@@ -395,3 +395,59 @@ def test_sensitivity_analysis(schema):
     female = {r["case"]: r for r in result["bodies"]["female"]}
     assert female["gait2392_stature_1.66m"]["knee_peak_change_pct"] > 5      # shorter reference: larger body scale
     assert female["hat_com_+2cm"]["largest_change_at_any_instant_N_m"]["hip"] > 1
+
+
+# ------------------------------------------------------- review D1-R07, D1-R08
+def test_knee_sensitivity_geometry(bodies, schema):
+    """D1-R07: the knee-centre case is read from the model file and rebuilt through build_body."""
+    from tools import sensitivity_d1 as sens
+    g, _ = sq.gait2392_geometry(schema)
+    k0, k100 = sens.knee_in_femur(0.0), sens.knee_in_femur(-math.radians(100))
+    assert np.allclose(k0, g["KNEE_R"], atol=1e-15)           # same method as the dataset
+    assert k100[1] < k0[1] and k100[0] > k0[0]                # knee centre lower and more anterior
+    # Gait2392: femur centre of mass and inertia stay fixed in the femur frame.
+    gm = sq.build_body("gait2392", schema, knee_in_femur=k100)
+    t = gm.segments["thigh"]
+    assert np.allclose(t.upper, -k100) and np.allclose(t.com, g["FEMUR_R"]["c"] - k100)
+    assert t.inertia == bodies["gait2392"].segments["thigh"].inertia
+    # de Leva: centre of mass stays at its fraction of the new hip-knee line; inertia uses the new length.
+    data = schema.load_dataset(ROOT / "ontology" / "quantitative_data" / "segments_de_leva_1996.yaml")
+    for name in ("female", "male"):
+        S = name[0].upper()
+        moved = sq.build_body(name, schema, knee_in_femur=k100)
+        t = moved.segments["thigh"]
+        length = float(np.hypot(*t.upper))
+        c = data["observations"][f"LB-QD:DELEVA:{S}:THIGH:CENTER_OF_MASS_FRACTION"]["value"]
+        r = data["observations"][f"LB-QD:DELEVA:{S}:THIGH:RADIUS_OF_GYRATION_FRACTION"]["value"]
+        assert math.isclose(float(np.hypot(*(t.com - t.upper))) / length, c, rel_tol=1e-12)
+        assert math.isclose(t.inertia, t.mass * (r * length) ** 2, rel_tol=1e-12)
+        assert np.allclose(t.upper, -(moved.stature / g["stature"]) * k100)
+        s_new, s_old = moved.segments["shank"], bodies[name].segments["shank"]   # shank unchanged
+        assert np.array_equal(s_new.upper, s_old.upper) and np.array_equal(s_new.com, s_old.com)
+        assert s_new.mass == s_old.mass and s_new.inertia == s_old.inertia
+        assert length > float(np.hypot(*bodies[name].segments["thigh"].upper))
+
+
+def test_knee_sensitivity_case_effect(schema):
+    from tools import sensitivity_d1 as sens
+    rows = {r["case"]: r for r in sens.analyse()["bodies"]["female"]}
+    knee = rows["knee_centre_at_100deg"]
+    assert "100 deg" in knee["change"] and "rebuilt" in knee["change"]
+    assert knee["knee_peak_change_pct"] > 0      # longer thigh: larger knee extension torque
+
+
+def test_sensitivity_output_carries_verified_provenance():
+    """D1-R08: same header as the run manifest; a wrong commit is refused."""
+    import subprocess
+    from tools import sensitivity_d1 as sens
+    with pytest.raises(ValueError):
+        sens.sensitivity_manifest("0" * 40)
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True)
+    if head.returncode != 0:
+        pytest.skip("not a git checkout")
+    manifest = sens.sensitivity_manifest(head.stdout.strip())
+    assert manifest["commit_provenance_status"] == "verified_git_head_and_inputs"
+    assert {"sensitivity_tool", "model", "dataset_de_leva", "config"} <= set(manifest["verified_input_files"])
+    assert all(len(rec["git_blob_id"]) == 40 for rec in manifest["inputs"].values())
+    assert manifest["validity"]["physiological_validity"] == "not established"
+    assert "bodies" in manifest

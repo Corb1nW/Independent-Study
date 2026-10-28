@@ -138,16 +138,24 @@ def assemble_hat(parts):
     return m, c, inertia
 
 
-def build_body(name, schema=None, gait2392_stature=None):
+def build_body(name, schema=None, gait2392_stature=None, knee_in_femur=None):
     """Return the per-leg Body for 'gait2392', 'female' or 'male'.
 
+    Two overrides exist only for the sensitivity analysis (D1-R05, D1-R07):
     `gait2392_stature` replaces the documented Gait2392 stature in the scale factor of the
-    female and male bodies; it exists only for the sensitivity analysis (D1-R05).
+    female and male bodies; `knee_in_femur` replaces the Gait2392 knee centre (x, y in the
+    femur frame, metres, unscaled). With `knee_in_femur`, every body is rebuilt exactly as
+    usual around the new knee: Gait2392 keeps its femur centre of mass and inertia in the
+    femur frame; the de Leva bodies place the centre of mass at their fraction of the new
+    hip-to-knee line and take the inertia from their radius fraction times the new length.
+    The shank is unchanged, because its frame starts at the knee.
     """
     schema = schema or QuantitativeSchema(ROOT / "ontology" / "quantitative_schema.yaml")
     g, g_used = gait2392_geometry(schema)
     if gait2392_stature is not None:
         g["stature"] = float(gait2392_stature)
+    if knee_in_femur is not None:
+        g["KNEE_R"] = np.asarray(knee_in_femur, float)
     knee, ankle = g["KNEE_R"], g["ANKLE_R"]
     if name == "gait2392":
         thigh = Segment(g["FEMUR_R"]["m"], g["FEMUR_R"]["I"], g["FEMUR_R"]["c"] - knee, -knee)
