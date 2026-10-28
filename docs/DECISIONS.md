@@ -1402,6 +1402,8 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 **Consequences.** Phase D's force law carries a cos(pennation) term. Compartment data, if used, are new observations reviewed like any other. The Phase B pennation disclosure stays as written.
 
+**Amendment 1 (2026-10-27, after ChatGPT's review P19-01; still Proposed).** ChatGPT (AMEND at `cc541e0`) asked that D-056 stay Proposed and that no Phase D projection be built on it until the primary-source PDF is checked and Corbin decides; its own browser could not open the PMC page. Claude then read the published PDF (`https://muscle.ucsd.edu/pubs/pdf/Arnold_ABE_2010.pdf`, through a web extraction tool, 2026-10-27): the Methods sentence on maximum isometric force, Table 1 notes a and g, and the four gluteus maximus rows match the PMC text quoted above exactly. The PDF also does not state whether peak force acts along the fibers or the tendon. Its Figure 3 contains a “cos α” label in the extracted text, without explanation, consistent with a Hill-type diagram that projects fiber force by the pennation angle; this is supporting, not decisive. Zajac 1989 remains unaccessed. **Status unchanged: Proposed.** Nothing in the code uses D-056; Phase D's force law must not rely on it until Corbin decides. Verification remains author-reported; ChatGPT could not reproduce the source check.
+
 ### D-057  One source list for the whole project (`sources/`)
 - **Decision status:** Proposed. Requested by Corbin (Q34); the files and rule below are Claude's implementation of that request and await his acceptance with PR #19.
 - **Implementation status:** Implemented: `sources/README.md` (rule and how to add a source), `sources/SOURCES.md` (the list), `tests/test_sources.py`
@@ -1411,7 +1413,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - **Approval basis:** Q34 (request); acceptance pending
 - **Evidence:** `python -m pytest -q tests/test_sources.py`: 3 passed; with one registered source deleted from the list, 2 fail; with one notes link altered, 1 fails
 - **Phase:** All
-- **Open concerns:** (1) The role skills do not yet mention the rule; updating them means a skills PR and reinstalling both models (D-054). (2) Several background entries lack authors or titles in the notes; they are marked “not recorded” rather than filled in.
+- **Open concerns:** (1) The role skills do not yet mention the rule; ChatGPT recommends adding it to both skills in a separate reviewed skills PR (P19-03); Corbin decides. (2) Several background entries lack authors or titles in the notes; they are marked “not recorded” rather than filled in. (3) Automation covers registered IDs and notes links only; the list is a curated inventory, completed by a search of the decision log and reviews on 2026-10-27, which added OpenStax (named in D-009). Commit messages and PR descriptions were not searched exhaustively (ChatGPT review P19-02).
 
 **Context.** Sources were spread over the data registries, the decision log, reviews, commits and the course notes. Corbin asked for one easy-to-find folder that lists every unique source (Q34).
 
@@ -1453,7 +1455,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | Review Claude's Reviewer skill (D-054 open concern 1) | ChatGPT | Any time |
 | Phase C build (D-055, C1–C6): built on `phase-c/claude-foundations` (D-055 Amendment 1) | Claude; review ChatGPT; accept Corbin | Review next |
 | Add the source-list rule (D-057) to the Builder and Reviewer skills, if Corbin wants it there (skills PR and reinstall, D-054) | Corbin | Any time |
-| Decide D-056 (meaning of Arnold `Fmax`) after ChatGPT's independent source check, incl. checking the quotes against the PDF | ChatGPT; Corbin | Before Phase D's force law |
+| Decide D-056 (meaning of Arnold `Fmax`). Quotes checked against the PDF by Claude (D-056 Amendment 1); ChatGPT could not open the source (P19-01) | Corbin | Before Phase D's force law |
 | Ontology loader accepts only one module file (`ontology: hip.yaml`); a separate knee module needs multi-file loading (C5 finding 1). Knee coordinate convention source needed (C5 finding 3) | Phase D builder | Start of Phase D |
 | Items deferred by D-055 to their first use: D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases | Builder of the phase that first needs each | On first use |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
@@ -1475,7 +1477,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 11 | 2026-10-27 | Claude | Q19 and A-5 added to §4; D-036 and D-053 marked Implemented and Independently checked (software); official Phase B run recorded; Phase C items carried | Q19, A-5; pending merge by Corbin |
 | 12 | 2026-10-27 | Claude | Q20–Q28 and A-6 added to §4, with sources and an interpretation of Q28; new Part VII with D-054 (role skills, Proposed) and D-055 (slim Phase C, Proposed); open items updated (two stale rows corrected) | Q28 (records and housekeeping); pending ChatGPT review and merge by Corbin |
 | 12a | 2026-10-27 | Claude | Same PR, after ChatGPT's review (AMEND, R18-01 to R18-04): Q28 quote made literal with spelling notes outside it; editorial-marks note; Q29, Q30 and an interpretation of Q29; D-054 status and evidence separate merge, adoption and installation; D-055 C4 narrowed to traceability with a pass/fail contract; C6 included (Q29); open items aligned with D-055 | Q29; pending ChatGPT re-review and merge by Corbin |
-| 13 | 2026-10-27 | Claude | Q31–Q33 and A-7 added to §4; Q29 conflict resolved (Q31); D-054 and D-055 Accepted (Q32); D-040 Amendment 2 (Phase C row superseded by D-055); open items; D-055 Amendment 1 (implementation record, C5 findings); new D-056 (Proposed); Q34 and D-057 (source list, Proposed) | Q32, A-7; Phase C PR pending ChatGPT review and merge by Corbin |
+| 13 | 2026-10-27 | Claude | Q31–Q33 and A-7 added to §4; Q29 conflict resolved (Q31); D-054 and D-055 Accepted (Q32); D-040 Amendment 2 (Phase C row superseded by D-055); open items; D-055 Amendment 1 (implementation record, C5 findings); new D-056 (Proposed); Q34 and D-057 (source list, Proposed); D-056 Amendment 1 and D-057 open concerns after ChatGPT's review of PR #19 (P19-01 to P19-03) | Q32, A-7; Phase C PR pending ChatGPT review and merge by Corbin |
 
 ## 8. References
 

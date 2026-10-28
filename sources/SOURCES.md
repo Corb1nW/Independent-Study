@@ -1,6 +1,8 @@
 # Source list
 
 Every unique source the project has used. Rules and how to add one: [`README.md`](README.md).
+**How complete this is:** built on 2026-10-27 from the data registries, `Research Materials`, the sources cited in PR #19, and a search of `docs/DECISIONS.md`, `docs/reviews/` and `PROJECT_STATE.md` for author–year citations, PMC/NBK/DOI/PMID identifiers and links. Commit messages and PR descriptions were not searched exhaustively. Treat it as a curated inventory; reviewers keep checking new citations by hand (ChatGPT review P19-02).
+
 Status: **Read** = opened and used · **Cited, not accessed** = named because another source relies on it · **Background** = read for context; no claim depends on it.
 
 ## Anatomy, biomechanics and modeling (evidence)
@@ -12,6 +14,7 @@ Status: **Read** = opened and used · **Cited, not accessed** = named because an
 | — | Delp SL, Loan JP, Hoy MG, Zajac FE, Topp EL, Rosen JM (1990). An interactive graphics-based model of the lower extremity to study orthopaedic surgical procedures. *IEEE Trans Biomed Eng* 37:757–767 (as cited in Arnold 2010, ref. 13) | no link recorded | Arnold 2010 splits gluteus maximus force across compartments using its proportions (D-056) | Cited, not accessed |
 | `SRC:HIP_CAPSULE_REVIEW` | Jimenez AE, et al. (2020). Hip joint capsular anatomy, mechanics, and surgical management. *JBJS Reviews* | [PMC7406151](https://pmc.ncbi.nlm.nih.gov/articles/PMC7406151/) | Hip capsule anatomy (`hip.yaml`) | Read |
 | `SRC:STATPEARLS_ADDUCTOR_MAGNUS` | Jeno SH, Launico MV, Schindler GS. Anatomy, Bony Pelvis and Lower Limb: Thigh Adductor Magnus Muscle. *StatPearls* (updated 2023-10-24) | [NBK534842](https://www.ncbi.nlm.nih.gov/books/NBK534842/) | Adductor magnus dual innervation (D-034, `hip.yaml`) | Read |
+| — | OpenStax. *Anatomy and Physiology* (edition not recorded) | no link recorded | Named in the source hierarchy as the gross-anatomy source (D-009); no data in the project cites it yet | Cited, not accessed |
 | `SRC:OPENSIM_GAIT2392` | OpenSim documentation. Gait2392 and Gait2354 Models | [OpenSim Confluence](https://opensimconfluence.atlassian.net/wiki/spaces/OpenSim/pages/53086215) | Computational modeling reference, not anatomical ground truth (D-011, `hip.yaml`) | Read |
 | — | OpenSim API documentation (version 3.2). `Millard2012EquilibriumMuscle` class reference | [simtk.org](https://simtk.org/api_docs/opensim/api_docs32/classOpenSim_1_1Millard2012EquilibriumMuscle.html) | Maximum isometric force as a fiber property projected by cos(pennation) (D-056) | Read |
 | `SRC:STATPEARLS_HIP` | Anatomy, Bony Pelvis and Lower Limb, Hip. *StatPearls* | [NBK526019](https://www.ncbi.nlm.nih.gov/books/NBK526019/) | Hip regional anatomy (D-009, `hip.yaml`) | Read |
