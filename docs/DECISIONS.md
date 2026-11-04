@@ -3,8 +3,8 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 16 (2026-10-28), D-058 accepted (Q40) and Amendment 2 (sources, Q41–Q44); Stage D1 built. See §7 for revision history.
-**Covers:** Design decisions from the original work through Phase C and the proposed Phase D scope
+**Revision:** 17 (2026-11-04), Stage D1 accepted at `3b86cc4` (Q51) with its six proposals (Q50); merged (A-12); official Stage D1 run at `dd89fff`. See §7 for revision history.
+**Covers:** Design decisions from the original work through Phase D Stage D1 (accepted); Stage D2 not yet proposed
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
 ---
@@ -151,6 +151,12 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q46** | same exchange | Selected “Label provisional, proceed (Recommended)” | (2) “The de Leva numbers come from an open data copy, not the paper itself. A second independent copy (the Visual3D wiki) matches every value we use. Only the male reference size (73.0 kg, 1.741 m) has a single reading. How should we treat them?” Alternative: Corbin checks the PDF. Direct: this session | de Leva values **provisional**, labeled in records, manifest and page (D1-R03) |
 | **Q47** | same exchange | Selected “Yes, replace it (Recommended)” | (3) “The plan said the computed torques would be run forward through the whole squat to reproduce it. That's numerically unstable for a standing body (tiny errors grow exponentially). I propose instead: one-step checks across the whole motion, plus short 0.1 s forward runs that must converge. OK to replace the whole-motion check?” Alternative: keep trying whole-motion with a feedback controller. Direct: this session | Whole-motion forward recovery in A3 replaced by local one-step and 0.1 s short-horizon checks (D1-R04) |
 | **Q48** | 2026-10-28 09:43 | “Claude, ChatGPT has re-reviewed PR #23 at 9988620c3351608ab78dd951d5378e2b261e0da9 under the Independent Study Reviewer skill. Verdict: AMEND. Original findings D1-R01 through D1-R06 are resolved at the inspected source/documentation level. Please address D1-R07 (clarify and test the thigh-geometry sensitivity perturbation) and D1-R08 (add verified commit/input provenance to sensitivity outputs using the existing manifest mechanism). Keep the scope narrow. Run pytest, integrity, negative probes, dataset regeneration checks, and the Stage D1 and Phase B regression runners. Report the exact new head SHA and results on PR #23. Do not merge; return the changes for re-review.” | Relays ChatGPT's re-review of PR #23 (not posted on GitHub at the time). Direct: this session | Scope of the D1-R07/D1-R08 response (D-058 Amendment 3, follow-up) |
+| **A-11** | 2026-10-28 09:39:34 (action) | Merged PR #25 (`406a089`, head `1ff32bb`, phase overview PDF for the instructor in `References/` with its generator `tools/make_phases_overview_pdf.py`) | A summary document for sharing, not a project record; whether ChatGPT reviewed it is not recorded | Acceptance of the merged revision (D-051 item 8). Recorded late, in revision 17 |
+| **Q49** | 2026-11-04 08:06 | “yes create a package for chat to run and then once it verifies we'll move on” | Claude had recommended an independent execution of Stage D1 before Stage D2, because ChatGPT's AGREE at `3b86cc4` was source-level only, and offered to package the snapshot for ChatGPT. Direct: this session | Independent execution of Stage D1 as a condition before moving on; done by ChatGPT, AGREE (PR #27) |
+| **Q50** | 2026-11-04 08:45 | “Accept all six, I especially appreciate keeping our modeling standards seperat from the actual human anatomy. I understand that our model will have to make simplified versions sometimes but these deviances from reality should always be noted so further areas of improvement can be easily identified later on in the project” | Claude presented the six proposals (a)–(f) of the Stage D1 build record one by one, recommending acceptance of each, and asked for a decision. Direct: this session | **Proposals (a)–(f) of the Stage D1 build Accepted** (D-058, acceptance note). Principle on simplifications: see the note below and Q52 |
+| **Q51** | 2026-11-04, between 08:45 and 08:48 (exact minute not captured) | Selected “Yes, accept D1 at 3b86cc4 (Recommended)” | Multiple-choice question from Claude: “‘Accept all six’ covers the proposals. Do you also accept the Stage D1 build itself at 3b86cc4 (PR #23), so it can be merged?” Alternative: “Not yet”. Direct: this session | **Stage D1 build Accepted at `3b86cc4683e6ac921e605302be5a863be0cafe9b`** (D-058) |
+| **Q52** | same exchange | Selected “Just record your quote” | (2) “Your rule that every simplification of real anatomy must be noted: how should I make it stick for the rest of the project?” Alternatives: “Decision + register + skills (Recommended)” (a central list of every simplification, plus the rule in both role skills) and “Decision + rule in skills”. Direct: this session | Q50's principle recorded as Corbin's stated principle; no new decision, rule, skill text or file |
+| **A-12** | 2026-11-04 08:48:42, 08:48:55, 08:49:10 and 08:49:25 (actions) | Merged PR #23 (`3b6f6e6`, head `3b86cc4`, Stage D1 build), PR #24 (`2727378`, ChatGPT's review at `0aa4651`), PR #26 (`dff65cc`, ChatGPT's re-reviews at `9988620` and `3b86cc4`) and PR #27 (`dd89fff`, ChatGPT's execution addendum at `3b86cc4`), in that order | After ChatGPT's AGREE (PR #26), its independent execution (AGREE, PR #27), Q50 and Q51. Reported by Corbin at 08:50: “all four are merged” | Acceptance of the merged revisions (D-051 item 8) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
@@ -173,6 +179,10 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 **Interpretation of Q9 (revision 4).** D-051 revision 2 stated that the decision “stays Proposed until the pilot passes” and asked Corbin to approve running the pilot. Q9 is read as that approval, not as acceptance of D-051 itself: under its own item 13, D-051 is accepted only after the pilot passes and Corbin approves. **Corbin may correct this interpretation.**
 
 **Q12 (revision 5).** Claude's question offered two readings of Q9: approval to run the pilot with D-051 decided afterwards (first), or approval of D-051 outright (second). Corbin answered “yes that was an approval”. Claude reads the “yes” as confirming the first reading, so the interpretation above stands. If Corbin meant the second, D-051 becomes Accepted and this note is amended.
+
+**Session of 2026-11-04 (revision 17).** Source: Claude session transcript, America/New_York, `https://claude.ai/code/session_01QzLsFQiGxJXWyEQeJ5rsyE`. Q49 and Q50 are verbatim; Q51 and Q52 are quoted as selected. A-11 and A-12 times are GitHub's `merged_at` values (A-12: 13:48:42Z to 13:49:25Z) read through the API.
+
+**Q50 and Q52 (revision 17).** In Q50, “seperat” stands for “separate”. Q50 accepts the six proposals and states a principle: simplified representations are expected, but each deviation from real anatomy should be noted so that areas for improvement can be found later. This matches existing practice: demonstration values and idealizations are labelled where they occur (for example the knee entries in `ontology/lower_limb_sagittal.yaml`, the `ModelJoint` class and Phase B's declared omitted physics). Asked how to make it stick (Q52), Corbin chose to record the quote only, so no new decision, rule, skill text or file was created. A central list of simplifications or a rule in the role skills can be added later if he asks.
 
 ---
 
@@ -247,7 +257,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-056 | Arnold 2010 maximum isometric force is a fiber force | Claude (D-055 C2) | Proposed | Recorded on datum | Reported by author |
 | D-057 | One source list for the whole project (`sources/`) | Corbin (Q34); Claude | Accepted (Q37) | Implemented (PR #19); in both role skills (Amendment 1) | Reported by author |
 | **Part VIII — Phase D (planar squat)** | | | | | |
-| D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44) | Stage D1 implemented on `phase-d/claude-d1-squat`, pending review | Reported by author |
+| D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44); Stage D1 build accepted at `3b86cc4` (Q51) with proposals (a)–(f) (Q50) | Stage D1 implemented (merged `3b6f6e6`, A-12); official run at `dd89fff`; Stage D2 not started | Stage D1: Independently checked (software; ChatGPT, PR #27) |
 
 ---
 
@@ -1461,12 +1471,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 **Date:** 2026-10-28
 
 ### D-058  Phase D in two stages; Stage D1: planar inverse-dynamics squat
-- **Decision status:** **Accepted (Q40, 2026-10-28) at `787e5a64f22d00bae736d086d97cd0256dd6125b`**, with Amendment 1; Amendment 2 records Corbin's source decisions (Q41–Q44). Status before acceptance: Proposed (direction Q39)
-- **Implementation status:** Not started
-- **Verification status:** Not checked
+- **Decision status:** **Accepted (Q40, 2026-10-28) at `787e5a64f22d00bae736d086d97cd0256dd6125b`**, with Amendment 1; Amendment 2 records Corbin's source decisions (Q41–Q44). **Stage D1 build Accepted at `3b86cc4683e6ac921e605302be5a863be0cafe9b` (Q51, 2026-11-04)**, with the six proposals (a)–(f) of its build record Accepted (Q50). Status before acceptance: Proposed (direction Q39)
+- **Implementation status:** Stage D1 implemented (PR #23, merged as `3b6f6e6`, A-12); official Stage D1 run, sensitivity analysis and page at `dd89fff` (acceptance note below). Stage D2 not started
+- **Verification status:** Stage D1 **Independently checked (software)**: ChatGPT's source-level re-review AGREE at `3b86cc4` (PR #26); ChatGPT's independent execution AGREE at `3b86cc4` (PR #27). Software behaviour only (D-051 item 10); ChatGPT records its Phase B regression as a self-check, since it wrote Phase B. Not validated against measured squats; de Leva values provisional (Q46)
 - **Date:** 2026-10-28
-- **Proposed by:** Claude (Phase D builder, Q38) · **Reviewed by:** ChatGPT (requested)
-- **Approval basis:** Q40 (with A-10); Q39 for the direction; Q41–Q44 for Amendment 2
+- **Proposed by:** Claude (Phase D builder, Q38) · **Reviewed by:** ChatGPT (PRs #22, #24, #26, #27)
+- **Approval basis:** Q40 (with A-10); Q39 for the direction; Q41–Q44 for Amendment 2; Q50 and Q51 (with A-12) for the Stage D1 build
 - **Evidence:** D-040 (Phase D row); D-055 Amendment 1 (C5 findings); de Leva 1996 (segment parameters); Wu et al. 2002 (hip and ankle conventions); Grood & Suntay 1983 (knee convention); see `sources/SOURCES.md`
 - **Amends:** D-040, Phase D row (split into Stages D1 and D2; exit criterion of D1 stated below)
 - **Phase:** D
@@ -1568,6 +1578,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - **Re-review follow-up (Q48; ChatGPT AMEND at `9988620`, D1-R01 to D1-R06 resolved):** *D1-R07:* the knee-centre sensitivity case no longer uses a hand-typed baseline or a length-only change. Both knee positions (0° and 100° flexion) are read from the kept model file by the same interpolation the dataset generator uses, the full (x, y) position is replaced, and every body is rebuilt through `build_body` around the new knee: Gait2392 keeps its femur centre of mass and inertia in the femur frame; the de Leva bodies keep their centre-of-mass and radius fractions on the new hip-to-knee line; the shank is unchanged. Tests check each of these and the sign of the effect. *D1-R08:* the sensitivity output now carries the same verified commit and input header as the run manifest (18 inputs, including the sensitivity tool), and refuses a commit that is not the clean HEAD; a test checks both.
 - **Revised D1 exit criterion (replaces Amendment 1's):** all checks in the manifest pass at their stated tolerances for all three bodies; contact feasibility reported for the demonstration motion; every sourced value traces to a row and column of the kept source files or to an XML path of the model file, de Leva values marked provisional (Q46); the sensitivity analysis reported; the manifest, sensitivity file and page come from one commit; reviewed by ChatGPT and accepted by Corbin.
 
+**Acceptance of Stage D1 (revision 17, 2026-11-04; approval: §4 Q49–Q51; A-12).**
+- **Build:** accepted at `3b86cc4` (Q51) after ChatGPT's re-review (AGREE, PR #26) and, at Corbin's request (Q49), ChatGPT's independent execution of that snapshot (AGREE, PR #27). ChatGPT ran every check in its own environment (CPython 3.12.14; Claude's runs used 3.13): 178 passed, integrity PASSED, 9/9 probes REJECTED, datasets current. Its own comparison program found the D1 manifest, the sensitivity output and the Phase B regression exactly equal to the committed results, apart from commit metadata and the hash of `src/squat_d1.py`, which changed in `0146e42` without changing any output. Claude prepared the package (snapshot as a git bundle, PyPI wheels, instructions); packaging only.
+- **Proposals (a)–(f)** of the build record: **Accepted (Q50).**
+- **Official run (exit criterion: manifest, sensitivity file and page from one commit).** Before this, the run and page were pinned to `9988620` and the sensitivity file to `0146e42`. Claude regenerated all three at `dd89fff` (`main` after A-12; Stage D1 code identical to `3b86cc4`): `results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json`, `2026-11-04_d1_sensitivity_dd89fff.json` (with `.md`) and `2026-11-04_d1_squat_viewer_dd89fff.html`, provenance `verified_git_head_and_inputs`. The run differs from the `9988620` run only in `commit_sha` and the model file's hash; the sensitivity output differs from `0146e42` only in `commit_sha`; the page equals the `9988620` page once commit and date are normalized. A builder's run, reported by author. The earlier result files are kept as history.
+- **Still open:** concerns 6–9 (de Leva values not checked against the paper; Gait2392 stature; radius-column interpretation; borrowed HAT shape and foot). Stage D2 (muscles) needs its own proposal, after D-056 is decided.
+
 
 ---
 
@@ -1600,10 +1616,12 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | ~~Phase C build (D-055, C1–C6)~~ Accepted at `506ece5` (Q36), merged (A-8) | Claude; ChatGPT; Corbin | Done |
 | ~~Phase D (planar squat): confirm builder and reviewer roles~~ Claude builds (Q38); reviewer read as ChatGPT (interpretation of Q38) | Corbin | Done |
 | ~~Approve, amend or reject D-058~~ Accepted at `787e5a6` (Q40, A-10) | ChatGPT review, then Corbin | Done |
-| Review the Stage D1 build (D-058 with Amendments 1 and 2), including the generator against the kept source files | ChatGPT; then Corbin | Next |
+| ~~Review the Stage D1 build (D-058 with Amendments 1 and 2), including the generator against the kept source files~~ AGREE at `3b86cc4` (PR #26); independent execution AGREE (PR #27, Q49); accepted (Q51), merged (A-12) | ChatGPT; then Corbin | Done |
+| ~~Decide the six proposals (a)–(f) in the Stage D1 build record~~ Accepted, Q50 | Corbin | Done |
+| Write the Stage D2 (muscles) proposal, after D-056 is decided | Phase D builder (Claude, Q38) | After D-056 |
 | Check the de Leva values and reference sizes against the paper itself (D-058 open concern 6) | Anyone with access to the paper | Before results are cited |
 | ~~Source-list rule in the role skills (D-057 Amendment 1)~~ Merged (A-9); reinstalled in both models (Q38, reported by Corbin) | ChatGPT; Corbin | Done |
-| Decide D-056 (meaning of Arnold `Fmax`). Quotes checked against the PDF by Claude (D-056 Amendment 1); ChatGPT could not open the source (P19-01) | Corbin | Before Phase D's force law |
+| Decide D-056 (meaning of Arnold `Fmax`). Quotes checked against the PDF by Claude (D-056 Amendment 1); ChatGPT could not open the source (P19-01) | Corbin | Next: before the Stage D2 proposal |
 | ~~Ontology loader accepts only one module file (C5 finding 1)~~ Multi-file loading added (D-058 Amendment 2). Knee coordinate convention: declared model convention (D-058 A4) | Phase D builder | Done |
 | Items deferred by D-055 to their first use: D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases | Builder of the phase that first needs each | On first use |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
@@ -1632,6 +1650,7 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 16 | 2026-10-28 | Claude | A-10, Q40–Q44 added to §4 with notes; D-058 Accepted (Q40) and Amendment 2 (sources, three bodies, radius column, foot assumptions, one-step round trip); open items | Q40–Q44; Stage D1 PR pending ChatGPT review and merge by Corbin |
 | 16a | 2026-10-28 | Claude | Q45–Q47 added to §4; D-058 Amendment 3 (response to ChatGPT's review D1-R01 to D1-R06; revised D1 exit criterion) | Q45–Q47; pending ChatGPT re-review and merge by Corbin |
 | 16b | 2026-10-28 | Claude | Q48 added to §4; D-058 Amendment 3 re-review follow-up (D1-R07, D1-R08) | Q48; pending ChatGPT re-review and merge by Corbin |
+| 17 | 2026-11-04 | Claude | A-11 (PR #25, recorded late), Q49–Q52 and A-12 added to §4 with notes; D-058: Stage D1 build Accepted at `3b86cc4` (Q51), proposals (a)–(f) Accepted (Q50), status fields and acceptance note; official Stage D1 run at `dd89fff`; index and open items | Q49–Q52, A-12; pending ChatGPT review and merge by Corbin |
 
 ## 8. References
 
