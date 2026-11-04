@@ -1,2 +1,4 @@
 # Consistent repository blobs across Linux, macOS and Windows checkouts.
 * text=auto
+*.osim -text
+sources/vendor/** -text

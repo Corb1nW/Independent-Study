@@ -1,0 +1,720 @@
+{
+  "bodies": {
+    "female": [
+      {
+        "case": "baseline",
+        "change": "as configured",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0231,
+          0.0354
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.0239,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -11.051,
+          "hip": -10.602,
+          "knee": -74.389
+        }
+      },
+      {
+        "case": "gait2392_stature_1.66m",
+        "change": "scale factor uses 1.66 m (forum measurement of the model geometry) instead of the documented 1.8 m",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.026,
+          0.0395
+        ],
+        "knee_peak_change_pct": 9.07,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 1.38,
+          "hip": 1.164,
+          "knee": 6.746
+        },
+        "min_support_margin_m": 0.025,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -12.431,
+          "hip": -11.766,
+          "knee": -81.135
+        }
+      },
+      {
+        "case": "radius_sagittal_column",
+        "change": "thigh and shank inertia from de Leva's 'sagittal' radius instead of the 'transverse' one",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0231,
+          0.0354
+        ],
+        "knee_peak_change_pct": 0.01,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.01,
+          "hip": 0.0,
+          "knee": 0.011
+        },
+        "min_support_margin_m": 0.0239,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -11.041,
+          "hip": -10.602,
+          "knee": -74.4
+        }
+      },
+      {
+        "case": "knee_centre_at_100deg",
+        "change": "knee centre fixed at its Gait2392 location for 100 deg flexion instead of 0 deg (femur frame, unscaled: x +5.9 mm, y -20.9 mm; this body's thigh +20.2 mm); thigh rebuilt as usual around the new knee",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0349,
+          0.0187
+        ],
+        "knee_peak_change_pct": 7.74,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 5.549,
+          "hip": 0.304,
+          "knee": 5.756
+        },
+        "min_support_margin_m": 0.0121,
+        "peak_tau_per_leg_N_m": {
+          "ankle": 10.333,
+          "hip": -10.564,
+          "knee": -80.145
+        }
+      },
+      {
+        "case": "hat_com_-2cm",
+        "change": "HAT centre of mass -2 cm anterior (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0347,
+          0.0241
+        ],
+        "knee_peak_change_pct": 5.03,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 3.777,
+          "hip": 3.812,
+          "knee": 3.742
+        },
+        "min_support_margin_m": 0.0123,
+        "peak_tau_per_leg_N_m": {
+          "ankle": 10.246,
+          "hip": 11.422,
+          "knee": -78.131
+        }
+      },
+      {
+        "case": "hat_com_+2cm",
+        "change": "HAT centre of mass +2 cm anterior (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0116,
+          0.0467
+        ],
+        "knee_peak_change_pct": -5.04,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 3.784,
+          "hip": 3.82,
+          "knee": 3.749
+        },
+        "min_support_margin_m": 0.0354,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -14.835,
+          "hip": -14.423,
+          "knee": -70.64
+        }
+      },
+      {
+        "case": "hat_inertia_x0.8",
+        "change": "HAT inertia x 0.8 (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0231,
+          0.035
+        ],
+        "knee_peak_change_pct": 0.15,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.114,
+          "hip": 0.114,
+          "knee": 0.114
+        },
+        "min_support_margin_m": 0.024,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -10.937,
+          "hip": -10.488,
+          "knee": -74.504
+        }
+      },
+      {
+        "case": "hat_inertia_x1.2",
+        "change": "HAT inertia x 1.2 (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0232,
+          0.0357
+        ],
+        "knee_peak_change_pct": -0.15,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.114,
+          "hip": 0.114,
+          "knee": 0.114
+        },
+        "min_support_margin_m": 0.0238,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -11.165,
+          "hip": -10.717,
+          "knee": -74.275
+        }
+      },
+      {
+        "case": "heel_1cm_forward",
+        "change": "heel edge of the support 1 cm further forward (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0231,
+          0.0354
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.0139,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -11.051,
+          "hip": -10.602,
+          "knee": -74.389
+        }
+      },
+      {
+        "case": "toes_3cm",
+        "change": "support extended 3 cm past the MTP joint onto the toes (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0231,
+          0.0354
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.0239,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -11.051,
+          "hip": -10.602,
+          "knee": -74.389
+        }
+      }
+    ],
+    "gait2392": [
+      {
+        "case": "baseline",
+        "change": "as configured",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0227,
+          0.042
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.0261,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -15.709,
+          "hip": -14.188,
+          "knee": -90.54
+        }
+      },
+      {
+        "case": "knee_centre_at_100deg",
+        "change": "knee centre fixed at its Gait2392 location for 100 deg flexion instead of 0 deg (femur frame, unscaled: x +5.9 mm, y -20.9 mm; this body's thigh +20.9 mm); thigh rebuilt as usual around the new knee",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0359,
+          0.0228
+        ],
+        "knee_peak_change_pct": 8.87,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 7.728,
+          "hip": 0.418,
+          "knee": 8.03
+        },
+        "min_support_margin_m": 0.0129,
+        "peak_tau_per_leg_N_m": {
+          "ankle": 13.228,
+          "hip": -14.135,
+          "knee": -98.569
+        }
+      },
+      {
+        "case": "hat_com_-2cm",
+        "change": "HAT centre of mass -2 cm anterior (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0348,
+          0.0301
+        ],
+        "knee_peak_change_pct": 5.29,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 4.838,
+          "hip": 4.885,
+          "knee": 4.792
+        },
+        "min_support_margin_m": 0.014,
+        "peak_tau_per_leg_N_m": {
+          "ankle": 13.558,
+          "hip": 14.972,
+          "knee": -95.332
+        }
+      },
+      {
+        "case": "hat_com_+2cm",
+        "change": "HAT centre of mass +2 cm anterior (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0105,
+          0.0539
+        ],
+        "knee_peak_change_pct": -5.3,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 4.848,
+          "hip": 4.895,
+          "knee": 4.802
+        },
+        "min_support_margin_m": 0.0382,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -20.556,
+          "hip": -19.083,
+          "knee": -85.738
+        }
+      },
+      {
+        "case": "hat_inertia_x0.8",
+        "change": "HAT inertia x 0.8 (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0225,
+          0.0416
+        ],
+        "knee_peak_change_pct": 0.17,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.157,
+          "hip": 0.157,
+          "knee": 0.157
+        },
+        "min_support_margin_m": 0.0262,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -15.551,
+          "hip": -14.031,
+          "knee": -90.697
+        }
+      },
+      {
+        "case": "hat_inertia_x1.2",
+        "change": "HAT inertia x 1.2 (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0228,
+          0.0424
+        ],
+        "knee_peak_change_pct": -0.17,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.157,
+          "hip": 0.157,
+          "knee": 0.157
+        },
+        "min_support_margin_m": 0.026,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -15.866,
+          "hip": -14.345,
+          "knee": -90.383
+        }
+      },
+      {
+        "case": "heel_1cm_forward",
+        "change": "heel edge of the support 1 cm further forward (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0227,
+          0.042
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.0161,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -15.709,
+          "hip": -14.188,
+          "knee": -90.54
+        }
+      },
+      {
+        "case": "toes_3cm",
+        "change": "support extended 3 cm past the MTP joint onto the toes (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0227,
+          0.042
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.0261,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -15.709,
+          "hip": -14.188,
+          "knee": -90.54
+        }
+      }
+    ],
+    "male": [
+      {
+        "case": "baseline",
+        "change": "as configured",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0232,
+          0.0382
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.024,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -14.114,
+          "hip": -13.001,
+          "knee": -87.336
+        }
+      },
+      {
+        "case": "gait2392_stature_1.66m",
+        "change": "scale factor uses 1.66 m (forum measurement of the model geometry) instead of the documented 1.8 m",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0261,
+          0.0426
+        ],
+        "knee_peak_change_pct": 9.05,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 1.754,
+          "hip": 1.428,
+          "knee": 7.901
+        },
+        "min_support_margin_m": 0.0251,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -15.868,
+          "hip": -14.429,
+          "knee": -95.238
+        }
+      },
+      {
+        "case": "radius_sagittal_column",
+        "change": "thigh and shank inertia from de Leva's 'sagittal' radius instead of the 'transverse' one",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0232,
+          0.0382
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.002,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.024,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -14.116,
+          "hip": -13.001,
+          "knee": -87.336
+        }
+      },
+      {
+        "case": "knee_centre_at_100deg",
+        "change": "knee centre fixed at its Gait2392 location for 100 deg flexion instead of 0 deg (femur frame, unscaled: x +5.9 mm, y -20.9 mm; this body's thigh +20.2 mm); thigh rebuilt as usual around the new knee",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0347,
+          0.0215
+        ],
+        "knee_peak_change_pct": 7.78,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 6.551,
+          "hip": 0.374,
+          "knee": 6.796
+        },
+        "min_support_margin_m": 0.0125,
+        "peak_tau_per_leg_N_m": {
+          "ankle": 12.119,
+          "hip": -12.953,
+          "knee": -94.132
+        }
+      },
+      {
+        "case": "hat_com_-2cm",
+        "change": "HAT centre of mass -2 cm anterior (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0352,
+          0.0265
+        ],
+        "knee_peak_change_pct": 5.23,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 4.612,
+          "hip": 4.656,
+          "knee": 4.569
+        },
+        "min_support_margin_m": 0.012,
+        "peak_tau_per_leg_N_m": {
+          "ankle": 12.658,
+          "hip": 13.979,
+          "knee": -91.906
+        }
+      },
+      {
+        "case": "hat_com_+2cm",
+        "change": "HAT centre of mass +2 cm anterior (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0113,
+          0.0499
+        ],
+        "knee_peak_change_pct": -5.24,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 4.622,
+          "hip": 4.665,
+          "knee": 4.579
+        },
+        "min_support_margin_m": 0.0359,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -18.735,
+          "hip": -17.666,
+          "knee": -82.758
+        }
+      },
+      {
+        "case": "hat_inertia_x0.8",
+        "change": "HAT inertia x 0.8 (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0231,
+          0.0379
+        ],
+        "knee_peak_change_pct": 0.16,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.141,
+          "hip": 0.141,
+          "knee": 0.141
+        },
+        "min_support_margin_m": 0.0241,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -13.973,
+          "hip": -12.861,
+          "knee": -87.477
+        }
+      },
+      {
+        "case": "hat_inertia_x1.2",
+        "change": "HAT inertia x 1.2 (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0233,
+          0.0386
+        ],
+        "knee_peak_change_pct": -0.16,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.141,
+          "hip": 0.141,
+          "knee": 0.141
+        },
+        "min_support_margin_m": 0.0238,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -14.254,
+          "hip": -13.142,
+          "knee": -87.196
+        }
+      },
+      {
+        "case": "heel_1cm_forward",
+        "change": "heel edge of the support 1 cm further forward (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0232,
+          0.0382
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.014,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -14.114,
+          "hip": -13.001,
+          "knee": -87.336
+        }
+      },
+      {
+        "case": "toes_3cm",
+        "change": "support extended 3 cm past the MTP joint onto the toes (demonstration)",
+        "contact_feasible": true,
+        "cop_range_m": [
+          -0.0232,
+          0.0382
+        ],
+        "knee_peak_change_pct": 0.0,
+        "largest_change_at_any_instant_N_m": {
+          "ankle": 0.0,
+          "hip": 0.0,
+          "knee": 0.0
+        },
+        "min_support_margin_m": 0.024,
+        "peak_tau_per_leg_N_m": {
+          "ankle": -14.114,
+          "hip": -13.001,
+          "knee": -87.336
+        }
+      }
+    ]
+  },
+  "commit_provenance_status": "verified_git_head_and_inputs",
+  "commit_sha": "0146e425769e0c0d5d9782ef2e3a0cfcf11e7e5a",
+  "inputs": {
+    "config": {
+      "git_blob_id": "25579e3adeb92fe0edc9819828f056dc201ef9ae",
+      "path": "config/phase_d1_squat.yaml",
+      "sha256": "02b80aedae0c0549ddce8005bf887a19e08431e98bae57b8a8f36a038d22c215"
+    },
+    "dataset_builder": {
+      "git_blob_id": "a2e413898c6650409c1199cad4e0b62a79263877",
+      "path": "tools/build_segment_datasets.py",
+      "sha256": "2ddb615d2175b5508770ee335a83ae791c85126385b17ae3a6ec08e2b6572336"
+    },
+    "dataset_de_leva": {
+      "git_blob_id": "53ecd3b0dfff46bec3b6a5f13de542c686b90cf2",
+      "path": "ontology/quantitative_data/segments_de_leva_1996.yaml",
+      "sha256": "8b3a9d35d3bb8fffdfdf4ded3879f42de9a6b5453efb8e8437d8f40a1bffbedb"
+    },
+    "dataset_gait2392": {
+      "git_blob_id": "dd7f80e022499c649fb478beaeaf7bda566789b6",
+      "path": "ontology/quantitative_data/segments_gait2392.yaml",
+      "sha256": "63fdc0bc5dd3a3469bf934b7c853ea2468e0d8fcc89541e0e45f6753608ad4aa"
+    },
+    "input_gate": {
+      "git_blob_id": "b2fc244e21244a1b7a66de7c237fbdbc2abf33ad",
+      "path": "src/input_gate.py",
+      "sha256": "168b611736e5838e06f0e37f05686af0f65f5941afafacbcc68763e17def91b0"
+    },
+    "model": {
+      "git_blob_id": "98183fcb41f048228bd05544fac7a34a3fdc8827",
+      "path": "src/squat_d1.py",
+      "sha256": "8908f80be259a4afbb5bb4a9c4254bb3e083df9eba803f79e3eafbb054d19de3"
+    },
+    "ontology_hip": {
+      "git_blob_id": "5748419735f8e4dbd30a1476acfce64c99b23fe7",
+      "path": "ontology/hip.yaml",
+      "sha256": "af68548b635c33afd53d05a23adc90505129ab88ce2a1a5fd029ddd1e763aeca"
+    },
+    "ontology_loader": {
+      "git_blob_id": "9cbc1e97c78b3262656eab721cc7e1682f9b1161",
+      "path": "src/ontology.py",
+      "sha256": "792e79329e5cec2d393dc9f9e5ba362850e7599b3401157f5b551285cea9cd2b"
+    },
+    "ontology_lower_limb": {
+      "git_blob_id": "302d3fe873027ce3c9c615007933460c17c95ac9",
+      "path": "ontology/lower_limb_sagittal.yaml",
+      "sha256": "c0e66d96d79b1c336a45e789110e668cf377815c28d298ec4d023254d4670ec2"
+    },
+    "run_manifest": {
+      "git_blob_id": "7427728b03b234c1e6089a5f088088af17560869",
+      "path": "src/run_manifest.py",
+      "sha256": "e36861c55a52f66c8afe8adb932796c996617d7223ff1ec1173ef761dbc1222a"
+    },
+    "runner": {
+      "git_blob_id": "b04e14835f18fdaaaaa4299074939864112af0fc",
+      "path": "tools/run_phase_d1.py",
+      "sha256": "50e882e9e225af4731f1d11819d0bff0a8b5a48f4972eff4a36343c346d3ae78"
+    },
+    "schema": {
+      "git_blob_id": "83bbd1211c3237f809eccbfc815613cac228aefc",
+      "path": "ontology/quantitative_schema.yaml",
+      "sha256": "c263a72b90a132a1a27cb79eea5692add40ee018d7ef63002fa59f9749853e72"
+    },
+    "sensitivity_tool": {
+      "git_blob_id": "1c2ff45018ae6043fc3e92da07f4a1b0252cd8b0",
+      "path": "tools/sensitivity_d1.py",
+      "sha256": "ccdce82fbd930f790d63a2c48e8628edc73ca1dff6ba71492fccc8bc9fee8ec0"
+    },
+    "source_bmc_female": {
+      "git_blob_id": "8e0f6991edac1e8147c1a0a5d6506128be20800c",
+      "path": "sources/vendor/bmc/BSPfemale_ZdeLeva.txt",
+      "sha256": "83e54e3ef20a6d2475f4629df4e8b2f264090a475870a892ee9abe13d7737699"
+    },
+    "source_bmc_male": {
+      "git_blob_id": "1f98072233c401a9194668578ed4b7f452409655",
+      "path": "sources/vendor/bmc/BSPmale_ZdeLeva.txt",
+      "sha256": "7b1fea6dfd4b79f6b19cce3b2ec36117f00c1c6a0687e42a16848811b3189d2c"
+    },
+    "source_gait2392_osim": {
+      "git_blob_id": "b9854def844c194cccacc30b5b74ecff91bf0e17",
+      "path": "sources/vendor/opensim-models/gait2392_millard2012muscle.osim",
+      "sha256": "9c28e8043cde59bb1354342d6f3ce0ca6a0ea416f08695c0db5387e46a8d464c"
+    },
+    "structural_model": {
+      "git_blob_id": "3c99d4fccf7acb495d2f1837868a6815eb393146",
+      "path": "src/datum_model.py",
+      "sha256": "eb7dbacdb8a914c1371aef3bc6581468e2e3179d8135549d522219a1678dec72"
+    },
+    "validator": {
+      "git_blob_id": "0a7407ebead49ef635681930bcdafd06da834101",
+      "path": "src/quantitative.py",
+      "sha256": "a65bf6e17ae3b8c347e7cb7add67c861f741fd5975aadc50bf2c05e42c84cf1d"
+    }
+  },
+  "note": "Each case changes one assumption. Perturbation sizes marked 'demonstration' show sensitivity; they are not estimates of real uncertainty.",
+  "validity": {
+    "clinical_validity": "not established",
+    "kind": "software demonstration of a data-to-dynamics path",
+    "physiological_validity": "not established",
+    "review_state": "not asserted by this manifest; see docs/DECISIONS.md and PROJECT_STATE.md for reviews and acceptance of commit_sha"
+  },
+  "verified_input_files": [
+    "config",
+    "dataset_builder",
+    "dataset_de_leva",
+    "dataset_gait2392",
+    "input_gate",
+    "model",
+    "ontology_hip",
+    "ontology_loader",
+    "ontology_lower_limb",
+    "run_manifest",
+    "runner",
+    "schema",
+    "sensitivity_tool",
+    "source_bmc_female",
+    "source_bmc_male",
+    "source_gait2392_osim",
+    "structural_model",
+    "validator"
+  ],
+  "what": "Sensitivity of the Stage D1 results to its modeling assumptions (D-058 Amendment 3, review D1-R05)."
+}

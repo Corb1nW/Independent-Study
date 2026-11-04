@@ -243,24 +243,19 @@ def test_c4_require_traceable_raises_with_every_failure(schema, dataset):
 
 
 # ------------------------------------------------------------- C5 growth test
-KNEE_ENTITIES = {
-    "LB:BONE:TIBIA_R": {"name": "Right Tibia (growth-test stub)", "class": "Bone", "side": "right",
-                        "relationships": {"REPRESENTED_BY": ["LB:SEG:SHANK_R"]}},
-    "LB:SEG:SHANK_R": {"name": "Right Shank Rigid-Body Segment (growth-test stub)",
-                       "class": "RigidBodySegment", "side": "right",
-                       "model_properties": ["mass", "center_of_mass", "inertia_tensor"]},
-    "LB:JOINT:KNEE_R": {"name": "Right Knee Joint (growth-test stub)", "class": "SynovialHingeJoint",
-                        "side": "right",
-                        "relationships": {"CONNECTS": ["LB:BONE:FEMUR_R", "LB:BONE:TIBIA_R"],
-                                          "HAS_COORDINATE": ["LB:DOF:KNEE_FLEX_EXT_R"]}},
-    "LB:DOF:KNEE_FLEX_EXT_R": {"name": "Right Knee Flexion/Extension (growth-test stub)",
-                               "class": "JointCoordinate", "side": "right",
-                               "relationships": {"PART_OF": ["LB:JOINT:KNEE_R"]}},
+# Updated in Stage D1 (D-058): the knee now exists in ontology/lower_limb_sagittal.yaml, so
+# growth is tested the way the project now grows, by adding a further module file.
+STUB_ENTITIES = {
+    "LB:BONE:PATELLA_R": {"name": "Right Patella (growth-test stub)", "class": "Bone", "side": "right"},
+    "LB:JOINT:PATELLOFEMORAL_R": {"name": "Right Patellofemoral Joint (growth-test stub)",
+                                  "class": "SynovialPlaneJoint", "side": "right",
+                                  "relationships": {"CONNECTS": ["LB:BONE:FEMUR_R", "LB:BONE:PATELLA_R"]}},
 }
+STUB = "growth_stub.yaml"
 
 
-def _grow(tmp_path):
-    """Copy the data the project reads into a temporary root and add a knee stub.
+def _grow(tmp_path, entities=None):
+    """Copy the data the project reads into a temporary root and add a stub module file.
 
     The stub is a fixture for testing growth, not anatomy entered into the project:
     names are marked as stubs, no evidence is attached and nothing is written back.
@@ -268,15 +263,22 @@ def _grow(tmp_path):
     root = tmp_path / "grown"
     for folder in ("ontology", "config"):
         shutil.copytree(ROOT / folder, root / folder)
-    path = root / "ontology" / "hip.yaml"
-    onto = yaml.safe_load(path.read_text(encoding="utf-8"))
-    original = deepcopy(onto["entities"])
-    assert not set(KNEE_ENTITIES) & set(original)
-    onto["entities"].update(deepcopy(KNEE_ENTITIES))
-    onto["class_hierarchy"]["SynovialHingeJoint"] = "SynovialJoint"
+    original = deepcopy(QuantitativeSchema(ROOT / "ontology" / "quantitative_schema.yaml").ontology.entities)
+    stub = {"ontology_module": {"extends": "LB-AO", "module": "growth_stub"},
+            "class_hierarchy": {"SynovialPlaneJoint": "SynovialJoint"},
+            "entities": deepcopy(entities or STUB_ENTITIES)}
+    assert not set(stub["entities"]) & set(original)
+    (root / "ontology" / STUB).write_text(yaml.safe_dump(stub, sort_keys=False), encoding="utf-8")
+    schema_path = root / "ontology" / "quantitative_schema.yaml"
+    schema_data = yaml.safe_load(schema_path.read_text(encoding="utf-8"))
+    schema_data["ontology"] = list(schema_data["ontology"]) + [STUB]
+    schema_path.write_text(yaml.safe_dump(schema_data, sort_keys=False), encoding="utf-8")
+    # A cross-file reference from the original module to the new one.
+    hip = root / "ontology" / "hip.yaml"
+    onto = yaml.safe_load(hip.read_text(encoding="utf-8"))
     rf = onto["entities"]["LB:MUS:RECTUS_FEMORIS_R"]["relationships"]
-    rf["CROSSES"] = rf["CROSSES"] + ["LB:JOINT:KNEE_R"]  # biarticular muscle reaches the knee
-    path.write_text(yaml.safe_dump(onto, sort_keys=False), encoding="utf-8")
+    rf["CROSSES"] = rf["CROSSES"] + ["LB:JOINT:PATELLOFEMORAL_R"]
+    hip.write_text(yaml.safe_dump(onto, sort_keys=False), encoding="utf-8")
     return root, original
 
 
@@ -288,10 +290,10 @@ def test_c5_growth_keeps_ids_evidence_and_validation(tmp_path, schema):
         assert eid in grown.ontology.entities
         if eid != "LB:MUS:RECTUS_FEMORIS_R":
             assert grown.ontology.get(eid) == entity
-    knee = [e for e, _ in grown.ontology.muscles_crossing("LB:JOINT:KNEE_R")]
-    assert knee == ["LB:MUS:RECTUS_FEMORIS_R"]
+    crossing = [e for e, _ in grown.ontology.muscles_crossing("LB:JOINT:PATELLOFEMORAL_R")]
+    assert crossing == ["LB:MUS:RECTUS_FEMORIS_R"]
     # Joint properties reach the new joint through the class hierarchy (D-031).
-    assert grown.property_applies_to_entity("range_of_motion", "LB:JOINT:KNEE_R")
+    assert grown.property_applies_to_entity("range_of_motion", "LB:JOINT:PATELLOFEMORAL_R")
     # Existing observations, aliases and the evidence gate are unchanged.
     old = schema.load_dataset(DATA)
     new = grown.load_dataset(root / "ontology" / "quantitative_data" / "gluteus_maximus.yaml")
@@ -313,13 +315,11 @@ def test_c5_growth_leaves_phase_b_results_unchanged(tmp_path):
 
 def test_c5_growth_test_would_catch_a_broken_reference(tmp_path):
     """Negative control: a stub that references a missing entity must fail loading."""
-    root, _ = _grow(tmp_path)
-    path = root / "ontology" / "hip.yaml"
-    onto = yaml.safe_load(path.read_text(encoding="utf-8"))
-    onto["entities"]["LB:JOINT:KNEE_R"]["relationships"]["CONNECTS"].append("LB:BONE:PATELLA_R")
-    path.write_text(yaml.safe_dump(onto, sort_keys=False), encoding="utf-8")
-    with pytest.raises(ValueError, match="references missing LB:BONE:PATELLA_R"):
-        check_project(root)
+    broken = deepcopy(STUB_ENTITIES)
+    broken["LB:JOINT:PATELLOFEMORAL_R"]["relationships"]["CONNECTS"].append("LB:BONE:NOT_THERE_R")
+    with pytest.raises(ValueError, match="references missing LB:BONE:NOT_THERE_R"):
+        _grow(tmp_path, broken)
+        check_project(tmp_path / "grown")
 
 
 # ------------------------------------------------------------- C6 result plot

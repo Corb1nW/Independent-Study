@@ -6,7 +6,8 @@ The goal is to take my experience with dynamic system and control theory and app
 ## Repository layout
 
 - **LB-AO code and records (repository root):** `src/`, `ontology/`, `tests/`, `tools/`, the demo scripts, `docs/DECISIONS.md` (decision log) and `PROJECT_STATE.md` (current state and next task). This is the line of work under review; its history begins at commit `d04fb78`.
-- **`sources/`:** every source the project has used, listed once (`SOURCES.md`), and the rule for adding one.
+- **`sources/`:** every source the project has used, listed once (`SOURCES.md`), and the rule for adding one; `sources/vendor/` keeps unmodified copies of open source files the data is generated from.
+- **Phase D squat (Stage D1):** `python -m tools.run_phase_d1 --commit-sha <SHA> --output results/phase_d/<file>.json`, then `python -m tools.build_squat_page --manifest <file>.json --output <file>.html` for the animated page.
 - **`Notes`, `Research Materials`, `References/`:** course notes, research links and the design documents.
 - **`Version Models/`:** the original v0.1 to v0.5 uploads (September 2026), kept as history. The root code supersedes them.
 

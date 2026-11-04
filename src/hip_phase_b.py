@@ -219,6 +219,7 @@ def run_manifest(inputs, result, commit_sha):
     provenance_paths.update({
         "schema": str(ROOT / "ontology/quantitative_schema.yaml"),
         "ontology": str(ROOT / "ontology/hip.yaml"),
+        "ontology_lower_limb": str(ROOT / "ontology/lower_limb_sagittal.yaml"),  # loaded with the schema since D-058
         "hip_model": str(ROOT / "src/hip_phase_b.py"),
         "validator": str(ROOT / "src/quantitative.py"),
         "ontology_loader": str(ROOT / "src/ontology.py"),

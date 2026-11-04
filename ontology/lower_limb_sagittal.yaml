@@ -1,0 +1,384 @@
+# Phase D module (D-058). Loaded together with hip.yaml; IDs are unique across files.
+ontology_module:
+  extends: LB-AO
+  module: lower_limb_sagittal
+  version: 0.1.0
+  description: Knee, ankle, foot, shank and upper-body segments, coordinates and model frames for the planar squat
+    (Phase D, D-058).
+  decision: D-058
+class_hierarchy:
+  SynovialHingeJoint: SynovialJoint
+entities:
+  LB:BODY:WHOLE:
+    name: Whole Human Body
+    class: WholeBody
+    note: Carrier for whole-body anthropometric values (body mass, stature). Population or model specific values
+      are observations, never properties of this entity.
+  LB:BONE:TIBIA_R:
+    name: Right Tibia
+    class: Bone
+    side: right
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:SHANK_R
+  LB:BONE:TALUS_R:
+    name: Right Talus
+    class: Bone
+    side: right
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:FOOT_R
+  LB:BONE:CALCANEUS_R:
+    name: Right Calcaneus
+    class: Bone
+    side: right
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:FOOT_R
+  LB:BONE:TIBIA_L:
+    name: Left Tibia
+    class: Bone
+    side: left
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:SHANK_L
+  LB:BONE:TALUS_L:
+    name: Left Talus
+    class: Bone
+    side: left
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:FOOT_L
+  LB:BONE:CALCANEUS_L:
+    name: Left Calcaneus
+    class: Bone
+    side: left
+    relationships:
+      REPRESENTED_BY:
+      - LB:SEG:FOOT_L
+  LB:JOINT:KNEE_R:
+    name: Right Knee Joint
+    class: SynovialHingeJoint
+    side: right
+    relationships:
+      CONNECTS:
+      - LB:BONE:FEMUR_R
+      - LB:BONE:TIBIA_R
+      HAS_COORDINATE:
+      - LB:DOF:KNEE_FLEX_EXT_R
+    note: Represented in Stage D1 as an idealized revolute joint with a fixed centre (D-058); the anatomical knee
+      also translates and rotates about other axes.
+  LB:JOINT:ANKLE_R:
+    name: Right Ankle (Talocrural) Joint
+    class: SynovialHingeJoint
+    side: right
+    relationships:
+      CONNECTS:
+      - LB:BONE:TIBIA_R
+      - LB:BONE:TALUS_R
+      HAS_COORDINATE:
+      - LB:DOF:ANKLE_DORSI_PLANTAR_R
+  LB:JOINT:SUBTALAR_R:
+    name: Right Subtalar Joint
+    class: SynovialJoint
+    side: right
+    relationships:
+      CONNECTS:
+      - LB:BONE:TALUS_R
+      - LB:BONE:CALCANEUS_R
+    note: Locked inside the fixed foot in Stage D1; its Gait2392 location is used only to place the heel.
+  LB:JOINT:MTP_R:
+    name: Right Metatarsophalangeal Joints (lumped)
+    class: SynovialJoint
+    side: right
+    note: Lumped as one joint, as in Gait2392. Locked inside the fixed foot in Stage D1; its location marks the
+      ball of the foot.
+  LB:DOF:KNEE_FLEX_EXT_R:
+    name: Right Knee Flexion/Extension
+    class: JointCoordinate
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:KNEE_R
+    convention: 'Declared model convention (D-058 Amendment 1, A4): relative sagittal angle between thigh and shank
+      frames, flexion positive, zero in the Gait2392 default pose. Not attributed to a published convention.'
+  LB:DOF:ANKLE_DORSI_PLANTAR_R:
+    name: Right Ankle Dorsiflexion/Plantarflexion
+    class: JointCoordinate
+    side: right
+    relationships:
+      PART_OF:
+      - LB:JOINT:ANKLE_R
+    convention: 'Declared model convention (D-058 Amendment 1, A4): relative sagittal angle between foot and shank
+      frames, dorsiflexion positive, zero in the Gait2392 default pose. Not attributed to Wu et al. 2002, whose
+      definitions were not checked for the planar case.'
+  LB:JOINT:KNEE_L:
+    name: Left Knee Joint
+    class: SynovialHingeJoint
+    side: left
+    relationships:
+      CONNECTS:
+      - LB:BONE:FEMUR_L
+      - LB:BONE:TIBIA_L
+      HAS_COORDINATE:
+      - LB:DOF:KNEE_FLEX_EXT_L
+    note: Represented in Stage D1 as an idealized revolute joint with a fixed centre (D-058); the anatomical knee
+      also translates and rotates about other axes.
+  LB:JOINT:ANKLE_L:
+    name: Left Ankle (Talocrural) Joint
+    class: SynovialHingeJoint
+    side: left
+    relationships:
+      CONNECTS:
+      - LB:BONE:TIBIA_L
+      - LB:BONE:TALUS_L
+      HAS_COORDINATE:
+      - LB:DOF:ANKLE_DORSI_PLANTAR_L
+  LB:JOINT:SUBTALAR_L:
+    name: Left Subtalar Joint
+    class: SynovialJoint
+    side: left
+    relationships:
+      CONNECTS:
+      - LB:BONE:TALUS_L
+      - LB:BONE:CALCANEUS_L
+    note: Locked inside the fixed foot in Stage D1; its Gait2392 location is used only to place the heel.
+  LB:JOINT:MTP_L:
+    name: Left Metatarsophalangeal Joints (lumped)
+    class: SynovialJoint
+    side: left
+    note: Lumped as one joint, as in Gait2392. Locked inside the fixed foot in Stage D1; its location marks the
+      ball of the foot.
+  LB:DOF:KNEE_FLEX_EXT_L:
+    name: Left Knee Flexion/Extension
+    class: JointCoordinate
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:KNEE_L
+    convention: 'Declared model convention (D-058 Amendment 1, A4): relative sagittal angle between thigh and shank
+      frames, flexion positive, zero in the Gait2392 default pose. Not attributed to a published convention.'
+  LB:DOF:ANKLE_DORSI_PLANTAR_L:
+    name: Left Ankle Dorsiflexion/Plantarflexion
+    class: JointCoordinate
+    side: left
+    relationships:
+      PART_OF:
+      - LB:JOINT:ANKLE_L
+    convention: 'Declared model convention (D-058 Amendment 1, A4): relative sagittal angle between foot and shank
+      frames, dorsiflexion positive, zero in the Gait2392 default pose. Not attributed to Wu et al. 2002, whose
+      definitions were not checked for the planar case.'
+  LB:JOINT:LUMBAR_GAIT2392:
+    name: Gait2392 Low-Back Joint (pelvis to torso)
+    class: ModelJoint
+    relationships:
+      CONNECTS:
+      - LB:SEG:PELVIS
+      - LB:SEG:TORSO
+    note: A model joint of OpenSim Gait2392 (Anderson and Pandy), not an anatomical joint. Locked at zero in Stage
+      D1, so pelvis and torso move as one HAT segment.
+  LB:SEG:SHANK_R:
+    name: Right Shank Rigid-Body Segment
+    class: RigidBodySegment
+    side: right
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:FOOT_R:
+    name: Right Foot Rigid-Body Segment
+    class: RigidBodySegment
+    side: right
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:UPPER_ARM_R:
+    name: Right Upper Arm Rigid-Body Segment
+    class: RigidBodySegment
+    side: right
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:FOREARM_R:
+    name: Right Forearm Rigid-Body Segment
+    class: RigidBodySegment
+    side: right
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:HAND_R:
+    name: Right Hand Rigid-Body Segment
+    class: RigidBodySegment
+    side: right
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:SHANK_L:
+    name: Left Shank Rigid-Body Segment
+    class: RigidBodySegment
+    side: left
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:FOOT_L:
+    name: Left Foot Rigid-Body Segment
+    class: RigidBodySegment
+    side: left
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:UPPER_ARM_L:
+    name: Left Upper Arm Rigid-Body Segment
+    class: RigidBodySegment
+    side: left
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:FOREARM_L:
+    name: Left Forearm Rigid-Body Segment
+    class: RigidBodySegment
+    side: left
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:HAND_L:
+    name: Left Hand Rigid-Body Segment
+    class: RigidBodySegment
+    side: left
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+  LB:SEG:HEAD:
+    name: 'Head Rigid-Body Segment (de Leva: vertex to mid-gonion)'
+    class: RigidBodySegment
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+  LB:SEG:TRUNK_DELEVA:
+    name: 'Trunk Rigid-Body Segment (de Leva: suprasternale to mid-hip, includes the pelvis)'
+    class: RigidBodySegment
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    note: 'Overlaps LB:SEG:PELVIS and LB:SEG:TORSO: a different way of dividing the same body. Never combine it
+      with them in one model.'
+  LB:SEG:TORSO:
+    name: 'Torso Rigid-Body Segment (Gait2392: head, arms and trunk above the low-back joint)'
+    class: RigidBodySegment
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+  LB:SEG:HAT:
+    name: Head-Arms-Trunk (HAT) Rigid-Body Segment
+    class: RigidBodySegment
+    model_properties:
+    - mass
+    - center_of_mass
+    - inertia_tensor
+    - pose
+    note: 'Everything above the hip joints as one rigid body (D-058). Male: LB:SEG:PELVIS + LB:SEG:TORSO from Gait2392
+      with the low-back joint locked. Female: mass from de Leva head, trunk and both arms; geometry scaled from
+      the male HAT (D-058 Amendment 2).'
+  LB:FRAME:GAIT2392_PELVIS:
+    name: Gait2392 body frame 'pelvis'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:PELVIS
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:FRAME:GAIT2392_FEMUR_R:
+    name: Gait2392 body frame 'femur_r'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:THIGH_R
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:FRAME:GAIT2392_TIBIA_R:
+    name: Gait2392 body frame 'tibia_r'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:SHANK_R
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:FRAME:GAIT2392_TALUS_R:
+    name: Gait2392 body frame 'talus_r'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:FOOT_R
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:FRAME:GAIT2392_CALCN_R:
+    name: Gait2392 body frame 'calcn_r'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:FOOT_R
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:FRAME:GAIT2392_TOES_R:
+    name: Gait2392 body frame 'toes_r'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:FOOT_R
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:FRAME:GAIT2392_TORSO:
+    name: Gait2392 body frame 'torso'
+    class: CoordinateFrame
+    relationships:
+      PART_OF:
+      - LB:SEG:TORSO
+    convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
+      in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+models:
+  squat_d1:
+    represents:
+    - LB:SEG:FOOT_R
+    - LB:SEG:SHANK_R
+    - LB:SEG:THIGH_R
+    - LB:SEG:HAT
+    - LB:JOINT:ANKLE_R
+    - LB:JOINT:KNEE_R
+    - LB:JOINT:HIP_R
+    assumptions:
+    - sagittal_plane_motion
+    - bilateral_symmetry_one_leg_carries_half_HAT
+    - foot_fixed_flat_to_ground
+    - joints_idealized_revolute_with_fixed_centres
+    - rigid_segments
+    - low_back_joint_locked
+    - prescribed_motion_inverse_dynamics
+    retained_coordinates:
+    - LB:DOF:ANKLE_DORSI_PLANTAR_R
+    - LB:DOF:KNEE_FLEX_EXT_R
+    - LB:DOF:HIP_FLEX_EXT_R
+    omitted_coordinates:
+    - LB:DOF:HIP_AB_AD_R
+    - LB:DOF:HIP_ROTATION_R
