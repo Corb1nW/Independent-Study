@@ -14,7 +14,9 @@ LIST = (ROOT / "sources" / "SOURCES.md").read_text(encoding="utf-8")
 
 
 def registered_sources():
-    files = [ROOT / "ontology" / "hip.yaml",
+    schema = yaml.safe_load((ROOT / "ontology" / "quantitative_schema.yaml").read_text(encoding="utf-8"))
+    modules = schema["ontology"] if isinstance(schema["ontology"], list) else [schema["ontology"]]
+    files = [*(ROOT / "ontology" / m for m in modules),   # every ontology module file (from D-059)
              *sorted((ROOT / "ontology" / "quantitative_data").glob("*.yaml"))]
     ids = {}
     for path in files:
