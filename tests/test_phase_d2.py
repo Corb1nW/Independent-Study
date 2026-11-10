@@ -89,7 +89,7 @@ def test_simm_spline_reproduces_knots_and_extrapolates_linearly():
 
 
 # ------------------------------------------------------------------- 8a geometry vs oracle
-@pytest.mark.parametrize("kind", ["d1_sample", "spline_knot", "switch_side"])
+@pytest.mark.parametrize("kind", ["d1_sample", "spline_knot", "switch_side", "switch_edge"])
 def test_lengths_and_moment_arms_match_opensim(kind):
     rows = [g for g in REF["geometry"] if g["kind"] == kind]
     assert rows
@@ -215,6 +215,20 @@ def test_assembled_force_and_intermediates_match_opensim():
             shortening += st["v_norm"] < -1e-3
             lengthening += st["v_norm"] > 1e-3
     assert shortening > 0 and lengthening > 0
+    kinds = {f["kind"] for f in REF["forces"]}
+    assert {"switch_side", "switch_edge"} <= kinds            # tendon force on both sides of and at each switch
+
+
+def test_exact_switch_edges_use_the_inclusive_rule():
+    edges = [g for g in REF["geometry"] if g["kind"] == "switch_edge"]
+    assert len(edges) == 6
+    for g in edges:
+        assert -g["q"][1] == g["edge_knee_angle_gait2392"]   # OpenSim knee angle exactly at the widened edge
+        for a in ACTS:
+            for p in a.points:
+                if p.kind == "conditional" and g["edge_knee_angle_gait2392"] in (
+                        p.active_range[0] - m2.ACTIVITY_TOL, p.active_range[1] + m2.ACTIVITY_TOL):
+                    assert p.active(-g["q"][1])
 
 
 def test_baseline_force_is_linear_in_activation_with_one_cos_alpha():
@@ -258,9 +272,10 @@ def test_domain_policy_flags_and_excludes_never_extrapolates(bound, flag):
              "velocity_high": ((L_for(1.0), (1 - eps) * a.v_max * a.l_opt / cos_opt),
                                (L_for(1.0), (1 + eps) * a.v_max * a.l_opt / cos_opt)),
              "x": ((a.l_ts + 1e-6, 0.0), (a.l_ts - 1e-6, 0.0))}
-    if bound == "length_low":          # constant thickness: l_norm >= sin(alpha0) = 0.5 > 0.2, so test the rule directly
-        st = m2.fiber_state(a, *cases[bound][0])
-        assert not st["flags"]
+    if bound == "length_low":
+        # This fixture's constant thickness keeps l_norm >= sin(30 deg) = 0.5, so the 0.2 bound is tested on a
+        # thin-pennation fixture instead (test_lower_normalized_length_bound_is_enforced_on_a_reachable_fixture).
+        assert not m2.fiber_state(a, *cases[bound][0])["flags"]
         return
     inside, outside = cases[bound]
     assert not m2.fiber_state(a, *inside)["flags"]
@@ -384,3 +399,77 @@ def test_compliant_tendon_equilibrium_balances_forces():
     assert c["compliant"]["normalized_fiber_length"] < c["rigid"]["normalized_fiber_length"]
     assert sens.tendon_multiplier(1.049, 0.049) == pytest.approx(1.0, abs=1e-12)
     assert sens.tendon_multiplier(1.0, 0.049) == pytest.approx(0.0, abs=1e-12)
+
+
+# ------------------------------------------- configuration guards (ChatGPT review D2-B01, D2-B02)
+def _write_cfg(tmp_path, mutate):
+    import copy
+    import yaml
+    cfg = copy.deepcopy(yaml.safe_load(d2r.CONFIG.read_text(encoding="utf-8")))
+    mutate(cfg)
+    p = tmp_path / "cfg.yaml"
+    p.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
+    return p
+
+
+@pytest.mark.parametrize("name", sorted(d2r.PARAMETER_UNITS))
+@pytest.mark.parametrize("unit_kind", ["compatible_noncanonical", "dimensionally_wrong"])
+def test_noncanonical_or_wrong_parameter_units_are_rejected(tmp_path, name, unit_kind):
+    canonical = d2r.PARAMETER_UNITS[name]
+    unit = {("N*m", "compatible_noncanonical"): "mN*m", ("N*m", "dimensionally_wrong"): "N",
+            ("1", "compatible_noncanonical"): "percent", ("1", "dimensionally_wrong"): "m"}[(canonical, unit_kind)]
+
+    def mutate(cfg):
+        cfg["parameters"][name]["unit"] = unit
+    with pytest.raises(ValueError, match=name):
+        d2r.load_config(_write_cfg(tmp_path, mutate))
+
+
+def test_reviewer_unit_probe_is_rejected(tmp_path):
+    """D2-B01: value 1 with unit mN*m was accepted and classified as 1 N m."""
+    def mutate(cfg):
+        cfg["parameters"]["epsilon_reserve"].update(value=1.0, unit="mN*m")
+    with pytest.raises(ValueError, match="epsilon_reserve"):
+        d2r.load_config(_write_cfg(tmp_path, mutate))
+
+
+@pytest.mark.parametrize("key,value", [("active_force_width_scale", 2.0), ("passive_fiber_force", "included"),
+                                       ("activation_dynamics", "first_order"), ("tendon", "compliant"),
+                                       ("fiber_damping", 0.1), ("active_force_width_scale", "1.0")])
+def test_baseline_physics_the_runner_does_not_implement_is_rejected(tmp_path, key, value):
+    def mutate(cfg):
+        cfg["baseline_force_law"][key] = value
+    with pytest.raises(ValueError, match=key):
+        d2r.load_config(_write_cfg(tmp_path, mutate))
+
+
+@pytest.mark.parametrize("change", ["missing", "extra"])
+def test_baseline_fields_must_be_exactly_the_declared_set(tmp_path, change):
+    def mutate(cfg):
+        if change == "missing":
+            cfg["baseline_force_law"].pop("passive_fiber_force")
+        else:
+            cfg["baseline_force_law"]["tendon_compliance_mode"] = "implicit"
+    with pytest.raises(ValueError, match="baseline_force_law"):
+        d2r.load_config(_write_cfg(tmp_path, mutate))
+
+
+def test_default_configuration_matches_the_implemented_baseline():
+    cfg, params = d2r.load_config()
+    for key, value in d2r.BASELINE_PHYSICS.items():
+        assert cfg["baseline_force_law"][key] == value
+    assert {k: cfg["parameters"][k]["unit"] for k in params} == d2r.PARAMETER_UNITS
+
+
+# ------------------------------------------------ lower length bound (ChatGPT note D2-BN01)
+def test_lower_normalized_length_bound_is_enforced_on_a_reachable_fixture():
+    """With pennation 0.05 rad the constant-thickness minimum l_M / l_opt is about 0.05, so 0.2 is reachable."""
+    a = m2.Actuator("thin", "none", 1000.0, 0.1, 0.2, 0.05, 10.0)
+    h = a.l_opt * math.sin(a.alpha0)
+
+    def L_for(l_norm):
+        return a.l_ts + math.sqrt((l_norm * a.l_opt) ** 2 - h * h)
+    inside = m2.fiber_state(a, L_for(0.2 + 1e-9), 0.0)
+    outside = m2.fiber_state(a, L_for(0.2 - 1e-9), 0.0)
+    assert not inside["flags"]
+    assert m2.FLAG_LENGTH in outside["flags"] and m2.unit_tendon_force(a, outside) == 0.0

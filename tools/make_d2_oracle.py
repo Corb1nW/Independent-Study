@@ -130,13 +130,27 @@ def geometry_states(tree_root):
             for side, off in (("flexion_side", SWITCH_OFFSET), ("extension_side", -SWITCH_OFFSET)):
                 states.append({"kind": "switch_side", "edge_knee_angle_gait2392": e, "side": side,
                                "q": (ratio * (qk + off)).tolist()})
+            # Exactly at the widened edge, where OpenSim's inclusive rule counts the point as active
+            # (ChatGPT note D2-BN01). q_knee = -e exactly, so the OpenSim knee angle equals e.
+            q_edge = (ratio * qk).tolist()
+            q_edge[1] = qk
+            states.append({"kind": "switch_edge", "edge_knee_angle_gait2392": e, "q": q_edge})
     return states
 
 
-def force_states():
-    """States for the assembled force law: poses across the motion with shortening and lengthening speeds."""
+def force_states(tree_root=None):
+    """States for the assembled force law: poses across the motion with shortening and lengthening speeds,
+    and both sides of every conditional switch (ChatGPT note D2-BN01)."""
     q, qd, depth = d1_poses()
     out = []
+    if tree_root is not None:
+        ratio = depth / depth[1]
+        for st in geometry_states(tree_root):
+            if st["kind"] in ("switch_side", "switch_edge"):
+                for sgn in (1.0, -1.0):
+                    out.append({"kind": st["kind"], "side": st.get("side", "edge"),
+                                "edge_knee_angle_gait2392": st["edge_knee_angle_gait2392"],
+                                "q": st["q"], "qdot": (sgn * 0.5 * ratio).tolist()})
     for i in (0, 40, 75, 110, 150, 190, 225, 260):
         for scale in (1.0, -1.0, 3.0, -3.0):
             out.append({"q": q[:, i].tolist(), "qdot": (scale * qd[:, i] if i not in (0, 150) else
@@ -189,7 +203,7 @@ def run_oracle(matched_path):
     forces = []
     for passive in (False, True):
         mp, sp = _model(matched_path, passive=passive)
-        for st in force_states():
+        for st in force_states(root):
             for a in ACTIVATIONS:
                 _set(mp, sp, st["q"], st["qdot"])
                 for name in ACTUATORS:
@@ -204,7 +218,8 @@ def run_oracle(matched_path):
                                   "normalized_fiber_velocity": mu.getNormalizedFiberVelocity(sp),
                                   "tendon_force_N": mu.getTendonForce(sp),
                                   "passive_fiber_force_N": mu.getPassiveFiberForce(sp)}
-                forces.append({"passive": passive, "q": st["q"], "qdot": st["qdot"], "activation": a, "values": vals})
+                forces.append({"passive": passive, "kind": st.get("kind", "motion"), "q": st["q"], "qdot": st["qdot"],
+                               "activation": a, "values": vals})
     return geometry, forces
 
 

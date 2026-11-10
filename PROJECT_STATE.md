@@ -1,11 +1,11 @@
 # LB-AO Project State
 
 **Updated:** 2026-11-10
-**Updated by:** Claude (Stage D2 merged, A-13; decisions Q59)
+**Updated by:** Claude (D2 post-merge review fixes, D-059 Amendment 4)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.2.0 · schema LB-QPS 0.7.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0, `muscles_gait2392.yaml` 0.1.0 · `DECISIONS.md` revision 21
-**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 implemented and merged by Corbin (A-13; official run at `7ac0f2d`); ChatGPT's post-merge review recommended.** Female body: muscles suffice. Male and Gait2392: flagged near the bottom (largest reserve 5.8 and 6.4 N·m), a result traced to D1's fixed-centre knee (with Gait2392's moving-knee geometry the muscles suffice); accepted as the reading of the result (Q59, P1 option (a)).** D-056 is Accepted (Q53). D-059 specifies:
+**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.2.0 · schema LB-QPS 0.7.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0, `muscles_gait2392.yaml` 0.1.0 · `DECISIONS.md` revision 22
+**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 implemented and merged by Corbin (A-13; official run at `7ac0f2d`); ChatGPT's post-merge review (PR #36) reproduced the results exactly and asked for two configuration guards, fixed in D-059 Amendment 4 (re-review pending).** Female body: muscles suffice. Male and Gait2392: flagged near the bottom (largest reserve 5.8 and 6.4 N·m), a result traced to D1's fixed-centre knee (with Gait2392's moving-knee geometry the muscles suffice); accepted as the reading of the result (Q59, P1 option (a)).** D-056 is Accepted (Q53). D-059 specifies:
 - instantaneous optimization on D1's official torques, with 14 Gait2392 actuators per leg (main squat muscles plus tibialis anterior; Q54, Q57) and a reserve check (Q57), made exact by a two-stage rule (Amendment 2: smallest largest per-joint reserve first, then minimum effort);
 - the De Groote force law with rigid tendons and no passive force in the baseline;
 - OpenSim 4.6 as an independent verification oracle;
@@ -91,6 +91,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | D2 oracle reference | `tools/make_d2_oracle.py` at the build | Claude | `python -m tools.make_d2_oracle --output tests/data/d2_oracle_reference.json` (opensim 4.6 from PyPI) | 322 geometry states, 192 force states, 31 unmodified-model states. Implementation vs OpenSim: lengths and moment arms within 4e-16 m, intermediates within 2e-15, tendon force within 1.6e-11 N |
 | Mutation check, D2 tests | build | Claude | 8 deliberate faults in `src/muscles_d2.py` | each fault fails 1–7 tests |
 | **Stage D2 run (D-059)** | `7ac0f2d` | Claude | `python -m tools.run_phase_d2 --commit-sha 7ac0f2d2d83752d43f85a4221923f43f54e26b61 --d1-manifest results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json --output results/phase_d/2026-11-10_d2_muscle_runs_7ac0f2d.json`; `python -m tools.sensitivity_d2 …`; `python -m tools.build_d2_page …` | Exit 0; provenance `verified_git_head_and_inputs` (24 files). All bodies: D1 consistency PASSED (difference 0), optimizer PASSED (KKT ≤ 1.1e-11; second solvers within 5.6e-7), force-law domain IN_DOMAIN. Muscle feasibility: female FEASIBLE; male and Gait2392 FLAGGED 1.39–1.66 s (t* 5.815 and 6.362 N·m). Sensitivity: unmodified Gait2392 geometry gives t* = 0. Page rendered at desktop (light) and phone (dark) widths; no horizontal scroll; no script errors |
+| **Stage D2 independent execution** | `b9e96ed` | **ChatGPT (independent of the builder)** | pytest; integrity; probes; dataset check; OpenSim oracle; D2 runner; sensitivity; page builder; its own comparator (CPython 3.12.14, NumPy 2.3.5, SciPy 1.17.0, quadprog 0.1.14, Clarabel 0.11.1, OpenSim 4.6) | **AMEND** (D2-B01, D2-B02). 213 passed; integrity PASSED; 9/9 REJECTED; oracle 44,034 values and default run 153,757 values identical to the committed files; sensitivity within 1.8e-8; page byte-identical. Knee explanation confirmed with OpenSim (knee translations restored: t* = 0 at all 301 states). Record: PR #36 |
 
 **Independently reproduced** (ChatGPT, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)): the test suite, integrity check and probes at `29e256e`, which contains the Phase A code and the D-052 fixes. This upgrades those results from author-reported. **Still author-reported:** the mutation check (30 of 47 Phase A tests fail against the old validator), the 11/4 comparison of the new tests against `4abb4f1`, and all results at other snapshots. Independent execution checks software behavior only, never anatomical or biomechanical validity (D-051 item 10). CI is a third-party run and counts as supporting evidence only. PR #6 adds two label tests (82 total at its head), not covered by ChatGPT's run.
 
@@ -158,10 +159,10 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Next task
 
-**Owner:** Corbin (merge this records PR, which also brings the Stage D2 build to `main`); ChatGPT (post-merge review of the build); Corbin (next stage).
-1. **Merge the records PR** that carries the build to `main` (PR #34 merged into PR #30's branch, A-13).
-2. **ChatGPT reviews the merged Stage D2 build** at `b9e96ed` with the Reviewer skill, including the oracle reference file.
-3. **Corbin decides the next stage.** Builder's recommendation: a moving knee for D1 and D2 (P1 option (b)), so torques and muscle geometry come from one knee model, before muscle results are cited.
+**Owner:** Corbin (merge ChatGPT's review PR #36); ChatGPT (re-review the configuration-guard fix PR); Corbin (merge; next stage).
+1. **ChatGPT re-reviews the D2 fixes** (D-059 Amendment 4) at the head of their PR: D2-B01 and D2-B02, and the D2-BN01 coverage.
+2. **Corbin merges** PR #36 and the fix PR.
+3. **Corbin decides the next stage.** Builder's recommendation: a moving knee for D1 and D2 (P1 option (b)), before muscle results are cited; then Phase E (conditions).
 
 **Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-050, D-055, D-056, D-058, D-059; the official D1 run in `results/phase_d/` (`dd89fff`); `sources/vendor/`; `sources/SOURCES.md`.
 

@@ -17,7 +17,7 @@ parameters:
   passive_strain_sensitivity: {value: 0.6, unit: '1', kind: defined_constant, rationale: "De Groote default passive strain at one normalized force (DeGrooteFregly2016Muscle.cpp at opensim-core 01683ac), set explicitly for the passive-on sensitivity case only (Amendment 1)"}
 baseline_force_law:
   tendon: rigid
-  activation_dynamics: ignored (instantaneous recruitment at each sample)
+  activation_dynamics: ignored   # instantaneous recruitment at each sample
   passive_fiber_force: ignored
   fiber_damping: 0.0
   active_force_width_scale: 1.0
