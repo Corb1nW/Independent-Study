@@ -183,6 +183,28 @@ def gait2392():
                     "assumptions": ["OpenSim evaluates these splines as smooth curves; linear interpolation between the "
                                     "two knots next to 0 differs from it by well under 1 mm here",
                                     "Stage D1 holds the knee centre fixed at this location for all knee angles"]})
+    # Moving knee (D-060): the same splines, kept as functions of the knee angle for Stage D3.
+    spl = {}
+    for axis_name in ("translation1", "translation2"):
+        ta = [t for t in knee.iter("TransformAxis") if t.get("name") == axis_name][0]
+        spl[axis_name] = {"kind": "simm_spline", "x": _vec(ta.find(".//SimmSpline/x").text),
+                          "y": _vec(ta.find(".//SimmSpline/y").text)}
+    d = datum(
+        "joint_center_position",
+        "Knee centre (tibia origin) in the femur frame as a function of the Gait2392 knee angle (Stage D3).",
+        {"kind": "moving_joint_centre",
+         "coordinate": "Gait2392 knee_angle_r (rad, flexion negative) = -LB:DOF:KNEE_FLEX_EXT_R",
+         "x": spl["translation1"], "y": spl["translation2"], "z": {"kind": "constant", "value": 0.0},
+         "evaluation": "OpenSim SimmSpline (opensim-core 01683ac, OpenSim/Common/SimmSpline.cpp)"},
+        "m", "model_derived",
+        [_claim(loc, ["knee_r_translation_spline_knots"])], loc,
+        {"entity_ids": ["LB:JOINT:KNEE_R"], "anatomical_scope": "Gait2392 joint 'knee_r'", "laterality": None,
+         "computational_representation": "OpenSim Gait2392 joint 'knee_r', translation coupled to the knee angle"},
+        G_APPLICABILITY, value_form="function", frame="LB:FRAME:GAIT2392_FEMUR_R",
+        derivation={"inputs": [], "formula": "published model knee translation splines", "assumptions": [
+            "A one-coordinate model coupling (Gait2392), not measured knee motion (D-060 simplification 1)"]})
+    d["coordinate_context"]["coordinate_id"] = "LB:DOF:KNEE_FLEX_EXT_R"
+    obs["LB-QD:G2392:JOINT:KNEE_R_MOVING"] = d
     doc = "OpenSim documentation, 'Gait 2392 and 2354 Models'"
     whole = {"entity_ids": ["LB:BODY:WHOLE"], "anatomical_scope": "whole body", "laterality": None,
              "computational_representation": "unscaled Gait2392 model"}
@@ -199,8 +221,9 @@ def gait2392():
                    "1.66 m (SimTK forum, unanswered). D-058 Amendment 2 uses 1.8 m and lists this as an open concern.")
             if key == "STATURE" else None)
     return {
-        "dataset": {"id": "LB-QD:SEGMENTS:GAIT2392", "version": "0.1.0",
-                    "description": "OpenSim Gait2392 body segment parameters and joint locations (reference body and scaling basis for Stage D1).",
+        "dataset": {"id": "LB-QD:SEGMENTS:GAIT2392", "version": "0.2.0",
+                    "description": ("OpenSim Gait2392 body segment parameters and joint locations (reference body and scaling "
+                                    "basis for Stage D1); moving-knee splines for Stage D3 (0.2.0, D-060)."),
                     "generated_by": "python -m tools.build_segment_datasets",
                     "decision": "D-058"},
         "sources": {

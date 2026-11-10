@@ -162,6 +162,18 @@ class SimmSpline:
         dx = a - x[k]
         return y[k] + dx * (self.b[k] + dx * (self.c[k] + dx * self.d[k]))
 
+    def second_derivative(self, a):
+        """Second derivative, as OpenSim's calcDerivative with order 2 (0 outside the knots)."""
+        x, n = self.x, len(self.x)
+        if a < x[0] or a > x[n - 1]:
+            return 0.0
+        if abs(a - x[0]) <= self.ROUNDOFF:
+            return 2.0 * self.c[0]
+        if abs(a - x[n - 1]) <= self.ROUNDOFF:
+            return 2.0 * self.c[n - 1]
+        k = self._segment(a)
+        return 2.0 * self.c[k] + 6.0 * (a - x[k]) * self.d[k]
+
     def derivative(self, a):
         x, n = self.x, len(self.x)
         if a < x[0]:
