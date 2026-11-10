@@ -156,3 +156,11 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 2. Read this file and the `DECISIONS.md` entries named in the next task.
 3. Return: changes as commits on a branch; validation evidence (commands, environment, results); proposals as `Proposed` entries for `DECISIONS.md`; unresolved questions. Reviews are one file in `docs/reviews/`, pinned to a SHA.
 4. Update this file at the end of every build or review.
+
+## Review handoff — D-059 Amendment 2 (2026-11-10)
+
+**Reviewed by (model): ChatGPT.** PR #30 at `7358c2dbb6af373b477d7c71a14a520a853f36c5` (base `2f7cf983cb1660ae3f0fb8d08fbe51b69ceabe7e`); comparison from `936c12c9fe72a128c629a62f6cd67fd367fded7b`. **AGREE**, scoped to the amended L∞ reserve rule (D2-R01) and path-switch transition policy (D2-R04); both resolved at proposal level. Earlier resolved items remain closed. No blocking findings.
+
+Authoritative review: [`2026-11-10_ChatGPT_D2_Amendment2_ReReview_7358c2d.md`](docs/reviews/2026-11-10_ChatGPT_D2_Amendment2_ReReview_7358c2d.md). Tests: 178 passed; integrity PASSED; probes 9/9 REJECTED; generated datasets current. Review-only mathematical/geometry probes passed; OpenSim not run and D2 not yet built. Nonblocking N01 carries numerical-band reporting into the build review.
+
+**Next:** Corbin decides D-059 at the reviewed SHA; if approved, Claude builds Stage D2 and ChatGPT reviews the build. No approval or merge is inferred. This handoff supplements the main-branch snapshot above; PR #30 contains the pending proposal and its fuller state update. **Status: REVIEWED, NOT APPROVED.**
