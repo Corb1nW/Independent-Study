@@ -51,6 +51,15 @@ SOURCE_VALIDATION = dict(d1r.SOURCE_VALIDATION, **{
 # other joints exceed t* by delta (1e-6 N m), which through two-joint muscles can lower a joint by about
 # 1e-4 N m at the flagged samples; 1e-3 N m keeps that numerical effect from hiding a limiting joint.
 LIMITING_TOL = 1e-3
+# Units the runner assumes for each parameter's bare number (ChatGPT review D2-B01).
+PARAMETER_UNITS = {"epsilon_reserve": "N*m", "solver_band_delta": "N*m", "kkt_tolerance": "1",
+                   "second_solver_t_star_tolerance": "N*m", "second_solver_activation_tolerance": "1",
+                   "d1_consistency_N_m": "N*m", "passive_strain_sensitivity": "1"}
+# The one baseline src/muscles_d2.py implements (D-059 Amendment 1; ChatGPT review D2-B02), and the fields
+# that only describe it.
+BASELINE_PHYSICS = {"tendon": "rigid", "activation_dynamics": "ignored", "passive_fiber_force": "ignored",
+                    "fiber_damping": 0.0, "active_force_width_scale": 1.0}
+BASELINE_PROSE = ("curves", "fiber_velocity", "domain")
 REQUIRED = {"model_id", "decision", "d1_config", "bodies", "parameters", "baseline_force_law", "assumptions",
             "omitted_physics"}
 
@@ -68,13 +77,26 @@ def load_config(path=CONFIG):
         if not str(item["rationale"]).strip() or type(item["value"]) not in (int, float) \
                 or not math.isfinite(item["value"]) or item["value"] <= 0:
             raise ValueError(f"{name}: finite positive value and rationale required")
+        if name in PARAMETER_UNITS and item["unit"] != PARAMETER_UNITS[name]:
+            # Canonical units only: the runner uses the bare number, so any other unit would be misread
+            # (ChatGPT review D2-B01).
+            raise ValueError(f"{name}: unit must be {PARAMETER_UNITS[name]!r}, got {item['unit']!r}")
         params[name] = float(item["value"])
-    needed = {"epsilon_reserve", "solver_band_delta", "kkt_tolerance", "second_solver_t_star_tolerance",
-              "second_solver_activation_tolerance", "d1_consistency_N_m", "passive_strain_sensitivity"}
-    if set(params) != needed:
-        raise ValueError(f"parameters must be exactly {sorted(needed)}")
-    if cfg["baseline_force_law"].get("fiber_damping") != 0.0 or cfg["baseline_force_law"].get("tendon") != "rigid":
-        raise ValueError("baseline must declare a rigid tendon and fiber damping 0 (D-059 Amendment 1)")
+    if set(params) != set(PARAMETER_UNITS):
+        raise ValueError(f"parameters must be exactly {sorted(PARAMETER_UNITS)}")
+    law = cfg["baseline_force_law"]
+    if not isinstance(law, dict) or set(law) != set(BASELINE_PHYSICS) | set(BASELINE_PROSE):
+        raise ValueError("baseline_force_law fields must be exactly: "
+                         + ", ".join(sorted(set(BASELINE_PHYSICS) | set(BASELINE_PROSE))))
+    for key, implemented in BASELINE_PHYSICS.items():
+        # The runner computes one fixed baseline; a declaration it does not implement would be a false
+        # manifest claim (ChatGPT review D2-B02). Alternatives belong to tools/sensitivity_d2.py.
+        if law[key] != implemented or type(law[key]) is not type(implemented):
+            raise ValueError(f"baseline_force_law.{key} must be {implemented!r} (the implemented baseline, "
+                             f"D-059 Amendment 1), got {law[key]!r}")
+    for key in BASELINE_PROSE:
+        if not isinstance(law[key], str) or not law[key].strip():
+            raise ValueError(f"baseline_force_law.{key} must be a non-empty description")
     return cfg, params
 
 
