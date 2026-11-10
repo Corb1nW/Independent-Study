@@ -326,3 +326,61 @@ def test_kkt_conditions_and_second_solver_on_random_problems():
         assert rec.solvers["t_star_difference"] < 1e-7
         assert rec.solvers["activation_difference"] < 1e-5
         assert np.max(np.abs(rec.reserve)) <= rec.band + 1e-9
+
+
+# ------------------------------------------------------------------ runner and page
+from tools import run_phase_d2 as d2r  # noqa: E402
+
+
+def test_d2_configuration_is_labeled_and_declares_the_baseline():
+    cfg, params = d2r.load_config()
+    assert params["epsilon_reserve"] == 1.0 and params["solver_band_delta"] == 1e-6
+    assert cfg["baseline_force_law"]["fiber_damping"] == 0.0
+    assert len(cfg["assumptions"]) == 15
+
+
+def test_d2_configuration_rejects_an_unlabeled_or_damped_baseline(tmp_path):
+    import yaml
+    cfg = yaml.safe_load(d2r.CONFIG.read_text(encoding="utf-8"))
+    bad = dict(cfg, baseline_force_law=dict(cfg["baseline_force_law"], fiber_damping=0.1))
+    p = tmp_path / "bad.yaml"; p.write_text(yaml.safe_dump(bad), encoding="utf-8")
+    with pytest.raises(ValueError):
+        d2r.load_config(p)
+    cfg["parameters"]["epsilon_reserve"].pop("rationale")
+    p.write_text(yaml.safe_dump(cfg), encoding="utf-8")
+    with pytest.raises(ValueError):
+        d2r.load_config(p)
+
+
+def test_exit_code_fails_only_on_verification_not_on_flags():
+    good = {"mechanics_verification": "passed", "d1_consistency": "passed", "optimizer_verification": "passed",
+            "muscle_feasibility": "flagged", "force_law_domain": "flagged", "contact_feasibility": "feasible"}
+    assert d2r.exit_code({"status": good}) == 0
+    for key in ("mechanics_verification", "d1_consistency", "optimizer_verification"):
+        assert d2r.exit_code({"status": dict(good, **{key: "failed"})}) == 1
+
+
+def test_switch_jumps_are_reported_for_every_switch_in_range():
+    import numpy as np
+    jumps = d2r.switch_jumps(ACTS, JOINTS, np.array([0.6981317007977318, 1.7453292519943295, 1.2915436464758039]))
+    assert len(jumps) == 8
+    assert all(abs(j["length_with_point_minus_without_mm"]) > 0 for j in jumps)
+
+
+def test_smallest_reserve_diagnostic_identifies_the_limiting_joint():
+    Cm = np.array([[10.0, 0.0], [0.0, -50.0]])
+    tau = np.array([5.0, -60.0])
+    rec = m2.recruit(Cm, tau)
+    needed = m2.smallest_reserve_per_joint(Cm, tau, rec.band)
+    assert needed[0] == pytest.approx(0.0, abs=1e-9) and needed[1] == pytest.approx(10.0, abs=1e-6)
+
+
+def test_compliant_tendon_equilibrium_balances_forces():
+    from tools import sensitivity_d2 as sens
+    a = BY_NAME["soleus_r"]
+    L = a.l_ts + 1.3 * a.l_opt
+    c = sens.compliant_equilibrium(a, 0.2, L)
+    assert c["compliant"]["equilibrium_residual_N"] < 1e-6
+    assert c["compliant"]["normalized_fiber_length"] < c["rigid"]["normalized_fiber_length"]
+    assert sens.tendon_multiplier(1.049, 0.049) == pytest.approx(1.0, abs=1e-12)
+    assert sens.tendon_multiplier(1.0, 0.049) == pytest.approx(0.0, abs=1e-12)

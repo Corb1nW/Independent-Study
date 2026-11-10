@@ -208,6 +208,22 @@ def run_oracle(matched_path):
     return geometry, forces
 
 
+def run_unmodified():
+    """Lengths and moment arms on the UNMODIFIED Gait2392 file at every 10th D1 sample (D-059 item 8f)."""
+    m, s = _model(OSIM, passive=False)
+    cs = m.getCoordinateSet()
+    q, _, _ = d1_poses()
+    rows = []
+    for i in range(0, q.shape[1], 10):
+        _set(m, s, q[:, i])
+        m.realizePosition(s)
+        rows.append({"index": i, "q": q[:, i].tolist(),
+                     "length_m": {n: m.getMuscles().get(n).getLength(s) for n in ACTUATORS},
+                     "moment_arm_m": {n: [SIGN[k] * m.getMuscles().get(n).computeMomentArm(s, cs.get(c))
+                                          for k, c in COORDS.items()] for n in ACTUATORS}})
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--output")
@@ -224,6 +240,7 @@ def main():
         path = Path(tmp) / "gait2392_d1_matched.osim"
         path.write_bytes(xml)
         geometry, forces = run_oracle(path)
+    unmodified = run_unmodified()
     ref = {
         "description": ("OpenSim oracle values for Stage D2 (D-059 item 8): computed by OpenSim on the D1-matched copy "
                         "of the vendored Gait2392 model. Not produced by src/muscles_d2.py."),
@@ -241,14 +258,17 @@ def main():
             "coordinate_map": {k: f"{COORDS[k]} = {SIGN[k]:+.0f} x D1 q_{k}" for k in COORDS},
             "moment_arm_sign": "stored in D1 coordinates: R = -dL/dq_D1",
             "units": "m, rad, m/s, N; activation dimensionless",
-            "conditional_activity_tolerance_rad": ACTIVITY_TOL, "switch_offset_rad": SWITCH_OFFSET},
+            "conditional_activity_tolerance_rad": ACTIVITY_TOL, "switch_offset_rad": SWITCH_OFFSET,
+            "unmodified_geometry": ("the vendored model as published (knee translation splines, oblique ankle axis, "
+                                    "free subtalar and MTP at 0), every 10th D1 sample, for D-059 item 8f")},
         "actuators": ACTUATORS,
         "geometry": geometry,
         "forces": forces,
+        "unmodified_geometry": unmodified,
     }
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(ref, indent=1, sort_keys=False) + "\n", encoding="utf-8")
+    out.write_text(json.dumps(ref, separators=(",", ":")) + "\n", encoding="utf-8")
     print("wrote", out, f"({len(geometry)} geometry states, {len(forces)} force states)")
 
 

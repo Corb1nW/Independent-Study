@@ -460,9 +460,31 @@ def stage2_second(Cm, tau, band):
     st.tol_ktratio = 1e-10
     sol = clarabel.DefaultSolver(sp.csc_matrix(2.0 * np.eye(n)), np.zeros(n), A, b,
                                  [clarabel.NonnegativeConeT(A.shape[0])], st).solve()
-    if str(sol.status) != "Solved":
-        raise RuntimeError(f"stage 2 second solver: {sol.status}")
-    return np.array(sol.x)
+    status = str(sol.status)
+    if status not in ("Solved", "AlmostSolved"):   # AlmostSolved: reduced accuracy; the agreement check decides
+        raise RuntimeError(f"stage 2 second solver: {status}")
+    return np.array(sol.x), status
+
+
+def smallest_reserve_per_joint(Cm, tau, band):
+    """Diagnostic, not part of recruitment: for each joint, the smallest |reserve| any bounded activation can give
+    there while every joint stays within the stage-2 band. A joint whose value equals t* is limiting."""
+    m, n = Cm.shape
+    out = []
+    for j in range(m):
+        # variables a (n), u (1): minimize u subject to |tau_j - C_j a| <= u and |tau_k - C_k a| <= band for all k
+        A, b = [], []
+        for k in range(m):
+            A += [np.r_[-Cm[k], 0.0], np.r_[Cm[k], 0.0]]
+            b += [band - tau[k], band + tau[k]]
+        A += [np.r_[-Cm[j], -1.0], np.r_[Cm[j], -1.0]]
+        b += [-tau[j], tau[j]]
+        res = linprog(np.r_[np.zeros(n), 1.0], A_ub=np.array(A), b_ub=np.array(b),
+                      bounds=[(0.0, 1.0)] * n + [(0.0, None)], method="highs-ds")
+        if not res.success:
+            raise RuntimeError(f"smallest reserve LP failed: {res.message}")
+        out.append(float(res.x[-1]))
+    return np.array(out)
 
 
 def recruit(Cm, tau, delta=1e-6, second_solver=True):
@@ -471,11 +493,16 @@ def recruit(Cm, tau, delta=1e-6, second_solver=True):
     t_star, _, kkt1 = stage1(Cm, tau)
     band = t_star + delta
     a, kkt2 = stage2(Cm, tau, band)
+    a = np.clip(a, 0.0, 1.0)          # removes round-off of order 1e-16 outside the bounds after the KKT check
     solvers = {"stage1": "scipy linprog highs-ds", "stage2": "quadprog (Goldfarb-Idnani)"}
     if second_solver:
         t_alt, _, _ = stage1(Cm, tau, method="highs-ipm")
-        a_alt = stage2_second(Cm, tau, band)
+        try:
+            a_alt, status = stage2_second(Cm, tau, band)
+            diff = float(np.max(np.abs(a_alt - a)))
+        except RuntimeError as exc:          # a failed cross-check is a failed verification, never skipped
+            status, diff = str(exc), float("inf")
         solvers.update({"stage1_second": "scipy linprog highs-ipm", "stage2_second": "Clarabel (interior point)",
-                        "t_star_difference": abs(t_alt - t_star),
-                        "activation_difference": float(np.max(np.abs(a_alt - a)))})
+                        "stage2_second_status": status, "t_star_difference": abs(t_alt - t_star),
+                        "activation_difference": diff})
     return Recruitment(a, tau - Cm @ a, t_star, band, {"stage1": kkt1, "stage2": kkt2}, solvers)
