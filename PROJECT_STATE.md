@@ -200,3 +200,13 @@ Executed: **240 tests passed**, integrity PASSED, 9/9 probes REJECTED, datasets 
 Authoritative review: [`2026-11-10_ChatGPT_D2_Fixes_ReReview_9ed7b1f.md`](docs/reviews/2026-11-10_ChatGPT_D2_Fixes_ReReview_9ed7b1f.md). This handoff supersedes the earlier pending-fix task for the proposed fix revision; main's implementation changes when Corbin merges PR #37.
 
 **Next:** Corbin decides and merges fix PR #37 and this review record, then decides the next modeling stage. No merge or owner approval is performed or inferred by the reviewer. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D3 scope review handoff (2026-11-10)
+
+**Reviewed by (model): ChatGPT.** PR #39, D-060, at `adae7238cfbd5d1c70f3a239378df3e73d6017e1`, base `c227793962719a38c95775d946a6e09a5dfd9ef1`. **AGREE on scope, no blocking findings.** Moving knee in both mechanics and muscle geometry, the translation-work term, two dynamics formulations, the OpenSim oracle and the comparison plan are suitable.
+
+Authoritative review: [`2026-11-10_ChatGPT_D3_Scope_adae723.md`](docs/reviews/2026-11-10_ChatGPT_D3_Scope_adae723.md). Nonblocking notes: N01 corrects the preliminary source displacement to **6.3 mm anterior / 21.1 mm inferior** over 0°–100°; N02 distinguishes D1's historical linearly interpolated fixed centre from smooth T(0) (about 0.40 mm horizontal difference) and carries correct body-frame/frozen-regression handling into the build.
+
+Executed: **240 tests passed**, integrity PASSED, 9/9 probes REJECTED, datasets current. Direct OpenSim source-geometry checks and a translational virtual-work fixture passed. No D3 dynamics or all-body feasibility pre-check was reproduced; those preliminary figures remain Claude-reported.
+
+**Next:** Corbin decides D-060 at the reviewed SHA; if approved, Claude builds Stage D3 and carries the nonblocking notes; ChatGPT reviews the new implementation SHA. Earlier D2 findings remain closed. No approval or merge is performed by the reviewer. **Status: REVIEWED, NOT APPROVED.**

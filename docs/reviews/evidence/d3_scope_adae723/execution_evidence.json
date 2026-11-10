@@ -1,0 +1,188 @@
+{
+  "builder_precheck_status": "Reported by author; no D3 dynamics/feasibility prototype executed by reviewer.",
+  "commands": [
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0,
+      "name": "head_review",
+      "seconds": 0.002,
+      "started_utc": "2026-11-10T21:09:50.489341+00:00",
+      "stderr": "",
+      "stdout": "adae7238cfbd5d1c70f3a239378df3e73d6017e1\n"
+    },
+    {
+      "command": "git status --porcelain",
+      "exit": 0,
+      "name": "status_review",
+      "seconds": 0.007,
+      "started_utc": "2026-11-10T21:09:50.491797+00:00",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "git diff --stat c227793962719a38c95775d946a6e09a5dfd9ef1 adae7238cfbd5d1c70f3a239378df3e73d6017e1",
+      "exit": 0,
+      "name": "diff_scope",
+      "seconds": 0.007,
+      "started_utc": "2026-11-10T21:09:50.499475+00:00",
+      "stderr": "",
+      "stdout": " PROJECT_STATE.md  | 14 +++++-----\n docs/DECISIONS.md | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++++---\n 2 files changed, 81 insertions(+), 11 deletions(-)\n"
+    },
+    {
+      "command": "python -c 'import sys,platform,json; from importlib.metadata import version; print(sys.version); print(platform.platform()); print(json.dumps({p:version(p) for p in (\"numpy\",\"pydantic\",\"pydantic_core\",\"pytest\",\"PyYAML\",\"sympy\",\"pint\",\"scipy\",\"quadprog\",\"clarabel\",\"opensim\")},sort_keys=True))'",
+      "exit": 0,
+      "name": "versions",
+      "seconds": 0.075,
+      "started_utc": "2026-11-10T21:09:50.506341+00:00",
+      "stderr": "",
+      "stdout": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]\nLinux-6.18.57-x86_64-with-glibc2.41\n{\"PyYAML\": \"6.0.3\", \"clarabel\": \"0.11.1\", \"numpy\": \"2.3.5\", \"opensim\": \"4.6\", \"pint\": \"0.26.2\", \"pydantic\": \"2.13.4\", \"pydantic_core\": \"2.46.4\", \"pytest\": \"9.2.0\", \"quadprog\": \"0.1.14\", \"scipy\": \"1.17.0\", \"sympy\": \"1.14.0\"}\n"
+    },
+    {
+      "command": "python -m pytest -q",
+      "exit": 0,
+      "name": "pytest",
+      "seconds": 45.915,
+      "started_utc": "2026-11-10T21:09:50.581642+00:00",
+      "stderr": "",
+      "stdout": "........................................................................ [ 30%]\n........................................................................ [ 60%]\n........................................................................ [ 90%]\n........................                                                 [100%]\n=============================== warnings summary ===============================\n../../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14\n  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.\n  The CallSpec2 alias will be removed in pytest 10.\n  Update imports to use CallSpec instead.\n  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed\n    from _pytest.python import CallSpec2\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n240 passed, 1 warning in 44.86s\n"
+    },
+    {
+      "command": "python -m src.integrity",
+      "exit": 0,
+      "name": "integrity",
+      "seconds": 0.92,
+      "started_utc": "2026-11-10T21:10:36.497111+00:00",
+      "stderr": "",
+      "stdout": "INTEGRITY CHECK PASSED: all checked cross-file references resolve and all observations validate.\n"
+    },
+    {
+      "command": "python tools/review_cycle1_probes.py",
+      "exit": 0,
+      "name": "probes",
+      "seconds": 0.675,
+      "started_utc": "2026-11-10T21:10:37.417605+00:00",
+      "stderr": "",
+      "stdout": "== Cross-file references (D1) ==\n== Parameter names in ontology not in schema (D2) ==\n== Ontology classes receiving no quantitative properties (D3) ==\n  AnatomicalRegion\n  ArticularCartilage\n  ArticularSocket\n  BoneRegion\n  CoordinateFrame\n  DerivedLandmark\n  FascialThickening\n  Fibrocartilage\n  PeripheralNerveOrNerveSource\n  SkeletalComplex\n== Datum vs. property definition mismatches (D5) ==\n== Validator probes (D4 / Appendix A) ==\n  REJECTED  1  unit relabeled kg->lb without conversion (see D-026)  -> ['unit lb is not the canonical unit kg; convert the value and record the conversion in transformation_history (D-017, D-026)', 'uncertainty unit kg differs from datum unit lb', 'value/unit (0.5472 lb) do not match the last recorded transformation output (0.5472 kg)']\n  REJECTED  1b unit with incompatible dimension (m on a mass)  -> ['unit m is dimensionally incompatible with kg', 'uncertainty unit kg differs from datum unit m', 'value/unit (0.5472 m) do not match the last recorded transformation output (0.5472 kg)']\n  REJECTED  2  unit missing (null)  -> ['populated datum requires a unit']\n  REJECTED  3  negative mass  -> ['value/unit (-5 kg) do not match the last recorded transformation output (0.5472 kg)', 'value -5 is below the physical bound for muscle_mass (> 0)']\n  REJECTED  4  status typo 'Populated', no value, no source  -> ['invalid status: Populated']\n  REJECTED  5  assumed value, no source, no rationale  -> ['value/unit (9999 kg) do not match the last recorded transformation output (0.5472 kg)', 'assumed datum requires a stated rationale in derivation.assumptions']\n  REJECTED  6  invalid applicability level  -> ['invalid applicability level: individual-ish']\n  REJECTED  7  unknown source_id  -> ['source_claim cites unknown source SRC:DOES_NOT_EXIST']\n  REJECTED  8  unknown target entity  -> ['target entity LB:MUS:NOT_A_MUSCLE does not exist in the ontology']\n"
+    },
+    {
+      "command": "python -m tools.build_segment_datasets --check",
+      "exit": 0,
+      "name": "datasets",
+      "seconds": 0.24,
+      "started_utc": "2026-11-10T21:10:38.093191+00:00",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "git status --porcelain",
+      "exit": 0,
+      "name": "status_after_review",
+      "seconds": 0.01,
+      "started_utc": "2026-11-10T21:10:38.333945+00:00",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0,
+      "name": "final_head",
+      "seconds": 0.004,
+      "started_utc": "2026-11-10T21:10:38.343822+00:00",
+      "stderr": "",
+      "stdout": "adae7238cfbd5d1c70f3a239378df3e73d6017e1\n"
+    },
+    {
+      "command": "git status --porcelain",
+      "exit": 0,
+      "name": "final_status",
+      "seconds": 0.003,
+      "started_utc": "2026-11-10T21:10:38.348541+00:00",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "reviewed_sha": "adae7238cfbd5d1c70f3a239378df3e73d6017e1",
+  "scope_probes": {
+    "legacy_D1_fixed_knee_m": [
+      -0.004098264724626691,
+      -0.39590120267799883,
+      0.0
+    ],
+    "limits": "Source geometry and a mathematical fixture only; no D3 inverse dynamics or feasibility pre-check was reproduced.",
+    "opensim_version": "4.6",
+    "smooth_0_to_100_translation_mm": [
+      6.289864212205706,
+      -21.120819765852396,
+      0.0
+    ],
+    "smooth_T_at_zero_m": [
+      -0.004499856517536013,
+      -0.39582069644835033,
+      0.0
+    ],
+    "smooth_zero_minus_legacy_fixed_mm": [
+      -0.4015917929093222,
+      0.08050622964850263,
+      0.0
+    ],
+    "source_geometry": [
+      {
+        "flexion_deg": 0.0,
+        "max_error_m": 2.6020852139652106e-18,
+        "tibia_origin_in_femur_m": [
+          -0.004499856517536011,
+          -0.39582069644835033,
+          0.0
+        ]
+      },
+      {
+        "flexion_deg": 30.0,
+        "max_error_m": 2.8189256484623115e-18,
+        "tibia_origin_in_femur_m": [
+          0.0007577119942246413,
+          -0.39899999791772234,
+          0.0
+        ]
+      },
+      {
+        "flexion_deg": 60.0,
+        "max_error_m": 5.204170427930421e-18,
+        "tibia_origin_in_femur_m": [
+          0.004099991974720246,
+          -0.40549607477928074,
+          0.0
+        ]
+      },
+      {
+        "flexion_deg": 100.0,
+        "max_error_m": 2.168404344971009e-19,
+        "tibia_origin_in_femur_m": [
+          0.001790007694669693,
+          -0.4169415162142027,
+          0.0
+        ]
+      }
+    ],
+    "source_joint_axes": {
+      "rotation1": "0 0 1",
+      "translation1": "1 0 0",
+      "translation2": "0 1 0"
+    },
+    "virtual_work_fixture": {
+      "dT_dq_m_per_rad": [
+        0.003277247861978125,
+        -0.014924194159498746,
+        -0.0
+      ],
+      "force_N": [
+        100.0,
+        -300.0,
+        0.0
+      ],
+      "knee_flexion_deg": 60.0,
+      "qdot_rad_s": 0.7,
+      "translation_contribution_N_m": 4.804983034047436,
+      "translation_power_W": 3.3634881238332053
+    }
+  }
+}
