@@ -6,4 +6,4 @@ numpy>=1.26
 sympy>=1.12
 scipy>=1.11
 quadprog>=0.1.12
-highspy>=1.7
+clarabel>=0.9

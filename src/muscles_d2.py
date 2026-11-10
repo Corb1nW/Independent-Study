@@ -445,32 +445,24 @@ def stage2(Cm, tau, band):
 
 
 def stage2_second(Cm, tau, band):
-    """Independent second solver for stage 2: the HiGHS quadratic-programming solver (highspy)."""
-    import highspy
+    """Independent second solver for stage 2: Clarabel, an interior-point conic solver.
+
+    (HiGHS's QP solver was tried first and cycles on degenerate cases such as many
+    identical actuators at their upper bound, so it is not used.)"""
+    import clarabel
+    import scipy.sparse as sp
     m, n = Cm.shape
-    h = highspy.Highs()
-    h.setOptionValue("output_flag", False)
-    h.setOptionValue("primal_feasibility_tolerance", 1e-10)
-    h.setOptionValue("dual_feasibility_tolerance", 1e-10)
-    lp = highspy.HighsLp()
-    lp.num_col_, lp.num_row_ = n, m
-    lp.col_cost_, lp.col_lower_, lp.col_upper_ = np.zeros(n), np.zeros(n), np.ones(n)
-    lp.row_lower_, lp.row_upper_ = tau - band, tau + band
-    lp.a_matrix_.format_ = highspy.MatrixFormat.kColwise
-    lp.a_matrix_.start_ = np.arange(0, m * n + 1, m)
-    lp.a_matrix_.index_ = np.tile(np.arange(m), n)
-    lp.a_matrix_.value_ = Cm.T.ravel()
-    hess = highspy.HighsHessian()
-    hess.dim_, hess.format_ = n, highspy.HessianFormat.kTriangular
-    hess.start_, hess.index_, hess.value_ = np.arange(n + 1), np.arange(n), np.full(n, 2.0)
-    model = highspy.HighsModel()
-    model.lp_, model.hessian_ = lp, hess
-    h.passModel(model)
-    h.run()
-    status = h.modelStatusToString(h.getModelStatus())
-    if status != "Optimal":
-        raise RuntimeError(f"stage 2 second solver: {status}")
-    return np.array(h.getSolution().col_value)
+    A = sp.csc_matrix(np.vstack((Cm, -Cm, -np.eye(n), np.eye(n))))
+    b = np.concatenate((tau + band, -(tau - band), np.zeros(n), np.ones(n)))
+    st = clarabel.DefaultSettings()
+    st.verbose = False
+    st.tol_gap_abs = st.tol_gap_rel = st.tol_feas = 1e-12
+    st.tol_ktratio = 1e-10
+    sol = clarabel.DefaultSolver(sp.csc_matrix(2.0 * np.eye(n)), np.zeros(n), A, b,
+                                 [clarabel.NonnegativeConeT(A.shape[0])], st).solve()
+    if str(sol.status) != "Solved":
+        raise RuntimeError(f"stage 2 second solver: {sol.status}")
+    return np.array(sol.x)
 
 
 def recruit(Cm, tau, delta=1e-6, second_solver=True):
@@ -483,7 +475,7 @@ def recruit(Cm, tau, delta=1e-6, second_solver=True):
     if second_solver:
         t_alt, _, _ = stage1(Cm, tau, method="highs-ipm")
         a_alt = stage2_second(Cm, tau, band)
-        solvers.update({"stage1_second": "scipy linprog highs-ipm", "stage2_second": "HiGHS QP (highspy)",
+        solvers.update({"stage1_second": "scipy linprog highs-ipm", "stage2_second": "Clarabel (interior point)",
                         "t_star_difference": abs(t_alt - t_star),
                         "activation_difference": float(np.max(np.abs(a_alt - a)))})
     return Recruitment(a, tau - Cm @ a, t_star, band, {"stage1": kkt1, "stage2": kkt2}, solvers)
