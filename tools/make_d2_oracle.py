@@ -60,14 +60,19 @@ def knee_centre():
     return d["observations"]["LB-QD:G2392:JOINT:KNEE_R"]["value"]
 
 
-def matched_model_xml():
-    """Bytes of the D1-matched model, from the unmodified vendored file (no OpenSim needed)."""
+def matched_model_xml(knee_mode="fixed"):
+    """Bytes of the D1-matched model, from the unmodified vendored file (no OpenSim needed).
+
+    knee_mode "fixed" (Stage D2): change 1 below applies. "moving" (Stage D3, D-060 item 4): the knee splines are
+    KEPT; only the ankle and foot changes 2 and 3 apply."""
+    if knee_mode not in ("fixed", "moving"):
+        raise ValueError(knee_mode)
     tree = ET.parse(OSIM)
     root = tree.getroot()
     joints = {j.get("name"): j for j in root.iter("CustomJoint")}
     knee = joints["knee_r"]
     kc = knee_centre()
-    for axis_name, value in (("translation1", kc[0]), ("translation2", kc[1])):
+    for axis_name, value in (() if knee_mode == "moving" else (("translation1", kc[0]), ("translation2", kc[1]))):
         ta = [t for t in knee.iter("TransformAxis") if t.get("name") == axis_name][0]
         func = list(ta)
         for child in func:
@@ -239,12 +244,38 @@ def run_unmodified():
     return rows
 
 
+def run_kinematics(matched_path):
+    """Stage D3 kinematics oracle (D-060 item 4): positions relative to the ankle (talus origin), in talus axes, of the
+    tibia origin (knee), femur origin (hip), pelvis origin, and femur and tibia centres of mass, at every D1 sample."""
+    import opensim as osim
+    m, s = _model(matched_path, passive=False)
+    bodies = m.getBodySet()
+    talus = bodies.get("talus_r")
+    q, _, _ = d1_poses()
+    rows = []
+    for i in range(q.shape[1]):
+        _set(m, s, q[:, i])
+        m.realizePosition(s)
+
+        def at(body, station):
+            v = bodies.get(body).findStationLocationInAnotherFrame(s, osim.Vec3(*station), talus)
+            return [v.get(0), v.get(1), v.get(2)]
+        rows.append({"index": i, "q": q[:, i].tolist(),
+                     "knee_m": at("tibia_r", (0, 0, 0)), "hip_m": at("femur_r", (0, 0, 0)),
+                     "pelvis_origin_m": at("pelvis", (0, 0, 0)),
+                     "femur_com_m": at("femur_r", [bodies.get("femur_r").getMassCenter().get(k) for k in range(3)]),
+                     "tibia_com_m": at("tibia_r", [bodies.get("tibia_r").getMassCenter().get(k) for k in range(3)])})
+    return rows
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--output")
     ap.add_argument("--matched-copy-only")
+    ap.add_argument("--knee", choices=("fixed", "moving"), default="fixed",
+                    help="fixed: Stage D2 reference (default); moving: Stage D3 reference with kinematics (D-060)")
     args = ap.parse_args()
-    xml = matched_model_xml()
+    xml = matched_model_xml(args.knee)
     if args.matched_copy_only:
         Path(args.matched_copy_only).write_bytes(xml)
         print("wrote", args.matched_copy_only, sha256(xml))
@@ -255,6 +286,7 @@ def main():
         path = Path(tmp) / "gait2392_d1_matched.osim"
         path.write_bytes(xml)
         geometry, forces = run_oracle(path)
+        kinematics = run_kinematics(path) if args.knee == "moving" else None
     unmodified = run_unmodified()
     ref = {
         "description": ("OpenSim oracle values for Stage D2 (D-059 item 8): computed by OpenSim on the D1-matched copy "
@@ -265,9 +297,11 @@ def main():
             "source_model": str(OSIM.relative_to(ROOT)), "source_model_sha256": sha256(OSIM.read_bytes()),
             "matched_model_sha256": sha256(xml), "tool": "tools/make_d2_oracle.py",
             "tool_sha256": sha256(Path(__file__).read_bytes()),
-            "matched_model_changes": ["knee_r translation1/2 -> Constant at LB-QD:G2392:JOINT:KNEE_R",
-                                      "ankle_r rotation1 axis -> 0 0 1; rotation3 axis -> 1 0 0",
-                                      "subtalar_angle_r and mtp_angle_r locked at 0"],
+            "knee_mode": args.knee,
+            "matched_model_changes": ([] if args.knee == "moving" else
+                                      ["knee_r translation1/2 -> Constant at LB-QD:G2392:JOINT:KNEE_R"])
+                                     + ["ankle_r rotation1 axis -> 0 0 1; rotation3 axis -> 1 0 0",
+                                        "subtalar_angle_r and mtp_angle_r locked at 0"],
             "muscle_conversion": "DeGrooteFregly2016Muscle.replaceMuscles, then overrides reset",
             "overrides": OVERRIDES, "passive_cases": "ignore_passive_fiber_force true (baseline) and false",
             "coordinate_map": {k: f"{COORDS[k]} = {SIGN[k]:+.0f} x D1 q_{k}" for k in COORDS},
@@ -281,6 +315,11 @@ def main():
         "forces": forces,
         "unmodified_geometry": unmodified,
     }
+    if kinematics is not None:
+        ref["description"] = ("OpenSim oracle values for Stage D3 (D-060 items 4 and 5): computed by OpenSim on a copy of "
+                              "the vendored Gait2392 model with its moving knee kept. Not produced by src/squat_d3.py or "
+                              "src/muscles_d2.py.")
+        ref["kinematics"] = kinematics
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(ref, separators=(",", ":")) + "\n", encoding="utf-8")

@@ -290,11 +290,22 @@ def muscle_traceability(consumed, schema=None):
 # ------------------------------------------------------------------------ geometry
 @dataclass
 class Joints:
-    """Gait2392 joint locations used by D1, scaled: hip in pelvis, knee in femur, ankle in tibia, subtalar in talus."""
+    """Gait2392 joint locations used by D1, scaled: hip in pelvis, knee in femur, ankle in tibia, subtalar in talus.
+
+    `moving_knee` (Stage D3, D-060): an object whose T(q_knee) returns the tibia origin in the femur frame and its
+    first two derivatives with respect to q_knee (2-D). When set, it replaces the fixed `knee`."""
     hip: np.ndarray
     knee: np.ndarray
     ankle: np.ndarray
     subtalar: np.ndarray
+    moving_knee: object = None
+
+    def knee_at(self, q_knee):
+        """Tibia origin in the femur frame and d/dq_knee, as 3-vectors."""
+        if self.moving_knee is None:
+            return self.knee, np.zeros(3)
+        T, Tq, _ = self.moving_knee.T(q_knee)
+        return np.array([T[0], T[1], self.knee[2]]), np.array([Tq[0], Tq[1], 0.0])
 
 
 def d1_joints(scale=1.0, schema=None):
@@ -332,12 +343,15 @@ def point_world(pt, q, joints):
         return w, J
     K = Rs @ (-joints.ankle)
     JK = np.outer(_z(K), B_MAP[0])
+    Tk, Tq = joints.knee_at(qk)
+    JT = np.zeros((3, 3))
+    JT[:, 1] = Rt @ (-Tq)                 # the femur moves by -R_t dT/dq_knee relative to the tibia origin
     if pt.frame == "femur":
-        w = Rt @ (p - joints.knee)
-        return K + w, JK + np.outer(_z(w), B_MAP[1])
-    H_rel = Rt @ (-joints.knee)
+        w = Rt @ (p - Tk)
+        return K + w, JK + np.outer(_z(w), B_MAP[1]) + JT
+    H_rel = Rt @ (-Tk)
     w = Rh @ (p - joints.hip)
-    return K + H_rel + w, JK + np.outer(_z(H_rel), B_MAP[1]) + np.outer(_z(w), B_MAP[2])
+    return K + H_rel + w, JK + np.outer(_z(H_rel), B_MAP[1]) + JT + np.outer(_z(w), B_MAP[2])
 
 
 def path(act, q, joints):

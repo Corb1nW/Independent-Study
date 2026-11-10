@@ -1,6 +1,10 @@
 """Build the Stage D2 muscle viewer: one self-contained HTML page from a D2 run manifest (D-059 item 10, Q55).
 
-    python -m tools.build_d2_page --manifest results/phase_d/<file>.json --output results/phase_d/<file>.html
+    python -m tools.build_d2_page --manifest results/phase_d/<d2 file>.json --output results/phase_d/<file>.html
+    python -m tools.build_d2_page --manifest <d2 file>.json --moving-manifest <d3 file>.json --output <file>.html
+
+With --moving-manifest (Stage D3, D-060 item 7) the page gains a knee switch: fixed (D1's knee, the D2
+manifest) or moving (Gait2392's knee, the D3 manifest).
 
 Presentation only: every number on the page is copied from the manifest. The page plays the
 squat with the 14 muscle lines drawn along their active path points and coloured by
@@ -36,14 +40,17 @@ def compact(manifest):
             "verification": r["verification"], "domain_flags": len(r["force_law_domain_flags"]),
             "jumps": r["path_length_jumps"],
             "fmax": {a["name"]: a["max_isometric_force_N"] for a in r["actuators"]},
+            "comparison": r.get("comparison_with_fixed_knee"),
         })
-    size = manifest["d1_simplification_size_gait2392"]["by_actuator"]
-    return {"commit": manifest["commit_sha"], "provenance": manifest["commit_provenance_status"],
+    size = (manifest.get("d1_simplification_size_gait2392") or {}).get("by_actuator")
+    return {"knee": "moving" if manifest.get("knee_model") == "gait2392_moving" else "fixed",
+            "decision": manifest["decision"].split(" ")[0],
+            "commit": manifest["commit_sha"], "provenance": manifest["commit_provenance_status"],
             "validity": manifest["validity"], "status": manifest["status"], "d1": manifest["d1_official_manifest"],
             "oracle": manifest["oracle_reference"], "names": NAMES, "groups": GROUPS,
-            "simplification_size_knee_mm": max(v["knee"] for v in size.values()),
-            "epsilon": manifest["configuration"]["parameters"]["epsilon_reserve"]["value"],
-            "assumptions": manifest["configuration"]["assumptions"], "runs": runs}
+            "simplification_size_knee_mm": max(v["knee"] for v in size.values()) if size else None,
+            "epsilon": (manifest.get("d2_configuration") or manifest["configuration"])["parameters"]["epsilon_reserve"]["value"],
+            "assumptions": (manifest.get("d2_configuration") or manifest["configuration"])["assumptions"], "runs": runs}
 
 
 TEMPLATE = r"""<title>LB-AO Muscle Viewer</title>
@@ -131,7 +138,7 @@ footer code { font-family: var(--font-data); overflow-wrap: anywhere } footer a 
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">Independent Study · LB-AO · Phase D, Stage D2</div>
+    <div class="eyebrow" id="eyebrow">Independent Study · LB-AO · Phase D, Stage D2</div>
     <h1>Which muscles do the work in a squat</h1>
     <p class="lede">The same side-view squat as Stage D1, now with 14 leg muscles from the OpenSim Gait2392 model. At each instant the model finds the least total muscle effort that still produces the joint torques the squat needs. Where the muscles cannot, a labelled “reserve” torque makes up the gap, and the page says so.</p>
     <div class="badges" id="badges"></div>
@@ -139,6 +146,7 @@ footer code { font-family: var(--font-data); overflow-wrap: anywhere } footer a 
 
   <div class="controls" role="group" aria-label="Playback">
     <div class="seg" id="bodies" role="group" aria-label="Body"></div>
+    <div class="seg" id="knees" role="group" aria-label="Knee model" hidden></div>
     <button class="play" id="play" type="button">Pause</button>
     <div class="scrub"><input id="scrub" type="range" min="0" max="300" value="0" aria-label="Time"><span class="time" id="time"></span></div>
   </div>
@@ -192,7 +200,8 @@ const svgNS = "http://www.w3.org/2000/svg";
 const el = (tag, attrs, parent) => { const e = document.createElementNS(svgNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
 const fmt = (v, d=1) => (v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? "−" : "") + Math.abs(v).toFixed(d);
 const ORDER = DATA.groups.flatMap(g => g[1]);
-let run = DATA.runs[0], i = 0, playing = !matchMedia("(prefers-reduced-motion: reduce)").matches, last = null;
+let V = DATA.moving || DATA;
+let run = V.runs[0], i = 0, playing = !matchMedia("(prefers-reduced-motion: reduce)").matches, last = null;
 const N = () => run.t.length;
 
 // sequential effort colour: mix --act-0 -> --act-1
@@ -201,11 +210,20 @@ function actColor(a) { const p = hex(css("--act-0")), q = hex(css("--act-1")); c
   return `rgb(${p.map((v, k) => Math.round(v + (q[k] - v) * t)).join(",")})`; }
 
 const seg = document.getElementById("bodies");
-DATA.runs.forEach((r, k) => {
+V.runs.forEach((r, k) => {
   const b = document.createElement("button"); b.type = "button"; b.textContent = r.label; b.setAttribute("aria-pressed", k === 0);
-  b.onclick = () => { run = r; [...seg.children].forEach(x => x.setAttribute("aria-pressed", x === b)); rebuild(); };
+  b.onclick = () => { run = V.runs[k]; [...seg.children].forEach(x => x.setAttribute("aria-pressed", x === b)); rebuild(); };
   seg.appendChild(b);
 });
+if (DATA.moving) {
+  const ks = document.getElementById("knees"); ks.hidden = false;
+  [["moving", "Moving knee (Gait2392)"], ["fixed", "Fixed knee (D1)"]].forEach(([key, label]) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.setAttribute("aria-pressed", key === V.knee);
+    b.onclick = () => { const k = V.runs.indexOf(run); V = key === "moving" ? DATA.moving : DATA; run = V.runs[k];
+      [...ks.children].forEach(x => x.setAttribute("aria-pressed", x === b)); header(); rebuild(); };
+    ks.appendChild(b);
+  });
+}
 
 // ---- figure
 const fig = document.getElementById("figure");
@@ -333,8 +351,9 @@ function buildReserve() {
     legend: "reserve-legend", legendNote: same && run.summary.t_star_max_N_m > 0 ? `<span>(the three lines coincide)</span>` : ""});
   const sm = run.summary;
   document.getElementById("reserve-note").innerHTML = run.status.muscle_feasibility === "feasible"
-    ? `The muscles supply the whole torque at every instant for this body (largest reserve ${sm.t_star_max_N_m.toFixed(3)} N·m).`
-    : `Around the bottom (${sm.flagged_time_range_s.map(x => x.toFixed(2)).join("–")} s) the muscles fall short by up to <b>${sm.t_star_max_N_m.toFixed(1)} N·m</b>; limiting: ${sm.limiting_joints_at_t_star_max.join(", ")} (coupled through two-joint muscles). Lines show the least reserve each joint needs. <b>This shortfall comes from D1's simplified knee:</b> with Gait2392's own moving knee the same muscles suffice (sensitivity analysis).`;
+    ? `The muscles supply the whole torque at every instant for this body (largest reserve ${sm.t_star_max_N_m.toFixed(3)} N·m)` +
+      (V.knee === "moving" && run.comparison ? `. With D1's fixed knee it was ${run.comparison.t_star_max_N_m.fixed.toFixed(1)} N·m.` : ".")
+    : `Around the bottom (${sm.flagged_time_range_s.map(x => x.toFixed(2)).join("–")} s) the muscles fall short by up to <b>${sm.t_star_max_N_m.toFixed(1)} N·m</b>; limiting: ${sm.limiting_joints_at_t_star_max.join(", ")} (coupled through two-joint muscles). Lines show the least reserve each joint needs. <b>This shortfall comes from D1's simplified knee:</b> with Gait2392's own moving knee the same muscles suffice (${DATA.moving ? "switch to the moving knee above" : "sensitivity analysis"}).`;
 }
 
 function facts() {
@@ -343,15 +362,18 @@ function facts() {
   document.getElementById("checks").innerHTML = `
     <dt>Optimizer</dt><dd>${pill(st.optimizer_verification === "passed", "pass", "fail")} KKT residual ${v.largest_kkt_residual.toExponential(1)}</dd>
     <dt>Second solver</dt><dd>activations within ${v.second_solver_activation_difference.toExponential(1)}</dd>
-    <dt>Uses D1's torques</dt><dd>${pill(st.d1_consistency === "passed", "pass", "fail")} difference ${v.d1_torque_difference_N_m.toExponential(1)} N·m</dd>
+    ${st.kinematics_verification ? `<dt>Moving-knee mechanics</dt><dd>${pill(st.mechanics_verification === "passed", "pass", "fail")} two formulations agree</dd>
+    <dt>Kinematics vs OpenSim</dt><dd>${pill(st.kinematics_verification === "passed", "pass", "fail")} within ${v.kinematics_oracle_error_m.toExponential(1)} m</dd>`
+    : `<dt>Uses D1's torques</dt><dd>${pill(st.d1_consistency === "passed", "pass", "fail")} difference ${v.d1_torque_difference_N_m.toExponential(1)} N·m</dd>`}
     <dt>Force-curve range</dt><dd>${pill(st.force_law_domain === "in_domain", "in range", "flagged")} ${run.domain_flags} flagged samples</dd>
-    <dt>Geometry vs OpenSim</dt><dd>checked in the test suite (OpenSim ${DATA.oracle.opensim_version})</dd>
-    <dt>D1 mechanics</dt><dd>${pill(st.mechanics_verification === "passed", "pass", "fail")} contact ${st.contact_feasibility}</dd>`;
+    <dt>Geometry vs OpenSim</dt><dd>checked in the test suite (OpenSim ${V.oracle.opensim_version})</dd>
+    <dt>${st.kinematics_verification ? "Foot contact" : "D1 mechanics"}</dt><dd>${st.kinematics_verification ? pill(st.contact_feasibility === "feasible", "feasible", "flagged") + (run.comparison ? ` heel margin ${(run.comparison.heel_margin_min_m.moving * 1000).toFixed(0)} mm (fixed knee ${(run.comparison.heel_margin_min_m.fixed * 1000).toFixed(0)} mm)` : "") : pill(st.mechanics_verification === "passed", "pass", "fail") + ` contact ${st.contact_feasibility}`}</dd>`;
   const sm = run.summary;
   document.getElementById("feas").innerHTML = `
     <dt>Status</dt><dd>${pill(st.muscle_feasibility === "feasible", "feasible throughout", "short of torque")}</dd>
-    <dt>Largest shortfall</dt><dd>${sm.t_star_max_N_m.toFixed(2)} N·m at ${sm.t_star_max_time_s.toFixed(2)} s</dd>
-    <dt>Pose then</dt><dd>ankle ${sm.q_at_t_star_max_deg[0].toFixed(0)}°, knee ${sm.q_at_t_star_max_deg[1].toFixed(0)}°, hip ${sm.q_at_t_star_max_deg[2].toFixed(0)}°</dd>
+    ${sm.t_star_max_N_m > 0 ? `<dt>Largest shortfall</dt><dd>${sm.t_star_max_N_m.toFixed(2)} N·m at ${sm.t_star_max_time_s.toFixed(2)} s</dd>
+    <dt>Pose then</dt><dd>ankle ${sm.q_at_t_star_max_deg[0].toFixed(0)}°, knee ${sm.q_at_t_star_max_deg[1].toFixed(0)}°, hip ${sm.q_at_t_star_max_deg[2].toFixed(0)}°</dd>` : `<dt>Largest shortfall</dt><dd>none</dd>`}
+    ${run.comparison ? `<dt>With D1's fixed knee</dt><dd>${run.comparison.t_star_max_N_m.fixed.toFixed(2)} N·m shortfall; peak knee torque ${run.comparison.peak_knee_torque_N_m.fixed.toFixed(1)} → ${run.comparison.peak_knee_torque_N_m.moving.toFixed(1)} N·m</dd>` : ""}
     <dt>Flagged time</dt><dd>${sm.flagged_time_range_s ? sm.flagged_time_range_s.map(x => x.toFixed(2)).join("–") + " s (" + sm.flagged_samples + " samples)" : "none"}</dd>
     <dt>Allowance</dt><dd>${sm.epsilon_reserve_N_m} N·m per joint (a demonstration choice)</dd>`;
 }
@@ -369,25 +391,34 @@ function tick(ts) {
   requestAnimationFrame(tick);
 }
 document.getElementById("scrub").max = N() - 1;
-const st = DATA.status, fv = DATA.validity;
+function header() {
+const st = V.status, fv = V.validity;
+document.getElementById("eyebrow").textContent = `Independent Study · LB-AO · Phase D, Stage ${V.knee === "moving" ? "D3 (moving knee)" : "D2"}`;
 document.getElementById("badges").innerHTML = [
   st.optimizer_verification === "passed" ? `<b>Computation verified</b> against OpenSim and a second solver` : `<b class="flag">Verification FAILED</b>`,
-  DATA.runs.map(r => `${r.label.split(" ")[0]}: ` + (r.status.muscle_feasibility === "feasible" ? `<b>muscles suffice</b>` : `<b class="flag">short at the bottom</b>`)).join(" · "),
+  (DATA.moving ? (V.knee === "moving" ? "Moving knee: " : "Fixed knee: ") : "") +
+  V.runs.map(r => `${r.label.split(" ")[0]}: ` + (r.status.muscle_feasibility === "feasible" ? `<b>muscles suffice</b>` : `<b class="flag">short at the bottom</b>`)).join(" · "),
   `<b class="plain">Sources provisional</b>`, `not validated against measured muscle activity`].map(x => `<span class="badge">${x}</span>`).join("");
-const maxJump = Math.max(...DATA.runs.flatMap(r => r.jumps.map(j => Math.abs(j.length_with_point_minus_without_mm))));
+const maxJump = Math.max(...V.runs.flatMap(r => r.jumps.map(j => Math.abs(j.length_with_point_minus_without_mm))));
+const kneeNote = V.knee === "moving"
+  ? `This view uses Gait2392's own knee, whose centre slides about 6 mm forward and 21 mm down as it bends (a model fit, not measured motion). With D1's fixed knee the male and Gait2392 bodies came up short near the bottom; with this knee they do not. Path switches change muscle lengths by at most ${maxJump.toFixed(2)} mm.`
+  : `D1's simplified knee (a fixed hinge) changes knee moment arms by up to ${(DATA.simplification_size_knee_mm || 0).toFixed(0)} mm compared with Gait2392's moving knee, and some muscle paths jump by up to ${maxJump.toFixed(1)} mm where a path point switches on or off. Both are reported, not hidden.`;
 document.getElementById("isnot").innerHTML = [
   "The checks show the stated model is computed correctly (geometry and forces match OpenSim to machine precision; the recruitment rule is solved exactly). They do not show real muscles work this way: no comparison with measured muscle activity.",
-  "“Least total effort” is a modelling rule, not a law of physiology. It predicts no co-contraction unless the torques force it, which is why the hamstrings stay off.",
+  "“Least total effort” is a modelling rule, not a law of physiology. It predicts no co-contraction unless the torques force it.",
   "Tendons are treated as rigid and passive muscle stretch is left out; both matter most for the calf muscles.",
   "Muscle strengths and paths come from the Gait2392 model, built for walking. The female and male bodies share its generic strengths, scaled in size only, not in strength.",
-  `D1's simplified knee (a fixed hinge) changes knee moment arms by up to ${DATA.simplification_size_knee_mm.toFixed(0)} mm compared with Gait2392's moving knee, and some muscle paths jump by up to ${maxJump.toFixed(1)} mm where a path point switches on or off. Both are reported, not hidden.`,
+  kneeNote,
 ].map(x => `<li>${x}</li>`).join("");
 document.getElementById("assump").innerHTML = DATA.assumptions.map(a => `<li>${a.replace(/^\d+\.\s*/, "")}</li>`).join("");
+const statusLine = Object.entries(st).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join("; ");
 document.getElementById("foot").innerHTML = `
   <div>${fv.kind.charAt(0).toUpperCase() + fv.kind.slice(1)}. Physiological validity: ${fv.physiological_validity}. Clinical validity: ${fv.clinical_validity}.</div>
-  <div>Status: optimizer ${st.optimizer_verification}; D1 consistency ${st.d1_consistency}; muscles ${st.muscle_feasibility}; force-law range ${st.force_law_domain}; D1 mechanics ${st.mechanics_verification}; contact ${st.contact_feasibility}; sources ${st.source_validation}.</div>
-  <div>D2 run manifest at commit <code>${DATA.commit.slice(0, 12)}</code> · provenance <code>${DATA.provenance}</code> · decision D-059 · uses the official D1 run at <code>${DATA.d1.commit_sha.slice(0, 12)}</code>.</div>
-  <div>Sources: OpenSim Gait2392 muscle parameters and paths, <a href="https://github.com/opensim-org/opensim-models" target="_blank" rel="noopener">opensim-org/opensim-models</a> (CC BY 3.0); muscle curves of De Groote et al. (2016) as implemented in <a href="https://github.com/opensim-org/opensim-core" target="_blank" rel="noopener">opensim-core</a> (Apache-2.0); segment data of de Leva (1996) via BMClab/BMC (CC BY 4.0); anatomy from StatPearls.</div>`;
+  <div>Status (${V.knee} knee): ${statusLine}.</div>
+  <div>${V.knee === "moving" ? "D3" : "D2"} run manifest at commit <code>${V.commit.slice(0, 12)}</code> · provenance <code>${V.provenance}</code> · decision ${V.decision} · official D1 run <code>${V.d1.commit_sha.slice(0, 12)}</code>${DATA.moving && V.knee === "moving" ? ` · compared with the fixed-knee D2 run <code>${DATA.commit.slice(0, 12)}</code>` : ""}.</div>
+  <div>Sources: OpenSim Gait2392 muscle parameters, paths and knee, <a href="https://github.com/opensim-org/opensim-models" target="_blank" rel="noopener">opensim-org/opensim-models</a> (CC BY 3.0); muscle curves of De Groote et al. (2016) as implemented in <a href="https://github.com/opensim-org/opensim-core" target="_blank" rel="noopener">opensim-core</a> (Apache-2.0); segment data of de Leva (1996) via BMClab/BMC (CC BY 4.0); anatomy from StatPearls.</div>`;
+}
+header();
 syncPlay(); rebuild(); requestAnimationFrame(tick);
 let rw = 0; addEventListener("resize", () => { const w = document.getElementById("heat").parentElement.clientWidth; if (Math.abs(w - rw) > 4) { rw = w; rebuild(); } });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rebuild);
@@ -396,19 +427,24 @@ new MutationObserver(rebuild).observe(document.documentElement, {attributes: tru
 """
 
 
-def render(manifest):
-    data = json.dumps(compact(manifest), separators=(",", ":"), allow_nan=False)
+def render(manifest, moving=None):
+    data = compact(manifest)
+    if moving is not None:
+        data["moving"] = compact(moving)
+    data = json.dumps(data, separators=(",", ":"), allow_nan=False)
     return TEMPLATE.replace("__DATA__", data.replace("</", "<\\/"))
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--manifest", type=Path, required=True)
+    p.add_argument("--moving-manifest", type=Path, help="Stage D3 manifest: adds the knee switch (D-060 item 7)")
     p.add_argument("--output", type=Path, required=True)
     args = p.parse_args()
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(render(manifest), encoding="utf-8")
+    moving = json.loads(args.moving_manifest.read_text(encoding="utf-8")) if args.moving_manifest else None
+    args.output.write_text(render(manifest, moving), encoding="utf-8")
     print("Page written to", args.output)
 
 
