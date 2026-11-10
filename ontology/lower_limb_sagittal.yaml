@@ -2,10 +2,10 @@
 ontology_module:
   extends: LB-AO
   module: lower_limb_sagittal
-  version: 0.1.0
+  version: 0.2.0
   description: Knee, ankle, foot, shank and upper-body segments, coordinates and model frames for the planar squat
-    (Phase D, D-058).
-  decision: D-058
+    (Phase D, D-058); muscles and model actuators for Stage D2 (D-059, 0.2.0).
+  decision: D-058, D-059
 class_hierarchy:
   SynovialHingeJoint: SynovialJoint
 entities:
@@ -357,6 +357,454 @@ entities:
       - LB:SEG:TORSO
     convention: 'OpenSim Gait2392 body frame: x anterior, y superior, z to the right, in metres; orientation as
       in the model''s default pose. A model frame, not an anatomical (ISB) frame.'
+  LB:MUS:VASTUS_LATERALIS_R:
+    name: Right Vastus Lateralis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      ACTS_ON:
+      - LB:JOINT:KNEE_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      REPRESENTED_BY:
+      - LB:ACT:G2392:VAS_LAT_R
+    mechanical_capabilities:
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'Quadriceps part; arises from the femur and crosses the knee only (StatPearls, Thigh Muscles). Attachment landmarks not yet modeled as entities.'
+  LB:MUS:VASTUS_LATERALIS_L:
+    name: Left Vastus Lateralis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      ACTS_ON:
+      - LB:JOINT:KNEE_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+    mechanical_capabilities:
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'Quadriceps part; arises from the femur and crosses the knee only (StatPearls, Thigh Muscles). Attachment landmarks not yet modeled as entities.'
+  LB:MUS:VASTUS_MEDIALIS_R:
+    name: Right Vastus Medialis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      ACTS_ON:
+      - LB:JOINT:KNEE_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      REPRESENTED_BY:
+      - LB:ACT:G2392:VAS_MED_R
+    mechanical_capabilities:
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'Quadriceps part; arises from the femur and crosses the knee only (StatPearls, Thigh Muscles). Attachment landmarks not yet modeled as entities.'
+  LB:MUS:VASTUS_MEDIALIS_L:
+    name: Left Vastus Medialis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      ACTS_ON:
+      - LB:JOINT:KNEE_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+    mechanical_capabilities:
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'Quadriceps part; arises from the femur and crosses the knee only (StatPearls, Thigh Muscles). Attachment landmarks not yet modeled as entities.'
+  LB:MUS:VASTUS_INTERMEDIUS_R:
+    name: Right Vastus Intermedius
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      ACTS_ON:
+      - LB:JOINT:KNEE_R
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+      REPRESENTED_BY:
+      - LB:ACT:G2392:VAS_INT_R
+    mechanical_capabilities:
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'Quadriceps part; arises from the anterolateral upper femur and crosses the knee only (StatPearls, Thigh Muscles). Attachment landmarks not yet modeled as entities.'
+  LB:MUS:VASTUS_INTERMEDIUS_L:
+    name: Left Vastus Intermedius
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      ACTS_ON:
+      - LB:JOINT:KNEE_L
+      INNERVATED_BY:
+      - LB:NERVE:FEMORAL
+    mechanical_capabilities:
+    - knee_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'Quadriceps part; arises from the anterolateral upper femur and crosses the knee only (StatPearls, Thigh Muscles). Attachment landmarks not yet modeled as entities.'
+  LB:MUS:GASTROCNEMIUS_R:
+    name: Right Gastrocnemius
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:KNEE_R
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+      REPRESENTED_BY:
+      - LB:ACT:G2392:MED_GAS_R
+      - LB:ACT:G2392:LAT_GAS_R
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - knee_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_GASTROCNEMIUS
+    note: 'Medial and lateral heads from the femoral condyle region; inserts on the calcaneus through the calcaneal tendon; plantarflexes the ankle and assists knee flexion (StatPearls, Gastrocnemius Muscle). Each head is a separate Gait2392 actuator.'
+  LB:MUS:GASTROCNEMIUS_L:
+    name: Left Gastrocnemius
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:KNEE_L
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - knee_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_GASTROCNEMIUS
+    note: 'Medial and lateral heads from the femoral condyle region; inserts on the calcaneus through the calcaneal tendon; plantarflexes the ankle and assists knee flexion (StatPearls, Gastrocnemius Muscle). Each head is a separate Gait2392 actuator.'
+  LB:MUS:SOLEUS_R:
+    name: Right Soleus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+      REPRESENTED_BY:
+      - LB:ACT:G2392:SOLEUS_R
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_GASTROCNEMIUS
+    note: 'Deep part of the triceps surae, from the fibula and the soleal line of the tibia to the calcaneus through the calcaneal tendon; monoarticular; also contributes to subtalar inversion, which the sagittal model omits (StatPearls, Gastrocnemius Muscle).'
+  LB:MUS:SOLEUS_L:
+    name: Left Soleus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_GASTROCNEMIUS
+    note: 'Deep part of the triceps surae, from the fibula and the soleal line of the tibia to the calcaneus through the calcaneal tendon; monoarticular; also contributes to subtalar inversion, which the sagittal model omits (StatPearls, Gastrocnemius Muscle).'
+  LB:MUS:TIBIALIS_ANTERIOR_R:
+    name: Right Tibialis Anterior
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+      REPRESENTED_BY:
+      - LB:ACT:G2392:TIB_ANT_R
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: 'From the lateral tibia and interosseous membrane to the medial cuneiform and first metatarsal base; strongest dorsiflexor; also inverts the foot, which the sagittal model omits (StatPearls, Leg Anterior Compartment).'
+  LB:MUS:TIBIALIS_ANTERIOR_L:
+    name: Left Tibialis Anterior
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: 'From the lateral tibia and interosseous membrane to the medial cuneiform and first metatarsal base; strongest dorsiflexor; also inverts the foot, which the sagittal model omits (StatPearls, Leg Anterior Compartment).'
+  LB:NERVE:TIBIAL:
+    name: Tibial Nerve
+    class: PeripheralNerveOrNerveSource
+    evidence:
+    - SRC:STATPEARLS_GASTROCNEMIUS
+  LB:NERVE:DEEP_FIBULAR:
+    name: Deep Fibular (Peroneal) Nerve
+    class: PeripheralNerveOrNerveSource
+    note: Branch of the common fibular nerve, from the sciatic nerve (StatPearls, Leg Anterior Compartment).
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+  LB:ACT:G2392:GLUT_MAX1_R:
+    name: Gait2392 actuator glut_max1_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:GLUTEUS_MAXIMUS_R
+    represented_scope: superior compartment (Gait2392 part 1 of 3)
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MAX2_R:
+    name: Gait2392 actuator glut_max2_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:GLUTEUS_MAXIMUS_R
+    represented_scope: middle compartment (Gait2392 part 2 of 3)
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MAX3_R:
+    name: Gait2392 actuator glut_max3_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:GLUTEUS_MAXIMUS_R
+    represented_scope: inferior compartment (Gait2392 part 3 of 3)
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:BIFEMLH_R:
+    name: Gait2392 actuator bifemlh_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:BICEPS_FEMORIS_LONG_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:SEMIMEM_R:
+    name: Gait2392 actuator semimem_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:SEMIMEMBRANOSUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:SEMITEN_R:
+    name: Gait2392 actuator semiten_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:SEMITENDINOSUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:VAS_MED_R:
+    name: Gait2392 actuator vas_med_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:VASTUS_MEDIALIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:VAS_INT_R:
+    name: Gait2392 actuator vas_int_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:VASTUS_INTERMEDIUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:VAS_LAT_R:
+    name: Gait2392 actuator vas_lat_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:VASTUS_LATERALIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:RECT_FEM_R:
+    name: Gait2392 actuator rect_fem_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:RECTUS_FEMORIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:MED_GAS_R:
+    name: Gait2392 actuator med_gas_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:GASTROCNEMIUS_R
+    represented_scope: medial head
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:LAT_GAS_R:
+    name: Gait2392 actuator lat_gas_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:GASTROCNEMIUS_R
+    represented_scope: lateral head
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:SOLEUS_R:
+    name: Gait2392 actuator soleus_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:SOLEUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:TIB_ANT_R:
+    name: Gait2392 actuator tib_ant_r
+    class: ModelActuator
+    side: right
+    represents: LB:MUS:TIBIALIS_ANTERIOR_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 used in the squat_d2 model view (D-059 item 11), not an
+      anatomical structure. 'represents' names the anatomical muscle; new muscles in this module also link back
+      through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
+    evidence:
+    - SRC:GAIT2392_OSIM
 models:
   squat_d1:
     represents:
@@ -382,3 +830,56 @@ models:
     omitted_coordinates:
     - LB:DOF:HIP_AB_AD_R
     - LB:DOF:HIP_ROTATION_R
+  squat_d2:
+    extends: squat_d1
+    represents:
+    - LB:ACT:G2392:GLUT_MAX1_R
+    - LB:ACT:G2392:GLUT_MAX2_R
+    - LB:ACT:G2392:GLUT_MAX3_R
+    - LB:ACT:G2392:BIFEMLH_R
+    - LB:ACT:G2392:SEMIMEM_R
+    - LB:ACT:G2392:SEMITEN_R
+    - LB:ACT:G2392:VAS_MED_R
+    - LB:ACT:G2392:VAS_INT_R
+    - LB:ACT:G2392:VAS_LAT_R
+    - LB:ACT:G2392:RECT_FEM_R
+    - LB:ACT:G2392:MED_GAS_R
+    - LB:ACT:G2392:LAT_GAS_R
+    - LB:ACT:G2392:SOLEUS_R
+    - LB:ACT:G2392:TIB_ANT_R
+    assumptions:
+    - instantaneous_two_stage_optimization
+    - rigid_tendons
+    - no_passive_fiber_force_in_baseline
+    - fiber_damping_zero
+    - gait2392_muscle_paths_on_d1_kinematics
+    - conditional_path_length_jumps_retained
+sources:
+  SRC:STATPEARLS_THIGH_MUSCLES:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles'
+    publisher: StatPearls
+    url: https://statpearls.com/point-of-care/24169
+    supports:
+    - vasti innervation and knee extension
+    - rectus femoris crosses hip and knee
+    retrieval_date: '2026-11-10'
+  SRC:STATPEARLS_GASTROCNEMIUS:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Gastrocnemius Muscle'
+    publisher: StatPearls (editor M. A. Varacallo; chapter authors not shown on the page read)
+    url: https://www.statpearls.com/point-of-care/22091
+    supports:
+    - gastrocnemius heads, insertion, tibial nerve, ankle plantarflexion and knee flexion
+    - soleus origin, insertion, tibial nerve, ankle plantarflexion
+    retrieval_date: '2026-11-10'
+  SRC:STATPEARLS_LEG_ANTERIOR:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Leg Anterior Compartment'
+    publisher: StatPearls (editor M. V. Launico; chapter authors not shown on the page read)
+    url: https://www.statpearls.com/point-of-care/34034
+    supports:
+    - tibialis anterior attachments, deep fibular nerve, ankle dorsiflexion
+    retrieval_date: '2026-11-10'
+  SRC:GAIT2392_OSIM:
+    title: OpenSim Gait2392 model file (gait2392_millard2012muscle.osim)
+    url: https://github.com/opensim-org/opensim-models/blob/master/Models/Gait2392_Simbody/gait2392_millard2012muscle.osim
+    supports:
+    - model actuators of the squat_d2 view
