@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Revision:** 19 (2026-11-10), D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -162,8 +162,11 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q55** | same exchange | Selected “Muscles drawn, colored by effort (Recommended)” | (3) “What should the D2 visual add to the D1 stick-figure page?” Option text: “Muscle lines on the animated figure, colored by activation, plus a force plot per muscle.” Alternative: “Plots only”. Direct: this session | D-059 item 10 (visual) |
 | **Q56** | same exchange | Selected “Yes, they match” | (4) “ChatGPT couldn't see our chat, so it couldn't certify the Q49–Q52 quotes in PR #28 word for word. Do they match what you said?” Alternative: “I'll check later”. Direct: this session | Corbin confirms Q49–Q52; closes ChatGPT's verification limitation VL28-01 (`docs/reviews/2026-11-04_ChatGPT_D1_Records_Closeout_36603e0.md`, PR #29) |
 | **Q57** | 2026-11-04, between 09:18 and 09:29, after Q53–Q56 (exact minute not captured) | Selected “Add tibialis anterior + reserve check (Recommended)” | Claude reported that D1's ankle torque needs a dorsiflexor near standing that the Q54 set lacks, then asked: “Near standing, D1 needs a small dorsiflexion torque that none of the chosen muscles can make. How should D2 handle it?” Option text: “Add the main dorsiflexor (also in Gait2392). Also keep small labeled 'reserve' torques as a safety net that must stay near zero, so any gap is visible rather than hidden.” Alternatives: “Add tibialis anterior only”; “Reserve torques only”. Direct: this session | D-059 items 2 and 3 (tibialis anterior; reserve check) |
+| **Q58** | 2026-11-10 14:15 | “Check Chat's verdict and you have my approval to start building” | After ChatGPT's re-review request at `7358c2d`, scoped by Corbin at 14:03 to blocking issues only (“we need to make progress not just go back and forth with everything”). ChatGPT's verdict: AGREE, no blocking findings, one nonblocking note (D2-A2-N01), PR #33. Direct: this session | **D-059 Accepted at `7358c2dbb6af373b477d7c71a14a520a853f36c5`** with Amendments 1 and 2; Stage D2 build may start (see interpretation) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
+
+**Interpretation of Q58 (revision 19).** Q58 made approval conditional on ChatGPT's verdict, which was AGREE (PR #33). Claude reads it as: D-059 Accepted as amended at `7358c2d`, **including Amendment 2's reserve rule** (smallest largest per-joint reserve, then minimum effort), since Corbin chose none of the alternatives (g) or (i); and approval for Claude to build Stage D2 within that scope. Corbin may correct this interpretation.
 
 **Editorial marks.** The “[sic]” marks in Q7, Q13 and Q20 are editorial insertions made when those quotes were first recorded; they are kept as history (Rule 4). From revision 12, spelling notes go outside the quotation marks (ChatGPT review R18-01).
 
@@ -269,7 +272,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-057 | One source list for the whole project (`sources/`) | Corbin (Q34); Claude | Accepted (Q37) | Implemented (PR #19); in both role skills (Amendment 1) | Reported by author |
 | **Part VIII — Phase D (planar squat)** | | | | | |
 | D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44); Stage D1 build accepted at `3b86cc4` (Q51) with proposals (a)–(f) (Q50) | Stage D1 implemented (merged `3b6f6e6`, A-12); official run at `dd89fff`; Stage D2 not started | Stage D1: Independently checked (software; ChatGPT, PR #27) |
-| D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Proposed | Not started | Not checked |
+| D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Accepted (Q58) | In progress | Not checked |
 
 ---
 
@@ -1606,12 +1609,12 @@ Open concerns 1 and 2 stand as recorded. The label stays “interpretation (mode
 - **Still open:** concerns 6–9 (de Leva values not checked against the paper; Gait2392 stature; radius-column interpretation; borrowed HAT shape and foot). Stage D2 (muscles) needs its own proposal, after D-056 is decided.
 
 ### D-059  Stage D2: muscle forces for the D1 squat by static optimization
-- **Decision status:** Proposed
-- **Implementation status:** Not started
+- **Decision status:** **Accepted (Q58, 2026-11-10)** at `7358c2d`, with Amendments 1 and 2. Status before acceptance: Proposed
+- **Implementation status:** In progress (Stage D2 build)
 - **Verification status:** Not checked
 - **Date:** 2026-11-04
-- **Proposed by:** Claude (Phase D builder; Q38, interpretation for Stage D2 in §4) · **Reviewed by:** ChatGPT: AMEND at `a3efd33` (PR #31, D2-R01 to D2-R03), response in Amendment 1; AMEND at `936c12c` (PR #32, D2-R01 in part, D2-R04), response in Amendment 2; re-review requested
-- **Approval basis:** pending. Direction from Corbin: muscle set (Q54, Q57), visual (Q55), reserve check (Q57); D-056 Accepted (Q53)
+- **Proposed by:** Claude (Phase D builder; Q38, interpretation for Stage D2 in §4) · **Reviewed by:** ChatGPT: AMEND at `a3efd33` (PR #31, D2-R01 to D2-R03), response in Amendment 1; AMEND at `936c12c` (PR #32, D2-R01 in part, D2-R04), response in Amendment 2; AGREE at `7358c2d` (PR #33, no blocking findings; note D2-A2-N01 carried into the build)
+- **Approval basis:** Q58 (interpretation in §4). Direction from Corbin: muscle set (Q54, Q57), visual (Q55), reserve check (Q57); D-056 Accepted (Q53)
 - **Evidence:** D-058 (Stage D1, accepted at `3b86cc4`; official run at `dd89fff`); D-056; `SRC:GAIT2392_OSIM` (muscle parameters and path points); OpenSim documentation for the Gait2392 maximum isometric forces (OpenSim 2.4) and for static optimization; De Groote et al. 2016 and OpenSim's `DeGrooteFregly2016Muscle` (source code at opensim-core `01683ac`, API documentation 4.5); OpenSim 4.6 (software, oracle); see `sources/SOURCES.md`
 - **Amends:** D-058, Stage D2 outline (“main hip and knee extensors”): the muscle set is widened by Q54 and Q57
 - **Phase:** D
@@ -1843,8 +1846,10 @@ Muscle forces are a demonstration under a stated criterion. Physiological validi
 | ~~Write the Stage D2 (muscles) proposal, after D-056 is decided~~ Proposed as D-059 | Phase D builder (Claude, Q38) | Done |
 | ~~Review D-059 (Stage D2 scope), including the curve constants against the vendored OpenSim header~~ AMEND at `a3efd33` (PR #31); constants and vendor hash confirmed | ChatGPT | Done |
 | ~~Re-review D-059 with Amendment 1~~ AMEND at `936c12c` (PR #32): D2-R01 in part, D2-R04 | ChatGPT | Done |
-| Re-review D-059 with Amendment 2 (L∞ stage 1; path-switch transition policy) | ChatGPT | Next |
-| Decide D-059, including the reserve rule (Amendment 2: smallest-largest reserve then minimum effort; alternatives (g) soft reserves, (i) sum-of-squares stage 1) | Corbin | After re-review |
+| ~~Re-review D-059 with Amendment 2~~ AGREE at `7358c2d` (PR #33) | ChatGPT | Done |
+| ~~Decide D-059~~ Accepted at `7358c2d` (Q58), with Amendment 2's reserve rule (interpretation in §4) | Corbin | Done |
+| Stage D2 build (D-059 with Amendments 1 and 2); carry ChatGPT's note D2-A2-N01 (report `t*`, signed stage-2 reserves and the numerical band separately) | Claude; ChatGPT reviews; Corbin decides | Next |
+| Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q38 for Stage D2 (§4) | Corbin | Any time |
 | Check the de Leva values and reference sizes against the paper itself (D-058 open concern 6) | Anyone with access to the paper | Before results are cited |
 | ~~Source-list rule in the role skills (D-057 Amendment 1)~~ Merged (A-9); reinstalled in both models (Q38, reported by Corbin) | ChatGPT; Corbin | Done |
@@ -1881,6 +1886,7 @@ Muscle forces are a demonstration under a stated criterion. Physiological validi
 | 18 | 2026-11-04 | Claude | Q53–Q57 added to §4 with notes (Q54/Q57 correction; Q38 interpretation for Stage D2); D-056 Accepted (Q53) with an acceptance note; new D-059 (Stage D2 scope, Proposed); index and open items | Q53–Q57; D-059 pending ChatGPT review and Corbin's decision |
 | 18a | 2026-11-10 | Claude | D-059 Amendment 1 after ChatGPT's review (AMEND, D2-R01 to D2-R03, L01, L02): two-stage minimum-reserve rule with signed threshold; complete force-law, domain and baseline-option contract (fiber damping 0); verification of the assembled force law and path switches; four simplifications added; open items | Pending ChatGPT re-review and Corbin's decision |
 | 18b | 2026-11-10 | Claude | D-059 Amendment 2 after ChatGPT's re-review (AMEND, D2-R01 in part, D2-R04): stage 1 minimizes the largest per-joint reserve, so the 1 N·m flag is exact; path-length jumps at conditional switches measured in OpenSim 4.6, per-branch transition policy, no smoothing; withdrawn Amendment 1 sentences marked; open items | Pending ChatGPT re-review and Corbin's decision |
+| 19 | 2026-11-10 | Claude | Q58 added to §4 with an interpretation; D-059 Accepted at `7358c2d` (Q58) with Amendments 1 and 2, status fields, index and open items; ChatGPT's reviews PR #31, #32, #33 recorded | Q58; pending merge by Corbin |
 
 ## 8. References
 
