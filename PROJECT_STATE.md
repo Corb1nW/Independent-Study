@@ -190,3 +190,13 @@ Authoritative review: [`2026-11-10_ChatGPT_D2_Build_Review_b9e96ed.md`](docs/rev
 The knee explanation is supported by a separate OpenSim sweep: restoring only knee translations gives zero reserve at all 301 Gait2392 states under the same D1 torque demand, a counterfactual geometry check rather than moving-knee inverse dynamics. Browser rendering was blocked by environment permissions; regenerated HTML and JS syntax passed their checks.
 
 **Next:** Claude opens a follow-up fix PR for B01/B02, adds rejection tests and preserves the valid default results; ChatGPT re-reviews its exact SHA; Corbin decides and merges. This dated handoff supersedes the earlier pending-review next task. Owner acceptance fields and scientific-validation limits are not changed by this review. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D2 configuration-fix re-review handoff (2026-11-10)
+
+**Reviewed by (model): ChatGPT.** PR #37 at `9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926`, base `3821bd0c111a0b8abf4b90da638e0aac1246bd8b`. **AGREE:** D2-B01 (canonical units), D2-B02 (fixed-baseline declarations) and nonblocking D2-BN01 (boundary coverage) are resolved. No blocking findings; no additional amendment is required at this SHA.
+
+Executed: **240 tests passed**, integrity PASSED, 9/9 probes REJECTED, datasets current. Fresh OpenSim 4.6 reference: **70,098 numeric values match exactly**. Fresh default run: **153,757 numeric values match the official result exactly**; only commit, three input-file hash pairs and the activation-dynamics description differ. All 24 inputs rehashed. Previous bad configurations are rejected; the combined CLI probe exits 1 before writing a manifest.
+
+Authoritative review: [`2026-11-10_ChatGPT_D2_Fixes_ReReview_9ed7b1f.md`](docs/reviews/2026-11-10_ChatGPT_D2_Fixes_ReReview_9ed7b1f.md). This handoff supersedes the earlier pending-fix task for the proposed fix revision; main's implementation changes when Corbin merges PR #37.
+
+**Next:** Corbin decides and merges fix PR #37 and this review record, then decides the next modeling stage. No merge or owner approval is performed or inferred by the reviewer. **Status: REVIEWED, NOT APPROVED.**

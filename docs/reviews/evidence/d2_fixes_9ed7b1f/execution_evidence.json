@@ -1,0 +1,292 @@
+{
+  "commands": [
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0,
+      "name": "head_review",
+      "seconds": 0.002,
+      "started_utc": "2026-11-10T20:52:41.761800+00:00",
+      "stderr": "",
+      "stdout": "9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926\n"
+    },
+    {
+      "command": "git status --porcelain",
+      "exit": 0,
+      "name": "status_review",
+      "seconds": 0.024,
+      "started_utc": "2026-11-10T20:52:41.764437+00:00",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "git diff --stat 3821bd0c111a0b8abf4b90da638e0aac1246bd8b 9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926",
+      "exit": 0,
+      "name": "diff_scope",
+      "seconds": 0.024,
+      "started_utc": "2026-11-10T20:52:41.789400+00:00",
+      "stderr": "",
+      "stdout": " PROJECT_STATE.md                    | 15 +++---\n config/phase_d2_muscles.yaml        |  2 +-\n docs/DECISIONS.md                   | 30 ++++++++++--\n sources/SOURCES.md                  |  6 +--\n tests/data/d2_oracle_reference.json |  2 +-\n tests/test_phase_d2.py              | 97 +++++++++++++++++++++++++++++++++++--\n tools/make_d2_oracle.py             | 23 +++++++--\n tools/run_phase_d2.py               | 34 ++++++++++---\n 8 files changed, 179 insertions(+), 30 deletions(-)\n"
+    },
+    {
+      "command": "python -c 'import sys,platform,json; from importlib.metadata import version; print(sys.version); print(platform.platform()); print(json.dumps({p:version(p) for p in (\"numpy\",\"pydantic\",\"pydantic_core\",\"pytest\",\"PyYAML\",\"sympy\",\"pint\",\"scipy\",\"quadprog\",\"clarabel\",\"opensim\")},sort_keys=True))'",
+      "exit": 0,
+      "name": "versions",
+      "seconds": 0.096,
+      "started_utc": "2026-11-10T20:52:41.814367+00:00",
+      "stderr": "",
+      "stdout": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]\nLinux-6.18.57-x86_64-with-glibc2.41\n{\"PyYAML\": \"6.0.3\", \"clarabel\": \"0.11.1\", \"numpy\": \"2.3.5\", \"opensim\": \"4.6\", \"pint\": \"0.26.2\", \"pydantic\": \"2.13.4\", \"pydantic_core\": \"2.46.4\", \"pytest\": \"9.2.0\", \"quadprog\": \"0.1.14\", \"scipy\": \"1.17.0\", \"sympy\": \"1.14.0\"}\n"
+    },
+    {
+      "command": "python -m pytest -q",
+      "exit": 0,
+      "name": "pytest",
+      "seconds": 56.813,
+      "started_utc": "2026-11-10T20:52:41.910374+00:00",
+      "stderr": "",
+      "stdout": "........................................................................ [ 30%]\n........................................................................ [ 60%]\n........................................................................ [ 90%]\n........................                                                 [100%]\n=============================== warnings summary ===============================\n../../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14\n  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/anyio/pytest_plugin.py:14: PytestRemovedIn10Warning: _pytest.python.CallSpec2 has been renamed to CallSpec.\n  The CallSpec2 alias will be removed in pytest 10.\n  Update imports to use CallSpec instead.\n  See https://docs.pytest.org/en/stable/deprecations.html#callspec2-renamed\n    from _pytest.python import CallSpec2\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n240 passed, 1 warning in 55.54s\n"
+    },
+    {
+      "command": "python -m src.integrity",
+      "exit": 0,
+      "name": "integrity",
+      "seconds": 1.441,
+      "started_utc": "2026-11-10T20:53:38.723679+00:00",
+      "stderr": "",
+      "stdout": "INTEGRITY CHECK PASSED: all checked cross-file references resolve and all observations validate.\n"
+    },
+    {
+      "command": "python tools/review_cycle1_probes.py",
+      "exit": 0,
+      "name": "probes",
+      "seconds": 1.047,
+      "started_utc": "2026-11-10T20:53:40.166117+00:00",
+      "stderr": "",
+      "stdout": "== Cross-file references (D1) ==\n== Parameter names in ontology not in schema (D2) ==\n== Ontology classes receiving no quantitative properties (D3) ==\n  AnatomicalRegion\n  ArticularCartilage\n  ArticularSocket\n  BoneRegion\n  CoordinateFrame\n  DerivedLandmark\n  FascialThickening\n  Fibrocartilage\n  PeripheralNerveOrNerveSource\n  SkeletalComplex\n== Datum vs. property definition mismatches (D5) ==\n== Validator probes (D4 / Appendix A) ==\n  REJECTED  1  unit relabeled kg->lb without conversion (see D-026)  -> ['unit lb is not the canonical unit kg; convert the value and record the conversion in transformation_history (D-017, D-026)', 'uncertainty unit kg differs from datum unit lb', 'value/unit (0.5472 lb) do not match the last recorded transformation output (0.5472 kg)']\n  REJECTED  1b unit with incompatible dimension (m on a mass)  -> ['unit m is dimensionally incompatible with kg', 'uncertainty unit kg differs from datum unit m', 'value/unit (0.5472 m) do not match the last recorded transformation output (0.5472 kg)']\n  REJECTED  2  unit missing (null)  -> ['populated datum requires a unit']\n  REJECTED  3  negative mass  -> ['value/unit (-5 kg) do not match the last recorded transformation output (0.5472 kg)', 'value -5 is below the physical bound for muscle_mass (> 0)']\n  REJECTED  4  status typo 'Populated', no value, no source  -> ['invalid status: Populated']\n  REJECTED  5  assumed value, no source, no rationale  -> ['value/unit (9999 kg) do not match the last recorded transformation output (0.5472 kg)', 'assumed datum requires a stated rationale in derivation.assumptions']\n  REJECTED  6  invalid applicability level  -> ['invalid applicability level: individual-ish']\n  REJECTED  7  unknown source_id  -> ['source_claim cites unknown source SRC:DOES_NOT_EXIST']\n  REJECTED  8  unknown target entity  -> ['target entity LB:MUS:NOT_A_MUSCLE does not exist in the ontology']\n"
+    },
+    {
+      "command": "python -m tools.build_segment_datasets --check",
+      "exit": 0,
+      "name": "datasets",
+      "seconds": 0.275,
+      "started_utc": "2026-11-10T20:53:41.213198+00:00",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "python -m tools.make_d2_oracle --output /workspace/scratch/5513ec304951/d2-fix-9ed7b1f/out/oracle_fresh.json",
+      "exit": 0,
+      "name": "oracle",
+      "seconds": 5.199,
+      "started_utc": "2026-11-10T20:53:41.488713+00:00",
+      "stderr": "",
+      "stdout": "[info] Updating Model file from 40000 to latest format...\n[info] Loaded model 3DGaitModel2392 from file /tmp/tmphny56bby/gait2392_d1_matched.osim\n[warning] Couldn't find file 'treadmill.vtp'.\n[warning] Couldn't find file 'sacrum.vtp'.\n[warning] Couldn't find file 'pelvis.vtp'.\n[warning] Couldn't find file 'l_pelvis.vtp'.\n[warning] Couldn't find file 'femur_r.vtp'.\n[warning] Couldn't find file 'tibia_r.vtp'.\n[warning] Couldn't find file 'fibula.vtp'.\n[warning] Couldn't find file 'talus.vtp'.\n[warning] Couldn't find file 'foot.vtp'.\n[warning] Couldn't find file 'bofoot.vtp'.\n[warning] Couldn't find file 'femur_l.vtp'.\n[warning] Couldn't find file 'tibia_l.vtp'.\n[warning] Couldn't find file 'l_fibula.vtp'.\n[warning] Couldn't find file 'l_talus.vtp'.\n[warning] Couldn't find file 'l_foot.vtp'.\n[warning] Couldn't find file 'l_bofoot.vtp'.\n[warning] Couldn't find file 'hat_spine.vtp'.\n[warning] Couldn't find file 'hat_jaw.vtp'.\n[warning] Couldn't find file 'hat_skull.vtp'.\n[warning] Couldn't find file 'hat_ribs.vtp'.\n[info] Updating Model file from 40000 to latest format...\n[info] Loaded model 3DGaitModel2392 from file /tmp/tmphny56bby/gait2392_d1_matched.osim\n[warning] Couldn't find file 'treadmill.vtp'.\n[warning] Couldn't find file 'sacrum.vtp'.\n[warning] Couldn't find file 'pelvis.vtp'.\n[warning] Couldn't find file 'l_pelvis.vtp'.\n[warning] Couldn't find file 'femur_r.vtp'.\n[warning] Couldn't find file 'tibia_r.vtp'.\n[warning] Couldn't find file 'fibula.vtp'.\n[warning] Couldn't find file 'talus.vtp'.\n[warning] Couldn't find file 'foot.vtp'.\n[warning] Couldn't find file 'bofoot.vtp'.\n[warning] Couldn't find file 'femur_l.vtp'.\n[warning] Couldn't find file 'tibia_l.vtp'.\n[warning] Couldn't find file 'l_fibula.vtp'.\n[warning] Couldn't find file 'l_talus.vtp'.\n[warning] Couldn't find file 'l_foot.vtp'.\n[warning] Couldn't find file 'l_bofoot.vtp'.\n[warning] Couldn't find file 'hat_spine.vtp'.\n[warning] Couldn't find file 'hat_jaw.vtp'.\n[warning] Couldn't find file 'hat_skull.vtp'.\n[warning] Couldn't find file 'hat_ribs.vtp'.\n[info] Updating Model file from 40000 to latest format...\n[info] Loaded model 3DGaitModel2392 from file /tmp/tmphny56bby/gait2392_d1_matched.osim\n[warning] Couldn't find file 'treadmill.vtp'.\n[warning] Couldn't find file 'sacrum.vtp'.\n[warning] Couldn't find file 'pelvis.vtp'.\n[warning] Couldn't find file 'l_pelvis.vtp'.\n[warning] Couldn't find file 'femur_r.vtp'.\n[warning] Couldn't find file 'tibia_r.vtp'.\n[warning] Couldn't find file 'fibula.vtp'.\n[warning] Couldn't find file 'talus.vtp'.\n[warning] Couldn't find file 'foot.vtp'.\n[warning] Couldn't find file 'bofoot.vtp'.\n[warning] Couldn't find file 'femur_l.vtp'.\n[warning] Couldn't find file 'tibia_l.vtp'.\n[warning] Couldn't find file 'l_fibula.vtp'.\n[warning] Couldn't find file 'l_talus.vtp'.\n[warning] Couldn't find file 'l_foot.vtp'.\n[warning] Couldn't find file 'l_bofoot.vtp'.\n[warning] Couldn't find file 'hat_spine.vtp'.\n[warning] Couldn't find file 'hat_jaw.vtp'.\n[warning] Couldn't find file 'hat_skull.vtp'.\n[warning] Couldn't find file 'hat_ribs.vtp'.\n[info] Updating Model file from 40000 to latest format...\n[info] Loaded model 3DGaitModel2392 from file /workspace/scratch/5513ec304951/d2-fix-9ed7b1f/repo/sources/vendor/opensim-models/gait2392_millard2012muscle.osim\n[warning] Couldn't find file 'treadmill.vtp'.\n[warning] Couldn't find file 'sacrum.vtp'.\n[warning] Couldn't find file 'pelvis.vtp'.\n[warning] Couldn't find file 'l_pelvis.vtp'.\n[warning] Couldn't find file 'femur_r.vtp'.\n[warning] Couldn't find file 'tibia_r.vtp'.\n[warning] Couldn't find file 'fibula.vtp'.\n[warning] Couldn't find file 'talus.vtp'.\n[warning] Couldn't find file 'foot.vtp'.\n[warning] Couldn't find file 'bofoot.vtp'.\n[warning] Couldn't find file 'femur_l.vtp'.\n[warning] Couldn't find file 'tibia_l.vtp'.\n[warning] Couldn't find file 'l_fibula.vtp'.\n[warning] Couldn't find file 'l_talus.vtp'.\n[warning] Couldn't find file 'l_foot.vtp'.\n[warning] Couldn't find file 'l_bofoot.vtp'.\n[warning] Couldn't find file 'hat_spine.vtp'.\n[warning] Couldn't find file 'hat_jaw.vtp'.\n[warning] Couldn't find file 'hat_skull.vtp'.\n[warning] Couldn't find file 'hat_ribs.vtp'.\nwrote /workspace/scratch/5513ec304951/d2-fix-9ed7b1f/out/oracle_fresh.json (328 geometry states, 408 force states)\n"
+    },
+    {
+      "command": "python -m tools.run_phase_d2 --commit-sha 9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926 --d1-manifest results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json --output /workspace/scratch/5513ec304951/d2-fix-9ed7b1f/out/d2_run_9ed7b1f.json",
+      "exit": 0,
+      "name": "d2_run",
+      "seconds": 26.374,
+      "started_utc": "2026-11-10T20:53:46.687953+00:00",
+      "stderr": "",
+      "stdout": "female: optimizer PASSED; D1 consistency PASSED; muscles FEASIBLE (t* max 0.000 N m at 0.00 s); force-law domain IN_DOMAIN; D1 mechanics passed, contact feasible\nmale: optimizer PASSED; D1 consistency PASSED; muscles FLAGGED (t* max 5.815 N m at 1.52 s); force-law domain IN_DOMAIN; D1 mechanics passed, contact feasible\ngait2392: optimizer PASSED; D1 consistency PASSED; muscles FLAGGED (t* max 6.362 N m at 1.52 s); force-law domain IN_DOMAIN; D1 mechanics passed, contact feasible\nVerification passed. Muscle forces are a demonstration under a stated criterion, not validated.\nManifest written to /workspace/scratch/5513ec304951/d2-fix-9ed7b1f/out/d2_run_9ed7b1f.json\n"
+    },
+    {
+      "command": "git status --porcelain",
+      "exit": 0,
+      "name": "status_after_review",
+      "seconds": 0.004,
+      "started_utc": "2026-11-10T20:54:13.062481+00:00",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "exit": 0,
+      "name": "final_head",
+      "seconds": 0.002,
+      "started_utc": "2026-11-10T20:54:13.066979+00:00",
+      "stderr": "",
+      "stdout": "9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926\n"
+    },
+    {
+      "command": "git status --porcelain",
+      "exit": 0,
+      "name": "final_status",
+      "seconds": 0.004,
+      "started_utc": "2026-11-10T20:54:13.069659+00:00",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "comparisons": {
+    "oracle": {
+      "counts": {
+        "numeric_leaves": 70098,
+        "scalar_leaves": 71291
+      },
+      "numeric_differences_by_field": {},
+      "other_differences": [
+        {
+          "new": "2.3.5",
+          "old": "2.5.3",
+          "path": "$.provenance.numpy"
+        },
+        {
+          "new": "Linux-6.18.57-x86_64-with-glibc2.41",
+          "old": "Linux-6.18.44-fc-v338-x86_64-with-glibc2.39",
+          "path": "$.provenance.platform"
+        },
+        {
+          "new": "3.12.14",
+          "old": "3.13.18",
+          "path": "$.provenance.python"
+        }
+      ],
+      "sha256": {
+        "new": "1741bc8cbc36efd8f82cc7c11ce6020498edfafbad9d35568dc809dec982762d",
+        "old": "f173ba9394daa8cd18cb5c36a9935f2d229c128fdd812b4e27f491031642a5b2"
+      }
+    },
+    "run": {
+      "counts": {
+        "numeric_leaves": 153757,
+        "scalar_leaves": 155605
+      },
+      "input_records_rehashed": [
+        "config",
+        "d1_manifest",
+        "d1_runner",
+        "d2_config",
+        "dataset_builder",
+        "dataset_de_leva",
+        "dataset_gait2392",
+        "dataset_muscles",
+        "input_gate",
+        "model",
+        "muscle_model",
+        "ontology_hip",
+        "ontology_loader",
+        "ontology_lower_limb",
+        "oracle_reference",
+        "run_manifest",
+        "runner",
+        "schema",
+        "source_bmc_female",
+        "source_bmc_male",
+        "source_degroote_header",
+        "source_gait2392_osim",
+        "structural_model",
+        "validator"
+      ],
+      "numeric_differences_by_field": {},
+      "other_differences": [
+        {
+          "new": "9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926",
+          "old": "7ac0f2d2d83752d43f85a4221923f43f54e26b61",
+          "path": "$.commit_sha"
+        },
+        {
+          "new": "ignored",
+          "old": "ignored (instantaneous recruitment at each sample)",
+          "path": "$.configuration.baseline_force_law.activation_dynamics"
+        },
+        {
+          "new": "0677b4893bb7bab02236ee3001d8a80dbf4b31bc",
+          "old": "7af0fb1b651a0c9d38742fbf170b35e4d9dfd292",
+          "path": "$.inputs.d2_config.git_blob_id"
+        },
+        {
+          "new": "2de2bdddd89907f54224bcc7cfd9eddb5320c1688bd3320b3e6b7fe7b82dcc7f",
+          "old": "d8e7e32a0f7697c94a37cee460faac2d02eb544083786a1d7977936eab579a6e",
+          "path": "$.inputs.d2_config.sha256"
+        },
+        {
+          "new": "f000f9c09579bd44286c602cac05b013a305ef43",
+          "old": "4dd693650b0fa4c343dd639c531be71bc9fadfb7",
+          "path": "$.inputs.oracle_reference.git_blob_id"
+        },
+        {
+          "new": "f173ba9394daa8cd18cb5c36a9935f2d229c128fdd812b4e27f491031642a5b2",
+          "old": "8d4cbfd07acce76306bc06f0ce28cfe1a2c955302b19e6d9ee0b07b2fbf40e02",
+          "path": "$.inputs.oracle_reference.sha256"
+        },
+        {
+          "new": "4506d65ca9544ee8fd35aca57bdf9294d129beaa",
+          "old": "332fd6df6fecf9bd8b8adddd1da86f162bcbd0b6",
+          "path": "$.inputs.runner.git_blob_id"
+        },
+        {
+          "new": "6687f02c3dca7c78b871d603858138ea0f8048cee0b159bad63a8034e6e576e1",
+          "old": "b98a060c9ce1f86c4a48c7d624bd93d5ded9f9112013754c365dd3f3dff4ed83",
+          "path": "$.inputs.runner.sha256"
+        }
+      ],
+      "sha256": {
+        "new": "f943dcf9923a4381b079b805dde4bf0ee661408a32d958d2b005f3e308387893",
+        "old": "d9e3034340f435ae606c913356e0dcbd8c0ff0f2f073e9e0466d49caf12b76ae"
+      }
+    }
+  },
+  "guard_probes": {
+    "activation": {
+      "reason": "baseline_force_law.activation_dynamics must be 'ignored' (the implemented baseline, D-059 Amendment 1), got 'first_order'",
+      "rejected": true
+    },
+    "combined": {
+      "reason": "epsilon_reserve: unit must be 'N*m', got 'mN*m'",
+      "rejected": true
+    },
+    "combined_cli": {
+      "exit": 1,
+      "failure": "ValueError: epsilon_reserve: unit must be 'N*m', got 'mN*m'",
+      "manifest_created": false
+    },
+    "damping_bool": {
+      "reason": "baseline_force_law.fiber_damping must be 0.0 (the implemented baseline, D-059 Amendment 1), got False",
+      "rejected": true
+    },
+    "extra": {
+      "reason": "baseline_force_law fields must be exactly: activation_dynamics, active_force_width_scale, curves, domain, fiber_damping, fiber_velocity, passive_fiber_force, tendon",
+      "rejected": true
+    },
+    "missing": {
+      "reason": "baseline_force_law fields must be exactly: activation_dynamics, active_force_width_scale, curves, domain, fiber_damping, fiber_velocity, passive_fiber_force, tendon",
+      "rejected": true
+    },
+    "passive": {
+      "reason": "baseline_force_law.passive_fiber_force must be 'ignored' (the implemented baseline, D-059 Amendment 1), got 'included'",
+      "rejected": true
+    },
+    "unit_1000_mN_m": {
+      "reason": "epsilon_reserve: unit must be 'N*m', got 'mN*m'",
+      "rejected": true
+    },
+    "unit_mN_m": {
+      "reason": "epsilon_reserve: unit must be 'N*m', got 'mN*m'",
+      "rejected": true
+    },
+    "width": {
+      "reason": "baseline_force_law.active_force_width_scale must be 1.0 (the implemented baseline, D-059 Amendment 1), got 2.0",
+      "rejected": true
+    }
+  },
+  "oracle_extension": {
+    "new_force_counts": {
+      "motion": 192,
+      "switch_edge": 72,
+      "switch_side": 144
+    },
+    "new_geometry_counts": {
+      "d1_sample": 301,
+      "spline_knot": 9,
+      "switch_edge": 6,
+      "switch_side": 12
+    },
+    "previous_force_rows_retained_exactly_except_new_kind_label": 192,
+    "previous_geometry_rows_retained_exactly": 322,
+    "previous_unmodified_geometry_rows_identical": 31
+  },
+  "reviewed_sha": "9ed7b1f1454bb1e3f4d16cd8cb8ec511b76c9926",
+  "source_status": "No source/model data changed; existing NCBI mirror links added with honest attribution.",
+  "verdict": "AGREE"
+}
