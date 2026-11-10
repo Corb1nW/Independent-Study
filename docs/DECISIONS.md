@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 23 (2026-11-10), D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Revision:** 24 (2026-11-10), D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -169,6 +169,8 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q60** | 2026-11-10 15:36 | “I had Chat run a review of D2, my bad I should have had it reviewed before merging. Should be simple fixes, look at it and get back to me” | After ChatGPT's post-merge review of the Stage D2 build (PR #36: AMEND, D2-B01, D2-B02, note D2-BN01). Direct: this session | Claude builds the fixes (D-059 Amendment 4) |
 | **A-15** | 2026-11-10 15:49:59, 15:58:27 and 15:58:58 (actions, from GitHub's merge times) | Merged PR #36 (ChatGPT's post-merge D2 review), PR #37 (`e83dbce`, D2 configuration guards) and PR #38 (ChatGPT's AGREE on the fixes at `9ed7b1f`) | — | Owner actions (D-051); D-059 Amendment 4 accepted by merge after ChatGPT's AGREE |
 | **Q61** | 2026-11-10 15:59 | “Got the approval, lets try a moving knee stage to see if the simplification is what causes the issue” | After Claude recommended a moving-knee stage (P1 option (b)) as the next step. Direct: this session | Direction for D-060 (Proposed); see interpretation |
+| **A-16** | 2026-11-10 16:22:29 and 16:22:46 (actions, from GitHub's merge times) | Merged PR #39 (`26f0ff1`, D-060 with ChatGPT's notes applied) and PR #40 (ChatGPT's AGREE at `adae723`) | — | Owner actions (D-051) |
+| **Q62** | 2026-11-10 16:23 | “alright you are good to start building” | After Claude applied ChatGPT's notes D3-N01 and D3-N02 to D-060 and asked for Corbin's decision. Direct: this session | **D-060 Accepted** (with the notes applied, `17e2c0f`); Stage D3 build approved |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
@@ -283,7 +285,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | **Part VIII — Phase D (planar squat)** | | | | | |
 | D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44); Stage D1 build accepted at `3b86cc4` (Q51) with proposals (a)–(f) (Q50) | Stage D1 implemented (merged `3b6f6e6`, A-12); official run at `dd89fff`; Stage D2 not started | Stage D1: Independently checked (software; ChatGPT, PR #27) |
 | D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Accepted (Q58) | Implemented (A-13, A-14) | Independently executed (PR #36); fixes in review |
-| D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Proposed | Not started | Not checked |
+| D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Accepted (Q62) | Built, in review | Reported by author |
 
 ---
 
@@ -1914,12 +1916,12 @@ It also confirmed the knee explanation with OpenSim alone: restoring only the kn
 
 
 ### D-060  Stage D3: Gait2392's moving knee for the squat mechanics and muscles
-- **Decision status:** Proposed
-- **Implementation status:** Not started
-- **Verification status:** Not checked
+- **Decision status:** **Accepted (Q62, 2026-11-10)** at `17e2c0f`. Status before acceptance: Proposed
+- **Implementation status:** Built on `phase-d/claude-d3-build`, ready for review (Amendment 1; official run at `525e2c3`)
+- **Verification status:** Reported by author; ChatGPT review pending
 - **Date:** 2026-11-10
 - **Proposed by:** Claude (Phase D builder; Q38 interpretation, Q61 direction) · **Reviewed by:** ChatGPT: AGREE at `adae723` (PR #40)
-- **Approval basis:** pending. Direction from Corbin: Q61
+- **Approval basis:** Q62. Direction from Corbin: Q61
 - **Evidence:** D-058 (Stage D1, fixed-centre knee); D-059 Amendments 3 and 4 (the D2 shortfall traced to the fixed knee; ChatGPT's OpenSim check with only the knee translations restored, PR #36); `SRC:GAIT2392_OSIM` (knee translation splines)
 - **Amends:** D-058 item on the knee ("revolute, fixed centre at knee angle 0") for Stage D3 runs only. D1's accepted results stay as they are.
 - **Phase:** D
@@ -1977,6 +1979,55 @@ Not validated against measured squats or muscle activity.
 2. **The smaller contact margin**, reported as in D1.
 3. **D1's open concerns 6–9 carry over**, for example the provisional de Leva values.
 
+**Amendment 1 (2026-11-10): implementation record of the Stage D3 build (branch `phase-d/claude-d3-build`; official run at `525e2c3`). Reported by author; ChatGPT review pending.**
+
+*Built.*
+- **Data.** Schema LB-QPS 0.8.0 lets `joint_center_position` be a function. `segments_gait2392.yaml` 0.2.0 adds `LB-QD:G2392:JOINT:KNEE_R_MOVING`, the two knee translation splines, generated from the model file. D1's fixed datum is unchanged. The ported SimmSpline gains OpenSim's second-derivative rule.
+- **Mechanics** (`src/squat_d3.py`):
+  - moving-knee kinematics;
+  - Newton–Euler with the knee's translation term;
+  - Kane's method (analytic Jacobians, mass matrix, bias);
+  - static gravity by virtual work and the energy balance, each by fourth-order differences;
+  - the Newton identity;
+  - one-step and short-horizon forward checks on Kane's equations;
+  - a frozen-knee mode at D1's datum (note D3-N02). It reproduces D1's torques to 3e-14 N·m for all three bodies.
+- **Muscles.** `Joints.moving_knee` places the femur by T(q_knee), with the −R_thigh dT/dq term in the moment arms. The fixed-knee behaviour is unchanged, and all D2 tests still pass.
+- **Oracle.** `tools/make_d2_oracle.py --knee moving` keeps the knee splines. It records positions relative to the ankle at all 301 samples (knee, hip, pelvis origin, femur and tibia centres of mass), plus muscle geometry and forces as in D2. The output is `tests/data/d3_oracle_reference.json`.
+- **Runner and page.**
+  - `config/phase_d3_moving_knee.yaml` and `tools/run_phase_d3.py`, which computes statuses and a sample-by-sample comparison with the official D1 (`dd89fff`) and D2 (`7ac0f2d`) manifests.
+  - `tools/build_d2_page.py --moving-manifest` adds the knee switch.
+- **Tests.** 23 new in `tests/test_phase_d3.py`; 263 in the suite. A mutation check of 4 faults: the original translation-sign error, the missing T″ term, muscles evaluated at T(0), and an unconverted thigh centre of mass. Each is caught.
+
+*Choices within the builder's scope.*
+1. The Kane formulation projects each centre of mass and the segment rotations. Accelerations come from analytic second partials rather than symbolic Lagrange, because the spline functions make a symbolic Lagrangian awkward. Independence from Newton–Euler: Kane uses no joint forces.
+2. The static and energy checks use fourth-order differences. Central differences left errors of about 3e-8, above D1's tolerances; the fourth-order versions give at most 1.3e-10 N·m and 8e-10 W.
+3. The D3 manifest uses D2's series names, so one page shows both knees.
+
+*Results (official run at `525e2c3`; provenance `verified_git_head_and_inputs`, 28 files).* All three bodies pass:
+- mechanics (Newton–Euler against Kane 4.3e-14 N·m; virtual work ≤ 1.3e-10 N·m; energy ≤ 8e-10 W; Newton 5.7e-14 N; one-step ≤ 4.8e-14 rad; short horizon ≤ 6.6e-11 rad);
+- kinematics against OpenSim (6.7e-16 m);
+- optimizer (KKT ≤ 1.4e-13; second solver within 1.5e-9);
+- force-law domain, with no flags.
+
+Compared with the fixed knee (female / male / Gait2392):
+
+| Quantity | Female | Male | Gait2392 |
+|---|---|---|---|
+| Peak knee torque, N·m (fixed → moving) | −74.4 → −75.8 | −87.3 → −89.0 | −90.5 → −92.3 |
+| Largest ankle torque change, N·m | 6.9 | 8.3 | 8.6 |
+| Contact | feasible | feasible | feasible |
+| Heel margin, mm (fixed → moving) | 23.9 → 17.2 | 24.0 → 17.8 | 26.1 → 20.3 |
+| Muscle feasibility (t* max) | 0 → 0 | **5.815 → 0** | **6.362 → 0** |
+| Flagged samples (fixed → moving) | 0 → 0 | 27 → 0 | 28 → 0 |
+
+The gastrocnemius–tibialis co-contraction of the fixed-knee runs is gone; soleus carries the plantarflexion at the bottom. Path-length jumps at the switches are at most 0.36 mm, as on the published model. At the bottom the vasti and gluteus maximus are fully active for all three bodies, and rectus femoris too for the male and Gait2392 bodies. They suffice, with little margin.
+
+*Answer to Q61.* With torques and muscle geometry from one knee model, Gait2392's, the muscles suffice for all three bodies. The D2 shortfall came from D1's fixed-centre knee. This verifies the computation under the stated assumptions. It does not validate the model against real squats.
+
+*Not run.* Windows; an independent OpenSim re-run by the reviewer; physiological validation.
+*Note.* The D2 reference file's recorded `tool_sha256` predates this build's oracle-tool edits. Its values are unchanged, and the fixed-mode copy's hash still matches.
+*Status.* Implementation: built, ready for review. Verification: reported by author.
+
 ---
 
 ## 6. Open items
@@ -2021,7 +2072,9 @@ Not validated against measured squats or muscle activity.
 | ~~Decide D-059 Amendment 3 proposals P1 and P2~~ P1 option (a) and P2 accepted (Q59) | Corbin | Done |
 | ~~Decide the next stage~~ Moving knee (Q61); proposed as D-060 | Corbin | Done |
 | ~~Review D-060~~ AGREE at `adae723` (PR #40); notes D3-N01 and D3-N02 applied | ChatGPT | Done |
-| Decide D-060 (Stage D3, moving knee) | Corbin | Next |
+| ~~Decide D-060~~ Accepted (Q62) | Corbin | Done |
+| ~~Build Stage D3~~ Built (D-060 Amendment 1); official run at `525e2c3` | Claude | Done |
+| Review the Stage D3 build at the head of its PR, including the D3 oracle reference file | ChatGPT; then Corbin | Next |
 | Confirm or correct the interpretation of Q59 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q38 for Stage D2 (§4) | Corbin | Any time |
@@ -2066,6 +2119,7 @@ Not validated against measured squats or muscle activity.
 | 22 | 2026-11-10 | Claude | A-14 and Q60 added to §4; D-059 Amendment 4 (D2-B01 and D2-B02 fixes, D2-BN01 coverage), status fields, index and open items | Q60; pending ChatGPT re-review and merge by Corbin |
 | 23 | 2026-11-10 | Claude | A-15 and Q61 added to §4 with an interpretation; new D-060 (Stage D3 moving knee, Proposed); D-059 Amendment 4 marked accepted by merge; index and open items | Q61; D-060 pending ChatGPT review and Corbin's decision |
 | 23a | 2026-11-10 | Claude | D-060: ChatGPT's notes D3-N01 (translation 6.3 mm anterior, 21.1 mm inferior) and D3-N02 (freeze at D1's datum; thigh centre of mass converted once) applied; review line | No change to method or acceptance criteria; Corbin's decision pending |
+| 24 | 2026-11-10 | Claude | A-16 and Q62 added to §4; D-060 Accepted (Q62) and Amendment 1 (Stage D3 implementation record); index and open items | Q62; build pending ChatGPT review and merge by Corbin |
 
 ## 8. References
 
