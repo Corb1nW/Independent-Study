@@ -179,3 +179,13 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 Authoritative review: [`2026-11-10_ChatGPT_D2_Amendment2_ReReview_7358c2d.md`](docs/reviews/2026-11-10_ChatGPT_D2_Amendment2_ReReview_7358c2d.md). Tests: 178 passed; integrity PASSED; probes 9/9 REJECTED; generated datasets current. Review-only mathematical/geometry probes passed; OpenSim not run and D2 not yet built. Nonblocking N01 carries numerical-band reporting into the build review.
 
 **Next:** Corbin decides D-059 at the reviewed SHA; if approved, Claude builds Stage D2 and ChatGPT reviews the build. No approval or merge is inferred. This handoff supplements the main-branch snapshot above; PR #30 contains the pending proposal and its fuller state update. **Status: REVIEWED, NOT APPROVED.**
+
+## Post-merge Stage D2 review handoff (2026-11-10)
+
+**Reviewed by (model): ChatGPT.** Build PR #34 at `b9e96edb4a2e4a56e35679c8982152d5bc182315`; main at `3821bd0c111a0b8abf4b90da638e0aac1246bd8b` contains identical build code/data. **Verdict: AMEND.** The unmodified build passed 213 tests, integrity, 9/9 probes and dataset checks. OpenSim 4.6 was rerun: all 44,034 oracle numeric values match exactly. All 153,757 default-run numeric values match the official `7ac0f2d` result; sensitivity differs in three activation-change values, largest 1.84e-8. Both run manifests' 24 input records were rehashed.
+
+Authoritative review: [`2026-11-10_ChatGPT_D2_Build_Review_b9e96ed.md`](docs/reviews/2026-11-10_ChatGPT_D2_Build_Review_b9e96ed.md). **Must fix:** D2-B01 (reject unsupported configuration units) and D2-B02 (reject baseline force-law declarations the implementation does not compute). Isolated probes demonstrated a successful but inconsistent manifest; the committed default results reproduce. Nonblocking BN01 carries boundary-fixture refinements forward.
+
+The knee explanation is supported by a separate OpenSim sweep: restoring only knee translations gives zero reserve at all 301 Gait2392 states under the same D1 torque demand, a counterfactual geometry check rather than moving-knee inverse dynamics. Browser rendering was blocked by environment permissions; regenerated HTML and JS syntax passed their checks.
+
+**Next:** Claude opens a follow-up fix PR for B01/B02, adds rejection tests and preserves the valid default results; ChatGPT re-reviews its exact SHA; Corbin decides and merges. This dated handoff supersedes the earlier pending-review next task. Owner acceptance fields and scientific-validation limits are not changed by this review. **Status: REVIEWED, NOT APPROVED.**
