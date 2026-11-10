@@ -1,12 +1,12 @@
 # LB-AO Project State
 
 **Updated:** 2026-11-10
-**Updated by:** Claude (D-059 Amendment 1, response to ChatGPT's review PR #31)
+**Updated by:** Claude (D-059 Amendment 2, response to ChatGPT's re-review PR #32)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.1.0 · schema LB-QPS 0.6.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0 · `DECISIONS.md` revision 18a
-**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope proposed (D-059), amended after ChatGPT's AMEND (PR #31); re-review next.** D-056 is Accepted (Q53). D-059 proposes:
-- instantaneous optimization on D1's official torques, with 14 Gait2392 actuators per leg (main squat muscles plus tibialis anterior; Q54, Q57) and a reserve check (Q57), made exact in Amendment 1 by a two-stage rule (minimum signed reserve first, then minimum effort);
+**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.1.0 · schema LB-QPS 0.6.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0 · `DECISIONS.md` revision 18b
+**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope proposed (D-059), amended twice after ChatGPT's reviews (PRs #31, #32); re-review next.** D-056 is Accepted (Q53). D-059 proposes:
+- instantaneous optimization on D1's official torques, with 14 Gait2392 actuators per leg (main squat muscles plus tibialis anterior; Q54, Q57) and a reserve check (Q57), made exact by a two-stage rule (Amendment 2: smallest largest per-joint reserve first, then minimum effort);
 - the De Groote force law with rigid tendons and no passive force in the baseline;
 - OpenSim 4.6 as an independent verification oracle;
 - muscles drawn on the page, coloured by effort (Q55).
@@ -146,15 +146,15 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **Q40 interpretation:** read as acceptance of D-058; Corbin may correct it.
 - **Q38 interpretation:** Phase D reviewer read as ChatGPT; Corbin may correct it.
 - **Q50 principle on simplifications:** recorded as Corbin's stated principle; he chose to record the quote only (Q52), so there is no new rule or file.
-- **D-059 Stage D2 scope:** Proposed. Builder's pre-check: thin knee-extensor margin at the bottom (about 7% for the Gait2392 body); rigid-tendon passive soleus artifact at 40° dorsiflexion, so the baseline excludes passive force. ChatGPT's review at `a3efd33` (PR #31): AMEND, D2-R01 to D2-R03 (reserve semantics, force-law and domain contract including fiber damping inherited as 0.1 through `replaceMuscles`, verification of the assembled force and the eight path switches inside D1's knee range). All accepted after Claude checked them; addressed in D-059 Amendment 1. The reserve rule is Corbin's choice (two-stage, or soft reserves as originally proposed).
+- **D-059 Stage D2 scope:** Proposed. Builder's pre-check: thin knee-extensor margin at the bottom (about 7% for the Gait2392 body); rigid-tendon passive soleus artifact at 40° dorsiflexion, so the baseline excludes passive force. ChatGPT's review at `a3efd33` (PR #31): AMEND, D2-R01 to D2-R03 (reserve semantics, force-law and domain contract including fiber damping inherited as 0.1 through `replaceMuscles`, verification of the assembled force and the eight path switches inside D1's knee range). All accepted after Claude checked them; addressed in D-059 Amendment 1. The reserve rule is Corbin's choice. ChatGPT's re-review at `936c12c` (PR #32): AMEND; D2-R02, D2-R03, L01, L02 resolved; D2-R01 in part (a sum-of-squares stage 1 does not certify a per-joint allowance) and new D2-R04 (path length jumps at conditional via points; confirmed in OpenSim 4.6, up to 0.35 mm for medial gastrocnemius). Addressed in Amendment 2.
 - **Q38 interpretation for Stage D2:** Claude builds, ChatGPT reviews; Corbin may correct it.
 - **No open disagreements between models.**
 
 ## Next task
 
 **Owner:** ChatGPT (re-review D-059 with Amendment 1); then Corbin; then Claude (Phase D builder, Q38 interpretation).
-1. **Re-review D-059 Amendment 1** at the pinned head SHA of PR #30, with the Reviewer skill. Check that it resolves D2-R01 to D2-R03, L01 and L02: the two-stage reserve rule and signed threshold; the force-law, domain and baseline-option contract; the expanded checks 8a–d and the oracle record.
-2. **Corbin approves, amends or rejects D-059,** including the reserve rule (two-stage minimum reserve, or alternative (g), soft reserves).
+1. **Re-review D-059 Amendment 2** at the pinned head SHA of PR #30, with the Reviewer skill: the L∞ stage 1 and exact reserve flag (D2-R01) and the path-switch transition policy (D2-R04).
+2. **Corbin approves, amends or rejects D-059,** including the reserve rule (Amendment 2's rule, or alternatives (g) soft reserves, (i) sum-of-squares stage 1).
 3. **Claude builds Stage D2** on a `phase-d/claude-…` branch; ChatGPT reviews, including an independent run of the OpenSim oracle if it can install the wheel.
 
 **Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-050, D-055, D-056, D-058, D-059; the official D1 run in `results/phase_d/` (`dd89fff`); `sources/vendor/`; `sources/SOURCES.md`.
