@@ -1,11 +1,11 @@
 # LB-AO Project State
 
 **Updated:** 2026-11-10
-**Updated by:** Claude (D2 post-merge review fixes, D-059 Amendment 4)
+**Updated by:** Claude (Stage D3 scope proposal, D-060)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.2.0 · schema LB-QPS 0.7.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0, `muscles_gait2392.yaml` 0.1.0 · `DECISIONS.md` revision 22
-**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 implemented and merged by Corbin (A-13; official run at `7ac0f2d`); ChatGPT's post-merge review (PR #36) reproduced the results exactly and asked for two configuration guards, fixed in D-059 Amendment 4 (re-review pending).** Female body: muscles suffice. Male and Gait2392: flagged near the bottom (largest reserve 5.8 and 6.4 N·m), a result traced to D1's fixed-centre knee (with Gait2392's moving-knee geometry the muscles suffice); accepted as the reading of the result (Q59, P1 option (a)).** D-056 is Accepted (Q53). D-059 specifies:
+**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.2.0 · schema LB-QPS 0.7.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0, `muscles_gait2392.yaml` 0.1.0 · `DECISIONS.md` revision 23
+**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 implemented and merged by Corbin (A-13; official run at `7ac0f2d`); ChatGPT's post-merge review (PR #36) reproduced the results exactly and asked for two configuration guards, fixed in D-059 Amendment 4 (ChatGPT AGREE, PR #38; merged, A-15). Stage D3 (moving knee, D-060) proposed (Q61); pre-check: with the moving knee in both torques and muscle geometry, the muscles suffice for all three bodies.** Female body: muscles suffice. Male and Gait2392: flagged near the bottom (largest reserve 5.8 and 6.4 N·m), a result traced to D1's fixed-centre knee (with Gait2392's moving-knee geometry the muscles suffice); accepted as the reading of the result (Q59, P1 option (a)).** D-056 is Accepted (Q53). D-059 specifies:
 - instantaneous optimization on D1's official torques, with 14 Gait2392 actuators per leg (main squat muscles plus tibialis anterior; Q54, Q57) and a reserve check (Q57), made exact by a two-stage rule (Amendment 2: smallest largest per-joint reserve first, then minimum effort);
 - the De Groote force law with rigid tendons and no passive force in the baseline;
 - OpenSim 4.6 as an independent verification oracle;
@@ -159,10 +159,10 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Next task
 
-**Owner:** Corbin (merge ChatGPT's review PR #36); ChatGPT (re-review the configuration-guard fix PR); Corbin (merge; next stage).
-1. **ChatGPT re-reviews the D2 fixes** (D-059 Amendment 4) at the head of their PR: D2-B01 and D2-B02, and the D2-BN01 coverage.
-2. **Corbin merges** PR #36 and the fix PR.
-3. **Corbin decides the next stage.** Builder's recommendation: a moving knee for D1 and D2 (P1 option (b)), before muscle results are cited; then Phase E (conditions).
+**Owner:** ChatGPT (review D-060); Corbin (decide); then Claude (build Stage D3).
+1. ~~Review D-060~~ ChatGPT AGREE at `adae723` (PR #40); its notes D3-N01 and D3-N02 applied (wording and two build requirements; method unchanged).
+2. **Corbin decides D-060.**
+3. **Claude builds Stage D3.**
 
 **Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-050, D-055, D-056, D-058, D-059; the official D1 run in `results/phase_d/` (`dd89fff`); `sources/vendor/`; `sources/SOURCES.md`.
 
