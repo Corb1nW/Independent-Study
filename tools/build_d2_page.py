@@ -114,6 +114,9 @@ svg { display: block; width: 100%; height: auto }
 .heat-wrap { position: relative }
 .heat-labels { font-size: 12px }
 .reserve-note { font-size: 13px; color: var(--ink-2); margin: 6px 0 0 }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); margin: 0 0 6px }
+.chips span { display: inline-flex; align-items: center; gap: 6px }
+.chips i { width: 14px; height: 3px; border-radius: 2px; display: inline-block }
 .lower { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start }
 .facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13px; margin: 0 }
 .facts dt { color: var(--muted) }
@@ -157,11 +160,13 @@ footer code { font-family: var(--font-data); overflow-wrap: anywhere } footer a 
         <div class="heat-wrap"><svg id="heat" role="img" aria-label="Activation heat map, one row per muscle"></svg></div>
       </section>
       <section class="panel" aria-label="Muscle forces">
-        <h2>Muscle force (N), largest five at the current body</h2>
+        <h2>Muscle force (N), the five largest for this body</h2>
+        <div class="chips" id="forces-legend"></div>
         <svg id="forces" role="img" aria-label="Force over time for the five strongest-working muscles"></svg>
       </section>
       <section class="panel" aria-label="Reserve torque">
         <h2>Reserve torque: what the muscles could not supply</h2>
+        <div class="chips" id="reserve-legend"></div>
         <svg id="reserve" role="img" aria-label="Smallest reserve torque needed at each joint over time"></svg>
         <p class="reserve-note" id="reserve-note"></p>
       </section>
@@ -264,7 +269,7 @@ function addCursor(svg, L, R, W, T, B, H, tmax) {
 function buildHeat() {
   const svg = document.getElementById("heat"); svg.replaceChildren();
   const W = Math.max(320, Math.round(svg.parentElement.clientWidth || 640));
-  const narrow = W < 520, L = narrow ? 112 : 150, R = 6, T = 4, B = 22, rh = 14, gap = 6;
+  const narrow = W < 520, L = narrow ? 132 : 150, R = 16, T = 4, B = 22, rh = 14, gap = 6;
   const groupsH = DATA.groups.length * gap;
   const H = T + ORDER.length * rh + groupsH + B;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
@@ -273,7 +278,7 @@ function buildHeat() {
   DATA.groups.forEach(([g, ms]) => {
     y += gap;
     ms.forEach(m => {
-      const lab = el("text", {x: L - 6, y: y + rh - 3, "text-anchor": "end", "font-size": narrow ? 10.5 : 12, fill: css("--ink-2")}, svg);
+      const lab = el("text", {x: L - 6, y: y + rh - 3, "text-anchor": "end", "font-size": narrow ? 10 : 12, fill: css("--ink-2")}, svg);
       lab.textContent = DATA.names[m];
       const a = run.act[m];
       for (let k = 0; k < t.length; k++)
@@ -287,7 +292,7 @@ function buildHeat() {
 
 function lineChart(svgId, series, unit, opts={}) {
   const svg = document.getElementById(svgId); svg.replaceChildren();
-  const W = Math.max(320, Math.round(svg.parentElement.clientWidth || 640)), H = opts.H || 170, L = 46, R = opts.R || 120, T = 10, B = 22;
+  const W = Math.max(320, Math.round(svg.parentElement.clientWidth || 640)), H = opts.H || 170, L = 46, R = 16, T = 10, B = 22;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   const t = run.t, tmax = t[t.length - 1];
   const peak = Math.max(opts.minTop || 0, ...series.flatMap(s => s.y));
@@ -301,7 +306,7 @@ function lineChart(svgId, series, unit, opts={}) {
   }
   if (opts.threshold !== undefined) {
     el("line", {x1: L, x2: W - R, y1: ys(opts.threshold), y2: ys(opts.threshold), stroke: css("--flag"), "stroke-width": 1, "stroke-dasharray": "5 4"}, svg);
-    const tx = el("text", {x: W - R + 6, y: ys(opts.threshold) + 4, "font-size": 11, fill: css("--flag"), "font-family": css("--font-data")}, svg);
+    const tx = el("text", {x: W - R, y: ys(opts.threshold) - 4, "text-anchor": "end", "font-size": 11, fill: css("--flag"), "font-family": css("--font-data")}, svg);
     tx.textContent = opts.thresholdLabel;
   }
   timeAxis(svg, W, H, L, R, B, tmax);
@@ -309,24 +314,23 @@ function lineChart(svgId, series, unit, opts={}) {
   series.forEach(s => {
     const d = s.y.map((v, k) => `${k ? "L" : "M"}${xs(t[k]).toFixed(1)},${ys(v).toFixed(1)}`).join("");
     el("path", {d, fill: "none", stroke: s.color, "stroke-width": s.width || 2, "stroke-linejoin": "round", "stroke-dasharray": s.dash || ""}, svg);
-    const lab = el("text", {x: W - R + 6, y: ys(s.y[s.y.length - 1] || 0), "font-size": 11, fill: s.color, "font-family": css("--font-body")}, svg);
-    lab.textContent = s.label; s.labEl = lab;
     dots.push({s, dot: el("circle", {r: 3.5, fill: s.color, stroke: css("--surface"), "stroke-width": 1.5}, svg)});
   });
-  // spread end labels so they do not overlap
-  const labs = series.map(s => s.labEl).sort((a, b) => +a.getAttribute("y") - +b.getAttribute("y"));
-  for (let k = 1; k < labs.length; k++) { const p = +labs[k - 1].getAttribute("y"), c = +labs[k].getAttribute("y"); if (c - p < 13) labs[k].setAttribute("y", p + 13); }
+  if (opts.legend) document.getElementById(opts.legend).innerHTML =
+    series.map(s => `<span><i style="background:${s.color}${s.dash ? ";opacity:.7" : ""}"></i>${s.label}</span>`).join("") + (opts.legendNote || "");
   addCursor(svg, L, R, W, T, B, H, tmax);
   cursors.push(k => dots.forEach(({s, dot}) => { dot.setAttribute("cx", xs(t[k])); dot.setAttribute("cy", ys(s.y[k])); }));
 }
 function buildForces() {
   const top5 = ORDER.map(m => [m, Math.max(...run.force[m])]).sort((a, b) => b[1] - a[1]).slice(0, 5);
   const shades = ["--act-1", "--knee", "--hip", "--ankle", "--accent"];
-  lineChart("forces", top5.map(([m], k) => ({y: run.force[m], label: DATA.names[m], color: css(shades[k])})), "N");
+  lineChart("forces", top5.map(([m], k) => ({y: run.force[m], label: DATA.names[m], color: css(shades[k])})), "N", {legend: "forces-legend"});
 }
 function buildReserve() {
-  const s = JOINTS.map(([j, name]) => ({y: run.needed[j], label: name, color: css("--" + j)}));
-  lineChart("reserve", s, "N·m", {H: 130, minTop: 2 * DATA.epsilon, threshold: DATA.epsilon, thresholdLabel: `allowance ${DATA.epsilon} N·m`});
+  const s = JOINTS.map(([j, name], k) => ({y: run.needed[j], label: name, color: css("--" + j), width: 4 - k * 1.2}));
+  const same = JOINTS.every(([j]) => run.needed[j].every((v, k) => Math.abs(v - run.needed.knee[k]) < 1e-3));
+  lineChart("reserve", s, "N·m", {H: 130, minTop: 2 * DATA.epsilon, threshold: DATA.epsilon, thresholdLabel: `allowance ${DATA.epsilon} N·m`,
+    legend: "reserve-legend", legendNote: same && run.summary.t_star_max_N_m > 0 ? `<span>(the three lines coincide)</span>` : ""});
   const sm = run.summary;
   document.getElementById("reserve-note").innerHTML = run.status.muscle_feasibility === "feasible"
     ? `The muscles supply the whole torque at every instant for this body (largest reserve ${sm.t_star_max_N_m.toFixed(3)} N·m).`
