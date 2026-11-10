@@ -1,11 +1,11 @@
 # LB-AO Project State
 
 **Updated:** 2026-11-10
-**Updated by:** Claude (D-059 accepted, Q58; Stage D2 build starting)
+**Updated by:** Claude (Stage D2 merged, A-13; decisions Q59)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.1.0 · schema LB-QPS 0.6.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0 · `DECISIONS.md` revision 19
-**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 build in progress (Claude).** D-056 is Accepted (Q53). D-059 proposes:
+**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.2.0 · schema LB-QPS 0.7.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0, `muscles_gait2392.yaml` 0.1.0 · `DECISIONS.md` revision 21
+**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 implemented and merged by Corbin (A-13; official run at `7ac0f2d`); ChatGPT's post-merge review recommended.** Female body: muscles suffice. Male and Gait2392: flagged near the bottom (largest reserve 5.8 and 6.4 N·m), a result traced to D1's fixed-centre knee (with Gait2392's moving-knee geometry the muscles suffice); accepted as the reading of the result (Q59, P1 option (a)).** D-056 is Accepted (Q53). D-059 specifies:
 - instantaneous optimization on D1's official torques, with 14 Gait2392 actuators per leg (main squat muscles plus tibialis anterior; Q54, Q57) and a reserve check (Q57), made exact by a two-stage rule (Amendment 2: smallest largest per-joint reserve first, then minimum effort);
 - the De Groote force law with rigid tendons and no passive force in the baseline;
 - OpenSim 4.6 as an independent verification oracle;
@@ -14,6 +14,8 @@
 Awaiting ChatGPT's review and Corbin's decision; Claude builds after acceptance (Q38 interpretation). Stage D1 remains as accepted at `3b86cc4` (official run `dd89fff`).
 
 ## Implemented work
+
+**Phase D, Stage D2 (D-059 with Amendments 1–3; merged A-13; P1 (a) and P2 accepted, Q59):** `src/muscles_d2.py` (Gait2392 path geometry on D1's chain with OpenSim's SimmSpline and conditional-point rule; De Groote rigid-tendon force law, constants read from the vendored header, domain policy; two-stage recruitment: HiGHS LP, quadprog QP, second solvers HiGHS interior point and Clarabel; limiting-joint diagnostic), `ontology/quantitative_data/muscles_gait2392.yaml` (generated), `lower_limb_sagittal.yaml` 0.2.0 (knee and ankle muscles, nerves, 14 model actuators), schema LB-QPS 0.7.0, `config/phase_d2_muscles.yaml`, `tools/make_d2_oracle.py` and `tests/data/d2_oracle_reference.json` (OpenSim 4.6), `tools/run_phase_d2.py`, `tools/sensitivity_d2.py`, `tools/build_d2_page.py`, `tests/test_phase_d2.py` (35 tests). Results in `results/phase_d/2026-11-10_d2_*_7ac0f2d.*`.
 
 **Phase D, Stage D1 (D-058; accepted at `3b86cc4`, Q51; merged `3b6f6e6`, A-12; proposals (a)–(f) accepted, Q50):** `src/squat_d1.py` (Newton–Euler inverse dynamics; independent symbolic Lagrange formulation; static, energy, Newton, one-step forward and closed-form checks; contact feasibility), `config/phase_d1_squat.yaml` (all values labeled), two generated segment datasets from kept source copies, a second ontology module and multi-file loading, `tools/run_phase_d1.py` (manifest), `tools/build_squat_page.py` (animated page), `tests/test_phase_d1.py` (33 tests at the build; 36 test functions at `3b86cc4`). Results in `results/phase_d/`; the official run, sensitivity analysis and page are at `dd89fff`.
 
@@ -85,6 +87,10 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 | Verification package (builder's check) | `3b86cc4` | Claude | the commands in the package's instructions, offline, from the zip: Python 3.13.18 with pydantic 2.13.5, pytest 9.0.2 and PyYAML 6.0.3 preinstalled, the rest from the packaged wheels | 178 passed with a clean git config (this host's commit-signing setting otherwise fails 8 git-fixture tests; an environment issue, now covered in the instructions); integrity PASSED; 9/9 REJECTED; datasets current; outputs equal to the committed results apart from the expected metadata. Packaging check only, not independent |
 | **Stage D1 independent execution** | `3b86cc4` (git bundle; HEAD and a blob ID checked against GitHub) | **ChatGPT (independent of the builder)** | pytest; integrity; probes; dataset check; D1, Phase B and sensitivity runners; its own comparison program (CPython 3.12.14, NumPy 2.3.5, pydantic 2.14.1, pytest 9.2.0, PyYAML 6.0.3, SymPy 1.14.0, Pint 0.26.2) | **AGREE.** 178 passed, integrity PASSED, 9/9 REJECTED, datasets current; D1 manifest: 20,570 values compared, 0 numeric differences (3 metadata differences: commit and model-file hash); sensitivity differs only in commit; Phase B `simulation` and `effective_values` exact. Record: PR #27 |
 | **Official Stage D1 run** | `dd89fff` (`main` after A-12; Stage D1 code identical to `3b86cc4`) | Claude | `python -m pytest -q` (clean git config); `python -m src.integrity`; `python tools/review_cycle1_probes.py`; `python -m tools.build_segment_datasets --check`; `python -m tools.run_phase_d1 --commit-sha dd89fff908eb9f5002c2f62d36bccf5bc6694330 --output results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json`; `python -m tools.sensitivity_d1 --commit-sha dd89fff… --output results/phase_d/2026-11-04_d1_sensitivity_dd89fff.json --markdown …md`; `python -m tools.build_squat_page --manifest results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json --output results/phase_d/2026-11-04_d1_squat_viewer_dd89fff.html`; Phase B runner (Python 3.13.18, numpy 2.5.4, sympy 1.14.0, pint 0.26.2, pydantic 2.13.5, PyYAML 6.0.3, pytest 9.0.2) | 178 passed; integrity PASSED; 9/9 REJECTED; datasets current. D1: exit 0; all three bodies mechanics PASSED, contact FEASIBLE, sources provisional; provenance `verified_git_head_and_inputs` (17 files); equal to the `9988620` run apart from `commit_sha` and the model file's hash. Sensitivity: provenance verified (18 files); equal to `0146e42` apart from `commit_sha`. Page equal to the `9988620` page once commit and date are normalized. Phase B output identical to the official run |
+| Test suite, integrity, probes, datasets | `7ac0f2d` (Stage D2 build) | Claude | `python -m pytest -q` (clean git config); `python -m src.integrity`; `python tools/review_cycle1_probes.py`; `python -m tools.build_segment_datasets --check` (Python 3.13.18, numpy 2.5.3, scipy 1.18.1, quadprog 0.1.14, clarabel 0.11.1, sympy 1.14.0, pydantic 2.13.5, pint 0.26.2, PyYAML 6.0.3, pytest 9.1.1) | **213 passed** (35 in `tests/test_phase_d2.py`); integrity PASSED; 9/9 REJECTED; datasets current |
+| D2 oracle reference | `tools/make_d2_oracle.py` at the build | Claude | `python -m tools.make_d2_oracle --output tests/data/d2_oracle_reference.json` (opensim 4.6 from PyPI) | 322 geometry states, 192 force states, 31 unmodified-model states. Implementation vs OpenSim: lengths and moment arms within 4e-16 m, intermediates within 2e-15, tendon force within 1.6e-11 N |
+| Mutation check, D2 tests | build | Claude | 8 deliberate faults in `src/muscles_d2.py` | each fault fails 1–7 tests |
+| **Stage D2 run (D-059)** | `7ac0f2d` | Claude | `python -m tools.run_phase_d2 --commit-sha 7ac0f2d2d83752d43f85a4221923f43f54e26b61 --d1-manifest results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json --output results/phase_d/2026-11-10_d2_muscle_runs_7ac0f2d.json`; `python -m tools.sensitivity_d2 …`; `python -m tools.build_d2_page …` | Exit 0; provenance `verified_git_head_and_inputs` (24 files). All bodies: D1 consistency PASSED (difference 0), optimizer PASSED (KKT ≤ 1.1e-11; second solvers within 5.6e-7), force-law domain IN_DOMAIN. Muscle feasibility: female FEASIBLE; male and Gait2392 FLAGGED 1.39–1.66 s (t* 5.815 and 6.362 N·m). Sensitivity: unmodified Gait2392 geometry gives t* = 0. Page rendered at desktop (light) and phone (dark) widths; no horizontal scroll; no script errors |
 
 **Independently reproduced** (ChatGPT, `docs/reviews/2026-10-21_ChatGPT_D052_Execution_Addendum_29e256e.md` (PR #7)): the test suite, integrity check and probes at `29e256e`, which contains the Phase A code and the D-052 fixes. This upgrades those results from author-reported. **Still author-reported:** the mutation check (30 of 47 Phase A tests fail against the old validator), the 11/4 comparison of the new tests against `4abb4f1`, and all results at other snapshots. Independent execution checks software behavior only, never anatomical or biomechanical validity (D-051 item 10). CI is a third-party run and counts as supporting evidence only. PR #6 adds two label tests (82 total at its head), not covered by ChatGPT's run.
 
@@ -152,10 +158,10 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 
 ## Next task
 
-**Owner:** Claude (Stage D2 builder, Q58); then ChatGPT (build review); then Corbin.
-1. **Merge PR #30** (D-059 and its records) and the review PRs #31–#33 (Corbin).
-2. **Build Stage D2** per D-059 with Amendments 1 and 2, on `phase-d/claude-d2-build`; carry note D2-A2-N01 into numerical reporting.
-3. **ChatGPT reviews the build**, including the oracle reference file and, if it can install the wheel, an OpenSim rerun.
+**Owner:** Corbin (merge this records PR, which also brings the Stage D2 build to `main`); ChatGPT (post-merge review of the build); Corbin (next stage).
+1. **Merge the records PR** that carries the build to `main` (PR #34 merged into PR #30's branch, A-13).
+2. **ChatGPT reviews the merged Stage D2 build** at `b9e96ed` with the Reviewer skill, including the oracle reference file.
+3. **Corbin decides the next stage.** Builder's recommendation: a moving knee for D1 and D2 (P1 option (b)), so torques and muscle geometry come from one knee model, before muscle results are cited.
 
 **Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-050, D-055, D-056, D-058, D-059; the official D1 run in `results/phase_d/` (`dd89fff`); `sources/vendor/`; `sources/SOURCES.md`.
 
@@ -166,7 +172,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 3. Return: changes as commits on a branch; validation evidence (commands, environment, results); proposals as `Proposed` entries for `DECISIONS.md`; unresolved questions. Reviews are one file in `docs/reviews/`, pinned to a SHA.
 4. Update this file at the end of every build or review.
 
-## Review handoff — D-059 Amendment 2 (2026-11-10)
+## Review handoff — D-059 Amendment 2 (2026-11-10; superseded: D-059 Accepted, Q58, and Stage D2 merged, A-13)
 
 **Reviewed by (model): ChatGPT.** PR #30 at `7358c2dbb6af373b477d7c71a14a520a853f36c5` (base `2f7cf983cb1660ae3f0fb8d08fbe51b69ceabe7e`); comparison from `936c12c9fe72a128c629a62f6cd67fd367fded7b`. **AGREE**, scoped to the amended L∞ reserve rule (D2-R01) and path-switch transition policy (D2-R04); both resolved at proposal level. Earlier resolved items remain closed. No blocking findings.
 

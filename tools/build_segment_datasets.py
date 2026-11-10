@@ -1,6 +1,6 @@
-"""Build the two segment-parameter datasets for Stage D1 (D-058 Amendment 2).
+"""Build the segment-parameter datasets for Stage D1 (D-058 Amendment 2) and the muscle dataset for Stage D2 (D-059).
 
-    python -m tools.build_segment_datasets          # writes both datasets
+    python -m tools.build_segment_datasets          # writes all three datasets
     python -m tools.build_segment_datasets --check  # exit 1 if a dataset differs
 
 Inputs are the unmodified source files in ``sources/vendor/`` (see its README):
@@ -330,7 +330,130 @@ def de_leva():
     }
 
 
-DATASETS = {"segments_gait2392.yaml": gait2392, "segments_de_leva_1996.yaml": de_leva}
+# ---------------------------------------------------------------------- muscles (D-059)
+# Gait2392 actuator -> (anatomical muscle entity, part of the muscle it represents)
+D2_ACTUATORS = {
+    "glut_max1_r": ("LB:MUS:GLUTEUS_MAXIMUS_R", "superior compartment (Gait2392 part 1 of 3)"),
+    "glut_max2_r": ("LB:MUS:GLUTEUS_MAXIMUS_R", "middle compartment (Gait2392 part 2 of 3)"),
+    "glut_max3_r": ("LB:MUS:GLUTEUS_MAXIMUS_R", "inferior compartment (Gait2392 part 3 of 3)"),
+    "bifemlh_r": ("LB:MUS:BICEPS_FEMORIS_LONG_R", "whole muscle"),
+    "semimem_r": ("LB:MUS:SEMIMEMBRANOSUS_R", "whole muscle"),
+    "semiten_r": ("LB:MUS:SEMITENDINOSUS_R", "whole muscle"),
+    "vas_med_r": ("LB:MUS:VASTUS_MEDIALIS_R", "whole muscle"),
+    "vas_int_r": ("LB:MUS:VASTUS_INTERMEDIUS_R", "whole muscle"),
+    "vas_lat_r": ("LB:MUS:VASTUS_LATERALIS_R", "whole muscle"),
+    "rect_fem_r": ("LB:MUS:RECTUS_FEMORIS_R", "whole muscle"),
+    "med_gas_r": ("LB:MUS:GASTROCNEMIUS_R", "medial head"),
+    "lat_gas_r": ("LB:MUS:GASTROCNEMIUS_R", "lateral head"),
+    "soleus_r": ("LB:MUS:SOLEUS_R", "whole muscle"),
+    "tib_ant_r": ("LB:MUS:TIBIALIS_ANTERIOR_R", "whole muscle"),
+}
+FRAMES = {"pelvis": "LB:FRAME:GAIT2392_PELVIS", "femur_r": "LB:FRAME:GAIT2392_FEMUR_R",
+          "tibia_r": "LB:FRAME:GAIT2392_TIBIA_R", "calcn_r": "LB:FRAME:GAIT2392_CALCN_R"}
+KNEE_COORD = "/jointset/knee_r/knee_angle_r"
+FMAX_DOC = ("OpenSim documentation (version 2.4), 'Gait 2392 Max Isometric Muscle Force': Delp's (1990) values, scaled "
+            "upward using Anderson and Pandy (1999) and Carhart (2000, reported in Yamaguchi 2001), not by one uniform "
+            "factor (D-059 item 4).")
+PARAMS = (  # XML element, property, unit, definition text
+    ("max_isometric_force", "maximum_isometric_force", "N",
+     "Gait2392 maximum isometric force of '{a}', read as maximum fiber force (D-056)."),
+    ("optimal_fiber_length", "optimal_fiber_length", "m", "Gait2392 optimal fiber length of '{a}'."),
+    ("tendon_slack_length", "tendon_slack_length", "m", "Gait2392 tendon slack length of '{a}'."),
+    ("pennation_angle_at_optimal", "pennation_angle_at_optimal", "rad",
+     "Gait2392 pennation angle of '{a}' at optimal fiber length."),
+    ("max_contraction_velocity", "maximum_contraction_velocity", "optimal_fiber_lengths/s",
+     "Gait2392 maximum contraction velocity of '{a}', in its own optimal fiber lengths per second."),
+)
+
+
+def _function(element):
+    """A coordinate function from the model file: SimmSpline knots, or a constant."""
+    f = element[0]
+    if f.tag == "SimmSpline":
+        return {"kind": "simm_spline", "x": _vec(f.findtext("x")), "y": _vec(f.findtext("y"))}
+    if f.tag == "Constant":
+        return {"kind": "constant", "value": float(f.findtext("value"))}
+    raise ValueError(f"unsupported path-point function {f.tag}")
+
+
+def muscles():
+    root = ET.parse(OSIM).getroot()
+    found = {m.get("name"): m for m in root.iter("Millard2012EquilibriumMuscle")}
+    obs = {}
+    for name, (entity, scope) in D2_ACTUATORS.items():
+        m = found[name]
+        key = name.upper()
+        target = {"entity_ids": [entity], "anatomical_scope": scope, "laterality": "right",
+                  "computational_representation": f"OpenSim Gait2392 actuator '{name}' (LB:ACT:G2392:{key})"}
+        base = f"gait2392_millard2012muscle.osim, ForceSet/{name}"
+        for element, prop, unit, text in PARAMS:
+            loc = f"{base}/{element}"
+            claims = [_claim(loc, [f"{name}_{element}"])]
+            if prop == "maximum_isometric_force":
+                claims.append({"source_id": "SRC:OPENSIM24_GAIT2392_FMAX", "supports": ["provenance_of_gait2392_forces"],
+                               "evidence_domain": "computational_model", "claim_scope": FMAX_DOC,
+                               "value_directly_reported": False})
+            d = datum(prop, text.format(a=name), float(m.findtext(element)), unit, "model_derived", claims, loc,
+                      target, G_APPLICABILITY,
+                      derivation={"inputs": [], "formula": "published model parameter", "assumptions": []})
+            if prop == "maximum_contraction_velocity":
+                d["normalization"] = {"length_property": "optimal_fiber_length",
+                                      "reference_observation": f"LB-QD:G2392:MUS:{key}:OPTIMAL_FIBER_LENGTH",
+                                      "basis": "OpenSim defines max_contraction_velocity in optimal fiber lengths per second"}
+            obs[f"LB-QD:G2392:MUS:{key}:{prop.upper()}"] = d
+        points = list(m.find(".//PathPointSet/objects"))
+        for k, p in enumerate(points, 1):
+            frame_name = p.findtext("socket_parent_frame").split("/")[-1]
+            loc = f"{base}/GeometryPath/PathPointSet/{p.get('name')}"
+            ctx_coord = None
+            if p.tag == "PathPoint":
+                value, form = _vec(p.findtext("location")), "vector"
+                text = f"Fixed path point {k} of {len(points)} of '{name}' in the '{frame_name}' frame."
+            elif p.tag == "ConditionalPathPoint":
+                assert p.findtext("socket_coordinate") == KNEE_COORD
+                lo, hi = _vec(p.findtext("range"))
+                value = {"kind": "conditional", "location": _vec(p.findtext("location")),
+                         "coordinate": "Gait2392 knee_angle_r (rad, flexion negative) = -LB:DOF:KNEE_FLEX_EXT_R",
+                         "active_range": [lo, hi],
+                         "activity_rule": "active when lo - 1e-5 <= knee_angle_r <= hi + 1e-5 (OpenSim "
+                                          "ConditionalPathPoint::isActive at opensim-core 01683ac)"}
+                form, ctx_coord = "function", "LB:DOF:KNEE_FLEX_EXT_R"
+                text = f"Conditional path point {k} of {len(points)} of '{name}' in the '{frame_name}' frame."
+            elif p.tag == "MovingPathPoint":
+                for ax in "xyz":
+                    assert p.findtext(f"socket_{ax}_coordinate") == KNEE_COORD
+                value = {"kind": "moving",
+                         "coordinate": "Gait2392 knee_angle_r (rad, flexion negative) = -LB:DOF:KNEE_FLEX_EXT_R",
+                         **{ax: _function(p.find(f"{ax}_location")) for ax in "xyz"},
+                         "evaluation": "OpenSim SimmSpline (opensim-core 01683ac, OpenSim/Common/SimmSpline.cpp)"}
+                form, ctx_coord = "function", "LB:DOF:KNEE_FLEX_EXT_R"
+                text = f"Moving path point {k} of {len(points)} of '{name}' in the '{frame_name}' frame."
+            else:
+                raise ValueError(p.tag)
+            d = datum("attachment_position", text, value, "m", "model_derived", [_claim(loc, [f"{p.get('name')}"])],
+                      loc, target, G_APPLICABILITY, value_form=form, frame=FRAMES[frame_name],
+                      derivation={"inputs": [], "formula": "published model path point", "assumptions": []})
+            d["coordinate_context"]["coordinate_id"] = ctx_coord
+            obs[f"LB-QD:G2392:MUS:{key}:PATH:{k:02d}"] = d
+    return {
+        "dataset": {"id": "LB-QD:MUSCLES:GAIT2392", "version": "0.1.0",
+                    "description": ("OpenSim Gait2392 parameters and path points of the 14 right-leg actuators of "
+                                    "Stage D2 (D-059 item 4)."),
+                    "generated_by": "python -m tools.build_segment_datasets",
+                    "decision": "D-059"},
+        "sources": {
+            "SRC:GAIT2392_OSIM": gait2392()["sources"]["SRC:GAIT2392_OSIM"],
+            "SRC:OPENSIM24_GAIT2392_FMAX": {
+                "title": "Gait 2392 Max Isometric Muscle Force (OpenSim documentation, version 2.4)",
+                "citation": "OpenSim Confluence, OpenSim24 space; comment by S. Hamner (2008).",
+                "url": "https://opensimconfluence.atlassian.net/wiki/spaces/OpenSim24/pages/54001706/Gait+2392+Max+Isometric+Muscle+Force",
+                "evidence_domain": "computational_model", "role": "provenance_documentation"}},
+        "observations": obs,
+    }
+
+
+DATASETS = {"segments_gait2392.yaml": gait2392, "segments_de_leva_1996.yaml": de_leva,
+            "muscles_gait2392.yaml": muscles}
 HEADER = "# GENERATED by `python -m tools.build_segment_datasets` from sources/vendor/. Do not edit by hand.\n"
 
 
