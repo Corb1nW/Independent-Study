@@ -1,11 +1,17 @@
 # LB-AO Project State
 
-**Updated:** 2026-11-04
-**Updated by:** Claude (records: Stage D1 acceptance and official run)
+**Updated:** 2026-11-10
+**Updated by:** Claude (D-059 accepted, Q58; Stage D2 build starting)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, public; D-051 and its Amendment 1)
 **Authoritative snapshot:** branch `main` on the remote, the commit that last changed this file (`git log -1 -- PROJECT_STATE.md`). Phase A implementation: `4abb4f1`. Baseline of the original work: `d04fb78`. LB-AO history imported into this repository at `2814236` (PR #1).
-**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.1.0 · schema LB-QPS 0.6.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0 · `DECISIONS.md` revision 17
-**Current phase:** **Phase D: Stage D1 accepted and merged; Stage D2 (muscles) next.** Stage D1 (planar inverse-dynamics squat, D-058) was accepted at `3b86cc4` (Q51) with its six proposals (Q50), after ChatGPT's AGREE (PR #26) and its independent execution (AGREE, PR #27); merged as `3b6f6e6` (A-12); official run at `dd89fff`. Three bodies: female and male (de Leva fractions, Gait2392 geometry scaled by height) and the Gait2392 reference. All mechanics checks pass and the demonstration motion is contact-feasible; not validated against measured squats; de Leva values provisional. Next: Corbin decides D-056, then Claude writes the Stage D2 proposal.
+**Component versions:** ontology `hip.yaml` 0.3.0 + `lower_limb_sagittal.yaml` 0.1.0 · schema LB-QPS 0.6.0 · datasets `gluteus_maximus.yaml` 0.3.1, `segments_gait2392.yaml` 0.1.0, `segments_de_leva_1996.yaml` 0.1.0 · `DECISIONS.md` revision 19
+**Current phase:** **Phase D: Stage D1 accepted; Stage D2 scope D-059 Accepted at `7358c2d` (Q58) after ChatGPT's AGREE (PR #33); Stage D2 build in progress (Claude).** D-056 is Accepted (Q53). D-059 proposes:
+- instantaneous optimization on D1's official torques, with 14 Gait2392 actuators per leg (main squat muscles plus tibialis anterior; Q54, Q57) and a reserve check (Q57), made exact by a two-stage rule (Amendment 2: smallest largest per-joint reserve first, then minimum effort);
+- the De Groote force law with rigid tendons and no passive force in the baseline;
+- OpenSim 4.6 as an independent verification oracle;
+- muscles drawn on the page, coloured by effort (Q55).
+
+Awaiting ChatGPT's review and Corbin's decision; Claude builds after acceptance (Q38 interpretation). Stage D1 remains as accepted at `3b86cc4` (official run `dd89fff`).
 
 ## Implemented work
 
@@ -122,6 +128,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 ## Accepted but unimplemented
 
 - **D-039 / D-040** remaining phases: Stage D2, E and F (implemented so far: D-036 and D-037/D-053 in Phase B, D-055 in Phase C, D-058 Stage D1)
+- **D-056** fiber-force reading of maximum isometric force: Accepted (Q53); first used by Stage D2's force law (D-059, if accepted)
 
 ## Open proposals and disagreements
 
@@ -131,7 +138,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **Deferred by Corbin until their phase (Q8):** D-028, D-029, D-030, D-032, D-033, D-038.
 - **D-054 role skills:** Accepted with both new rules (Q32). ChatGPT has not yet reviewed Claude's Reviewer skill.
 - **D-055 slim Phase C:** Accepted (Q32); implemented and accepted at `506ece5` (Q36).
-- **D-056 meaning of Arnold `Fmax`:** proposed: whole-muscle maximum fiber force; Phase D's force law projects by cos(pennation) once. Left open by Corbin until Phase D (Q36); due now, before the Stage D2 proposal. Quotes checked against the PDF by Claude; ChatGPT could not open the source.
+- **D-056 meaning of Arnold `Fmax`:** **Accepted (Q53)**: whole-muscle maximum fiber force, projected once by cos(pennation); labeled an interpretation. Quotes checked against the PDF by Claude; ChatGPT could not open the source.
 - **D-057 source list:** Accepted (Q37); in both role skills (A-9), reinstalled in both models (Q38, reported by Corbin).
 - **Q29 conflict:** resolved by Q31 (wait for review).
 - **Q28 interpretation (`DECISIONS.md` §4):** reviewer for Phase C read as ChatGPT; Corbin may correct it.
@@ -139,16 +146,18 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 - **Q40 interpretation:** read as acceptance of D-058; Corbin may correct it.
 - **Q38 interpretation:** Phase D reviewer read as ChatGPT; Corbin may correct it.
 - **Q50 principle on simplifications:** recorded as Corbin's stated principle; he chose to record the quote only (Q52), so there is no new rule or file.
+- **D-059 Stage D2 scope:** Proposed. Builder's pre-check: thin knee-extensor margin at the bottom (about 7% for the Gait2392 body); rigid-tendon passive soleus artifact at 40° dorsiflexion, so the baseline excludes passive force. ChatGPT's review at `a3efd33` (PR #31): AMEND, D2-R01 to D2-R03 (reserve semantics, force-law and domain contract including fiber damping inherited as 0.1 through `replaceMuscles`, verification of the assembled force and the eight path switches inside D1's knee range). All accepted after Claude checked them; addressed in D-059 Amendment 1. The reserve rule is Corbin's choice. ChatGPT's re-review at `936c12c` (PR #32): AMEND; D2-R02, D2-R03, L01, L02 resolved; D2-R01 in part (a sum-of-squares stage 1 does not certify a per-joint allowance) and new D2-R04 (path length jumps at conditional via points; confirmed in OpenSim 4.6, up to 0.35 mm for medial gastrocnemius). Addressed in Amendment 2.
+- **Q38 interpretation for Stage D2:** Claude builds, ChatGPT reviews; Corbin may correct it.
 - **No open disagreements between models.**
 
 ## Next task
 
-**Owner:** ChatGPT (review this records PR); Corbin (merge, then decide D-056); then Claude (Phase D builder, Q38).
-1. **Review this records PR:** Stage D1 acceptance (Q49–Q52), A-11, A-12 and the official Stage D1 run at `dd89fff`.
-2. **Corbin decides D-056:** whether Arnold 2010's `Fmax` is read as whole-muscle maximum fiber force, projected once by cos(pennation) in the force law (D-056 and its Amendment 1).
-3. **Claude writes the Stage D2 (muscles) proposal**; ChatGPT reviews; Corbin decides. Topics it will need to settle (builder's note, not requirements): which muscles; the moment-arm source and its sign convention (the knee convention is currently declared, not sourced); how load is shared among muscles crossing the same joint; how two-joint muscles are handled.
+**Owner:** Claude (Stage D2 builder, Q58); then ChatGPT (build review); then Corbin.
+1. **Merge PR #30** (D-059 and its records) and the review PRs #31–#33 (Corbin).
+2. **Build Stage D2** per D-059 with Amendments 1 and 2, on `phase-d/claude-d2-build`; carry note D2-A2-N01 into numerical reporting.
+3. **ChatGPT reviews the build**, including the oracle reference file and, if it can install the wheel, an OpenSim rerun.
 
-**Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-040, D-053, D-055, D-056, D-058; the official D1 run in `results/phase_d/` (`dd89fff`); `sources/SOURCES.md`.
+**Required inputs:** this repository; `docs/DECISIONS.md` D-008, D-022, D-050, D-055, D-056, D-058, D-059; the official D1 run in `results/phase_d/` (`dd89fff`); `sources/vendor/`; `sources/SOURCES.md`.
 
 ## Handoff protocol (D-048, as amended by D-051)
 

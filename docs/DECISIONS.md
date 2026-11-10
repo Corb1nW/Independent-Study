@@ -3,8 +3,8 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 17 (2026-11-04), Stage D1 accepted at `3b86cc4` (Q51) with its six proposals (Q50); merged (A-12); official Stage D1 run at `dd89fff`. See §7 for revision history.
-**Covers:** Design decisions from the original work through Phase D Stage D1 (accepted); Stage D2 not yet proposed
+**Revision:** 19 (2026-11-10), D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
 ---
@@ -157,8 +157,16 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q51** | 2026-11-04, between 08:45 and 08:48 (exact minute not captured) | Selected “Yes, accept D1 at 3b86cc4 (Recommended)” | Multiple-choice question from Claude: “‘Accept all six’ covers the proposals. Do you also accept the Stage D1 build itself at 3b86cc4 (PR #23), so it can be merged?” Alternative: “Not yet”. Direct: this session | **Stage D1 build Accepted at `3b86cc4683e6ac921e605302be5a863be0cafe9b`** (D-058) |
 | **Q52** | same exchange | Selected “Just record your quote” | (2) “Your rule that every simplification of real anatomy must be noted: how should I make it stick for the rest of the project?” Alternatives: “Decision + register + skills (Recommended)” (a central list of every simplification, plus the rule in both role skills) and “Decision + rule in skills”. Direct: this session | Q50's principle recorded as Corbin's stated principle; no new decision, rule, skill text or file |
 | **A-12** | 2026-11-04 08:48:42, 08:48:55, 08:49:10 and 08:49:25 (actions) | Merged PR #23 (`3b6f6e6`, head `3b86cc4`, Stage D1 build), PR #24 (`2727378`, ChatGPT's review at `0aa4651`), PR #26 (`dff65cc`, ChatGPT's re-reviews at `9988620` and `3b86cc4`) and PR #27 (`dd89fff`, ChatGPT's execution addendum at `3b86cc4`), in that order | After ChatGPT's AGREE (PR #26), its independent execution (AGREE, PR #27), Q50 and Q51. Reported by Corbin at 08:50: “all four are merged” | Acceptance of the merged revisions (D-051 item 8) |
+| **Q53** | 2026-11-04, between 09:18 and 09:29 (exact minute not captured) | Selected “Along the fibers (Recommended)” | Multiple-choice question from Claude, after a plain-language explanation of D-056: “D-056: how should Arnold's peak muscle force be read?” Option text: “Accept D-056 as proposed: fiber force, projected onto the tendon by cos(pennation) exactly once. Labeled as an interpretation.” Alternatives: “Along the tendon”; “Keep it open”. Direct: this session | **D-056 Accepted** as proposed with Amendment 1 |
+| **Q54** | same exchange | Selected “Main squat muscles (Recommended)” | (2) “Which muscles should Stage D2 include?” Option text: “Named muscles for hip extension, knee extension and ankle plantarflexion: glute max, hamstrings, vasti, rectus femoris, soleus, gastrocnemius. About 6-8 per leg. Covers every joint D1 computes.” Alternatives: “Hip and knee extensors only”; “One grouped muscle per joint”. Direct: this session | D-059 item 2 (muscle set); see the note on Q54 and Q57 |
+| **Q55** | same exchange | Selected “Muscles drawn, colored by effort (Recommended)” | (3) “What should the D2 visual add to the D1 stick-figure page?” Option text: “Muscle lines on the animated figure, colored by activation, plus a force plot per muscle.” Alternative: “Plots only”. Direct: this session | D-059 item 10 (visual) |
+| **Q56** | same exchange | Selected “Yes, they match” | (4) “ChatGPT couldn't see our chat, so it couldn't certify the Q49–Q52 quotes in PR #28 word for word. Do they match what you said?” Alternative: “I'll check later”. Direct: this session | Corbin confirms Q49–Q52; closes ChatGPT's verification limitation VL28-01 (`docs/reviews/2026-11-04_ChatGPT_D1_Records_Closeout_36603e0.md`, PR #29) |
+| **Q57** | 2026-11-04, between 09:18 and 09:29, after Q53–Q56 (exact minute not captured) | Selected “Add tibialis anterior + reserve check (Recommended)” | Claude reported that D1's ankle torque needs a dorsiflexor near standing that the Q54 set lacks, then asked: “Near standing, D1 needs a small dorsiflexion torque that none of the chosen muscles can make. How should D2 handle it?” Option text: “Add the main dorsiflexor (also in Gait2392). Also keep small labeled 'reserve' torques as a safety net that must stay near zero, so any gap is visible rather than hidden.” Alternatives: “Add tibialis anterior only”; “Reserve torques only”. Direct: this session | D-059 items 2 and 3 (tibialis anterior; reserve check) |
+| **Q58** | 2026-11-10 14:15 | “Check Chat's verdict and you have my approval to start building” | After ChatGPT's re-review request at `7358c2d`, scoped by Corbin at 14:03 to blocking issues only (“we need to make progress not just go back and forth with everything”). ChatGPT's verdict: AGREE, no blocking findings, one nonblocking note (D2-A2-N01), PR #33. Direct: this session | **D-059 Accepted at `7358c2dbb6af373b477d7c71a14a520a853f36c5`** with Amendments 1 and 2; Stage D2 build may start (see interpretation) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
+
+**Interpretation of Q58 (revision 19).** Q58 made approval conditional on ChatGPT's verdict, which was AGREE (PR #33). Claude reads it as: D-059 Accepted as amended at `7358c2d`, **including Amendment 2's reserve rule** (smallest largest per-joint reserve, then minimum effort), since Corbin chose none of the alternatives (g) or (i); and approval for Claude to build Stage D2 within that scope. Corbin may correct this interpretation.
 
 **Editorial marks.** The “[sic]” marks in Q7, Q13 and Q20 are editorial insertions made when those quotes were first recorded; they are kept as history (Rule 4). From revision 12, spelling notes go outside the quotation marks (ChatGPT review R18-01).
 
@@ -183,6 +191,12 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 **Session of 2026-11-04 (revision 17).** Source: Claude session transcript, America/New_York, `https://claude.ai/code/session_01QzLsFQiGxJXWyEQeJ5rsyE`. Q49 and Q50 are verbatim; Q51 and Q52 are quoted as selected. A-11 and A-12 times are GitHub's `merged_at` values (A-12: 13:48:42Z to 13:49:25Z) read through the API.
 
 **Q50 and Q52 (revision 17).** In Q50, “seperat” stands for “separate”. Q50 accepts the six proposals and states a principle: simplified representations are expected, but each deviation from real anatomy should be noted so that areas for improvement can be found later. This matches existing practice: demonstration values and idealizations are labelled where they occur (for example the knee entries in `ontology/lower_limb_sagittal.yaml`, the `ModelJoint` class and Phase B's declared omitted physics). Asked how to make it stick (Q52), Corbin chose to record the quote only, so no new decision, rule, skill text or file was created. A central list of simplifications or a rule in the role skills can be added later if he asks.
+
+**Session of 2026-11-04, continued (revision 18).** Same source as the session note above. Q53–Q57 are quoted as selected, with each question and option text as shown to Corbin. Before Q53, Claude explained D-056 in plain language (fiber versus tendon direction, about 7% difference for gluteus maximus, an interpretation not stated in the paper).
+
+**Q54 and Q57 (revision 18).** Q54's option text, written by Claude, said the chosen set “Covers every joint D1 computes”. Surveying D2's inputs, Claude then found that it does not. For roughly the first and last third of D1's motion, the ankle torque needs dorsiflexion and the hip torque needs flexion. Rectus femoris, in the set, flexes the hip; nothing in the set dorsiflexes the ankle. Claude reported this before asking Q57 (Q31). Q54 stays above as history.
+
+**Interpretation of Q38 for Stage D2 (revision 18).** Before Q53, Claude told Corbin that it reads Q38, which names Claude as Phase D builder, as covering Stage D2 too, with ChatGPT reviewing, and invited a swap. Corbin answered the questions without addressing roles. Silence is not approval (Rule 8), so this stays an interpretation. **Corbin may correct this interpretation.**
 
 ---
 
@@ -254,10 +268,11 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | **Part VII — Role skills and Phase C scope** | | | | | |
 | D-054 | Shared one-page role skills (Builder, Reviewer) | ChatGPT (draft); Claude; Corbin | Accepted (Q32) | Implemented (`docs/skills/`, PR #17) | Not applicable |
 | D-055 | Slim Phase C: only what Phase B consumed and Phase D needs | Claude (builder, Q28) | Accepted (Q32, at `2877ed9`) | Implemented (PR #19, accepted at `506ece5`, Q36; merged A-8) | Software reviewed by ChatGPT (source level, AGREE); execution author-reported |
-| D-056 | Arnold 2010 maximum isometric force is a fiber force | Claude (D-055 C2) | Proposed | Recorded on datum | Reported by author |
+| D-056 | Arnold 2010 maximum isometric force is a fiber force | Claude (D-055 C2) | Accepted (Q53) | Recorded on datum; first consumer would be D-059 | Reported by author (source check by Claude; ChatGPT could not open the source) |
 | D-057 | One source list for the whole project (`sources/`) | Corbin (Q34); Claude | Accepted (Q37) | Implemented (PR #19); in both role skills (Amendment 1) | Reported by author |
 | **Part VIII — Phase D (planar squat)** | | | | | |
 | D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44); Stage D1 build accepted at `3b86cc4` (Q51) with proposals (a)–(f) (Q50) | Stage D1 implemented (merged `3b6f6e6`, A-12); official run at `dd89fff`; Stage D2 not started | Stage D1: Independently checked (software; ChatGPT, PR #27) |
+| D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Accepted (Q58) | In progress | Not checked |
 
 ---
 
@@ -1417,13 +1432,13 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 
 *What C5 showed (findings, not fixed here):* (1) the schema names exactly one ontology file (`ontology: hip.yaml`), so a knee module can only be added inside `hip.yaml` today; a separate module file needs the loader to accept several files. (2) A new joint class needs a `class_hierarchy` entry to receive joint properties (D-031 works as designed). (3) The ontology's coordinate convention source, ISB (Wu et al. 2002, Part I), covers the ankle, hip and spine, not the knee; a knee convention source is needed when the knee is added. All three are Phase D inputs; (1) is listed as an open item.
 
-### D-056  Arnold 2010 maximum isometric force is a fiber force (proposed)
-- **Decision status:** Proposed
-- **Implementation status:** Recorded on the datum (`quality.reviewer_notes`); no value or model change
+### D-056  Arnold 2010 maximum isometric force is a fiber force (~~proposed~~ accepted, Q53)
+- **Decision status:** **Accepted (Q53, 2026-11-04)**, as proposed with Amendment 1. Status before acceptance: Proposed
+- **Implementation status:** Recorded on the datum (`quality.reviewer_notes`); no value or model change. First consumer: Stage D2's force law (D-059, if accepted)
 - **Verification status:** Reported by author (source check by Claude); independent source check requested from ChatGPT
 - **Date:** 2026-10-27
-- **Proposed by:** Claude (Phase C builder, D-055 C2) · **Reviewed by:** ChatGPT (requested)
-- **Approval basis:** pending
+- **Proposed by:** Claude (Phase C builder, D-055 C2) · **Reviewed by:** ChatGPT (AMEND, P19-01; could not open the source)
+- **Approval basis:** Q53
 - **Evidence:** Arnold et al. 2010, PMC2903973: Methods, “Model Parameters” (peak force from PCSA and 61 N/cm² specific tension); Table 1, note a (PCSA = volume / optimal fiber length), note c (per-compartment fiber length, pennation and tendon slack length), note g (whole-muscle force split by Delp et al. proportions); Table 1 rows glmax1–3; Methods citing Zajac 1989 for the Hill-type model. OpenSim API documentation, `Millard2012EquilibriumMuscle` (version 3.2): maximum isometric force is described as the force the fibers can generate, and fiber force enters tendon equilibrium multiplied by cos(pennation). Read on 2026-10-27.
 - **Amends (if accepted):** D-049 Amendment 2 (revisit of the pennation bound), D-053 item 7 and Amendment 1 B4 (meaning of `Fmax`)
 - **Phase:** D (consumer); recorded in C
@@ -1440,6 +1455,15 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 **Consequences.** Phase D's force law carries a cos(pennation) term. Compartment data, if used, are new observations reviewed like any other. The Phase B pennation disclosure stays as written.
 
 **Amendment 1 (2026-10-27, after ChatGPT's review P19-01; still Proposed).** ChatGPT (AMEND at `cc541e0`) asked that D-056 stay Proposed and that no Phase D projection be built on it until the primary-source PDF is checked and Corbin decides; its own browser could not open the PMC page. Claude then read the published PDF (`https://muscle.ucsd.edu/pubs/pdf/Arnold_ABE_2010.pdf`, through a web extraction tool, 2026-10-27): the Methods sentence on maximum isometric force, Table 1 notes a and g, and the four gluteus maximus rows match the PMC text quoted above exactly. The PDF also does not state whether peak force acts along the fibers or the tendon. Its Figure 3 contains a “cos α” label in the extracted text, without explanation, consistent with a Hill-type diagram that projects fiber force by the pennation angle; this is supporting, not decisive. Zajac 1989 remains unaccessed. **Status unchanged: Proposed.** Nothing in the code uses D-056; Phase D's force law must not rely on it until Corbin decides. Verification remains author-reported; ChatGPT could not reproduce the source check.
+
+**Acceptance (revision 18, 2026-11-04; approval: §4 Q53).** Corbin accepted D-056 as proposed, after a plain-language explanation that it is an interpretation the paper does not state in words. In effect from now:
+- Item 1: Arnold's whole-muscle `Fmax` is read as a maximum **fiber** force.
+- Item 2: a Hill-type force law projects fiber force by cos(pennation) once.
+- Item 3: values from different models are not mixed. This is why D-059 proposes Gait2392's own muscle parameters, not Arnold's, for Stage D2.
+- Item 4: D-049's pennation bound stays.
+- Item 5: Phase B is unchanged.
+
+Open concerns 1 and 2 stand as recorded. The label stays “interpretation (model implementation)”, not quoted fact.
 
 ### D-057  One source list for the whole project (`sources/`)
 - **Decision status:** **Accepted (Q37, 2026-10-27).** Before acceptance: Proposed, requested by Corbin (Q34); Q36 answered “Not yet”, replaced by Q37.
@@ -1584,6 +1608,207 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 - **Official run (exit criterion: manifest, sensitivity file and page from one commit).** Before this, the run and page were pinned to `9988620` and the sensitivity file to `0146e42`. Claude regenerated all three at `dd89fff` (`main` after A-12; Stage D1 code identical to `3b86cc4`): `results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json`, `2026-11-04_d1_sensitivity_dd89fff.json` (with `.md`) and `2026-11-04_d1_squat_viewer_dd89fff.html`, provenance `verified_git_head_and_inputs`. The run differs from the `9988620` run only in `commit_sha` and the model file's hash; the sensitivity output differs from `0146e42` only in `commit_sha`; the page equals the `9988620` page once commit and date are normalized. A builder's run, reported by author. The earlier result files are kept as history.
 - **Still open:** concerns 6–9 (de Leva values not checked against the paper; Gait2392 stature; radius-column interpretation; borrowed HAT shape and foot). Stage D2 (muscles) needs its own proposal, after D-056 is decided.
 
+### D-059  Stage D2: muscle forces for the D1 squat by static optimization
+- **Decision status:** **Accepted (Q58, 2026-11-10)** at `7358c2d`, with Amendments 1 and 2. Status before acceptance: Proposed
+- **Implementation status:** In progress (Stage D2 build)
+- **Verification status:** Not checked
+- **Date:** 2026-11-04
+- **Proposed by:** Claude (Phase D builder; Q38, interpretation for Stage D2 in §4) · **Reviewed by:** ChatGPT: AMEND at `a3efd33` (PR #31, D2-R01 to D2-R03), response in Amendment 1; AMEND at `936c12c` (PR #32, D2-R01 in part, D2-R04), response in Amendment 2; AGREE at `7358c2d` (PR #33, no blocking findings; note D2-A2-N01 carried into the build)
+- **Approval basis:** Q58 (interpretation in §4). Direction from Corbin: muscle set (Q54, Q57), visual (Q55), reserve check (Q57); D-056 Accepted (Q53)
+- **Evidence:** D-058 (Stage D1, accepted at `3b86cc4`; official run at `dd89fff`); D-056; `SRC:GAIT2392_OSIM` (muscle parameters and path points); OpenSim documentation for the Gait2392 maximum isometric forces (OpenSim 2.4) and for static optimization; De Groote et al. 2016 and OpenSim's `DeGrooteFregly2016Muscle` (source code at opensim-core `01683ac`, API documentation 4.5); OpenSim 4.6 (software, oracle); see `sources/SOURCES.md`
+- **Amends:** D-058, Stage D2 outline (“main hip and knee extensors”): the muscle set is widened by Q54 and Q57
+- **Phase:** D
+- **Open concerns:** see the list at the end of this entry, and Amendments 1 and 2.
+
+**Context.** Stage D1 computes, for a prescribed squat, the net torque each joint needs (per leg). Stage D2 asks which muscles produce those torques and how hard each one works. Many muscles cross each joint, so the split is not unique and needs a rule (the redundancy problem). Corbin chose the main squat muscles (Q54) plus tibialis anterior and a reserve check (Q57), and muscles drawn on the figure, coloured by effort (Q55). D-056 (Accepted, Q53) fixes how a muscle's peak force reaches the tendon: fiber force projected by cos(pennation) exactly once.
+
+**Builder's feasibility pre-check (estimate, reported by author; not a result).** Using OpenSim 4.6 on the unmodified Gait2392 file, the De Groote active force-length curve, a rigid tendon and no force-velocity effect, at standing and at D1's deepest pose (ankle 40°, knee 100°, hip 74°):
+- Knee: D1 needs 74.4 / 87.3 / 90.5 N·m of extension per leg at the bottom (female / male / Gait2392 bodies). The chosen knee extensors can give about 97.5 N·m actively there, so the Gait2392 body uses about 93% of its knee-extensor capacity. The vasti sit at about 1.3 times their optimal length.
+- Ankle and hip: D1's torques change sign. For roughly the first and last third of the motion (knee below about 40°), the ankle needs up to 7–9 N·m of **dorsiflexion** and the hip up to 8–10 N·m of **flexion**. Rectus femoris flexes the hip; tibialis anterior (Q57) dorsiflexes the ankle.
+- Passive force: with a rigid tendon, soleus is stretched to 1.41 times its optimal fiber length at 40° dorsiflexion and would pull about 27 N·m of plantarflexion passively. That is more than D1 needs (11–16 N·m), and tibialis anterior can then add only about 3 N·m (it is short there). This is an artifact of treating soleus's long tendon (5 times its fiber length) as rigid; with a compliant tendon the fibers would be shorter and the passive force much smaller.
+
+**Decision (proposed).**
+
+1. **Method: static optimization on D1's torques.** At each time sample of the D1 run and for each body, find muscle activations `a_i` in [0, 1] and reserve torques `r_j` such that, for each joint `j`, `Σ_i F_i(a_i)·R_ij + r_j = τ_j` exactly (D1's per-leg torque), minimizing `Σ_i a_i² + Σ_j (r_j / r0)²`. The exponent 2 is OpenSim's default for static optimization. Quasi-static: no activation dynamics; the motion and torques come unchanged from the official D1 run.
+2. **Muscle set (Q54, Q57): 14 Gait2392 actuators per leg,** each kept as a separate line of action as in the model file: gluteus maximus (`glut_max1`, `glut_max2`, `glut_max3`); hamstrings (`bifemlh`, `semimem`, `semiten`); vasti (`vas_med`, `vas_int`, `vas_lat`); rectus femoris (`rect_fem`); gastrocnemius (`med_gas`, `lat_gas`); soleus (`soleus`); tibialis anterior (`tib_ant`). Seven named muscle groups, as Corbin chose, become 14 actuators because Gait2392 splits gluteus maximus and the vasti and gastrocnemius into parts. **Left out, and listed as simplifications:** biceps femoris short head (flexes the knee only, which D1 never needs); adductor magnus (also a hip extensor in deep squats); iliopsoas (hip flexion is covered by rectus femoris); all other Gait2392 muscles.
+3. **Reserve check (Q57).** One reserve torque per joint, labeled as a non-muscle torque, with `r0` = 1 N·m so that using it costs as much as fully activating an actuator for every 1 N·m. A run is **muscle-feasible** when every reserve stays at or below 1 N·m at every sample; otherwise it is reported as flagged, with the instants and sizes. This follows how D1 reports contact (D-058 Amendment 3: a flagged result is a result, not a software fault).
+4. **One model for all muscle data: Gait2392.** Maximum isometric force, optimal fiber length, tendon slack length, pennation at optimal length, maximum contraction velocity and path points are read from the vendored model file (`sources/vendor/opensim-models/`) by a generator and stored as a new dataset, `ontology/quantitative_data/muscles_gait2392.yaml`, with a source claim on each value. This mirrors `segments_gait2392.yaml`: the traceability gate (D-055 C4) applies, and a `--check` mode confirms the dataset still matches the file. Using the same model as D1's geometry keeps parameters and paths together. Per D-056 item 3, Arnold 2010's gluteus maximus values (`gluteus_maximus.yaml`) are **not** mixed in; they stay as recorded. Provenance of the Gait2392 forces (OpenSim 2.4 documentation): Delp's 1990 values, scaled upward using Anderson and Pandy (1999) and Carhart (2000, reported in Yamaguchi 2001), and described there as not a strict uniform scaling.
+5. **Force law: De Groote et al. 2016, rigid tendon.**
+   - Active fiber force is `F0·a·f_act(l̃)·f_v(ṽ)`, where `F0` is the maximum isometric force (a fiber force, D-056), `l̃` is fiber length divided by optimal fiber length, and `ṽ` is fiber velocity divided by `v_max·l_opt`. `v_max` = 10 optimal fiber lengths per second, from the model file; this declares the normalization D-050 and D-055 C3 require.
+   - Tendon force is the fiber force times cos α, where α is the pennation angle (D-056 item 2).
+   - Pennation follows the constant-thickness model: `l_M·sin α = l_opt·sin α0`.
+   - Rigid tendon: `l_M·cos α = l_MT − l_ts`, where `l_MT` is the musculotendon length and `l_ts` the tendon slack length.
+   - Curve constants (`b11`–`b43` for force-length, `d1`–`d4` for force-velocity) are transcribed from OpenSim's `DeGrooteFregly2016Muscle.h` at opensim-core `01683ac`. That header records where and why it departs from the paper's supplement, for example so that the force-velocity curve passes exactly through (−1, 0) and (0, 1). A copy is kept in `sources/vendor/` with its hash; it is Apache-2.0 licensed.
+   - **Baseline excludes passive fiber force,** as OpenSim's static optimization does (its documentation: active fiber force along an inextensible tendon, without the parallel elastic element). Passive force is reported as a sensitivity case (item 9).
+6. **Muscle geometry on D1's joints.**
+   - Path points come from the model file: fixed, conditional (active over a coordinate range) and moving (spline in the knee angle). This file has no wrapping surfaces.
+   - Points are evaluated on **D1's kinematics**: sagittal rotations about each joint's z axis, the knee translation frozen at knee angle 0, the ankle rotating about z (Gait2392's ankle axis is oblique), and subtalar and MTP joints locked.
+   - Musculotendon length `L(q)` is the sum of the 3-D distances between consecutive active points. Moment arm is `R = −∂L/∂q`, the definition consistent with D1's torque sign (positive increases the coordinate). Musculotendon velocity is `−Σ_j R_j·q̇_j`.
+   - Knee sign: Gait2392's knee angle is negative in flexion; D1's is positive. The mapping is tested.
+7. **Bodies.** All three D1 bodies. For the female and male bodies, path points scale by D1's stature factor (stature / 1.8 m), and optimal fiber length and tendon slack length scale by the same factor. That is OpenSim's scaling rule (both multiplied by the ratio of new to old path length) applied to a uniform scale. Maximum isometric force is **not** scaled, as in OpenSim's scaling; this is a labeled demonstration choice, with a sensitivity case.
+8. **Verification**, each a test or a recorded check with a stated tolerance:
+   - (a) **Geometry against OpenSim.** Lengths and moment arms of all 14 actuators match OpenSim 4.6 on a **D1-matched copy** of the model file, generated by a script with every change listed: knee translations frozen, ankle axis set to z, subtalar and MTP locked. Checked at a grid of poses covering D1's motion; tolerance 1e-9 m.
+   - (b) **Moment arm by virtual work.** `−∂L/∂q` by central difference agrees with the implemented derivative.
+   - (c) **Force law against OpenSim.** The curve values match OpenSim's `DeGrooteFregly2016Muscle` (exported curves, rigid tendon).
+   - (d) **Optimizer.** Joint torques are reproduced to 1e-6 N·m; the KKT conditions hold; and a second, independent solver gives the same activations within a stated tolerance.
+   - (e) **Reserve status** reported per body (item 3).
+   - (f) **Size of D1's joint simplifications for muscles,** reported but not pass/fail: moment arms on the D1-matched copy against the unmodified Gait2392 file, per actuator, over the motion.
+
+   OpenSim is used **only for verification**. A tool writes its outputs, at stated poses, to a reference file in the repository. Ordinary tests compare against that file and do not need OpenSim installed. Regenerating the reference file needs OpenSim (pip package `opensim` 4.6, about 280 MB installed); for ChatGPT's offline sandbox it can be supplied as a wheel.
+9. **Sensitivity analysis**, one change at a time:
+   - passive fiber force included, rigid tendon (expected to flag the deep-dorsiflexion artifact above);
+   - maximum isometric force scaled by body-mass ratio for the female and male bodies;
+   - activation exponent 3 instead of 2;
+   - moment arms from the unmodified Gait2392 file;
+   - the rigid-tendon fiber lengths compared, at the bottom pose only, with a compliant-tendon equilibrium (De Groote tendon curve, OpenSim's default tendon strain 0.049 at maximum force) for the ankle plantarflexors.
+10. **Visual (Q55).** The D1 page gains muscle lines drawn along their active path points (sagittal projection), coloured by activation on a stated scale, plus a force plot per muscle and a reserve-torque strip. Drawn from the D2 manifest; it shows the muscle-feasibility status next to D1's statuses.
+11. **Ontology.**
+    - Each anatomical muscle in the set is an entity, with both sides as D-008 requires. Existing hip muscle entries in `hip.yaml` are reused; knee and ankle muscles are added to `lower_limb_sagittal.yaml` with a cited anatomy source, read during the build and listed in `sources/SOURCES.md`.
+    - Each Gait2392 actuator is a separate **model actuator** entity that `REPRESENTS` its anatomical muscle, or one compartment of it, in the `squat_d2` model view. This keeps the model representation apart from the anatomy, as `ModelJoint` does for the Gait2392 low-back joint (Q50).
+12. **Run record.** As in D1: the shared manifest (D-055 C1) with every consumed file, the traceability report (C4), separate statuses, and declared omitted physics. Statuses are `mechanics_verification` (from D1), `contact_feasibility` (from D1), `source_validation` (provisional where D1's are), `muscle_feasibility` (feasible / flagged) and `optimizer_verification` (passed / failed). A failed verification stops the run with exit code 1; a flagged muscle feasibility does not.
+
+**Simplifications declared by this proposal** (each labeled in the configuration and manifest, in addition to D1's):
+1. Sagittal model with D1's fixed-centre knee and straight ankle axis applied to muscle paths (measured by 8f).
+2. Static: no activation dynamics, no muscle history.
+3. The optimization criterion predicts no co-contraction beyond what the torques force. Antagonists add cost without helping, so they stay off unless a two-joint muscle needs them.
+4. Rigid tendons. Most questionable for soleus and gastrocnemius, whose tendons are 5–6.5 times their fiber lengths.
+5. No passive fiber force in the baseline.
+6. Gait2392 muscle strengths (scaled Delp values, not uniformly) and paths, which were built for gait; deep-flexion paths are not checked against measurements.
+7. Peak forces not scaled to the female and male bodies.
+8. De Groote curves instead of the Millard curves named in the model file.
+9. Compartments treated as independent actuators.
+10. Muscles left out (item 2).
+
+**Exit criterion for D2.**
+- All verification checks (8a–d) pass at their stated tolerances for all three bodies.
+- Muscle feasibility (8e) and the D1-simplification size (8f) are reported.
+- Every muscle parameter traces to a path or element of the kept model file, through the dataset and the traceability gate.
+- The sensitivity analysis (9) is reported.
+- The D2 manifest, sensitivity file and page come from one commit.
+- Reviewed by ChatGPT and accepted by Corbin.
+
+Muscle forces are a demonstration under a stated criterion. Physiological validity is not claimed: no comparison with measured muscle activity is made.
+
+**Defense.**
+- Static optimization is the standard first answer to muscle redundancy for a prescribed motion, and OpenSim's default.
+- It reuses D1's verified torques, needs no controller, and can be checked exactly: the torques must be reproduced, and the optimum must satisfy known conditions.
+- Taking parameters and paths from the same Gait2392 file that D1's geometry comes from avoids mixing models (D-056 item 3).
+- The De Groote curves are closed-form, published, and implemented in OpenSim. That gives an independent oracle for both the geometry and the force law, which neither model nor reviewer has had before. ChatGPT asked for independent oracles in D1 (P21-03).
+- Excluding passive force in the baseline follows OpenSim's practice and avoids an artifact the pre-check found; the sensitivity case shows its size instead of hiding it.
+- The reserve check makes any shortfall visible rather than silently absorbed (Q57).
+
+**Alternatives.**
+- (a) **Arnold 2010 model muscles.** Better documented parameters, but a different geometry from D1's bodies, and its model file is not vendored.
+- (b) **Millard curves,** to match the file's muscle class. Needs a quintic Bézier implementation and has no independent closed form to check against. OpenSim's `replaceMuscles` converts Millard muscles to De Groote muscles, which is the route taken here.
+- (c) **Compliant tendons.** Each muscle's force becomes a nonlinear function of activation, solved by equilibrium, so the optimization becomes nonlinear. Deferred to a later stage; its effect at the bottom is estimated in 9.
+- (d) **Forward or tracking simulation** (computed muscle control, direct collocation). Larger scope; a later phase.
+- (e) **One grouped muscle per joint.** Declined by Corbin (Q54).
+- (f) **Including passive force in the baseline.** Gives the artifact described above.
+
+**Consequences.**
+- One new dataset generated from the vendored model file.
+- New ontology entities for muscles and model actuators.
+- A muscle model module, an optimizer, a runner, an OpenSim oracle tool with a committed reference file, tests, a sensitivity tool, and an extended page.
+- New dependency: `scipy`, for the second solver and possibly the main one; a builder choice, to be confirmed in the build PR. OpenSim stays a verification-only tool.
+
+**Open concerns.**
+1. **Knee capacity margin.** The pre-check gives the Gait2392 body only about 7% spare knee-extensor capacity at the bottom, before force-velocity effects. Reserves may appear near the bottom during the rise. This would be reported (item 3), not hidden.
+2. **Gait2392's deep-flexion geometry.** At 100° knee flexion the knee-extensor moment arms fall to about 2.5 cm in this model. Whether that is realistic is not checked here.
+3. **De Groote 2016 supplement not accessed.** The constants come from OpenSim's implementation, which documents its own corrections. The paper's main text was read; it gives the model structure but not the constants.
+4. **Anatomy sources for the new muscle entities** are to be read during the build.
+5. **D1's open concerns 6–9 carry over,** for example the provisional de Leva values and the uncertain Gait2392 stature.
+6. **OpenSim installation size** for the reviewer's offline environment.
+
+**Amendment 1 (2026-11-10, after ChatGPT's review at `a3efd33`, PR #31: AMEND, D2-R01 to D2-R03, L01, L02; still Proposed).** Claude checked each finding before accepting it: the reserve counterexample by algebra; the header passages (velocity domain [−1, 1] and caller's responsibility, fiber-length bounds 0.2 and 1.8, damping term in the fiber force); the pinned upstream code (`DeGrooteFregly2016Muscle.cpp` defaults damping to 0 but `replaceMuscles()` copies the Millard muscle's damping; `Millard2012EquilibriumMuscle.cpp` defaults it to 0.1; the vendored model file sets no `fiber_damping`, so 0.1 would be inherited); all eight conditional-point switches inside D1's 0–100° knee range (`semiten` 19.0°, `semimem` 32.0°, `med_gas` and `lat_gas` 45.0°, `vas_med` and `vas_lat` 69.33°, `vas_int` 81.36°, `rect_fem` 83.65°); and ChatGPT's force-assembly fixture (433.0127 / 500 / 375 N; 475.9455 / 482.0060 N; `f_v(−2)` = −0.2292). All reproduce. **All five findings are accepted; no disagreement.** One addition found during the check: OpenSim's `ConditionalPathPoint::isActive` treats a point as active when the coordinate is within its range **widened by 1e-5 rad** on each side, so the implementation must use the same convention (item 6 below). The pre-check figures (93% capacity, 27 N·m soleus) remain builder estimates, not reproduced by ChatGPT. This amendment changes the proposal only; nothing is built.
+
+*Item 1 (method), replaced (D2-R01, L02).* **Two-stage instantaneous optimization.** At each time sample, independently (no activation dynamics; D1's inertial torques are kept, so "static" means instantaneous recruitment, not that skeletal inertia is dropped):
+- **Stage 1, minimum reserve** *(replaced by Amendment 2: smallest largest reserve)*. Minimize `Σ_j r_j²` (N·m²) over `0 ≤ a_i ≤ 1` and signed `r_j`, subject to `Σ_i c_ij·a_i + r_j = τ_j` for each joint, where `c_ij` is actuator `i`'s torque at joint `j` at full activation (item 5). The set of torque vectors the muscles can make is the image of a box under a linear map, so it is convex, and the minimizing reserve vector `r*` is unique: the shortest signed torque gap between the demand and what the bounded muscles can produce. **`r* = 0` exactly when the muscles alone can produce the demand.** All joints are weighted equally.
+- **Stage 2, minimum effort.** With `r = r*` fixed, minimize `Σ_i a_i²` over `0 ≤ a_i ≤ 1` subject to the same equations. Strictly convex, so the activations are unique. When `r* = 0`, this is ordinary static optimization without reserves (OpenSim's default criterion, exponent 2).
+- The scale `r0` of the original item 1 is removed; it played no role in stage 1 and mixed a cost scale with a feasibility allowance (D2-R01).
+
+*Item 3 (reserve check), replaced (D2-R01).* Reserves are **signed, per joint, in N·m**, and reported as time series. `muscle_feasibility` is **feasible** when `max_{t,j} |r*_j(t)| ≤ ε_reserve` and every value is finite; otherwise **flagged**, with the instants, joints, signs and sizes. `ε_reserve` = **1 N·m, a demonstration allowance** (not sourced, not physiological), stored and labeled in the configuration. A separate **numerical tolerance** (1e-6 N·m, a solver tolerance) decides whether a computed `r*` counts as zero. Because stage 1 minimizes the reserve before any effort criterion, a flagged result is a certificate that the bounded muscle set, under this force law and geometry, cannot produce the demand by at least that margin; it is not an artefact of a cost trade-off *(this certificate claim is withdrawn by Amendment 2: a sum of squares does not certify a per-joint allowance)* (ChatGPT's 14-actuator counterexample gives `r* = 0` and all activations 1 under this rule). This follows the reviewer's options 1 and 2 together; option 3 (keep the soft objective, call the result a reserve-use flag) is listed as an alternative below. **Corbin decides which rule applies.** OpenSim's own guidance makes reserves expensive so they are used only when muscles fall short (`Working with Static Optimization`); the hierarchy makes that exact rather than approximate.
+
+*Item 5 (force law), completed (D2-R02).* For each actuator at each sample, with `h = l_opt·sin α0` (constant thickness) and `x = L_MT − l_ts` (rigid tendon):
+- `l_M = √(x² + h²)`, `cos α = x / l_M`, normalized length `l̃ = l_M / l_opt`.
+- **Fiber velocity:** `v_M = cos α · dL_MT/dt` (derivative of `l_M` at constant `h`). **Sign: lengthening positive.** Normalized `ṽ = v_M / (v_max·l_opt)`; the force-velocity curve gives 0 at `ṽ = −1` (maximum shortening). Musculotendon velocity is never passed to the curve directly.
+- **Baseline tendon force:** `F_T = F0·a·f_act(l̃)·f_v(ṽ)·cos α`, linear in `a`, so `c_ij = F0·f_act·f_v·cos α·R_ij`.
+- **Applicability domain**, per actuator and sample: `x > 0` (positive-projection branch), `l̃` in [0.2, 1.8] (the header's bounds), `ṽ` in [−1, 1] (the header's stated domain; `f_v(−2)` would be negative). **Policy:** a non-finite value is a verification failure (exit code 1). An out-of-domain actuator is **neither extrapolated nor clamped**: its coefficient is set to 0 at that sample (it is excluded), and a separate status `force_law_domain` is flagged with the actuator, sample and violated bound. A domain flag is reported, not hidden; the reserve then shows whether the remaining muscles cover the demand.
+- **Baseline options, set explicitly and recorded in the configuration and manifest:** tendon compliance ignored; activation dynamics ignored; passive fiber force ignored; **fiber damping 0**; active-force width scale 1. For the oracle, every value inherited through `replaceMuscles()` (damping, passive and tendon strains) is **reset** after conversion, and the reset values are recorded.
+- **Passive-on sensitivity case:** passive strain at one normalized force **0.6** (the De Groote default in `DeGrooteFregly2016Muscle.cpp`, set explicitly, not the inherited Millard value), using the header's corrected passive curve (lines 479–489), damping still 0. With passive force on, tendon force is no longer linear in activation; the case adds the passive torque to the known side of the equations (it does not depend on activation under a rigid tendon) and is otherwise solved the same way.
+- **Compliant-tendon comparison (item 9, last case):** at the bottom pose only, for soleus and gastrocnemius, with the **same activation** (the rigid-baseline value) and the **same `L_MT`**, passive force on in both, tendon strain 0.049 set explicitly; reported: fiber length, pennation, tendon force, equilibrium residual and whether the result lies within the curve domains. It compares tendon models, not recruitments.
+
+*Item 6 (geometry), addition (D2-R03).* A conditional point is active when its knee coordinate lies within its range widened by **1e-5 rad** on each side, matching OpenSim's `ConditionalPathPoint::isActive` at `01683ac`. `L(q)` is continuous but its derivative may jump at a switch *(withdrawn by Amendment 2: the length itself jumps at each switch)*; no derivative is asserted across one.
+
+*Item 8 (verification), replaced (D2-R03).* Each a test or a recorded check, with tolerance and units in the test or configuration:
+- **(a) Geometry against OpenSim** on the D1-matched copy: lengths and moment arms of all 14 actuators at **every D1 sample pose**, at **every spline knot** of the moving points, and **1e-4 rad on each side of each of the eight conditional switches** (outside OpenSim's 1e-5 rad band, so both conventions agree), and at the switch value itself with the inclusive convention. Includes a two-joint path (`rect_fem`, `semimem`, `med_gas`) and the knee sign conversion. Length tolerance 1e-9 m; moment-arm tolerance stated in the reference file.
+- **(b) Moment arm by differentiation:** central differences with a step-size study (error falls as the step halves) **away from switches**; **one-sided** differences on each side of a switch, compared with the active-point set on that side. **Virtual-work identity:** `−F_T·dL_MT/dt = Σ_j F_T·R_ij·q̇_j` for each actuator along the motion.
+- **(c) Assembled force law against OpenSim** (`DeGrooteFregly2016Muscle`, configured as in item 5): not only the curves but the **complete tendon force and its intermediates** (`l_M`, `α`, `v_M`, `ṽ`) at nonzero pennation, shortening and lengthening, and `a` = 0, an interior value and 1; linearity in `a`; a single cos α projection; zero passive and damping force in the baseline; the passive-on case. Plus ChatGPT's hand fixture (`F0` = 1000 N, `a` = 0.5, `l_M = l_opt` = 0.1 m, α0 = 30°, `v_max` = 10/s): 433.01270189221935 N at rest; 475.94546724506705 N at path velocity 0.05 m/s, with `ṽ` = 0.04330127018922194. Domain-policy tests: each bound just inside and just outside; a non-finite input fails the run.
+- **(d) Optimizer:** for both stages, primal equality to 1e-6 N·m, bounds, and the KKT conditions (stationarity, dual feasibility, complementarity) to stated tolerances; a second, independent solver agrees. Fixtures: ChatGPT's feasible-but-penalized toy case (`r* = 0`, all activations 1); an infeasible case with a known `r*`; reserves of both signs (`|r| ≤ ε` must reject −10 N·m). An optimizer failure (no convergence, KKT residual above tolerance) is a verification failure, exit code 1; a flagged reserve or domain status is a result.
+- **(e)** Reserve status (item 3) and domain status (item 5) reported per body.
+- **(f)** Unchanged: size of D1's joint simplifications for muscles, reported, not pass/fail.
+
+**Oracle reference file:** records the OpenSim package and version, platform, Python version, hashes of the source model, the D1-matched copy and the transformation script, every property override (item 5), units, and the sampled states. Its values come from OpenSim, never from the implementation under test. Ordinary tests read the file and do not need OpenSim.
+
+*Item 12 (run record), addition.* New status `force_law_domain` (in domain / flagged). `optimizer_verification` covers both stages.
+
+*Simplifications, additions (D2-R02, L01).*
+11. **Fiber damping set to 0** (the Millard file would otherwise give 0.1 through conversion).
+12. **Curve applicability domain enforced;** out-of-domain actuators excluded at that sample, not extrapolated.
+13. Forces along coordinates other than D1's three are absorbed by ideal joint constraints; D2 makes **no joint-reaction or contact-stress prediction**.
+14. The female and male bodies share Gait2392's generic strengths; they are **stature-scaled demonstration profiles, not sex-specific strength models** (item 7's sensitivity case scales force by mass, nothing more).
+- Simplification 10, qualified (L01): leaving out **biceps femoris short head** is a scope choice, not shown harmless by the net knee-extension demand: a one-joint knee flexor could change recruitment when a two-joint muscle (for example `rect_fem` for hip flexion) also extends the knee. The reserve and domain diagnostics, not this argument, show the limits.
+
+*Alternatives, addition.* (g) **Soft reserves, as originally proposed** (reviewer's option 3): `Σ a_i² + Σ (r_j / r0)²` in one stage, with the status named a reserve-use flag that does not prove a capacity shortfall. Simpler and closer to OpenSim's practice; declined by the builder because a reserve then measures the cost trade-off, not capacity (ChatGPT's counterexample). (h) **Minimize the largest absolute deficit** in stage 1 instead of the sum of squares: also a valid certificate; not preferred because it is not unique when several joints fall short *(adopted by Amendment 2; the non-uniqueness reason was wrong)*.
+
+*Exit criterion, addition.* 8a–d as amended pass for all three bodies; muscle-feasibility and force-law-domain statuses are reported with their time series.
+
+*Open concerns, addition.* 7. **Domain exclusions near the bottom.** If the vasti or soleus leave the curve domain at deep flexion (the pre-check put them at 1.3 and 1.41 optimal lengths, inside it), exclusion would move load to the reserve; reported, not hidden. 8. **GeometryPath.cpp and MovingPathPoint.cpp** were read by ChatGPT for this review; Claude has not read them and relies on the oracle comparison instead.
+
+**Amendment 2 (2026-11-10, after ChatGPT's re-review at `936c12c`, PR #32: AMEND, D2-R01 in part and new D2-R04; still Proposed).** ChatGPT found D2-R02, D2-R03, L01, L02 and the source registration resolved at proposal level. Claude checked both open findings before accepting them:
+- **D2-R01:** ChatGPT's two-joint fixture reproduces (one actuator, `C` = (4, −1) N·m, demand (2.95, 0.45) N·m). The minimum-squared reserve is (0.279, 1.118) N·m at `a` = 0.668, which would be flagged, while `a` = 0.5 gives (0.95, 0.95) N·m, within the 1 N·m allowance. Amendment 1's claim that a flag certifies a per-joint shortfall was **wrong**: a sum of squares does not minimize the largest joint reserve. Accepted.
+- **D2-R04:** checked independently with **OpenSim 4.6 on the unmodified Gait2392 file** (not ChatGPT's script, and not the D1-matched copy). The knee was set 1e-6 and 1e-8 rad on each side of each switch, at the 1e-5-widened range edge, with hip = 0.74 × knee and ankle = 0.4 × knee (D1's depth ratios). Musculotendon length **jumps at every one of the eight switches**: `med_gas` 0.348 mm, `lat_gas` 0.034, `semimem` 0.0102, `rect_fem` 0.0065, `semiten` 0.0054, `vas_int` 0.0051, `vas_med` 0.0015, `vas_lat` 0.0005 mm. These are builder-reported; the values change by less than 1e-4 mm between the two offsets, except the vasti at about 6e-5 mm. ChatGPT's 0.354 mm (`med_gas`) and 0.031 mm (`lat_gas`) on the D1-matched frames are of the same size. Amendment 1's claim that `L(q)` is continuous was **wrong**. Accepted.
+
+**No disagreement.** The sentences withdrawn by this amendment are marked in Amendment 1.
+
+*Item 1 (method), stage 1 replaced (D2-R01).* **Stage 1, smallest largest reserve.**
+- Minimize `t` over `0 ≤ a_i ≤ 1`, signed `r_j` and `t`, subject to `Σ_i c_ij·a_i + r_j = τ_j` and `|r_j| ≤ t` for every joint. This is a linear program.
+- Its optimum `t*` (N·m) is unique: the smallest per-joint reserve that any bounded activation pattern needs. `t* = 0` exactly when the retained muscles alone produce the demand.
+
+*Item 1, stage 2 replaced.* **Stage 2, minimum effort.**
+- Minimize `Σ_i a_i²` over `0 ≤ a_i ≤ 1`, subject to `|τ_j − Σ_i c_ij·a_i| ≤ t* + δ` for every joint, where `δ` is the 1e-6 N·m numerical tolerance.
+- This problem is strictly convex, so the activations are unique, and the reserves follow as `r_j = τ_j − Σ_i c_ij·a_i`.
+- When `t* = 0`, this is ordinary static optimization without reserves.
+- When `t* > 0`, reserves at joints that are not limiting may rise up to `t*`, never above, because effort is minimized within that band. This is stated in the manifest.
+
+*Item 3 (reserve check), certificate restated.*
+- `muscle_feasibility` is **feasible** when `t* ≤ ε_reserve` (1 N·m, demonstration allowance); otherwise it is **flagged**, with `t*`, the instants, and the joints and signs at the bound.
+- Because stage 1 minimizes the same per-joint norm the allowance uses, the flag is now exact. A flag means that no activations in [0, 1] keep every joint's reserve within 1 N·m, for the retained in-domain actuators under this force law and geometry.
+- The manifest labels the norm: **largest absolute per-joint reserve (L∞)**.
+
+*Item 5, wording correction.* In the passive-on case the tendon force is **affine** in activation (a known passive offset plus a linear active term). Amendment 1 said it is "no longer linear"; affine is the precise term. Moving the offset to the right-hand side keeps both stages a linear program and a convex quadratic program.
+
+*Item 6 (geometry), transition policy (D2-R04).*
+- **Path length is piecewise continuous in the knee angle, with jumps at conditional switches.** The jumps are inherited from Gait2392 and present in OpenSim itself (sizes above).
+- At each D1 sample, length, moment arms and musculotendon velocity come from the **active-point set at that sample**, with the 1e-5 rad inclusive convention. Velocity is that branch's `−Σ_j R_ij·q̇_j`. No length difference or velocity is formed across a switch, and no finite difference of `L` is taken between samples.
+- **No smoothing.** The source paths are used as written, jumps included.
+- The medial gastrocnemius jump is about 0.6% of its optimal fiber length (0.06 m). This is the builder's estimate of the largest effect on normalized fiber length; the build reports actual values.
+
+*Item 8, additions.*
+- (a) At each switch, the oracle comparison reports **left and right values of length, moment arms and tendon force** at the widened-range edge. Jump sizes per switch and body are written to the manifest.
+- (b) One-sided derivatives and the virtual-work identity are asserted **within a branch only**.
+- (d) New fixtures: ChatGPT's two-joint case (`t*` = 0.95 N·m, `a` = 0.5, feasible); the 14-actuator case (`t* = 0`, all activations 1); an infeasible case with known `t*`; and reserves of both signs.
+
+*Simplifications, addition.*
+15. **Path-length jumps at Gait2392's conditional via points** (0.0005–0.35 mm on the unmodified file, builder's check) are kept, not smoothed. Velocity and force are evaluated per branch.
+
+*Alternatives, replaced and added.*
+- Amendment 1's alternative (h) (minimize the largest deficit) is now the stage-1 rule. The reason given for declining it (non-unique) was wrong: the scalar `t*` is unique, and stage 2 makes the activations unique.
+- **(i) Keep the sum-of-squares stage 1** of Amendment 1, with the status relabeled as "largest component of the minimum-L2 residual" and the certificate limited to its Euclidean norm. Valid, but its flag would not match a per-joint allowance; declined by the builder.
+- (g) soft reserves remains an alternative.
+
+*Open concerns, addition.*
+9. **Switch positions near D1 samples.** If a D1 sample lies within 1e-5 rad of a switch, the inclusive convention decides the branch. Results are reported per sample, and no interpolation crosses a switch.
+
 
 ---
 
@@ -1618,10 +1843,17 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | ~~Approve, amend or reject D-058~~ Accepted at `787e5a6` (Q40, A-10) | ChatGPT review, then Corbin | Done |
 | ~~Review the Stage D1 build (D-058 with Amendments 1 and 2), including the generator against the kept source files~~ AGREE at `3b86cc4` (PR #26); independent execution AGREE (PR #27, Q49); accepted (Q51), merged (A-12) | ChatGPT; then Corbin | Done |
 | ~~Decide the six proposals (a)–(f) in the Stage D1 build record~~ Accepted, Q50 | Corbin | Done |
-| Write the Stage D2 (muscles) proposal, after D-056 is decided | Phase D builder (Claude, Q38) | After D-056 |
+| ~~Write the Stage D2 (muscles) proposal, after D-056 is decided~~ Proposed as D-059 | Phase D builder (Claude, Q38) | Done |
+| ~~Review D-059 (Stage D2 scope), including the curve constants against the vendored OpenSim header~~ AMEND at `a3efd33` (PR #31); constants and vendor hash confirmed | ChatGPT | Done |
+| ~~Re-review D-059 with Amendment 1~~ AMEND at `936c12c` (PR #32): D2-R01 in part, D2-R04 | ChatGPT | Done |
+| ~~Re-review D-059 with Amendment 2~~ AGREE at `7358c2d` (PR #33) | ChatGPT | Done |
+| ~~Decide D-059~~ Accepted at `7358c2d` (Q58), with Amendment 2's reserve rule (interpretation in §4) | Corbin | Done |
+| Stage D2 build (D-059 with Amendments 1 and 2); carry ChatGPT's note D2-A2-N01 (report `t*`, signed stage-2 reserves and the numerical band separately) | Claude; ChatGPT reviews; Corbin decides | Next |
+| Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
+| Confirm or correct the interpretation of Q38 for Stage D2 (§4) | Corbin | Any time |
 | Check the de Leva values and reference sizes against the paper itself (D-058 open concern 6) | Anyone with access to the paper | Before results are cited |
 | ~~Source-list rule in the role skills (D-057 Amendment 1)~~ Merged (A-9); reinstalled in both models (Q38, reported by Corbin) | ChatGPT; Corbin | Done |
-| Decide D-056 (meaning of Arnold `Fmax`). Quotes checked against the PDF by Claude (D-056 Amendment 1); ChatGPT could not open the source (P19-01) | Corbin | Next: before the Stage D2 proposal |
+| ~~Decide D-056 (meaning of Arnold `Fmax`)~~ Accepted, Q53 | Corbin | Done |
 | ~~Ontology loader accepts only one module file (C5 finding 1)~~ Multi-file loading added (D-058 Amendment 2). Knee coordinate convention: declared model convention (D-058 A4) | Phase D builder | Done |
 | Items deferred by D-055 to their first use: D-029, D-030, D-032, D-033, broad anatomy evidence migration, deferred-attachment records, entity-ID aliases | Builder of the phase that first needs each | On first use |
 | Backfill status fields for D-001 to D-023 when revisited (D-043) | Any reviewer | As revisited |
@@ -1651,6 +1883,10 @@ Recorded per D-047 so a reviewer can check that each choice stayed inside the de
 | 16a | 2026-10-28 | Claude | Q45–Q47 added to §4; D-058 Amendment 3 (response to ChatGPT's review D1-R01 to D1-R06; revised D1 exit criterion) | Q45–Q47; pending ChatGPT re-review and merge by Corbin |
 | 16b | 2026-10-28 | Claude | Q48 added to §4; D-058 Amendment 3 re-review follow-up (D1-R07, D1-R08) | Q48; pending ChatGPT re-review and merge by Corbin |
 | 17 | 2026-11-04 | Claude | A-11 (PR #25, recorded late), Q49–Q52 and A-12 added to §4 with notes; D-058: Stage D1 build Accepted at `3b86cc4` (Q51), proposals (a)–(f) Accepted (Q50), status fields and acceptance note; official Stage D1 run at `dd89fff`; index and open items | Q49–Q52, A-12; pending ChatGPT review and merge by Corbin |
+| 18 | 2026-11-04 | Claude | Q53–Q57 added to §4 with notes (Q54/Q57 correction; Q38 interpretation for Stage D2); D-056 Accepted (Q53) with an acceptance note; new D-059 (Stage D2 scope, Proposed); index and open items | Q53–Q57; D-059 pending ChatGPT review and Corbin's decision |
+| 18a | 2026-11-10 | Claude | D-059 Amendment 1 after ChatGPT's review (AMEND, D2-R01 to D2-R03, L01, L02): two-stage minimum-reserve rule with signed threshold; complete force-law, domain and baseline-option contract (fiber damping 0); verification of the assembled force law and path switches; four simplifications added; open items | Pending ChatGPT re-review and Corbin's decision |
+| 18b | 2026-11-10 | Claude | D-059 Amendment 2 after ChatGPT's re-review (AMEND, D2-R01 in part, D2-R04): stage 1 minimizes the largest per-joint reserve, so the 1 N·m flag is exact; path-length jumps at conditional switches measured in OpenSim 4.6, per-branch transition policy, no smoothing; withdrawn Amendment 1 sentences marked; open items | Pending ChatGPT re-review and Corbin's decision |
+| 19 | 2026-11-10 | Claude | Q58 added to §4 with an interpretation; D-059 Accepted at `7358c2d` (Q58) with Amendments 1 and 2, status fields, index and open items; ChatGPT's reviews PR #31, #32, #33 recorded | Q58; pending merge by Corbin |
 
 ## 8. References
 
