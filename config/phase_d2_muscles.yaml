@@ -1,0 +1,49 @@
+# Stage D2 muscle forces (D-059 with Amendments 1 and 2). Every value here is labeled:
+# demonstration_assumption = chosen for the demonstration, not measured; defined_constant = a conventional or
+# tool-defined value; solver_tolerance = numerical accuracy, not a physical allowance.
+# Muscle parameters and paths are NOT here: they come from ontology/quantitative_data/muscles_gait2392.yaml.
+# The motion and joint torques come unchanged from the Stage D1 model and configuration.
+model_id: PHASE_D2_MUSCLE_FORCES_DEMONSTRATION
+decision: D-059
+d1_config: config/phase_d1_squat.yaml
+bodies: [female, male, gait2392]
+parameters:
+  epsilon_reserve: {value: 1.0, unit: N*m, kind: demonstration_assumption, rationale: "Per-joint reserve allowance for muscle_feasibility (D-059 item 3, Amendment 2): feasible when the smallest largest reserve t* is at or below it. Not sourced and not physiological"}
+  solver_band_delta: {value: 1.0e-6, unit: N*m, kind: solver_tolerance, rationale: "Stage 2 allows |reserve| <= t* + delta; also the tolerance for counting a computed t* as zero (Amendment 1, item 3). Reported separately from t* (ChatGPT note D2-A2-N01)"}
+  kkt_tolerance: {value: 1.0e-8, unit: '1', kind: solver_tolerance, rationale: "Largest stationarity, dual-feasibility, complementarity or primal residual accepted for either stage (D-059 8d)"}
+  second_solver_t_star_tolerance: {value: 1.0e-7, unit: N*m, kind: solver_tolerance, rationale: "Agreement of HiGHS dual simplex and HiGHS interior point on t*"}
+  second_solver_activation_tolerance: {value: 1.0e-5, unit: '1', kind: solver_tolerance, rationale: "Agreement of quadprog (active set) and Clarabel (interior point) on stage-2 activations"}
+  d1_consistency_N_m: {value: 1.0e-6, unit: N*m, kind: solver_tolerance, rationale: "Recomputed D1 torques must equal the official D1 manifest, which stores them to 6 decimals"}
+  passive_strain_sensitivity: {value: 0.6, unit: '1', kind: defined_constant, rationale: "De Groote default passive strain at one normalized force (DeGrooteFregly2016Muscle.cpp at opensim-core 01683ac), set explicitly for the passive-on sensitivity case only (Amendment 1)"}
+baseline_force_law:
+  tendon: rigid
+  activation_dynamics: ignored (instantaneous recruitment at each sample)
+  passive_fiber_force: ignored
+  fiber_damping: 0.0
+  active_force_width_scale: 1.0
+  curves: De Groote et al. 2016 as implemented in sources/vendor/opensim-core/DeGrooteFregly2016Muscle.h (constants read from the file)
+  fiber_velocity: "v_M = cos(alpha) dL/dt, lengthening positive; normalized by v_max * l_opt"
+  domain: "x = L - l_ts > 0; l_M / l_opt in [0.2, 1.8]; normalized fiber velocity in [-1, 1]. Out of domain: actuator excluded at that sample and flagged; non-finite: failure"
+assumptions:
+  - "1. Sagittal model with D1's fixed-centre knee and z-axis ankle applied to Gait2392 muscle paths"
+  - "2. Instantaneous recruitment: no activation dynamics, no muscle history; D1's inertial torques are kept"
+  - "3. The criterion predicts no co-contraction beyond what the torques force"
+  - "4. Rigid tendons (most questionable for soleus and gastrocnemius)"
+  - "5. No passive fiber force in the baseline"
+  - "6. Gait2392 muscle strengths (Delp's values scaled upward, not uniformly) and paths built for gait; deep-flexion paths not checked against measurements"
+  - "7. Maximum isometric forces not scaled to the female and male bodies; they are stature-scaled demonstration profiles with Gait2392's generic strengths, not sex-specific strength models"
+  - "8. De Groote curves instead of the Millard curves named in the model file"
+  - "9. Gluteus maximus compartments and gastrocnemius heads treated as independent actuators"
+  - "10. Muscles left out: biceps femoris short head, adductor magnus, iliopsoas and all other Gait2392 muscles; leaving out the short head is a scope choice, not shown harmless"
+  - "11. Fiber damping 0 (the Millard file would otherwise give 0.1 through conversion)"
+  - "12. Curve domain enforced; out-of-domain actuators excluded at that sample, not extrapolated"
+  - "13. Forces along coordinates other than D1's three are absorbed by ideal joint constraints; no joint-reaction or contact-stress prediction"
+  - "14. Female and male bodies: path points, optimal fiber lengths and tendon slack lengths scaled by stature / 1.8 m"
+  - "15. Path-length jumps at Gait2392's conditional via points are kept, not smoothed; values are evaluated per branch"
+omitted_physics:
+  status: deliberate_demonstration_simplifications
+  activation_dynamics: "Omitted: activation is chosen instantaneously at each sample"
+  tendon_compliance: "Omitted in the baseline: tendons are inextensible"
+  passive_tissue: "Omitted: passive fiber force (baseline), ligaments, joint capsules"
+  co_contraction: "Not predicted beyond what the torques require"
+  measured_activity: "No comparison with measured muscle activity (EMG); physiological validity not claimed"

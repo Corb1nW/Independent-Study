@@ -1,6 +1,6 @@
 schema:
   id: LB-QPS
-  version: 0.6.0
+  version: 0.7.0
   name: Lower-Body Quantitative Property Schema
   module: pelvis_hip_complex
   purpose: >-
@@ -376,9 +376,12 @@ property_classes:
         value_form: vector
         requires_coordinate_context: true
       attachment_position:
-        definition: Modeled attachment/path point expressed in a declared parent frame.
+        definition: Modeled attachment/path point expressed in a declared parent frame. A fixed point is a vector; a
+          point whose presence or location depends on a coordinate (a conditional or moving path point) is a function
+          of that coordinate, stated in the value (LB-QPS 0.7.0, D-059).
         canonical_unit: m
         value_form: vector
+        allowed_value_forms: [vector, function]
         requires_coordinate_context: true
       surface_geometry:
         definition: Geometric representation of an anatomical or model surface with method and frame explicitly identified.
