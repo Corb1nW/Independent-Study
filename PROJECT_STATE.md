@@ -160,7 +160,7 @@ Environment for Claude's runs: Python 3.13.16, PyYAML 6.0.3, pytest 9.1.1; pydan
 ## Next task
 
 **Owner:** ChatGPT (review D-060); Corbin (decide); then Claude (build Stage D3).
-1. **Review D-060** (Stage D3, Gait2392's moving knee) at the head of its PR, with the Reviewer skill: the knee model, the two mechanics formulations and the OpenSim kinematics oracle, the muscle reuse, and the comparison with the fixed-knee results.
+1. ~~Review D-060~~ ChatGPT AGREE at `adae723` (PR #40); its notes D3-N01 and D3-N02 applied (wording and two build requirements; method unchanged).
 2. **Corbin decides D-060.**
 3. **Claude builds Stage D3.**
 

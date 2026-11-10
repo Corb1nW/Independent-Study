@@ -1918,7 +1918,7 @@ It also confirmed the knee explanation with OpenSim alone: restoring only the kn
 - **Implementation status:** Not started
 - **Verification status:** Not checked
 - **Date:** 2026-11-10
-- **Proposed by:** Claude (Phase D builder; Q38 interpretation, Q61 direction) · **Reviewed by:** ChatGPT (requested)
+- **Proposed by:** Claude (Phase D builder; Q38 interpretation, Q61 direction) · **Reviewed by:** ChatGPT: AGREE at `adae723` (PR #40)
 - **Approval basis:** pending. Direction from Corbin: Q61
 - **Evidence:** D-058 (Stage D1, fixed-centre knee); D-059 Amendments 3 and 4 (the D2 shortfall traced to the fixed knee; ChatGPT's OpenSim check with only the knee translations restored, PR #36); `SRC:GAIT2392_OSIM` (knee translation splines)
 - **Amends:** D-058 item on the knee ("revolute, fixed centre at knee angle 0") for Stage D3 runs only. D1's accepted results stay as they are.
@@ -1926,14 +1926,14 @@ It also confirmed the knee explanation with OpenSim alone: restoring only the kn
 
 **Context.** D1 fixes the knee centre at its zero-angle location. D2 found that, with that knee, the male and Gait2392 bodies run out of muscle near the bottom of the squat (t* up to 6.4 N·m). Two checks then restored Gait2392's moving knee in the muscle geometry only, keeping D1's torques: Claude's sensitivity case and ChatGPT's independent OpenSim sweep. Both gave t* = 0. Corbin asked for a moving-knee stage to test that explanation properly (Q61): torques and muscle geometry from one knee model.
 
-**Builder's pre-check (estimate, reported by author; not a result).** Gait2392's knee is one coordinate (the knee angle). As it flexes from 0° to 100°, the tibia origin slides about 6 mm anteriorly and 14 mm inferiorly in the femur frame, along two SimmSplines. The pre-check used a prototype of Kane's method with numerical Jacobians, at every 2nd sample. With the knee frozen, the prototype reproduces D1's torques to 3e-5 N·m. With the knee moving:
+**Builder's pre-check (estimate, reported by author; not a result).** Gait2392's knee is one coordinate (the knee angle). As it flexes from 0° to 100°, the tibia origin slides about 6.3 mm anteriorly and 21.1 mm inferiorly in the femur frame, along two SimmSplines (corrected after ChatGPT's note D3-N01; the first draft's 14 mm was read from the knots, not evaluated). The pre-check used a prototype of Kane's method with numerical Jacobians, at every 2nd sample. With the knee frozen, the prototype reproduces D1's torques to 3e-5 N·m. With the knee moving:
 - peak knee torque rises by about 2% (Gait2392 −92.3 against −90.5 N·m);
 - ankle torque changes by up to 8.6 N·m, because the upper body sits differently over the foot;
 - the centre of pressure stays inside the support for all three bodies (−3.0 to +2.1 cm against heel −4.7 cm), but the heel margin shrinks to about 17 mm from D1's designed 24 mm;
 - with the same muscles and recruitment rule, **t* = 0 for all three bodies at every checked sample.**
 
 **Decision (proposed).**
-1. **Knee model.** One knee coordinate, with Gait2392's coupling: the tibia origin in the femur frame is T(θ) = (translation1(θ), translation2(θ), 0), with θ = −q_knee. Each spline is evaluated with the ported OpenSim `SimmSpline` (D-059). The female and male bodies scale T by D1's stature factor, as their other joint locations already are. Segment masses, centres of mass and inertias stay fixed in their own body frames. Only the joint kinematics change. The motion q(t) is D1's, unchanged.
+1. **Knee model.** One knee coordinate, with Gait2392's coupling: the tibia origin in the femur frame is T(θ) = (translation1(θ), translation2(θ), 0), with θ = −q_knee. Each spline is evaluated with the ported OpenSim `SimmSpline` (D-059). The female and male bodies scale T by D1's stature factor, as their other joint locations already are. Segment masses, centres of mass and inertias stay fixed in their own body frames. D1 stores the thigh centre of mass relative to the knee, so it is converted to the femur frame once, from D1's fixed knee datum, and never rebuilt from an instantaneous thigh length (ChatGPT note D3-N02). Only the joint kinematics change. The motion q(t) is D1's, unchanged.
 2. **Data.** The knee spline knots go into `segments_gait2392.yaml` as a new observation, generated from the model file like the rest. That needs `joint_center_position` to allow a `function` form (schema LB-QPS 0.8.0, mirroring 0.7.0's path points). D1's fixed-knee observation stays.
 3. **Mechanics** (`src/squat_d3.py`, reusing D1's structure). Inverse dynamics by two independent formulations:
    - Newton–Euler, with the knee's generalized force including the translation term (the joint force times dT/dq_knee);
@@ -1942,7 +1942,7 @@ It also confirmed the knee explanation with OpenSim alone: restoring only the kn
    Plus D1's checks, adapted: static gravity moments by virtual work, energy rate, ground-force Newton identity, mass bookkeeping, and one-step and short-horizon forward consistency using Kane's mass matrix. Contact feasibility is reported as in D1.
 4. **Kinematics oracle.** OpenSim 4.6, on a copy of the model with only the D1 ankle and foot changes: ankle about z, subtalar and MTP locked, **knee splines kept**. For each D1 pose, the hip, knee, ankle and segment-origin positions relative to the foot are compared with ours. OpenSim checks the geometry. The dynamics are checked by the two formulations and the identities, as in D1.
 5. **Muscles.** D2's geometry, force law and two-stage recruitment, with the femur placed by T(θ). The OpenSim muscle oracle uses the same knee-kept copy, so check 8f now measures only the ankle and foot simplifications.
-6. **Runs and comparison.** A Stage D3 manifest for the three bodies, with D1's and D2's statuses. It is compared sample by sample with the official fixed-knee results (D1 `dd89fff`, D2 `7ac0f2d`): joint torques, centre of pressure, t* and activations. The comparison answers Q61.
+6. **Runs and comparison.** A Stage D3 manifest for the three bodies, with D1's and D2's statuses. It is compared sample by sample with the official fixed-knee results (D1 `dd89fff`, D2 `7ac0f2d`): joint torques, centre of pressure, t* and activations. The comparison answers Q61. A frozen-knee regression freezes the knee at D1's existing datum, a linear interpolation 0.40 mm (horizontal) and 0.08 mm (vertical) from the smooth spline's T(0), not at T(0) (ChatGPT note D3-N02).
 7. **Page.** The D2 viewer gains a knee-model switch (fixed or moving), so the two results can be shown side by side.
 
 **Simplifications** (added to D1's and D2's, except that D1's fixed knee and D2's simplification 1 no longer apply to D3 runs):
@@ -1969,6 +1969,8 @@ Not validated against measured squats or muscle activity.
 - (a) Keep the fixed knee and only document the artefact (P1 option (a), already accepted as the reading of D2).
 - (b) Use the moving knee in the muscle geometry with fixed-knee torques (P1 option (c)). Inconsistent; already reported as a sensitivity case.
 - (c) A different knee model, such as rolling contact or a patella body. Larger scope, and no source in hand.
+
+**Review.** ChatGPT, AGREE at `adae723` (PR #40), no blocking findings. Notes D3-N01 (translation figures) and D3-N02 (D1 datum and the thigh's centre of mass) were checked by Claude and are both correct. They are applied above as a description correction and two build requirements; method and acceptance criteria are unchanged.
 
 **Open concerns.**
 1. **Origin of Gait2392's knee splines.** The OpenSim documentation attributes the knee to earlier models. Not read yet; to be checked during the build, or listed as "Cited, not accessed".
@@ -2018,7 +2020,8 @@ Not validated against measured squats or muscle activity.
 | ~~Re-review the D2 configuration-guard fixes (D-059 Amendment 4)~~ AGREE at `9ed7b1f` (PR #38), merged (A-15) | ChatGPT; Corbin | Done |
 | ~~Decide D-059 Amendment 3 proposals P1 and P2~~ P1 option (a) and P2 accepted (Q59) | Corbin | Done |
 | ~~Decide the next stage~~ Moving knee (Q61); proposed as D-060 | Corbin | Done |
-| Review D-060 (Stage D3, moving knee) | ChatGPT; then Corbin | Next |
+| ~~Review D-060~~ AGREE at `adae723` (PR #40); notes D3-N01 and D3-N02 applied | ChatGPT | Done |
+| Decide D-060 (Stage D3, moving knee) | Corbin | Next |
 | Confirm or correct the interpretation of Q59 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q38 for Stage D2 (§4) | Corbin | Any time |
@@ -2062,6 +2065,7 @@ Not validated against measured squats or muscle activity.
 | 21 | 2026-11-10 | Claude | A-13 and Q59 added to §4 with an interpretation; D-059 Amendment 3 decision (P1 option (a), P2 accepted), status fields, index and open items | Q59, A-13; pending merge by Corbin |
 | 22 | 2026-11-10 | Claude | A-14 and Q60 added to §4; D-059 Amendment 4 (D2-B01 and D2-B02 fixes, D2-BN01 coverage), status fields, index and open items | Q60; pending ChatGPT re-review and merge by Corbin |
 | 23 | 2026-11-10 | Claude | A-15 and Q61 added to §4 with an interpretation; new D-060 (Stage D3 moving knee, Proposed); D-059 Amendment 4 marked accepted by merge; index and open items | Q61; D-060 pending ChatGPT review and Corbin's decision |
+| 23a | 2026-11-10 | Claude | D-060: ChatGPT's notes D3-N01 (translation 6.3 mm anterior, 21.1 mm inferior) and D3-N02 (freeze at D1's datum; thigh centre of mass converted once) applied; review line | No change to method or acceptance criteria; Corbin's decision pending |
 
 ## 8. References
 
