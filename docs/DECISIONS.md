@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 25 (2026-11-11), D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Revision:** 26 (2026-11-11), D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -172,6 +172,7 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **A-16** | 2026-11-10 16:22:29 and 16:22:46 (actions, from GitHub's merge times) | Merged PR #39 (`26f0ff1`, D-060 with ChatGPT's notes applied) and PR #40 (ChatGPT's AGREE at `adae723`) | — | Owner actions (D-051) |
 | **Q62** | 2026-11-10 16:23 | “alright you are good to start building” | After Claude applied ChatGPT's notes D3-N01 and D3-N02 to D-060 and asked for Corbin's decision. Direct: this session | **D-060 Accepted** (with the notes applied, `17e2c0f`); Stage D3 build approved |
 | **Q63** | 2026-11-11 11:28 | “Alright chat still has some improvements. Work hard to make sure everything is fleshed out” | After ChatGPT's build review of Stage D3 (PR #42: AMEND at `b06400b`; D3-B01, D3-B02, D3-B03, note D3-N03). Direct: this session | Claude fixes all four (D-060 Amendment 2) |
+| **Q64** | 2026-11-11 12:01 | “chat noticed another issue, keep improving” | After ChatGPT's re-review of Amendment 2 (PR #42: AMEND at `9805d41`; D3-B01 to D3-B03 and D3-N03 resolved, new finding D3-B04). Direct: this session | Claude fixes D3-B04 (D-060 Amendment 3) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
@@ -286,7 +287,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | **Part VIII — Phase D (planar squat)** | | | | | |
 | D-058 | Phase D in two stages; Stage D1: planar inverse-dynamics squat | Claude (builder, Q38); direction Corbin (Q39) | Accepted (Q40, at `787e5a6`); amended by Amendment 2 (Q41–Q44); Stage D1 build accepted at `3b86cc4` (Q51) with proposals (a)–(f) (Q50) | Stage D1 implemented (merged `3b6f6e6`, A-12); official run at `dd89fff`; Stage D2 not started | Stage D1: Independently checked (software; ChatGPT, PR #27) |
 | D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Accepted (Q58) | Implemented (A-13, A-14) | Independently executed (PR #36); fixes in review |
-| D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Accepted (Q62) | Built; amended after review (Amendment 2) | Reported by author; re-review pending |
+| D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Accepted (Q62) | Built; amended after review (Amendments 2 and 3) | Reported by author; ChatGPT reproduced the amended run (`9805d41`); re-review of Amendment 3 pending |
 
 ---
 
@@ -1918,8 +1919,8 @@ It also confirmed the knee explanation with OpenSim alone: restoring only the kn
 
 ### D-060  Stage D3: Gait2392's moving knee for the squat mechanics and muscles
 - **Decision status:** **Accepted (Q62, 2026-11-10)** at `17e2c0f`. Status before acceptance: Proposed
-- **Implementation status:** Built on `phase-d/claude-d3-build`; amended after ChatGPT's AMEND (Amendment 2; official run at `d3efc56`), ready for re-review
-- **Verification status:** Reported by author; ChatGPT: AMEND at `b06400b` (PR #42), fixes in Amendment 2, re-review pending
+- **Implementation status:** Built on `phase-d/claude-d3-build`; amended after ChatGPT's reviews (Amendments 2 and 3; official run at `d3efc56`), ready for re-review
+- **Verification status:** Reported by author; ChatGPT: AMEND at `b06400b` (PR #42); at `9805d41` AMEND for D3-B04 only, with the earlier findings resolved and the amended run reproduced byte for byte; fix in Amendment 3, re-review pending
 - **Date:** 2026-11-10
 - **Proposed by:** Claude (Phase D builder; Q38 interpretation, Q61 direction) · **Reviewed by:** ChatGPT: AGREE at `adae723` (PR #40)
 - **Approval basis:** Q62. Direction from Corbin: Q61
@@ -2110,6 +2111,42 @@ The check found that the D2 reference's recorded tool hash was stale (Amendment 
 
 *Status.* Implementation: amended, ready for re-review. Verification: reported by author.
 
+**Amendment 3 (2026-11-11): line-ending fix after ChatGPT's re-review (AMEND at `9805d41`, PR #42; Q64). Reported by author; ChatGPT re-review pending.**
+
+*ChatGPT's re-review.*
+- D3-B01, D3-B02 and D3-B03 are resolved, and D3-N03 is resolved for reference coverage.
+- ChatGPT reran the amended run at `d3efc56`; the manifest and viewer matched byte for byte.
+- One new finding remains, D3-B04 (High).
+
+*D3-B04 (a Windows checkout rejects the oracle references), accepted.* `.gitattributes` gives every file `text=auto`. With `core.autocrlf=true`, Git therefore checks `tools/make_d2_oracle.py` out with CRLF line endings. Its raw bytes then no longer match the `tool_sha256` recorded in both references.
+
+Reproduced by Claude in a full `core.autocrlf=true` clone at `9805d41` (Linux Git, which converts as Windows does). The checkout was clean, with 184 files converted to CRLF:
+- both coverage commands reported only that the tool hash did not match;
+- 13 tests failed, every one on that hash.
+
+The D3 kinematics check would fail for the same reason.
+
+*Fix (ChatGPT's proposal).* After the general rule, `.gitattributes` gains the path rule `tools/make_d2_oracle.py text eol=lf`. The raw-byte provenance check and the rejection of a stale tool are unchanged. A new test fails without the rule (mutation-checked). It asserts that:
+- the generator contains no CR bytes;
+- Git resolves `text` and `eol=lf` for it.
+
+The generator is the only file whose raw-byte hash is recorded in committed data. All other inputs are verified through Git's filtered blob ids (`src/run_manifest.py`, Phase B finding D1), which already accept CRLF.
+
+*Demonstration at `e6ab896`, in a fresh `core.autocrlf=true` clone.* The generator was LF and the other text files CRLF, as on Windows.
+- Both coverage commands: COVERAGE OK.
+- 285 tests pass.
+- `src.integrity` passed; the probes rejected 9/9; `build_segment_datasets.py --check` exited 0.
+- `tools.run_phase_d3` exited 0, with provenance verified for 30 inputs. Compared with the official `d3efc56` manifest:
+  - every run and every status is identical;
+  - every Git blob id is identical;
+  - only the commit and the raw byte hashes of the CRLF-converted inputs differ, as designed.
+
+The official run stays `d3efc56`, because no model code, configuration, reference or result changed.
+
+*Not run.* Windows itself; the clone used Git's conversion on Linux, as ChatGPT's probe did.
+
+*Status.* Implementation: amended, ready for re-review. Verification: reported by author.
+
 ---
 
 ## 6. Open items
@@ -2157,7 +2194,8 @@ The check found that the D2 reference's recorded tool hash was stale (Amendment 
 | ~~Decide D-060~~ Accepted (Q62) | Corbin | Done |
 | ~~Build Stage D3~~ Built (D-060 Amendment 1); official run at `525e2c3` | Claude | Done |
 | ~~Review the Stage D3 build~~ AMEND at `b06400b` (PR #42): D3-B01, D3-B02, D3-B03, note D3-N03; all fixed (D-060 Amendment 2) | ChatGPT; Claude | Done |
-| Re-review the amended Stage D3 build at the head of PR #41 (official run `d3efc56`) | ChatGPT; then Corbin merges PRs #42 and #41 | Next |
+| ~~Re-review Amendment 2~~ AMEND at `9805d41` (PR #42): D3-B04 only; fixed (D-060 Amendment 3) | ChatGPT; Claude | Done |
+| Re-review the D3-B04 fix at the head of PR #41 (official run `d3efc56` unchanged) | ChatGPT; then Corbin merges PRs #42 and #41 | Next |
 | Confirm or correct the interpretation of Q59 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q38 for Stage D2 (§4) | Corbin | Any time |
@@ -2204,6 +2242,7 @@ The check found that the D2 reference's recorded tool hash was stale (Amendment 
 | 23a | 2026-11-10 | Claude | D-060: ChatGPT's notes D3-N01 (translation 6.3 mm anterior, 21.1 mm inferior) and D3-N02 (freeze at D1's datum; thigh centre of mass converted once) applied; review line | No change to method or acceptance criteria; Corbin's decision pending |
 | 24 | 2026-11-10 | Claude | A-16 and Q62 added to §4; D-060 Accepted (Q62) and Amendment 1 (Stage D3 implementation record); index and open items | Q62; build pending ChatGPT review and merge by Corbin |
 | 25 | 2026-11-11 | Claude | Q63 added to §4; D-060 Amendment 2 (fixes for ChatGPT's D3-B01, D3-B02, D3-B03 and D3-N03; official run at `d3efc56`); three Amendment 1 sentences marked withdrawn; status lines, index and open items | Q63; pending ChatGPT re-review and merge by Corbin |
+| 26 | 2026-11-11 | Claude | Q64 added to §4; D-060 Amendment 3 (D3-B04: the oracle generator kept LF by a path rule in `.gitattributes`; shown in a CRLF clone); status lines, index and open items | Q64; pending ChatGPT re-review and merge by Corbin |
 
 ## 8. References
 
