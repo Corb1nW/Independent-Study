@@ -1,6 +1,6 @@
 schema:
   id: LB-QPS
-  version: 0.7.0
+  version: 0.8.0
   name: Lower-Body Quantitative Property Schema
   module: pelvis_hip_complex
   purpose: >-
@@ -203,9 +203,10 @@ property_classes:
     applies_to_classes: [SynovialJoint, JointCoordinate, ModelJoint]
     properties:
       joint_center_position:
-        definition: Estimated or measured joint centre (hip, knee, ankle or other joint) expressed in a declared coordinate frame. Wording generalized from hip only in schema 0.6.0 (D-058).
+        definition: Estimated or measured joint centre (hip, knee, ankle or other joint) expressed in a declared coordinate frame. Wording generalized from hip only in schema 0.6.0 (D-058). A joint centre that moves with a joint coordinate (a model coupling such as Gait2392's knee) is a function of that coordinate, stated in the value (LB-QPS 0.8.0, D-060).
         canonical_unit: m
         value_form: vector
+        allowed_value_forms: [vector, function]
         requires_coordinate_context: true
       coordinate_value:
         definition: Joint coordinate value under an explicitly declared convention and reference pose.

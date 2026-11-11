@@ -1,0 +1,33 @@
+# Stage D3: the D1 squat and D2 muscles with Gait2392's moving knee (D-060). Every value here is labeled.
+# The motion and body parameters come from the D1 configuration; the muscle parameters, force law and recruitment
+# settings from the D2 configuration. Only the knee changes.
+model_id: PHASE_D3_MOVING_KNEE_DEMONSTRATION
+decision: D-060
+d1_config: config/phase_d1_squat.yaml
+d2_config: config/phase_d2_muscles.yaml
+bodies: [female, male, gait2392]
+knee_model: gait2392_moving
+tolerances:
+  newton_euler_vs_kane_N_m: 1.0e-8
+  static_virtual_work_N_m: 1.0e-9
+  energy_W: 1.0e-8
+  newton_identity_N: 1.0e-8
+  local_one_step_rad_at_1ms: 1.0e-10
+  short_horizon_0p1s_rad_at_1ms: 1.0e-9
+  mass_fraction_sum: 2.0e-4
+  kinematics_oracle_m: 1.0e-9
+assumptions:
+  - "Knee model (D-060): both the inverse dynamics and the muscle geometry use Gait2392's moving knee; D1's motion q(t) is retained unchanged and not re-searched for the new knee (D-060 simplification 2)"
+  - "Knee coupling: one coordinate; the tibia origin moves along the model's two translation splines (about 6.3 mm anterior and 21.1 mm inferior from 0 to 100 deg flexion). A model fit, not measured knee motion; no rolling contact, no patella body, no other knee rotations (D-060 simplification 1)"
+  - "Female and male bodies: the knee splines scaled by stature / 1.8 m, like their other joint locations"
+  - "Segment masses, centres of mass and inertias are D1's, fixed in their own body frames; the thigh centre of mass converted once from D1's fixed knee datum (ChatGPT note D3-N02)"
+  - "Muscles: D2's 14 actuators, force law and two-stage recruitment, with the femur placed by the moving knee. D2's simplifications apply as listed in the manifest's declared_assumptions, with items 1 and 2 restated below for the moving knee (ChatGPT finding D3-B02)"
+# D2 simplifications that describe D1's fixed knee or fixed-knee torques, restated for Stage D3 runs. The runner
+# composes the manifest's declared_assumptions from the list above, then D2's list with these items replaced.
+d2_assumption_restatements:
+  1: "Sagittal model with Gait2392's moving knee and D1's z-axis ankle applied to Gait2392 muscle paths"
+  2: "Instantaneous recruitment: no activation dynamics, no muscle history; D1's motion is retained and its joint torques, inertial terms included, are recomputed with the moving knee"
+omitted_physics:
+  status: deliberate_demonstration_simplifications
+  knee: "Gait2392's one-coordinate coupling only; no knee contact mechanics, patella, ligaments or out-of-plane rotations"
+  other: "As in D-058 and D-059: sagittal plane, foot fixed, no activation dynamics, rigid tendons, no passive force in the baseline"
