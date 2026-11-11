@@ -476,7 +476,7 @@ function drawCard() {
 function frame() { drawFigure(); drawJoints(); cursors.forEach(c => c(i)); }
 function rebuild() { cursors = []; buildTau(); buildHeat(); buildReserve(); drawCard(); contact(); frame(); }
 function tick(ts) {
-  if (playing) { if (last === null) last = ts; const dt = (ts - last) / 1000; last = ts;
+  if (playing) { if (last === null) last = ts; const dt = (ts - last) / 1000;
     const step = T[1] - T[0], adv = Math.floor(dt / step);
     if (adv > 0) { i = (i + adv) % N; last = ts - (dt - adv * step) * 1000; frame(); } } else last = null;
   requestAnimationFrame(tick);
