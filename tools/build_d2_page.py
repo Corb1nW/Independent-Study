@@ -43,14 +43,23 @@ def compact(manifest):
             "comparison": r.get("comparison_with_fixed_knee"),
         })
     size = (manifest.get("d1_simplification_size_gait2392") or {}).get("by_actuator")
-    return {"knee": "moving" if manifest.get("knee_model") == "gait2392_moving" else "fixed",
+    moving = manifest.get("knee_model") == "gait2392_moving"
+    if moving:
+        # Stage D3: the run's own declared list (D3's simplifications, then D2's restated for the moving knee).
+        assumptions = [{"label": f"{a['source']}-{a['number']}" + (" (restated)" if a.get("restated_for_stage_d3") else ""),
+                        "text": a["text"]} for a in manifest["declared_assumptions"]]
+    else:
+        assumptions = [{"label": f"D2-{k}", "text": t.split(". ", 1)[1] if t.split(". ", 1)[0].isdigit() else t}
+                       for k, t in enumerate(manifest["configuration"]["assumptions"], 1)]
+    return {"knee": "moving" if moving else "fixed",
             "decision": manifest["decision"].split(" ")[0],
             "commit": manifest["commit_sha"], "provenance": manifest["commit_provenance_status"],
             "validity": manifest["validity"], "status": manifest["status"], "d1": manifest["d1_official_manifest"],
             "oracle": manifest["oracle_reference"], "names": NAMES, "groups": GROUPS,
             "simplification_size_knee_mm": max(v["knee"] for v in size.values()) if size else None,
+            "ankle_foot_size": (manifest.get("ankle_foot_simplification_size_gait2392") or {}).get("largest_by_coordinate"),
             "epsilon": (manifest.get("d2_configuration") or manifest["configuration"])["parameters"]["epsilon_reserve"]["value"],
-            "assumptions": (manifest.get("d2_configuration") or manifest["configuration"])["assumptions"], "runs": runs}
+            "assumptions": assumptions, "runs": runs}
 
 
 TEMPLATE = r"""<title>LB-AO Muscle Viewer</title>
@@ -131,6 +140,8 @@ svg { display: block; width: 100%; height: auto }
 .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-family: var(--font-body); font-weight: 700 }
 .pill.ok { color: var(--ok); border: 1px solid var(--ok) } .pill.flag { color: var(--flag); border: 1px solid var(--flag) }
 .notes { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-2); display: grid; gap: 4px }
+#assump { list-style: none; padding-left: 0; margin-top: 6px }
+#assump .tag { font-family: var(--font-data); font-size: 11px; color: var(--muted); margin-right: 6px; white-space: nowrap }
 details { font-size: 13px; color: var(--ink-2) } summary { cursor: pointer; color: var(--accent) }
 footer { font-size: 12px; color: var(--muted); display: grid; gap: 4px }
 footer code { font-family: var(--font-data); overflow-wrap: anywhere } footer a { color: var(--accent) }
@@ -186,7 +197,7 @@ footer code { font-family: var(--font-data); overflow-wrap: anywhere } footer a 
     <section class="panel"><h2>Can the muscles do it?</h2><dl class="facts" id="feas"></dl></section>
     <section class="panel"><h2>What this model is, and is not</h2>
       <ul class="notes" id="isnot"></ul>
-      <details><summary>All 15 declared simplifications</summary><ol class="notes" id="assump"></ol></details>
+      <details><summary id="assump-summary">Declared simplifications</summary><ul class="notes" id="assump"></ul></details>
     </section>
   </div>
   <footer id="foot"></footer>
@@ -249,7 +260,7 @@ function drawFigure() {
   JOINTS.forEach(([j], n) => { const at = [ank, k, h][n]; el("circle", {cx: at[0], cy: at[1], r: 5, fill: css("--" + j), stroke: css("--surface"), "stroke-width": 2}, fig); });
   const lbl = el("text", {x: 12, y: 18, "font-size": 11, fill: css("--muted"), "font-family": css("--font-data")}, fig);
   lbl.textContent = `${r.label}: ${r.mass} kg, ${r.stature} m`;
-  if (r.tstar[i] > DATA.epsilon) {
+  if (r.tstar[i] > V.epsilon) {
     const w = el("text", {x: 12, y: 36, "font-size": 12, "font-weight": 700, fill: css("--flag"), "font-family": css("--font-body")}, fig);
     w.textContent = `Muscles short by ${r.tstar[i].toFixed(1)} N·m here`;
   }
@@ -347,7 +358,7 @@ function buildForces() {
 function buildReserve() {
   const s = JOINTS.map(([j, name], k) => ({y: run.needed[j], label: name, color: css("--" + j), width: 4 - k * 1.2}));
   const same = JOINTS.every(([j]) => run.needed[j].every((v, k) => Math.abs(v - run.needed.knee[k]) < 1e-3));
-  lineChart("reserve", s, "N·m", {H: 130, minTop: 2 * DATA.epsilon, threshold: DATA.epsilon, thresholdLabel: `allowance ${DATA.epsilon} N·m`,
+  lineChart("reserve", s, "N·m", {H: 130, minTop: 2 * V.epsilon, threshold: V.epsilon, thresholdLabel: `allowance ${V.epsilon} N·m`,
     legend: "reserve-legend", legendNote: same && run.summary.t_star_max_N_m > 0 ? `<span>(the three lines coincide)</span>` : ""});
   const sm = run.summary;
   document.getElementById("reserve-note").innerHTML = run.status.muscle_feasibility === "feasible"
@@ -400,17 +411,21 @@ document.getElementById("badges").innerHTML = [
   V.runs.map(r => `${r.label.split(" ")[0]}: ` + (r.status.muscle_feasibility === "feasible" ? `<b>muscles suffice</b>` : `<b class="flag">short at the bottom</b>`)).join(" · "),
   `<b class="plain">Sources provisional</b>`, `not validated against measured muscle activity`].map(x => `<span class="badge">${x}</span>`).join("");
 const maxJump = Math.max(...V.runs.flatMap(r => r.jumps.map(j => Math.abs(j.length_with_point_minus_without_mm))));
+const af = V.ankle_foot_size;
 const kneeNote = V.knee === "moving"
-  ? `This view uses Gait2392's own knee, whose centre slides about 6 mm forward and 21 mm down as it bends (a model fit, not measured motion). With D1's fixed knee the male and Gait2392 bodies came up short near the bottom; with this knee they do not. Path switches change muscle lengths by at most ${maxJump.toFixed(2)} mm.`
+  ? `In this view both the joint torques and the muscle paths use Gait2392's own knee, whose centre slides about 6 mm forward and 21 mm down as it bends (a model fit, not measured motion). The squat motion itself is D1's, unchanged. With D1's fixed knee the male and Gait2392 bodies came up short near the bottom; with this knee they do not. Path switches change muscle lengths by at most ${maxJump.toFixed(2)} mm` +
+    (af ? `, and the remaining ankle and foot simplifications change moment arms by up to ${af.ankle.mm.toFixed(1)} mm (${DATA.names[af.ankle.actuator]}, at the ankle).` : ".")
   : `D1's simplified knee (a fixed hinge) changes knee moment arms by up to ${(DATA.simplification_size_knee_mm || 0).toFixed(0)} mm compared with Gait2392's moving knee, and some muscle paths jump by up to ${maxJump.toFixed(1)} mm where a path point switches on or off. Both are reported, not hidden.`;
 document.getElementById("isnot").innerHTML = [
   "The checks show the stated model is computed correctly (geometry and forces match OpenSim to machine precision; the recruitment rule is solved exactly). They do not show real muscles work this way: no comparison with measured muscle activity.",
-  "“Least total effort” is a modelling rule, not a law of physiology. It predicts no co-contraction unless the torques force it.",
+  "“Least total effort” is a modelling rule, not a law of physiology. It predicts no co-contraction unless the torques and the available muscles force it. Near standing they do, a little: rectus femoris is the only hip flexor among the 14 muscles (iliopsoas is left out) and it also extends the knee, so the gastrocnemius offsets that and the tibialis anterior offsets the gastrocnemius at the ankle.",
   "Tendons are treated as rigid and passive muscle stretch is left out; both matter most for the calf muscles.",
   "Muscle strengths and paths come from the Gait2392 model, built for walking. The female and male bodies share its generic strengths, scaled in size only, not in strength.",
   kneeNote,
 ].map(x => `<li>${x}</li>`).join("");
-document.getElementById("assump").innerHTML = DATA.assumptions.map(a => `<li>${a.replace(/^\d+\.\s*/, "")}</li>`).join("");
+const esc = x => String(x).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
+document.getElementById("assump").innerHTML = V.assumptions.map(a => `<li><span class="tag">${esc(a.label)}</span>${esc(a.text)}</li>`).join("");
+document.getElementById("assump-summary").textContent = `All ${V.assumptions.length} declared simplifications (${V.knee === "moving" ? "Stage D3, moving knee" : "Stage D2, fixed knee"})`;
 const statusLine = Object.entries(st).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join("; ");
 document.getElementById("foot").innerHTML = `
   <div>${fv.kind.charAt(0).toUpperCase() + fv.kind.slice(1)}. Physiological validity: ${fv.physiological_validity}. Clinical validity: ${fv.clinical_validity}.</div>

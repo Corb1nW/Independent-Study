@@ -28,6 +28,7 @@ from src import squat_d3 as d3
 from src.quantitative import QuantitativeSchema
 from src.run_manifest import manifest_header
 from tools import run_phase_d2 as d2r
+from tools.oracle_coverage import check_reference
 
 ROOT = sq.ROOT
 CONFIG = ROOT / "config" / "phase_d3_moving_knee.yaml"
@@ -35,10 +36,11 @@ ORACLE = ROOT / "tests" / "data" / "d3_oracle_reference.json"
 INPUTS = dict(d2r.INPUTS)
 for key in ("runner", "oracle_reference"):
     INPUTS.pop(key, None)
-INPUTS.update({"d2_runner": ROOT / "tools/run_phase_d2.py", "d3_config": CONFIG, "d3_model": ROOT / "src/squat_d3.py",
+INPUTS.update({"oracle_coverage": ROOT / "tools/oracle_coverage.py", "oracle_tool": ROOT / "tools/make_d2_oracle.py",
+               "d2_runner": ROOT / "tools/run_phase_d2.py", "d3_config": CONFIG, "d3_model": ROOT / "src/squat_d3.py",
                "d3_oracle_reference": ORACLE, "runner": ROOT / "tools/run_phase_d3.py"})
 REQUIRED = {"model_id", "decision", "d1_config", "d2_config", "bodies", "knee_model", "tolerances", "assumptions",
-            "omitted_physics"}
+            "d2_assumption_restatements", "omitted_physics"}
 TOLERANCES = {"newton_euler_vs_kane_N_m", "static_virtual_work_N_m", "energy_W", "newton_identity_N",
               "local_one_step_rad_at_1ms", "short_horizon_0p1s_rad_at_1ms", "mass_fraction_sum", "kinematics_oracle_m"}
 
@@ -54,7 +56,27 @@ def load_config(path=CONFIG):
         raise ValueError(f"tolerances must be exactly {sorted(TOLERANCES)}, all positive")
     if any(b not in ("female", "male", "gait2392") for b in cfg["bodies"]):
         raise ValueError("bodies must be female, male or gait2392")
+    restated = cfg["d2_assumption_restatements"]
+    if not isinstance(restated, dict) or not restated or any(
+            type(k) is not int or k < 1 or not isinstance(v, str) or not v.strip() for k, v in restated.items()):
+        raise ValueError("d2_assumption_restatements must map D2 assumption numbers (1-based) to non-empty text")
+    if not all(isinstance(a, str) and a.strip() for a in cfg["assumptions"]):
+        raise ValueError("assumptions must be non-empty text")
     return cfg
+
+
+def declared_assumptions(cfg, d2_cfg):
+    """Every simplification that applies to a Stage D3 run, in order: D3's own, then D2's with the restated
+    items replaced (ChatGPT finding D3-B02). Each entry names where it comes from."""
+    d2 = d2_cfg["assumptions"]
+    restated = cfg["d2_assumption_restatements"]
+    if max(restated) > len(d2):
+        raise ValueError(f"d2_assumption_restatements names item {max(restated)}; D2 declares {len(d2)}")
+    out = [{"source": "D3", "number": k, "text": t} for k, t in enumerate(cfg["assumptions"], 1)]
+    for k, t in enumerate(d2, 1):
+        text = restated.get(k, t.split(". ", 1)[1] if t.split(". ", 1)[0].isdigit() else t)
+        out.append({"source": "D2", "number": k, "text": text, "restated_for_stage_d3": k in restated})
+    return out
 
 
 def _r(a, digits=6):
@@ -62,7 +84,12 @@ def _r(a, digits=6):
 
 
 def kinematics_oracle_error(oracle):
-    """Largest difference (m) between D3's Gait2392 kinematics and OpenSim's, over all D1 samples."""
+    """Largest difference (m) between D3's Gait2392 kinematics and OpenSim's, over all D1 samples.
+
+    Infinite when the reference does not cover exactly the expected states (ChatGPT note D3-N03): a repeated,
+    truncated or stale reference must fail, not pass by comparing the poses it happens to contain."""
+    if check_reference(oracle, "moving"):
+        return float("inf")
     b = d3.build_body("gait2392")
     hip = m2.d1_joints(1.0).hip[:2]
     err = 0.0
@@ -75,6 +102,47 @@ def kinematics_oracle_error(oracle):
         for key, v in mine.items():
             err = max(err, float(np.max(np.abs(v - np.array(row[key][:2])))))
     return err
+
+
+def ankle_foot_simplification_size(acts, joints, oracle):
+    """D-059 check 8f for Stage D3 (D-060 item 5; ChatGPT finding D3-B03): moment arms with the knee kept, against
+    the unmodified Gait2392 model, at its every-10th D1 samples. Both models have Gait2392's moving knee, so the
+    differences measure only the remaining ankle and foot changes (ankle rotation about z; subtalar and MTP
+    locked). Reported, not pass/fail.
+
+    Computed twice: from this implementation (as in Stage D2) and from the two OpenSim models alone (the
+    reference's knee-kept geometry rows against its unmodified rows at the same poses)."""
+    impl = d2r.simplification_size(acts, joints, oracle)["by_actuator"]
+    matched = {g["index"]: g for g in oracle["geometry"] if g["kind"] == "d1_sample"}
+    opensim = {}
+    for row in oracle["unmodified_geometry"]:
+        g = matched[row["index"]]
+        if g["q"] != row["q"]:
+            raise ValueError(f"oracle rows at index {row['index']} have different poses")
+        for a in oracle["actuators"]:
+            d = np.abs(np.array(g["moment_arm_m"][a]) - np.array(row["moment_arm_m"][a])) * 1000
+            opensim[a] = np.maximum(opensim.get(a, 0.0), d)
+    opensim = {a: {j: round(float(v), 4) for j, v in zip(sq.JOINTS, d)} for a, d in opensim.items()}
+    largest = {}
+    for j in sq.JOINTS:
+        a = max(impl, key=lambda n: impl[n][j])
+        largest[j] = {"actuator": a, "mm": impl[a][j]}
+    return {
+        "check": "D-059 item 8f applied to Stage D3 (D-060 item 5)",
+        "models_compared": {"stage_d3": "Gait2392 with its moving knee kept; ankle rotation about z; subtalar and MTP "
+                                        "locked (the D3 oracle's matched copy, reproduced by this implementation)",
+                            "reference": "unmodified gait2392_millard2012muscle.osim (OpenSim 4.6)"},
+        "what_it_measures": "the remaining ankle and foot simplifications only; the knee is the same in both",
+        "poses": f"{len(oracle['unmodified_geometry'])} poses, every 10th D1 sample",
+        "units": "mm, largest absolute moment-arm difference per actuator and coordinate",
+        "reported_not_pass_fail": True,
+        "by_actuator": impl,
+        "largest_by_coordinate": largest,
+        "opensim_only_cross_check": {
+            "by_actuator": opensim,
+            "largest_difference_from_implementation_based_mm": max(abs(impl[a][j] - opensim[a][j])
+                                                                   for a in impl for j in sq.JOINTS)},
+    }
 
 
 def run_body(name, schema, d1_params, d2_params, tol, d1_official, d2_official, oracle_error):
@@ -147,7 +215,8 @@ def run_body(name, schema, d1_params, d2_params, tol, d1_official, d2_official, 
         "input_traceability": trace,
         "checks": {"residuals": checks, "passed": passed, "all_passed": all(passed.values())},
         "contact": res["contact"],
-        "verification": {"kinematics_oracle_error_m": oracle_error, "largest_kkt_residual": worst["kkt"],
+        "verification": {"kinematics_oracle_error_m": oracle_error if math.isfinite(oracle_error) else None,
+                         "largest_kkt_residual": worst["kkt"],
                          "second_solver_t_star_difference_N_m": worst["t_star_difference"],
                          "second_solver_activation_difference": worst["activation_difference"]},
         "reserve_summary": {
@@ -237,8 +306,13 @@ def build_manifest(commit_sha, d1_manifest, d2_manifest, config_path=CONFIG):
                                  "that knee are computed correctly. Not validation against measured squats or muscle "
                                  "activity."),
         "configuration": cfg, "d2_configuration": d2_cfg,
+        "declared_assumptions": declared_assumptions(cfg, d2_cfg),
         "oracle_reference": {"path": str(ORACLE.relative_to(ROOT)), **{k: oracle["provenance"][k] for k in
-                             ("opensim_version", "source_model_sha256", "matched_model_sha256", "knee_mode")}},
+                             ("opensim_version", "source_model_sha256", "matched_model_sha256", "knee_mode")},
+                             "coverage_problems": check_reference(oracle, "moving")},
+        "ankle_foot_simplification_size_gait2392": ankle_foot_simplification_size(
+            m2.load_actuators(1.0, schema)[0],
+            dataclasses.replace(m2.d1_joints(1.0, schema), moving_knee=d3.load_knee(1.0, schema)[0]), oracle),
         "runs": runs, "source_validation": d2r.SOURCE_VALIDATION,
     })
     return manifest

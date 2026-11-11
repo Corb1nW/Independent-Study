@@ -17,6 +17,7 @@ import pytest
 
 from src import muscles_d2 as m2
 from src.ontology import AnatomyOntology
+from tools.oracle_coverage import check_reference
 
 ROOT = Path(__file__).resolve().parents[1]
 REF = json.loads((ROOT / "tests" / "data" / "d2_oracle_reference.json").read_text(encoding="utf-8"))
@@ -93,6 +94,7 @@ def test_simm_spline_reproduces_knots_and_extrapolates_linearly():
 def test_lengths_and_moment_arms_match_opensim(kind):
     rows = [g for g in REF["geometry"] if g["kind"] == kind]
     assert rows
+    assert check_reference(REF, "fixed") == []       # full, ordered coverage first (ChatGPT note D3-N03)
     for g in rows:
         q = np.array(g["q"])
         for name in REF["actuators"]:
@@ -192,6 +194,7 @@ def test_virtual_work_identity_within_a_branch():
 
 # -------------------------------------------------------- 8c assembled force law vs oracle
 def test_assembled_force_and_intermediates_match_opensim():
+    assert check_reference(REF, "fixed") == []       # full, ordered coverage first (ChatGPT note D3-N03)
     assert {f["activation"] for f in REF["forces"]} == {0.0, 0.37, 1.0}
     assert {f["passive"] for f in REF["forces"]} == {False, True}
     shortening = lengthening = 0

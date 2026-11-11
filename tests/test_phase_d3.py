@@ -147,6 +147,7 @@ JM = dataclasses.replace(m2.d1_joints(1.0), moving_knee=d3.load_knee(1.0)[0])
 def test_moving_knee_muscle_geometry_matches_opensim(kind):
     rows = [g for g in REF["geometry"] if g["kind"] == kind]
     assert rows
+    assert check_reference(REF, "moving") == []       # full, ordered coverage first (ChatGPT note D3-N03)
     for g in rows:
         q = np.array(g["q"])
         for n in REF["actuators"]:
@@ -156,6 +157,7 @@ def test_moving_knee_muscle_geometry_matches_opensim(kind):
 
 
 def test_moving_knee_forces_match_opensim():
+    assert check_reference(REF, "moving") == []       # full, ordered coverage first (ChatGPT note D3-N03)
     for f in REF["forces"]:
         q, qd = np.array(f["q"]), np.array(f["qdot"])
         for n, v in f["values"].items():
@@ -204,3 +206,127 @@ def test_d3_exit_code_fails_only_on_verification():
     assert d3r.exit_code({"status": good}) == 0
     for k in ("mechanics_verification", "kinematics_verification", "optimizer_verification"):
         assert d3r.exit_code({"status": dict(good, **{k: "failed"})}) == 1
+
+
+# ----------------------------------------------- oracle coverage (ChatGPT note D3-N03)
+from tools.oracle_coverage import check_reference  # noqa: E402
+
+
+@pytest.mark.parametrize("path,mode", [("tests/data/d3_oracle_reference.json", "moving"),
+                                       ("tests/data/d2_oracle_reference.json", "fixed")])
+def test_committed_references_cover_exactly_the_expected_states(path, mode):
+    ref = json.loads((ROOT / path).read_text(encoding="utf-8"))
+    assert check_reference(ref, mode) == []
+
+
+def _tampered(change):
+    import copy
+    ref = copy.deepcopy(REF)
+    change(ref)
+    return ref
+
+
+@pytest.mark.parametrize("label,change", [
+    ("301 copies of the upright row (the reviewer's probe)",
+     lambda r: r.update(kinematics=[dict(r["kinematics"][0], index=i) for i in range(301)])),
+    ("truncated kinematics", lambda r: r.update(kinematics=r["kinematics"][:300])),
+    ("reordered kinematics", lambda r: r["kinematics"].reverse()),
+    ("non-finite position", lambda r: r["kinematics"][7]["hip_m"].__setitem__(1, float("nan"))),
+    ("truncated geometry", lambda r: r.update(geometry=r["geometry"][:5])),
+    ("geometry pose edited", lambda r: r["geometry"][40]["q"].__setitem__(1, 0.5)),
+    ("missing actuator in geometry", lambda r: r["geometry"][3]["length_m"].pop("soleus_r")),
+    ("forces truncated", lambda r: r.update(forces=r["forces"][:-1])),
+    ("force value non-finite", lambda r: r["forces"][2]["values"]["vas_lat_r"].__setitem__("tendon_force_N", float("inf"))),
+    ("unmodified rows thinned", lambda r: r.update(unmodified_geometry=r["unmodified_geometry"][::2])),
+    ("fixed-knee reference passed as moving", lambda r: r["provenance"].update(knee_mode="fixed")),
+    ("matched model hash stale", lambda r: r["provenance"].update(matched_model_sha256="0" * 64)),
+    ("oracle tool hash stale", lambda r: r["provenance"].update(tool_sha256="0" * 64)),
+])
+def test_tampered_reference_fails_coverage_and_the_runner_check(label, change):
+    bad = _tampered(change)
+    assert check_reference(bad, "moving"), label
+    assert d3r.kinematics_oracle_error(bad) == float("inf"), label
+
+
+def test_kinematics_rows_follow_the_d1_motion_exactly():
+    m = sq.Motion(PARAMS["start_angles"], PARAMS["depth_angles"], PARAMS["period"])
+    q, _, _ = m(np.linspace(0, PARAMS["period"], int(PARAMS["samples"])))
+    assert [r["index"] for r in REF["kinematics"]] == list(range(q.shape[1]))
+    assert np.array_equal(np.array([r["q"] for r in REF["kinematics"]]).T, q)
+
+
+# ----------------------------------- ankle and foot simplification size (ChatGPT finding D3-B03)
+def test_ankle_foot_simplification_size_is_reported_and_cross_checked():
+    r = d3r.ankle_foot_simplification_size(ACTS, JM, REF)
+    assert r["reported_not_pass_fail"] is True
+    assert set(r["by_actuator"]) == set(REF["actuators"])
+    assert r["largest_by_coordinate"]["ankle"] == {"actuator": "tib_ant_r", "mm": pytest.approx(4.393, abs=1e-3)}
+    assert r["largest_by_coordinate"]["knee"]["actuator"] == "lat_gas_r"
+    assert r["largest_by_coordinate"]["knee"]["mm"] == pytest.approx(0.0188, abs=1e-4)
+    assert r["largest_by_coordinate"]["hip"]["mm"] < 1e-3            # the hip is not affected by ankle or foot changes
+    # the implementation-based figures equal the OpenSim-only comparison of the two models
+    assert r["opensim_only_cross_check"]["largest_difference_from_implementation_based_mm"] < 1e-3
+
+
+def test_knee_is_identical_in_both_models_of_the_comparison():
+    """What 8f measures in D3 is only the ankle and foot: the knee XML is the same in the matched copy and the source."""
+    import xml.etree.ElementTree as ET
+    from tools import make_d2_oracle as oracle
+    knee = lambda root: ET.tostring([j for j in root.iter("CustomJoint") if j.get("name") == "knee_r"][0])  # noqa: E731
+    assert knee(ET.fromstring(oracle.matched_model_xml("moving"))) == knee(ET.parse(oracle.OSIM).getroot())
+
+
+# ChatGPT finding D3-B02: each knee mode of the viewer shows its own manifest's assumptions.
+from tools import build_d2_page as page  # noqa: E402
+
+D2_MANIFEST = json.loads((ROOT / "results" / "phase_d" / "2026-11-10_d2_muscle_runs_7ac0f2d.json").read_text(encoding="utf-8"))
+FIXED_ONLY = ("fixed-centre knee", "inertial torques are kept")
+
+
+def _declared():
+    cfg = d3r.load_config()
+    d2_cfg, _ = d3r.d2r.load_config(ROOT / cfg["d2_config"])
+    return cfg, d2_cfg, d3r.declared_assumptions(cfg, d2_cfg)
+
+
+def test_declared_assumptions_restate_every_fixed_knee_item_of_d2():
+    cfg, d2_cfg, declared = _declared()
+    assert [a["source"] for a in declared] == ["D3"] * len(cfg["assumptions"]) + ["D2"] * len(d2_cfg["assumptions"])
+    assert [a["number"] for a in declared if a["source"] == "D2"] == list(range(1, len(d2_cfg["assumptions"]) + 1))
+    # The D2 items that describe the fixed knee are exactly the ones restated, and none survives in the D3 list.
+    fixed_items = {k for k, t in enumerate(d2_cfg["assumptions"], 1) if any(ph in t for ph in FIXED_ONLY)}
+    assert fixed_items == set(cfg["d2_assumption_restatements"]) == {1, 2}
+    assert not [a for a in declared if any(ph in a["text"] for ph in FIXED_ONLY)]
+    assert {a["number"] for a in declared if a.get("restated_for_stage_d3")} == fixed_items
+    # Unrestated D2 items are carried over word for word (numbering prefix removed).
+    for a, t in zip([a for a in declared if a["source"] == "D2"], d2_cfg["assumptions"]):
+        if not a["restated_for_stage_d3"]:
+            assert t.endswith(a["text"])
+    assert any("D1's motion q(t) is retained" in a["text"] and "moving knee" in a["text"] for a in declared)
+
+
+def test_declared_assumptions_reject_a_restatement_of_a_missing_item():
+    cfg, d2_cfg, _ = _declared()
+    with pytest.raises(ValueError):
+        d3r.declared_assumptions(dict(cfg, d2_assumption_restatements={len(d2_cfg["assumptions"]) + 1: "x"}), d2_cfg)
+
+
+def test_viewer_data_takes_each_modes_assumptions_from_its_own_manifest():
+    _, _, declared = _declared()
+    fixed = page.compact(D2_MANIFEST)
+    assert fixed["knee"] == "fixed"
+    assert [a["text"] for a in fixed["assumptions"]] == [
+        t.split(". ", 1)[1] if t.split(". ", 1)[0].isdigit() else t for t in D2_MANIFEST["configuration"]["assumptions"]]
+    assert any("fixed-centre knee" in a["text"] for a in fixed["assumptions"])
+    d3_manifest = json.loads((ROOT / "results" / "phase_d" / "2026-11-10_d3_moving_knee_runs_525e2c3.json")
+                             .read_text(encoding="utf-8"))
+    with pytest.raises(KeyError):          # a D3 manifest without its own list must not borrow D2's
+        page.compact(d3_manifest)
+    moving = page.compact(dict(d3_manifest, declared_assumptions=declared))
+    assert moving["knee"] == "moving"
+    assert [a["text"] for a in moving["assumptions"]] == [a["text"] for a in declared]
+    assert not [a for a in moving["assumptions"] if any(ph in a["text"] for ph in FIXED_ONLY)]
+    assert [a["label"] for a in moving["assumptions"]][:2] == ["D3-1", "D3-2"]
+    assert "D2-1 (restated)" in [a["label"] for a in moving["assumptions"]]
+    html = page.render(D2_MANIFEST, dict(d3_manifest, declared_assumptions=declared))
+    assert "V.assumptions" in html and "esc(a.text)" in html
