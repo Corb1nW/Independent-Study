@@ -2104,7 +2104,7 @@ The check found that the D2 reference's recorded tool hash was stale (Amendment 
 - **added:** the new fields (`declared_assumptions`, `ankle_foot_simplification_size_gait2392`, `oracle_reference.coverage_problems`, `configuration.d2_assumption_restatements`, two inputs);
 - **changed:** the commit, the D3 configuration's assumption text, and the runner and configuration hashes.
 
-*Checks.* 284 tests pass (Python 3.13, Linux), up from 263. `src.integrity` passed. The probes reject their eight cases as designed. `build_segment_datasets.py --check` passed. Both coverage CLIs report OK. The viewer check passed.
+*Checks.* 284 tests pass (Python 3.13, Linux), up from 263. `src.integrity` passed. The probes reject all 9 cases (9/9 REJECTED), as designed. `build_segment_datasets.py --check` passed. Both coverage CLIs report OK. The viewer check passed.
 
 *Not run.* Windows; an independent OpenSim re-run by the reviewer; physiological validation.
 
