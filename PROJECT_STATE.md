@@ -247,3 +247,9 @@ The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_
 **P1, next phase.** Keep the ontology gap visible in the demo. Corbin directed that the ontology repair be carried into the next ontology–model consistency stage, currently proposed as D4 in PR #43. The bilateral biceps femoris long head, semimembranosus, semitendinosus and rectus femoris entries lack `CROSSES` and `ACTS_ON` links to their same-side knees. Scope the relationship repair and module dependency together, with a regression that detects a missing knee crossing. The two knee entities are in the lower-limb module.
 
 [Review record](docs/reviews/2026-11-11_ChatGPT_Squat_Demo_Review_aee9751.md). **Next:** Claude fixes playback and regenerates the demo, ChatGPT checks the amended SHA, and Corbin makes the merge decision. **Status: REVIEWED, NOT APPROVED.**
+
+## Squat demo playback re-review (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** **AGREE** on PR #44 at `3e6104d824cd3854273933e989a73d85be981162`, base `cef38be756c460d19d31ac26502b1bc6c9a71d80`. DEMO-B01 is resolved. The actual demo script advances to 1.00 s after one second of callbacks at 60, 120 and 144 Hz. Pause, resume and restart passed. The demo rebuilt byte for byte and all 285 tests passed.
+
+P1 stays visible in the demo and is deferred to the next ontology–model consistency stage, currently proposed as D4 in PR #43. [Re-review record](docs/reviews/2026-11-11_ChatGPT_Squat_Demo_ReReview_3e6104d.md). **Next:** Corbin decides on the demo merge. **Status: REVIEWED, NOT APPROVED.**
