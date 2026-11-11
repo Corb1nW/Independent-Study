@@ -255,3 +255,11 @@ The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_
 **Reviewed by (model): ChatGPT.** **AGREE** on PR #44 at `3e6104d824cd3854273933e989a73d85be981162`, base `cef38be756c460d19d31ac26502b1bc6c9a71d80`. DEMO-B01 is resolved. The actual demo script advances to 1.00 s after one second of callbacks at 60, 120 and 144 Hz. Pause, resume and restart passed. The demo rebuilt byte for byte and all 285 tests passed.
 
 P1 stays visible in the demo and is deferred to the next ontology–model consistency stage, currently proposed as D4 in PR #43. [Re-review record](docs/reviews/2026-11-11_ChatGPT_Squat_Demo_ReReview_3e6104d.md). **Next:** Corbin decides on the demo merge. **Status: REVIEWED, NOT APPROVED.**
+
+## D-061 squat proof-of-concept scope review (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #43 at `57bfeaa7ac1beebceeff2b572aa3e2d5cd29c1e8`, proposal base `cef38be756c460d19d31ac26502b1bc6c9a71d80`. **AMEND.** D4 is the right first stage. The crossing check must distinguish path topology from leverage and cover the deferred knee links. D6 needs confirmed data terms for public vendoring and validation claims conditional on the evaluation. P4 needs to preserve D-051's review boundary or explicitly amend it with targeted checks of executable changes.
+
+At the reviewed SHA, 285 tests passed, integrity passed, 9/9 invalid probes were rejected, and the segment dataset check passed. A geometric counterexample showed that a path can cross a joint with zero moment arm. The data archives and future builds remain to be checked in their stage reviews.
+
+[Review record](docs/reviews/2026-11-11_ChatGPT_D061_Scope_57bfeaa.md). **Next:** Claude amends D-061 and Corbin decides on the plan. **Status: REVIEWED, NOT APPROVED.**
