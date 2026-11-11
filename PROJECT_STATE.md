@@ -228,3 +228,9 @@ Authoritative review: [`2026-11-11_ChatGPT_D3_Build_Review_b06400b.md`](docs/rev
 The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_oracle.py`. Both oracle checks and the full D3 run fail in that checkout. A local test of the path-specific rule `tools/make_d2_oracle.py text eol=lf` restored both oracle checks and the full run. **Next:** Claude adds the tracked rule in PR #41 and supplies evidence and the amended SHA. ChatGPT re-reviews the line-ending fix. Corbin makes the merge decision.
 
 [Re-review record](docs/reviews/2026-11-11_ChatGPT_D3_Amendment2_ReReview_9805d41.md). This entry supersedes the prior D3 build review handoff. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D3 Amendment 3 re-review handoff (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #41 at `abed0742c13b5e976a4da76aab58f45a0f379a1e`, base `ad11987d1a458ab4fb65462219c2ac533bc5f0c8`. **AGREE.** The tracked LF attribute resolves D3-B04. In a clean Git checkout with `core.autocrlf=true`, both oracle checks passed, 285 tests passed, integrity passed, 9/9 probes were rejected, and the dataset check passed. The full D3 run matched the official `d3efc563b9abd097f2adf1eddbd579560bbfa48d` results and all 30 input blob IDs. The checkout conversion was reproduced on Linux.
+
+[Re-review record](docs/reviews/2026-11-11_ChatGPT_D3_Amendment3_ReReview_abed074.md). No blocking findings. **Next:** Corbin decides on PRs #41 and #42. **Status: REVIEWED, NOT APPROVED.**
