@@ -3,6 +3,12 @@ This is an Independant Study between Corbin Wright and Fanchao Meng for the 2026
 The goal is to take my experience with dynamic system and control theory and apply this to my ambition with the field of Physical Therapy. The project is to create a digital twin of the human musculoskeletal system that can allow us to tune different parameters to reflect different conditions you may see in the real world. This tool would have benfits within clinics and students preparing for their time in the field. This project will be just laying the groundwork for a much more in depth product which will be highly customizable and reflects all the major systems that impact movement. 
 
 
+## Start here: the squat demo
+
+**[`SQUAT_DEMO.html`](SQUAT_DEMO.html)** presents the project so far in one page. It plays the squat with its 14 muscles, shows what went into the model and how the three stages built and checked it, lists what the model leaves out, and explains how this serves the larger project. GitHub shows HTML as source code, so download the file (the *Download raw file* button) and open it in any web browser. It needs no installation and works offline; only the fonts need a connection.
+
+The page is generated from the official run results: `python -m tools.build_squat_demo`.
+
 ## Repository layout
 
 - **LB-AO code and records (repository root):** `src/`, `ontology/`, `tests/`, `tools/`, the demo scripts, `docs/DECISIONS.md` (decision log) and `PROJECT_STATE.md` (current state and next task). This is the line of work under review; its history begins at commit `d04fb78`.

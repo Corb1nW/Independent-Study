@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LB-AO Squat Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Same instrument-panel language as the Phase D viewers, laid out as a single-page presentation. */
+:root {
+  --bg: #f3f5f6; --surface: #fdfefe; --ink: #13202a; --ink-2: #4a5964; --muted: #6f7e88;
+  --line: #dde3e7; --axis: #b9c4cb; --accent: #0f5c8c; --accent-soft: #e3eef5; --ok: #1b7f4b; --flag: #b4471b;
+  --ankle: #2a78d6; --knee: #eb6834; --hip: #1baf7a; --ground: #8a9aa5;
+  --act-0: #d4dce1; --act-1: #c2410c; --bone: #a9b6be; --fixed: #8a6bd1;
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161a; --surface: #171d22; --ink: #e6edf1; --ink-2: #aab7c0; --muted: #85939d;
+  --line: #263037; --axis: #3a4750; --accent: #6db3e3; --accent-soft: #1b2a35; --ok: #4cc28a; --flag: #f08a5d;
+  --ankle: #3987e5; --knee: #d95926; --hip: #199e70; --ground: #6f808b;
+  --act-0: #34414a; --act-1: #ff8a4c; --bone: #56646d; --fixed: #a58ae6; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161a; --surface: #171d22; --ink: #e6edf1; --ink-2: #aab7c0; --muted: #85939d;
+  --line: #263037; --axis: #3a4750; --accent: #6db3e3; --accent-soft: #1b2a35; --ok: #4cc28a; --flag: #f08a5d;
+  --ankle: #3987e5; --knee: #d95926; --hip: #199e70; --ground: #6f808b;
+  --act-0: #34414a; --act-1: #ff8a4c; --bone: #56646d; --fixed: #a58ae6; color-scheme: dark }
+* { box-sizing: border-box }
+html { scroll-behavior: smooth; scroll-padding-top: 64px }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; margin: 0 }
+a { color: var(--accent) }
+code { font-family: var(--font-data); font-size: .9em; overflow-wrap: anywhere }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+
+nav.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line) }
+nav.top .wrap { display: flex; gap: 4px 18px; align-items: center; overflow-x: auto; scrollbar-width: none; padding-block: 10px }
+nav.top .brand { font-family: var(--font-display); font-weight: 800; font-size: 14px; letter-spacing: .02em; white-space: nowrap; margin-right: 6px }
+nav.top a { font-size: 13.5px; color: var(--ink-2); text-decoration: none; white-space: nowrap; padding: 3px 0; border-bottom: 2px solid transparent }
+nav.top a:hover, nav.top a.on { color: var(--ink); border-bottom-color: var(--accent) }
+
+header.hero { padding-block: 40px 10px; display: grid; gap: 14px }
+.eyebrow { font-family: var(--font-data); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5.2vw, 52px); line-height: 1.04; margin: 0; letter-spacing: -.015em; text-wrap: balance; max-width: 20ch }
+.lede { margin: 0; max-width: 68ch; color: var(--ink-2); font-size: 17px }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 8px }
+.stat { background: var(--surface); padding: 12px 14px }
+.stat b { display: block; font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums }
+.stat span { font-size: 12.5px; color: var(--muted) }
+.stat.ok b { color: var(--ok) }
+
+section.chapter { padding-block: 44px 8px; display: grid; gap: 18px }
+.chap-head { display: grid; gap: 6px; max-width: 76ch }
+.chap-num { font-family: var(--font-data); font-size: 12px; color: var(--accent); letter-spacing: .08em }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3.2vw, 30px); line-height: 1.15; margin: 0; letter-spacing: -.01em }
+.chap-head p { margin: 0; color: var(--ink-2) }
+h3 { font-family: var(--font-display); font-weight: 600; font-size: 16px; margin: 0 0 8px; letter-spacing: .005em }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0 }
+.panel p.sub { margin: -4px 0 10px; font-size: 13px; color: var(--muted) }
+.grid2 { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 18px; align-items: start }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; align-items: stretch }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr } }
+.stack { display: grid; gap: 18px; min-width: 0 }
+svg { display: block; width: 100%; height: auto }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center }
+.seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 8px; overflow: hidden; max-width: 100% }
+.seg button { font: inherit; font-size: 14px; padding: 7px 12px; border: 0; background: var(--surface); color: var(--ink-2); cursor: pointer }
+.seg button + button { border-left: 1px solid var(--axis) }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface) }
+.play { font: inherit; font-weight: 700; font-size: 14px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--surface); cursor: pointer; min-width: 84px }
+.scrub { display: flex; align-items: center; gap: 10px; flex: 1 1 240px; min-width: 0 }
+.scrub input { flex: 1; min-width: 0; accent-color: var(--accent) }
+.time { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-2); white-space: nowrap }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+.legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 6px }
+.legend .ramp { flex: 0 1 140px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--act-0), var(--act-1)) }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--ink-2); margin: 0 0 6px }
+.chips span { display: inline-flex; align-items: center; gap: 6px }
+.chips i { width: 14px; height: 3px; border-radius: 2px; display: inline-block }
+.joints { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px }
+.joint { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 12px; color: var(--muted) }
+.joint b { display: block; font-family: var(--font-data); font-size: 14px; color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums }
+.joint .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0 }
+.howto { font-size: 13.5px; color: var(--ink-2); margin: 0; display: grid; gap: 6px; padding-left: 18px }
+.heat-label { cursor: pointer }
+.heat-label:hover, .heat-label.sel { text-decoration: underline; fill: var(--accent) }
+
+.card-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px }
+@media (max-width: 760px) { .card-grid { grid-template-columns: 1fr } }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; font-size: 13.5px; margin: 0 }
+.facts dt { color: var(--muted) }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere }
+.facts dd.num { font-family: var(--font-data); font-variant-numeric: tabular-nums }
+.idtag { font-family: var(--font-data); font-size: 12px; color: var(--ink-2); background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap }
+.pill.ok { color: var(--ok); border: 1px solid var(--ok) } .pill.flag { color: var(--flag); border: 1px solid var(--flag) } .pill.plain { color: var(--ink-2); border: 1px solid var(--axis) }
+.callout { border-left: 3px solid var(--flag); padding: 8px 12px; background: color-mix(in srgb, var(--flag) 7%, var(--surface)); border-radius: 0 8px 8px 0; font-size: 13.5px; color: var(--ink-2); margin: 10px 0 0 }
+.callout.info { border-left-color: var(--accent); background: var(--accent-soft) }
+.muscle-pick { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px }
+.muscle-pick button { font: inherit; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer }
+.muscle-pick button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 700 }
+
+.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; align-items: stretch }
+.flow .step { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px 14px; margin-right: 22px; display: grid; align-content: start; gap: 4px }
+.flow .step:last-child { margin-right: 0 }
+.flow .step:not(:last-child)::after { content: ""; position: absolute; right: -17px; top: 50%; width: 12px; height: 12px; border-top: 2px solid var(--axis); border-right: 2px solid var(--axis); transform: translateY(-50%) rotate(45deg) }
+.flow .k { font-family: var(--font-data); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em }
+.flow .n { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.1 }
+.flow .d { font-size: 13px; color: var(--ink-2) }
+@media (max-width: 900px) { .flow { grid-template-columns: 1fr } .flow .step { margin-right: 0; margin-bottom: 20px }
+  .flow .step:last-child { margin-bottom: 0 }
+  .flow .step:not(:last-child)::after { right: auto; left: 50%; top: auto; bottom: -15px; transform: translateX(-50%) rotate(135deg) } }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 13.5px }
+table.t th, table.t td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+table.t thead th { color: var(--muted); font-weight: 400; font-size: 12px; border-bottom-color: var(--axis) }
+table.t td.num, table.t th.num { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap }
+.scroll-x { overflow-x: auto }
+
+.stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px }
+@media (max-width: 900px) { .stages { grid-template-columns: 1fr } }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; border-top: 4px solid var(--c) }
+.stage .tag { font-family: var(--font-data); font-size: 12px; color: var(--muted) }
+.stage h3 { margin: 0; font-size: 18px }
+.stage p { margin: 0; font-size: 14px; color: var(--ink-2) }
+.stage .q { font-style: italic; color: var(--ink) }
+.stage .res { border-top: 1px solid var(--line); padding-top: 8px; font-size: 13.5px }
+
+ul.clean { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--ink-2) }
+ul.tags { list-style: none; padding-left: 0 }
+ul.tags .tag { font-family: var(--font-data); font-size: 11px; color: var(--muted); margin-right: 8px; white-space: nowrap }
+details { font-size: 14px; color: var(--ink-2) } summary { cursor: pointer; color: var(--accent); font-weight: 700; margin-bottom: 8px }
+.goal { display: grid; gap: 10px }
+.goal h3 { font-size: 18px }
+.check { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; font-size: 14px }
+.check li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; color: var(--ink-2) }
+.check li::before { content: "✓"; color: var(--ok); font-weight: 700 }
+.check li.next::before { content: "→"; color: var(--muted) }
+.roadmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px }
+.road { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface); font-size: 13px; color: var(--ink-2) }
+.road b { display: block; font-family: var(--font-data); color: var(--ink); font-size: 12.5px; margin-bottom: 2px }
+.road.done { border-color: var(--ok) } .road.done b { color: var(--ok) }
+.road.later { border-style: dashed }
+footer { margin-top: 48px; padding-block: 22px 40px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: grid; gap: 6px }
+</style>
+</head>
+<body>
+<nav class="top" aria-label="Sections"><div class="wrap">
+  <span class="brand">LB-AO · Squat demo</span>
+  <a href="#sim">1 · Simulation</a><a href="#inputs">2 · Ingredients</a><a href="#build">3 · How it was built</a>
+  <a href="#checks">4 · Checks</a><a href="#limits">5 · Limits</a><a href="#project">6 · The bigger picture</a>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">Independent Study · LB-AO musculoskeletal digital twin · Phase D, Stages D1–D3</div>
+  <h1>A squat, built from an ontology of the human body</h1>
+  <p class="lede">This page shows what the project has built so far. It is a side-view squat for three body types, driven by 14 leg muscles. Every number traces back to a published source or is labelled as an assumption. Two AI models built and checked it, and Corbin decided and merged each step. The computation is verified, but it has <b>not yet been compared with measured people</b>.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<!-- 1 -->
+<section class="chapter" id="sim">
+  <div class="chap-head"><span class="chap-num">01 · THE SIMULATION</span>
+    <h2>Watch the squat, muscle by muscle</h2>
+    <p>The squat is 1.5 s down and 1.5 s up, with the foot flat. At each instant the model does two things. It works out the joint torques the motion needs (inverse dynamics), then shares those torques among the 14 muscles using the least total effort. Muscles are coloured by how hard they work.</p>
+  </div>
+  <div class="controls" role="group" aria-label="Playback">
+    <div class="seg" id="bodies" role="group" aria-label="Body"></div>
+    <button class="play" id="play" type="button">Pause</button>
+    <div class="scrub"><input id="scrub" type="range" min="0" max="300" value="0" aria-label="Time"><span class="time" id="time"></span></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Side view, facing right</h3>
+      <svg id="figure" viewBox="0 0 400 450" role="img" aria-label="Stick figure squatting with coloured muscle lines"></svg>
+      <div class="legend"><span>Effort 0</span><span class="ramp"></span><span>1 (fully active)</span></div>
+      <div class="joints" id="joints"></div>
+    </div>
+    <div class="stack">
+      <div class="panel">
+        <h3>Joint torque each leg must supply (N·m)</h3>
+        <p class="sub">Negative knee torque is extension, which holds the body up. Click or drag a chart to move in time.</p>
+        <div class="chips" id="tau-legend"></div>
+        <svg id="tau" role="img" aria-label="Ankle, knee and hip torque over time"></svg>
+      </div>
+      <div class="panel">
+        <h3>Muscle effort over the squat</h3>
+        <p class="sub">One row per muscle; darker is harder working. Click a muscle name to see where it comes from.</p>
+        <svg id="heat" role="img" aria-label="Activation heat map, one row per muscle"></svg>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="muscle-card" aria-live="polite">
+    <h3>From anatomy to model: one muscle traced</h3>
+    <p class="sub">Each model muscle (a Gait2392 actuator) is linked in the ontology to the anatomical muscle it represents, and from there to its nerve, its action and the source behind it.</p>
+    <div class="muscle-pick" id="muscle-pick"></div>
+    <div class="card-grid">
+      <div><h3 id="mc-title"></h3><dl class="facts" id="mc-onto"></dl></div>
+      <div><h3>In the model</h3><dl class="facts" id="mc-model"></dl></div>
+    </div>
+    <div id="mc-gap"></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="chapter" id="inputs">
+  <div class="chap-head"><span class="chap-num">02 · INGREDIENTS</span>
+    <h2>What went into it</h2>
+    <p>The project keeps anatomy, numbers and models apart. The ontology says what exists and how it connects. The datasets hold the numbers, each tied to a source. The model only uses data that passes a traceability check, and every run writes a manifest recording exactly which files it used.</p>
+  </div>
+  <div class="flow" id="flow"></div>
+  <div class="grid3">
+    <div class="panel"><h3>Three bodies</h3><p class="sub">The same squat for each body. Segment masses are per leg, with half the upper body carried by each leg.</p>
+      <div class="scroll-x"><table class="t" id="bodies-t"></table></div></div>
+    <div class="panel"><h3>The motion</h3><p class="sub">Designed, not measured. These are labelled demonstration assumptions.</p>
+      <dl class="facts" id="motion"></dl><p class="callout info" id="motion-why" style="margin-top:12px"></p></div>
+    <div class="panel"><h3>The 14 muscles</h3><p class="sub">Maximum isometric force, from Gait2392 (the same for all three bodies).</p>
+      <div class="scroll-x"><table class="t" id="muscles-t"></table></div></div>
+  </div>
+  <div class="panel"><h3>Sources the squat depends on</h3>
+    <p class="sub">Taken from <code>sources/SOURCES.md</code>, the project's single list of every source used. “Read” means opened and used; “Cited, not accessed” means named only because another source relies on it.</p>
+    <div class="scroll-x"><table class="t" id="sources-t"></table></div></div>
+</section>
+
+<!-- 3 -->
+<section class="chapter" id="build">
+  <div class="chap-head"><span class="chap-num">03 · HOW IT WAS BUILT</span>
+    <h2>Three stages, each answering one question</h2>
+    <p>Each stage began with a written scope decision. It was built by one AI model, reviewed by the other, and accepted and merged by Corbin. The third stage started because the second turned up a problem.</p>
+  </div>
+  <div class="stages" id="stages"></div>
+  <div class="panel">
+    <h3>The finding that led to Stage D3</h3>
+    <p class="sub">The “reserve” is torque the muscles could not supply. It was a labelled stand-in, with 1 N·m allowed before a sample is flagged. Shown for the body selected above.</p>
+    <div class="chips" id="res-legend"></div>
+    <svg id="reserve" role="img" aria-label="Reserve torque needed over time, fixed knee versus moving knee"></svg>
+    <p id="res-note" style="margin:8px 0 0;font-size:14px;color:var(--ink-2)"></p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="chapter" id="checks">
+  <div class="chap-head"><span class="chap-num">04 · HOW WE KNOW IT IS COMPUTED RIGHT</span>
+    <h2>Checks, and an independent re-run</h2>
+    <p>Each result is computed in more than one way, or compared with outside software, against tolerances written down before the run. The table shows the worst case across the three bodies from the official Stage D3 run.</p>
+  </div>
+  <div class="panel scroll-x"><table class="t" id="checks-t"></table></div>
+  <div class="grid3">
+    <div class="panel"><h3>Foot contact stays realistic</h3><dl class="facts" id="contact"></dl></div>
+    <div class="panel" style="grid-column: span 2; min-width: 0"><h3>Re-run independently by the other AI model</h3>
+      <p class="sub">The reviewing model reran the work on its own setup and compared the outputs value by value. Quoted from <code>PROJECT_STATE.md</code>.</p>
+      <ul class="clean" id="records"></ul></div>
+  </div>
+  <p class="callout" id="verif-note"></p>
+</section>
+
+<!-- 5 -->
+<section class="chapter" id="limits">
+  <div class="chap-head"><span class="chap-num">05 · LIMITS</span>
+    <h2>What this model is, and is not</h2>
+    <p>Simplifications are allowed, but every departure from real anatomy is written down. That makes it clear what to improve next. The list below is generated from the run itself, not written separately.</p>
+  </div>
+  <div class="grid3">
+    <div class="panel"><h3>Status</h3><dl class="facts" id="validity"></dl></div>
+    <div class="panel" style="grid-column: span 2; min-width: 0"><h3>Left out on purpose</h3><ul class="clean" id="omitted"></ul></div>
+  </div>
+  <div class="panel" id="gap-panel"></div>
+  <div class="panel"><details><summary id="assump-sum"></summary><ul class="clean tags" id="assump"></ul></details></div>
+</section>
+
+<!-- 6 -->
+<section class="chapter" id="project">
+  <div class="chap-head"><span class="chap-num">06 · THE BIGGER PICTURE</span>
+    <h2>How the squat serves the project</h2>
+    <p>The long-term aim is a digital twin of the human musculoskeletal system. Its parameters could be tuned to reflect conditions seen in physical therapy, for use in clinics and by students. That needs groundwork first. The squat is a proof of concept for two claims the larger project rests on.</p>
+  </div>
+  <div class="grid3">
+    <div class="panel goal"><span class="chap-num">CLAIM A</span><h3>Working with AI can produce legitimate scientific research</h3>
+      <ul class="check" id="goal-a"></ul></div>
+    <div class="panel goal"><span class="chap-num">CLAIM B</span><h3>An ontology of the musculoskeletal system can build a digital twin</h3>
+      <ul class="check" id="goal-b"></ul></div>
+  </div>
+  <div class="panel"><h3>How the work is done</h3>
+    <p style="margin:0 0 10px;font-size:14px;color:var(--ink-2)">Corbin decides and merges. One AI model builds, and the other reviews with AGREE, AMEND or DISAGREE. They swap roles under the same one-page role rules. Every decision, its defence and how disagreements were settled go into a log that collaborators can audit. Developing this way of working is half the project's value.</p>
+    <div class="stats" id="process"></div></div>
+  <div class="panel"><h3>Where it goes next</h3>
+    <p class="sub">Stages D1–D3 are done. The next steps are a plan still awaiting Corbin's decisions, not a commitment. Conditions and personalization come in the larger project.</p>
+    <div class="roadmap" id="roadmap"></div></div>
+</section>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+const JOINTS = [["ankle", "Ankle"], ["knee", "Knee"], ["hip", "Hip"]];
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const svgNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(svgNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const $ = id => document.getElementById(id);
+const esc = x => String(x).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
+const neg = (v, d=1) => (v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? "−" : "") + Math.abs(v).toFixed(d);
+const sci = v => { if (v === 0) return "0"; const [m, e] = Math.abs(v).toExponential(1).split("e"); return `${v < 0 ? "−" : ""}${m}×10<sup>${+e}</sup>`; };
+const ORDER = DATA.groups.flatMap(g => g[1]);
+const T = DATA.t, N = T.length;
+let run = DATA.runs[0], i = 0, playing = !matchMedia("(prefers-reduced-motion: reduce)").matches, last = null, selected = "vas_lat_r";
+
+function hex(c) { c = c.replace("#", ""); return [0, 2, 4].map(k => parseInt(c.slice(k, k + 2), 16)); }
+function actColor(a) { const p = hex(css("--act-0")), q = hex(css("--act-1")); const t = Math.max(0, Math.min(1, a));
+  return `rgb(${p.map((v, k) => Math.round(v + (q[k] - v) * t)).join(",")})`; }
+
+// ---------------------------------------------------------------- hero stats
+const P = DATA.pipeline, allPass = DATA.runs.every(r => Object.entries(r.status).every(([k, v]) => k === "source_validation" || ["passed", "feasible", "in_domain"].includes(v)));
+$("stats").innerHTML = [
+  [DATA.runs.length, "body types"], [3, "joints per leg (ankle, knee, hip)"], [ORDER.length, "leg muscles"],
+  [P.traced, "data records traced to sources"], [DATA.sources.length, "sources behind the squat"],
+  [allPass ? "All pass" : "Check failed", "computation checks", allPass ? "ok" : ""],
+].map(([b, s, c]) => `<div class="stat ${c || ""}"><b>${b}</b><span>${s}</span></div>`).join("");
+
+// ---------------------------------------------------------------- controls
+const segB = $("bodies");
+DATA.runs.forEach((r, k) => {
+  const b = document.createElement("button"); b.type = "button"; b.textContent = r.label; b.setAttribute("aria-pressed", k === 0);
+  b.onclick = () => { run = r; [...segB.children].forEach(x => x.setAttribute("aria-pressed", x === b)); rebuild(); };
+  segB.appendChild(b);
+});
+const playBtn = $("play");
+function syncPlay() { playBtn.textContent = playing ? "Pause" : "Play"; }
+playBtn.onclick = () => { playing = !playing; if (playing && i >= N - 1) i = 0; syncPlay(); };
+$("scrub").max = N - 1;
+$("scrub").addEventListener("input", e => { i = +e.target.value; playing = false; syncPlay(); frame(); });
+
+// ---------------------------------------------------------------- figure
+const fig = $("figure"), S = 205, X0 = 150, Y0 = 380;
+const px = (x, y) => [X0 + S * x, Y0 - S * y];
+function drawFigure() {
+  const r = run, p = r.pts, f = r.foot; fig.replaceChildren();
+  const [gx1, gy] = px(-0.7, f.ground_y_m), [gx2] = px(1.2, f.ground_y_m);
+  el("line", {x1: gx1, y1: gy, x2: gx2, y2: gy, stroke: css("--ground"), "stroke-width": 1.5}, fig);
+  for (let k = 0; k < 14; k++) { const x = gx1 + k * 22; el("line", {x1: x, y1: gy, x2: x - 8, y2: gy + 8, stroke: css("--line"), "stroke-width": 1}, fig); }
+  const ank = px(0, 0), heel = px(...f.heel_m), ball = px(...f.ball_m);
+  el("polygon", {points: [ank, heel, ball].map(q => q.join(",")).join(" "), fill: "none", stroke: css("--bone"), "stroke-width": 3, "stroke-linejoin": "round"}, fig);
+  const k = px(p.knee.x[i], p.knee.y[i]), h = px(p.hip.x[i], p.hip.y[i]), top = px(p.hat_drawing_top.x[i], p.hat_drawing_top.y[i]);
+  el("polyline", {points: [ank, k, h].map(q => q.join(",")).join(" "), fill: "none", stroke: css("--bone"), "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round"}, fig);
+  el("line", {x1: h[0], y1: h[1], x2: top[0], y2: top[1], stroke: css("--bone"), "stroke-width": 8, "stroke-linecap": "round"}, fig);
+  el("circle", {cx: top[0], cy: top[1] - 14, r: 13, fill: "none", stroke: css("--bone"), "stroke-width": 3}, fig);
+  const order = ORDER.map(m => m).sort((a, b) => (r.act[a][i] + (a === selected ? 2 : 0)) - (r.act[b][i] + (b === selected ? 2 : 0)));
+  for (const m of order) {
+    const pts = r.paths[i][ORDER.indexOf(m)].map(([x, y]) => px(x, y).join(",")).join(" "), a = r.act[m][i];
+    if (m === selected) el("polyline", {points: pts, fill: "none", stroke: css("--accent"), "stroke-width": 9 + 3 * a, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.35}, fig);
+    const line = el("polyline", {points: pts, fill: "none", stroke: actColor(a), "stroke-width": 2.5 + 3 * a, "stroke-linecap": "round", "stroke-linejoin": "round", style: "cursor:pointer"}, fig);
+    const tt = el("title", {}, line); tt.textContent = `${DATA.names[m]}: effort ${a.toFixed(2)}`;
+    line.addEventListener("click", () => selectMuscle(m));
+  }
+  JOINTS.forEach(([j], n) => { const at = [ank, k, h][n]; el("circle", {cx: at[0], cy: at[1], r: 5.5, fill: css("--" + j), stroke: css("--surface"), "stroke-width": 2}, fig); });
+  const lbl = el("text", {x: 10, y: 18, "font-size": 11.5, fill: css("--muted"), "font-family": css("--font-data")}, fig);
+  lbl.textContent = `${r.label}: ${r.mass} kg, ${r.stature} m`;
+  const sel = el("text", {x: 10, y: 36, "font-size": 12, fill: css("--accent"), "font-family": css("--font-body"), "font-weight": 700}, fig);
+  sel.textContent = `Highlighted: ${DATA.names[selected]}`;
+}
+function drawJoints() {
+  $("joints").innerHTML = JOINTS.map(([j, name]) => `<div class="joint"><span class="dot" style="background:${css("--" + j)}"></span>${name}
+    <b>${neg(run.q[j][i], 0)}°</b>${neg(run.tau[j][i], 1)} N·m</div>`).join("");
+  $("time").textContent = `${T[i].toFixed(2)} s / ${T[N - 1].toFixed(1)} s`;
+  $("scrub").value = i;
+}
+
+// ---------------------------------------------------------------- charts
+let cursors = [];
+function timeAxis(svg, W, H, L, R, B) {
+  const tmax = T[N - 1];
+  for (let s = 0; s <= tmax + 1e-9; s += 0.5) {
+    const x = L + (W - L - R) * s / tmax;
+    const t = el("text", {x, y: H - 6, "text-anchor": "middle", "font-size": 11, fill: css("--muted"), "font-family": css("--font-data")}, svg);
+    t.textContent = s.toFixed(1) + (s === 0 ? " s" : "");
+  }
+}
+function addCursor(svg, L, R, W, T0, B, H) {
+  const tmax = T[N - 1];
+  const cur = el("line", {y1: T0, y2: H - B, stroke: css("--ink"), "stroke-width": 1.2, "stroke-dasharray": "3 3"}, svg);
+  const hit = el("rect", {x: L, y: 0, width: W - L - R, height: H, fill: "transparent", style: "cursor: crosshair"}, svg);
+  const pick = ev => { const b = svg.getBoundingClientRect(); const x = (ev.clientX - b.left) / b.width * W;
+    i = Math.max(0, Math.min(N - 1, Math.round((x - L) / (W - L - R) * (N - 1)))); playing = false; syncPlay(); frame(); };
+  hit.addEventListener("pointerdown", ev => { pick(ev); hit.setPointerCapture(ev.pointerId); });
+  hit.addEventListener("pointermove", ev => { if (ev.buttons) pick(ev); });
+  cursors.push(k => { const x = L + (W - L - R) * T[k] / tmax; cur.setAttribute("x1", x); cur.setAttribute("x2", x); });
+}
+function niceStep(span) { return [0.5, 1, 2, 5, 10, 20, 25, 50, 100].find(s => span / s <= 6) || 100; }
+function lineChart(svgId, series, opts = {}) {
+  const svg = $(svgId); svg.replaceChildren();
+  const W = Math.max(300, Math.round(svg.parentElement.clientWidth - 32 || 640)), H = opts.H || 190, L = 44, R = 14, T0 = 10, B = 22;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const all = series.flatMap(s => s.y);
+  let lo = Math.min(0, ...all), hi = Math.max(opts.minTop || 0, ...all);
+  const step = niceStep(hi - lo); lo = Math.floor(lo / step) * step; hi = Math.max(lo + step, Math.ceil(hi / step) * step);
+  const xs = t => L + (W - L - R) * t / T[N - 1], ys = v => T0 + (H - T0 - B) * (hi - v) / (hi - lo);
+  for (let v = lo; v <= hi + 1e-9; v += step) {
+    el("line", {x1: L, x2: W - R, y1: ys(v), y2: ys(v), stroke: Math.abs(v) < 1e-9 ? css("--axis") : css("--line"), "stroke-width": 1}, svg);
+    const tx = el("text", {x: L - 6, y: ys(v) + 4, "text-anchor": "end", "font-size": 11, fill: css("--muted"), "font-family": css("--font-data")}, svg);
+    tx.textContent = neg(v, step < 1 ? 1 : 0);
+  }
+  if (opts.threshold !== undefined) {
+    el("line", {x1: L, x2: W - R, y1: ys(opts.threshold), y2: ys(opts.threshold), stroke: css("--flag"), "stroke-width": 1, "stroke-dasharray": "5 4"}, svg);
+    const tx = el("text", {x: W - R, y: ys(opts.threshold) - 4, "text-anchor": "end", "font-size": 11, fill: css("--flag"), "font-family": css("--font-data")}, svg);
+    tx.textContent = opts.thresholdLabel;
+  }
+  timeAxis(svg, W, H, L, R, B);
+  const dots = [];
+  series.forEach(s => {
+    const d = s.y.map((v, k) => `${k ? "L" : "M"}${xs(T[k]).toFixed(1)},${ys(v).toFixed(1)}`).join("");
+    el("path", {d, fill: "none", stroke: s.color, "stroke-width": s.width || 2.2, "stroke-linejoin": "round", "stroke-dasharray": s.dash || ""}, svg);
+    dots.push({s, dot: el("circle", {r: 3.5, fill: s.color, stroke: css("--surface"), "stroke-width": 1.5}, svg)});
+  });
+  if (opts.legend) $(opts.legend).innerHTML = series.map(s => `<span><i style="background:${s.color}"></i>${s.label}</span>`).join("");
+  addCursor(svg, L, R, W, T0, B, H);
+  cursors.push(k => dots.forEach(({s, dot}) => { dot.setAttribute("cx", xs(T[k])); dot.setAttribute("cy", ys(s.y[k])); }));
+}
+function buildTau() {
+  lineChart("tau", JOINTS.map(([j, name]) => ({y: run.tau[j], label: name, color: css("--" + j)})), {legend: "tau-legend"});
+}
+function buildHeat() {
+  const svg = $("heat"); svg.replaceChildren();
+  const W = Math.max(300, Math.round(svg.parentElement.clientWidth - 32 || 640));
+  const narrow = W < 500, L = narrow ? 128 : 150, R = 14, T0 = 2, B = 22, rh = 14, gap = 6;
+  const H = T0 + ORDER.length * rh + DATA.groups.length * gap + B;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const cw = (W - L - R) / N; let y = T0;
+  DATA.groups.forEach(([g, ms]) => {
+    y += gap;
+    ms.forEach(m => {
+      const lab = el("text", {x: L - 6, y: y + rh - 3, "text-anchor": "end", "font-size": narrow ? 10 : 12, fill: css("--ink-2"), class: "heat-label" + (m === selected ? " sel" : "")}, svg);
+      lab.textContent = DATA.names[m]; lab.addEventListener("click", () => selectMuscle(m));
+      for (let k = 0; k < N; k++) el("rect", {x: (L + k * cw).toFixed(2), y, width: (cw + 0.6).toFixed(2), height: rh - 2, fill: actColor(run.act[m][k])}, svg);
+      if (m === selected) el("rect", {x: L - 1, y: y - 1, width: W - L - R + 2, height: rh, fill: "none", stroke: css("--accent"), "stroke-width": 1.5, rx: 2}, svg);
+      y += rh;
+    });
+  });
+  timeAxis(svg, W, H, L, R, B);
+  addCursor(svg, L, R, W, T0, B, H);
+}
+
+// ---------------------------------------------------------------- muscle card
+const JN = {ankle: "ankle", knee: "knee", hip: "hip"};
+function selectMuscle(m) { selected = m; rebuild(); }
+function drawCard() {
+  const m = DATA.muscles[selected];
+  $("muscle-pick").innerHTML = ORDER.map(k => `<button type="button" data-m="${k}" aria-pressed="${k === selected}">${esc(DATA.names[k])}</button>`).join("");
+  $("muscle-pick").querySelectorAll("button").forEach(b => b.onclick = () => selectMuscle(b.dataset.m));
+  $("mc-title").textContent = `${m.entity_name} (ontology)`;
+  const ev = m.evidence.map(e => e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>` : esc(e.title)).join("; ");
+  $("mc-onto").innerHTML = `
+    <dt>Entity</dt><dd><span class="idtag">${esc(m.entity)}</span></dd>
+    <dt>Crosses</dt><dd>${m.crosses.map(esc).join(", ") || "—"}</dd>
+    <dt>Action</dt><dd>${m.capabilities.map(esc).join(", ")}</dd>
+    <dt>Nerve</dt><dd>${m.nerves.map(esc).join(", ") || "—"}</dd>
+    <dt>Evidence</dt><dd>${ev}</dd>
+    ${m.note ? `<dt>Note</dt><dd style="font-size:13px;color:var(--ink-2)">${esc(m.note)}</dd>` : ""}`;
+  const r = run, peakA = Math.max(...r.act[selected]), peakF = Math.max(...r.force[selected]);
+  const arms = JOINTS.filter(([j]) => m.arms_mm[j] > 0).map(([j, n]) => `${n} ${m.arms_mm[j].toFixed(0)} mm`).join(" · ");
+  $("mc-model").innerHTML = `
+    <dt>Actuator</dt><dd><span class="idtag">${esc(m.actuator)}</span> (${esc(DATA.names[selected])})</dd>
+    <dt>Max. force</dt><dd class="num">${m.fmax.toFixed(0)} N</dd>
+    <dt>Fibre / tendon</dt><dd class="num">${m.lopt_mm} mm optimal fibre · ${m.lts_mm} mm tendon slack · ${m.penn_deg}° pennation</dd>
+    <dt>Moment arms</dt><dd class="num">${arms}</dd>
+    <dt>This squat</dt><dd class="num">${r.label}: peak effort ${peakA.toFixed(2)}, peak force ${peakF.toFixed(0)} N</dd>
+    <dt>Values from</dt><dd style="font-size:13px;color:var(--ink-2)">Gait2392 model file (Gait2392 body; the female and male bodies scale the lengths by height). Moment arms are the largest over the squat, computed by this page's builder from the model's muscle paths.</dd>`;
+  $("mc-gap").innerHTML = m.gap.length ? `<p class="callout">The model gives this muscle a moment arm at the <b>${m.gap.join(", ")}</b>, but the ontology records it as crossing only the ${m.crosses.join(", ")}. The anatomy is not in doubt: its own action list includes ${m.capabilities.filter(c => m.gap.some(g => c.includes(g))).join(", ") || "it"}. This is a gap in the ontology entry, which was written for the hip-only module. Making the ontology and the model check each other is planned next (see section 6).</p>` : "";
+}
+
+// ---------------------------------------------------------------- frame loop
+function frame() { drawFigure(); drawJoints(); cursors.forEach(c => c(i)); }
+function rebuild() { cursors = []; buildTau(); buildHeat(); buildReserve(); drawCard(); contact(); frame(); }
+function tick(ts) {
+  if (playing) { if (last === null) last = ts; const dt = (ts - last) / 1000; last = ts;
+    const step = T[1] - T[0], adv = Math.floor(dt / step);
+    if (adv > 0) { i = (i + adv) % N; last = ts - (dt - adv * step) * 1000; frame(); } } else last = null;
+  requestAnimationFrame(tick);
+}
+
+// ---------------------------------------------------------------- 2 ingredients
+const nSrc = DATA.sources.length;
+$("flow").innerHTML = [
+  ["Sources", nSrc, "published papers, the OpenSim model and anatomy references, each listed once with what it was used for"],
+  ["Ontology", P.entities, `entities in ${P.modules} modules: bones, joints, ${P.muscle_entities} muscles, nerves and ${P.actuators} model actuators, with their relationships`],
+  ["Datasets", P.traced, "numbers used by this run; each has a source, a unit and a role, and passed the traceability gate"],
+  ["Model", `${DATA.runs.length} × ${ORDER.length}`, "bodies × muscles on a three-joint leg (ankle, knee, hip), plus foot contact"],
+  ["Run manifest", P.input_files, `input files recorded by hash with the commit; provenance <code>${esc(P.provenance)}</code>`],
+].map(([k, n, d]) => `<div class="step"><span class="k">${k}</span><span class="n">${n}</span><span class="d">${d}</span></div>`).join("");
+$("bodies-t").innerHTML = `<thead><tr><th>Body</th><th class="num">Mass</th><th class="num">Height</th><th class="num">Thigh</th><th class="num">Shank</th><th class="num">½ upper body</th></tr></thead><tbody>` +
+  DATA.runs.map(r => `<tr><td>${r.label}<br><span style="font-size:12px;color:var(--muted)">${esc(r.long)}</span></td><td class="num">${r.mass} kg</td><td class="num">${r.stature} m</td>
+    <td class="num">${r.seg_mass.thigh.toFixed(1)}</td><td class="num">${r.seg_mass.shank.toFixed(1)}</td><td class="num">${r.seg_mass.hat.toFixed(1)}</td></tr>`).join("") +
+  `</tbody>`;
+const M = DATA.motion;
+$("motion").innerHTML = `
+  <dt>Bottom pose</dt><dd class="num">ankle ${M.depth_deg[0]}° · knee ${M.depth_deg[1]}° · hip ${M.depth_deg[2]}°</dd>
+  <dt>Timing</dt><dd class="num">${M.period / 2} s down, ${M.period / 2} s up</dd>
+  <dt>Samples</dt><dd class="num">${M.samples}, every ${((T[1] - T[0]) * 1000).toFixed(0)} ms</dd>
+  <dt>Gravity</dt><dd class="num">${M.gravity} m/s²</dd>
+  <dt>Grip threshold</dt><dd class="num">${M.friction} (flags only)</dd>`;
+$("motion-why").textContent = M.depth_why;
+$("muscles-t").innerHTML = `<tbody>` + DATA.groups.map(([g, ms]) => `<tr><td colspan="2" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding-top:10px">${g}</td></tr>` +
+  ms.map(m => `<tr><td>${esc(DATA.names[m])}</td><td class="num">${DATA.muscles[m].fmax.toFixed(0)} N</td></tr>`).join("")).join("") + `</tbody>`;
+$("sources-t").innerHTML = `<thead><tr><th>Source</th><th>Used for in the squat</th><th>Status</th></tr></thead><tbody>` +
+  DATA.sources.map(s => `<tr><td>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title)}</td><td>${esc(s.use)}</td><td style="white-space:nowrap">${esc(s.status)}</td></tr>`).join("") + `</tbody>`;
+
+// ---------------------------------------------------------------- 3 stages
+const byBody = Object.fromEntries(DATA.runs.map(r => [r.body, r]));
+const fixedShort = DATA.runs.filter(r => r.cmp.t_star_max_N_m.fixed > DATA.epsilon);
+const kneeRange = DATA.runs.map(r => -r.cmp.peak_knee_torque_N_m.fixed);
+const kneeRangeM = DATA.runs.map(r => -r.cmp.peak_knee_torque_N_m.moving);
+const MAN = DATA.manifests;
+$("stages").innerHTML = [
+  {c: "--ankle", tag: `Stage D1 · ${MAN.d1[2].split(" ")[0]} · run ${MAN.d1[1].slice(0, 7)}`, h: "Mechanics",
+   q: "What joint torques does a squat need?",
+   p: "Built the body from segment data (de Leva 1996 and Gait2392), prescribed the motion and solved the inverse dynamics. Two independent formulations (Newton–Euler and Lagrange) were checked against each other, along with energy and foot-contact feasibility. The knee was a simple fixed hinge.",
+   res: `Peak knee torque per leg: ${kneeRange.map(v => v.toFixed(0)).join(", ")} N·m (${DATA.runs.map(r => r.label.toLowerCase()).join(", ")}). Contact feasible for all three.`},
+  {c: "--act-1", tag: `Stage D2 · ${MAN.d2[2].split(" ")[0]} · run ${MAN.d2[1].slice(0, 7)}`, h: "Muscles",
+   q: "Can 14 real muscles produce those torques?",
+   p: "Added 14 Gait2392 muscles with their real paths and the De Groote force law. At each instant, a two-stage optimizer shares the torque among them at least effort. Geometry and forces were checked against OpenSim 4.6, and the optimizer against a second solver.",
+   res: `Female: yes. ${fixedShort.map(r => `${r.label}: short by up to ${r.cmp.t_star_max_N_m.fixed.toFixed(1)} N·m`).join("; ")} near the bottom. Suspected cause: D1's simplified knee.`},
+  {c: "--hip", tag: `Stage D3 · ${MAN.d3[2].split(" ")[0]} · run ${MAN.d3[1].slice(0, 7)}`, h: "Moving knee",
+   q: "Is the shortfall real, or caused by the simplification?",
+   p: "Replaced the fixed hinge with Gait2392's moving knee, whose centre slides as it bends, in both the torques and the muscle paths. Kane's method gave a second formulation, and the knee kinematics were matched against OpenSim.",
+   res: `<b>The muscles suffice for all three bodies.</b> The shortfall came from the simplified knee. Peak knee torque is now ${kneeRangeM.map(v => v.toFixed(0)).join(", ")} N·m.`},
+].map(s => `<div class="stage" style="--c:var(${s.c})"><span class="tag">${s.tag}</span><h3>${s.h}</h3><p class="q">${s.q}</p><p>${s.p}</p><p class="res">${s.res}</p></div>`).join("");
+function buildReserve() {
+  const r = run;
+  lineChart("reserve", [
+    {y: r.tstar_fixed, label: "Fixed knee (Stage D2)", color: css("--fixed"), width: 2.4},
+    {y: r.tstar_moving, label: "Moving knee (Stage D3)", color: css("--hip"), width: 2.4, dash: "6 4"}],
+    {H: 150, minTop: 2 * DATA.epsilon, threshold: DATA.epsilon, thresholdLabel: `flag above ${DATA.epsilon} N·m`, legend: "res-legend"});
+  const f = r.cmp.t_star_max_N_m.fixed, d2 = r.d2_summary;
+  $("res-note").innerHTML = f > DATA.epsilon
+    ? `${r.label}: with the fixed knee, the muscles fell short by up to <b>${f.toFixed(2)} N·m</b> around the bottom (${d2.flagged_time_range_s.map(x => x.toFixed(2)).join("–")} s, ${r.cmp.flagged_samples.fixed} samples). With the moving knee: <b>${r.cmp.t_star_max_N_m.moving.toFixed(1)} N·m</b> at every instant.`
+    : `${r.label}: the muscles suffice with either knee (largest reserve ${f.toFixed(1)} → ${r.cmp.t_star_max_N_m.moving.toFixed(1)} N·m). Switch to Male or Gait2392 above to see the shortfall.`;
+}
+
+// ---------------------------------------------------------------- 4 checks
+const worst = key => Math.max(...DATA.runs.map(r => Math.abs(r.residuals[key])));
+const worstV = key => Math.max(...DATA.runs.map(r => Math.abs(r.verification[key])));
+const TOL = DATA.tolerances;
+const rows = [
+  ["Two formulations agree", "Newton–Euler and Kane's method give the same joint torques", worst("newton_euler_vs_kane_N_m"), TOL.newton_euler_vs_kane_N_m, "N·m"],
+  ["Static check", "Torques match a separate virtual-work calculation when the body is still", worst("static_virtual_work_N_m"), TOL.static_virtual_work_N_m, "N·m"],
+  ["Energy balance", "Power put in by the joints equals the change in energy", worst("energy_W"), TOL.energy_W, "W"],
+  ["Newton's law", "Forces on each leg add up", worst("newton_identity_per_leg_N"), TOL.newton_identity_N, "N"],
+  ["Forward consistency", "Feeding the torques back in reproduces the motion (one 1 ms step)", worst("local_one_step_rad_at_1ms"), TOL.local_one_step_rad_at_1ms, "rad"],
+  ["Forward over 0.1 s", "The same over a short simulated stretch", worst("short_horizon_0p1s_rad_at_1ms"), TOL.short_horizon_0p1s_rad_at_1ms, "rad"],
+  ["Mass bookkeeping", "Segment masses add up to the body mass", worst("mass_bookkeeping_relative"), TOL.mass_fraction_sum, "relative"],
+  ["Knee vs OpenSim", "The moving knee's positions match OpenSim 4.6", worstV("kinematics_oracle_error_m"), TOL.kinematics_oracle_m, "m"],
+  ["Optimizer optimality", "The muscle-sharing problem is solved to its optimality conditions (KKT residual)", worstV("largest_kkt_residual"), null, "N·m"],
+  ["Second solver", "A different solver gives the same muscle efforts", worstV("second_solver_activation_difference"), null, "activation"],
+];
+const pass = (v, t) => t === null ? DATA.runs.every(r => r.status.optimizer_verification === "passed") : v <= t;
+$("checks-t").innerHTML = `<thead><tr><th>Check</th><th>What it shows</th><th class="num">Worst result</th><th class="num">Allowed</th><th>Unit</th><th></th></tr></thead><tbody>` +
+  rows.map(([n, d, v, t, u]) => `<tr><td><b>${n}</b></td><td>${d}</td><td class="num">${sci(v)}</td><td class="num">${t === null ? "—" : sci(t)}</td><td style="font-size:12px;color:var(--muted)">${u}</td>
+    <td>${pass(v, t) ? '<span class="pill ok">pass</span>' : '<span class="pill flag">fail</span>'}</td></tr>`).join("") + `</tbody>`;
+function contact() {
+  const c = run.contact;
+  $("contact").innerHTML = `
+    <dt>Body</dt><dd>${run.label}</dd>
+    <dt>Status</dt><dd>${c.feasible ? '<span class="pill ok">feasible throughout</span>' : '<span class="pill flag">flagged</span>'}</dd>
+    <dt>Centre of pressure</dt><dd class="num">${neg(c.cop_min_m * 1000, 0)} to ${neg(c.cop_max_m * 1000, 0)} mm from the ankle</dd>
+    <dt>Foot support</dt><dd class="num">heel ${neg(c.support_heel_m * 1000, 0)} to ball ${neg(c.support_ball_m * 1000, 0)} mm</dd>
+    <dt>Closest to heel</dt><dd class="num">${(c.heel_margin_min_m * 1000).toFixed(1)} mm inside</dd>
+    <dt>Grip needed</dt><dd class="num">${c.required_friction_max.toFixed(3)} (threshold ${c.friction_coefficient_assumed})</dd>`;
+}
+$("records").innerHTML = DATA.records.map(x => `<li><b>${x.stage}.</b> ${esc(x.text)} <span style="color:var(--muted)">(${x.ref})</span></li>`).join("");
+$("verif-note").innerHTML = `<b>Verified is not the same as validated.</b> ${esc(DATA.what_checks_show)} Passing checks show the stated model is computed correctly. They cannot show that real people squat this way.`;
+
+// ---------------------------------------------------------------- 5 limits
+const V = DATA.validity, SV = DATA.source_validation;
+$("validity").innerHTML = `
+  <dt>What it is</dt><dd>${esc(V.kind)}</dd>
+  <dt>Physiological</dt><dd><span class="pill plain">${esc(V.physiological_validity)}</span></dd>
+  <dt>Clinical</dt><dd><span class="pill plain">${esc(V.clinical_validity)}</span></dd>
+  <dt>Sources</dt><dd><span class="pill plain">${esc(SV.status)}</span> ${esc(SV.de_leva_values)}</dd>`;
+const OMIT = {three_dimensional: "3-D motion", muscles: "Muscles", contact: "Foot contact", passive_structures: "Passive structures", spine: "Spine", knee: "Knee"};
+$("omitted").innerHTML = Object.entries(DATA.omitted).filter(([k]) => OMIT[k] && k !== "muscles")
+  .map(([k, v]) => `<li><b>${OMIT[k]}.</b> ${esc(v.replace(/^Omitted: /, ""))}</li>`).join("") +
+  `<li><b>Muscles.</b> 14 of Gait2392's 43 leg muscles; iliopsoas, the main hip flexor, is not yet included. Tendons are rigid, there is no passive muscle force and no activation dynamics.</li>
+   <li><b>Strengths.</b> The female and male bodies share Gait2392's generic muscle strengths, which were built for walking. They are scaled in size only.</li>`;
+const gaps = ORDER.filter(m => DATA.muscles[m].gap.length);
+$("gap-panel").innerHTML = gaps.length ? `<h3>Found while building this page: an ontology gap</h3>
+  <p style="margin:0;font-size:14px;color:var(--ink-2)">${gaps.length} muscles act at a joint in the model that their ontology entry does not list as crossed:
+  ${gaps.map(m => `<b>${esc(DATA.names[m])}</b> (also ${DATA.muscles[m].gap.join(", ")})`).join(", ")}. Their entries come from the hip-only module (<code>hip.yaml</code>), which had no knee to point to. The model is unaffected, because it takes paths from Gait2392. The finding shows why the ontology and the model need to check each other, which is the next planned stage. It is reported here, not fixed: changing the ontology is Corbin's decision.</p>`
+  : `<h3>Ontology and model agree</h3><p style="margin:0;font-size:14px;color:var(--ink-2)">Every muscle acts in the model only at joints its ontology entry lists as crossed.</p>`;
+$("assump-sum").textContent = `All ${DATA.assumptions.length} declared simplifications, as recorded in the Stage D3 run`;
+$("assump").innerHTML = DATA.assumptions.map(a => `<li><span class="tag">${esc(a.label)}</span>${esc(a.text)}</li>`).join("");
+
+// ---------------------------------------------------------------- 6 project
+const PR = DATA.process;
+$("goal-a").innerHTML = [
+  ["", "Every number is sourced, derived from sources, or labelled as an assumption, and the run refuses untraced inputs"],
+  ["", "Results are verified by independent methods: two formulations, OpenSim as an outside oracle, a second solver"],
+  ["", "The other AI model reproduced each stage's results independently"],
+  ["", `Mistakes and corrections are on the record: ${PR.reviews_chatgpt + PR.reviews_claude} review records, with each model's findings and fixes`],
+  ["next", "Write acceptance criteria before results exist, and validate against a measured squat whatever the outcome"],
+  ["next", "A human expert in biomechanics or physical therapy reads the result"],
+].map(([c, t]) => `<li class="${c}">${t}</li>`).join("");
+$("goal-b").innerHTML = [
+  ["", `Each model muscle is an ontology entity linked to the anatomical muscle, its nerve, its action and its evidence (try the muscle card in section 1)`],
+  ["", "Numbers live in validated datasets separate from the anatomy; the model reads them through a traceability gate"],
+  ["", "The model performs as stated: torques, muscle forces and contact for three bodies, all checks passing"],
+  ["next", "Assemble the model from the ontology with code that names no anatomy, so that new anatomy enters as data"],
+  ["next", "Have the ontology and model check each other (the gap in section 5 is exactly what this would catch)"],
+  ["next", "Let the model perform the squat itself: a muscle-driven forward simulation, not only a calculation backwards from a given motion"],
+].map(([c, t]) => `<li class="${c}">${t}</li>`).join("");
+$("process").innerHTML = [
+  [PR.decisions, "decisions in the log, each with its defence"], [PR.owner_answers, "of Corbin's answers recorded verbatim"],
+  [PR.reviews_chatgpt, "records by ChatGPT in <code>docs/reviews/</code>"], [PR.reviews_claude, "records by Claude in <code>docs/reviews/</code>"],
+].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+$("roadmap").innerHTML = [
+  ["done", "A–C", "Ontology, validated data, hip-only model"],
+  ["done", "D1–D3", "Squat mechanics, muscles, moving knee (this page)"],
+  ["", "Assemble", "Model built from the ontology; anatomy as data"],
+  ["", "Complete", "The rest of Gait2392's leg muscles, incl. iliopsoas"],
+  ["", "Validate", "Compare with a measured squat (motion, force plates, EMG)"],
+  ["", "Perform", "Muscle-driven forward simulation with a tracking controller"],
+  ["", "Package", "Technical report, uncertainty, audit of the AI process"],
+  ["later", "Later", "Clinical conditions and personalization (the larger project)"],
+].map(([c, b, t]) => `<div class="road ${c}"><b>${b}</b>${t}</div>`).join("");
+
+$("foot").innerHTML = `
+  <div><b>Built from</b> the official run manifests: Stage D1 <code>${MAN.d1[0]}</code> (commit <code>${MAN.d1[1].slice(0, 12)}</code>), Stage D2 <code>${MAN.d2[0]}</code> (<code>${MAN.d2[1].slice(0, 12)}</code>), Stage D3 <code>${MAN.d3[0]}</code> (<code>${MAN.d3[1].slice(0, 12)}</code>). Values are rounded for display.</div>
+  <div>Regenerate with <code>python -m tools.build_squat_demo</code>. For every value and the fixed/moving knee switch, open the full Stage D3 viewer, <code>${DATA.full_viewer}</code>. Decisions are in <code>docs/DECISIONS.md</code>, and the current state is in <code>PROJECT_STATE.md</code>.</div>
+  <div>Independent Study, Fall 2026, Misericordia University: Corbin Wright with Fanchao Meng. Built with ChatGPT and Claude, under Corbin's decisions.</div>`;
+
+// ---------------------------------------------------------------- nav highlight, start
+const links = [...document.querySelectorAll("nav.top a")];
+const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), {rootMargin: "-40% 0px -55% 0px"});
+document.querySelectorAll("section.chapter").forEach(s => obs.observe(s));
+syncPlay(); rebuild(); requestAnimationFrame(tick);
+let rw = 0; addEventListener("resize", () => { const w = $("heat").parentElement.clientWidth; if (Math.abs(w - rw) > 4) { rw = w; rebuild(); } });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rebuild);
+</script>
+</body>
+</html>
