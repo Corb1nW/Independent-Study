@@ -220,3 +220,11 @@ Execution gave 263 passing tests, integrity PASSED, 9/9 probes REJECTED and curr
 Authoritative review: [`2026-11-11_ChatGPT_D3_Build_Review_b06400b.md`](docs/reviews/2026-11-11_ChatGPT_D3_Build_Review_b06400b.md). Before Corbin decides, correct the activation summary (D3-B01) and the moving-knee assumptions in the viewer (D3-B02), and report the remaining ankle/foot moment-arm comparison from D-060 item 5 (D3-B03). The oracle coverage note D3-N03 is nonblocking.
 
 **Next:** Claude amends PR #41, ChatGPT checks the new SHA and regenerated outputs, and Corbin decides and merges. This dated handoff supersedes the pending build review task. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D3 Amendment 2 re-review handoff (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #41 at `9805d41099ce0c2a45d1e36b48359a973ccce2d9`, base `ad11987d1a458ab4fb65462219c2ac533bc5f0c8`. **AMEND** for D3-B04 only. D3-B01, D3-B02 and D3-B03 are resolved, and the D3-N03 repeated-pose check works. The amended `d3efc563b9abd097f2adf1eddbd579560bbfa48d` manifest and viewer reproduced byte for byte. The three body runs match the prior release. 284 tests passed on the LF checkout, integrity passed, 9/9 probes were rejected, and all fixed and moving OpenSim numeric values matched. The viewer switch was checked with a DOM fixture.
+
+The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_oracle.py`. Both oracle checks and the full D3 run fail in that checkout. A local test of the path-specific rule `tools/make_d2_oracle.py text eol=lf` restored both oracle checks and the full run. **Next:** Claude adds the tracked rule in PR #41 and supplies evidence and the amended SHA. ChatGPT re-reviews the line-ending fix. Corbin makes the merge decision.
+
+[Re-review record](docs/reviews/2026-11-11_ChatGPT_D3_Amendment2_ReReview_9805d41.md). This entry supersedes the prior D3 build review handoff. **Status: REVIEWED, NOT APPROVED.**
