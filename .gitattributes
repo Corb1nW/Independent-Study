@@ -2,3 +2,7 @@
 * text=auto
 *.osim -text
 sources/vendor/** -text
+# The oracle generator's raw bytes are hashed into the committed OpenSim references (tool_sha256), and
+# tools/oracle_coverage.py compares that hash with the file on disk, so it must be LF in every checkout
+# (ChatGPT finding D3-B04).
+tools/make_d2_oracle.py text eol=lf

@@ -330,3 +330,16 @@ def test_viewer_data_takes_each_modes_assumptions_from_its_own_manifest():
     assert "D2-1 (restated)" in [a["label"] for a in moving["assumptions"]]
     html = page.render(D2_MANIFEST, dict(d3_manifest, declared_assumptions=declared))
     assert "V.assumptions" in html and "esc(a.text)" in html
+
+
+# ChatGPT finding D3-B04: the generator whose raw bytes are hashed into the references stays LF on checkout.
+def test_hashed_oracle_generator_is_checked_out_with_lf_everywhere():
+    import shutil
+    import subprocess
+    from tools import make_d2_oracle
+    assert b"\r" not in Path(make_d2_oracle.__file__).read_bytes()
+    if shutil.which("git") is None or not (ROOT / ".git").exists():
+        pytest.skip("no Git checkout")
+    out = subprocess.run(["git", "check-attr", "text", "eol", "--", "tools/make_d2_oracle.py"], cwd=ROOT,
+                         capture_output=True, text=True, check=True).stdout
+    assert "text: set" in out and "eol: lf" in out
