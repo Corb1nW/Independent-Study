@@ -215,3 +215,27 @@ Authoritative review: [`2026-11-10_ChatGPT_D3_Scope_adae723.md`](docs/reviews/20
 Executed: **240 tests passed**, integrity PASSED, 9/9 probes REJECTED, datasets current. Direct OpenSim source-geometry checks and a translational virtual-work fixture passed. No D3 dynamics or all-body feasibility pre-check was reproduced; those preliminary figures remain Claude-reported.
 
 **Next:** Corbin decides D-060 at the reviewed SHA; if approved, Claude builds Stage D3 and carries the nonblocking notes; ChatGPT reviews the new implementation SHA. Earlier D2 findings remain closed. No approval or merge is performed by the reviewer. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D3 build review handoff (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #41 at `b06400b4c7bf00a023a570b47fdb95a95c6cb079`, base `ad11987d1a458ab4fb65462219c2ac533bc5f0c8`. **AMEND.** D3-N01 (source displacement) and D3-N02 (historical fixed datum and femur-frame COM) are resolved. The official Stage D3 run at `525e2c302a8062f8d962da4dfbc8d813b54a97c0` reproduced byte for byte, including all three bodies' zero stage-1 reserve on the moving knee.
+
+Execution gave 263 passing tests, integrity PASSED, 9/9 probes REJECTED and current generated datasets. Fresh OpenSim 4.6 numeric values matched the committed oracles exactly (75,817 moving and 70,098 fixed). The D3 manifest and viewer matched byte for byte, and all 28 manifest inputs matched their hashes and Git blob IDs. The viewer switch was exercised in a Node DOM fixture. Browser layout checks are author-reported.
+
+Authoritative review: [`2026-11-11_ChatGPT_D3_Build_Review_b06400b.md`](docs/reviews/2026-11-11_ChatGPT_D3_Build_Review_b06400b.md). Before Corbin decides, correct the activation summary (D3-B01) and the moving-knee assumptions in the viewer (D3-B02), and report the remaining ankle/foot moment-arm comparison from D-060 item 5 (D3-B03). The oracle coverage note D3-N03 is nonblocking.
+
+**Next:** Claude amends PR #41, ChatGPT checks the new SHA and regenerated outputs, and Corbin decides and merges. This dated handoff supersedes the pending build review task. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D3 Amendment 2 re-review handoff (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #41 at `9805d41099ce0c2a45d1e36b48359a973ccce2d9`, base `ad11987d1a458ab4fb65462219c2ac533bc5f0c8`. **AMEND** for D3-B04 only. D3-B01, D3-B02 and D3-B03 are resolved, and the D3-N03 repeated-pose check works. The amended `d3efc563b9abd097f2adf1eddbd579560bbfa48d` manifest and viewer reproduced byte for byte. The three body runs match the prior release. 284 tests passed on the LF checkout, integrity passed, 9/9 probes were rejected, and all fixed and moving OpenSim numeric values matched. The viewer switch was checked with a DOM fixture.
+
+The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_oracle.py`. Both oracle checks and the full D3 run fail in that checkout. A local test of the path-specific rule `tools/make_d2_oracle.py text eol=lf` restored both oracle checks and the full run. **Next:** Claude adds the tracked rule in PR #41 and supplies evidence and the amended SHA. ChatGPT re-reviews the line-ending fix. Corbin makes the merge decision.
+
+[Re-review record](docs/reviews/2026-11-11_ChatGPT_D3_Amendment2_ReReview_9805d41.md). This entry supersedes the prior D3 build review handoff. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D3 Amendment 3 re-review handoff (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #41 at `abed0742c13b5e976a4da76aab58f45a0f379a1e`, base `ad11987d1a458ab4fb65462219c2ac533bc5f0c8`. **AGREE.** The tracked LF attribute resolves D3-B04. In a clean Git checkout with `core.autocrlf=true`, both oracle checks passed, 285 tests passed, integrity passed, 9/9 probes were rejected, and the dataset check passed. The full D3 run matched the official `d3efc563b9abd097f2adf1eddbd579560bbfa48d` results and all 30 input blob IDs. The checkout conversion was reproduced on Linux.
+
+[Re-review record](docs/reviews/2026-11-11_ChatGPT_D3_Amendment3_ReReview_abed074.md). No blocking findings. **Next:** Corbin decides on PRs #41 and #42. **Status: REVIEWED, NOT APPROVED.**
