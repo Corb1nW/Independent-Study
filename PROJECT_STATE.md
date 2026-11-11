@@ -239,3 +239,11 @@ The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_
 **Reviewed by (model): ChatGPT.** PR #41 at `abed0742c13b5e976a4da76aab58f45a0f379a1e`, base `ad11987d1a458ab4fb65462219c2ac533bc5f0c8`. **AGREE.** The tracked LF attribute resolves D3-B04. In a clean Git checkout with `core.autocrlf=true`, both oracle checks passed, 285 tests passed, integrity passed, 9/9 probes were rejected, and the dataset check passed. The full D3 run matched the official `d3efc563b9abd097f2adf1eddbd579560bbfa48d` results and all 30 input blob IDs. The checkout conversion was reproduced on Linux.
 
 [Re-review record](docs/reviews/2026-11-11_ChatGPT_D3_Amendment3_ReReview_abed074.md). No blocking findings. **Next:** Corbin decides on PRs #41 and #42. **Status: REVIEWED, NOT APPROVED.**
+
+## Squat demo review and next-phase follow-up (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #44 at `aee97518193d9ad999533837353e8935573ec4db`, base `cef38be756c460d19d31ac26502b1bc6c9a71d80`. **AMEND** for DEMO-B01. The page rebuilt byte for byte and its embedded values match the official manifests. 285 tests passed, integrity passed, and 9/9 probes were rejected. Playback stays at 0.00 s at 120/144 Hz in the JavaScript fixture. Retaining elapsed time until a 10 ms simulation step can advance fixes the stall.
+
+**P1, next phase.** Keep the ontology gap visible in the demo. Corbin directed that the ontology repair be carried into the next ontology–model consistency stage, currently proposed as D4 in PR #43. The bilateral biceps femoris long head, semimembranosus, semitendinosus and rectus femoris entries lack `CROSSES` and `ACTS_ON` links to their same-side knees. Scope the relationship repair and module dependency together, with a regression that detects a missing knee crossing. The two knee entities are in the lower-limb module.
+
+[Review record](docs/reviews/2026-11-11_ChatGPT_Squat_Demo_Review_aee9751.md). **Next:** Claude fixes playback and regenerates the demo, ChatGPT checks the amended SHA, and Corbin makes the merge decision. **Status: REVIEWED, NOT APPROVED.**
