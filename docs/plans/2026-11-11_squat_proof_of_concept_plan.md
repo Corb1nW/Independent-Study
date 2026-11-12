@@ -1,9 +1,9 @@
 # Squat proof of concept: plan
 
-- **Decision:** D-061 (Proposed). Corbin decides; nothing here is approved until he does.
-- **Written by:** Claude (Phase D builder), 2026-11-11, from Corbin's direction Q65
+- **Decision:** D-061. Direction agreed tentatively (Q66). **This round is limited to Stage D4 (Q67)**, which is specified in D-062. Stages D5–D9 below are an **outlook, not decided**; each gets its own scope decision if Corbin goes on.
+- **Written by:** Claude (Phase D builder), 2026-11-11, from Corbin's direction Q65; amended the same day (D-061 Amendment 1)
 - **Base:** `main` at `cef38be` (Stage D3 merged)
-- **Review:** ChatGPT, scope review (blocking findings only)
+- **Review:** ChatGPT, AMEND at `57bfeaa` (PR #46). D061-B01 is applied in D-062; D061-B02 and B03 are applied below.
 
 ## 1. What we are proving
 
@@ -17,7 +17,7 @@ This plan turns that into two claims, each with evidence we can show.
 1. every number is sourced, derived from sources, or labelled as an assumption;
 2. acceptance and validation criteria are written down **before** the results are seen;
 3. the computation is verified by independent methods (two formulations, an external oracle);
-4. the model is **validated** against measured human data, and the outcome is reported whatever it is;
+4. the model is **evaluated** against measured human data under preregistered criteria, every outcome is reported, and "validated" is claimed only where the criteria are met;
 5. the other AI model reproduces the results independently;
 6. errors and corrections are on the record, including each model's own;
 7. a human expert reads the result.
@@ -61,15 +61,15 @@ Each stage gets its own scope decision with pre-stated acceptance criteria, as D
   Numbers stay in the quantitative datasets, as now.
 - **Executable model specifications.** The `models:` blocks already in the ontology (`squat_d1`, `squat_d2`: represents, retained and omitted coordinates, assumptions) become the input the assembler reads.
 - **Assembler.** A new module reads the ontology and datasets through the existing validator and traceability gate. It builds a generic planar multibody tree by traversal, plus the actuator set, and names no anatomy in code. Generic tree dynamics (recursive Newton–Euler, with Kane's method as the second formulation) replace the squat-specific code. The current D1–D3 modules stay as regression oracles.
-- **Two-way checks between anatomy and model.**
-  - (a) An actuator has a non-negligible moment arm about a coordinate if and only if the ontology says its muscle crosses that joint.
-  - (b) Every entity the model represents resolves to evidence.
-  - (c) A deviation register (represented, simplified, omitted) is generated from the ontology into every manifest and the viewer.
+- **Two-way checks between anatomy and model** (as amended by ChatGPT's D061-B01; details and thresholds in D-062):
+  - (a) The joints each muscle path crosses are derived from its path and the segment tree, and must match the ontology's `CROSSES`.
+  - (b) Leverage is computed from geometry, without reading `CROSSES`. Non-negligible leverage needs a crossing. A crossing with negligible leverage (a path through the joint centre) is allowed and recorded.
+  - (c) The sign of the leverage agrees with the muscle's stated actions.
+  - (d) Every entity the model represents resolves to evidence.
+  - (e) A deviation register (represented, simplified, omitted) is generated from the ontology.
+- **Repair.** The demo's known gap is fixed: the knee crossings of biceps femoris long head, semimembranosus, semitendinosus and rectus femoris, both sides.
 
-**Acceptance (to be fixed in the D4 decision).**
-- The assembled model reproduces the official D3 run (`d3efc56`) and D1 run (`dd89fff`) for all three bodies, to machine precision.
-- Check (a) passes, and fails when the ontology is deliberately edited to drop a crossing.
-- **Growth test:** one muscle (iliopsoas) is added by ontology and dataset changes only, with zero lines changed in `src/`.
+**Acceptance.** Fixed in D-062, before the build: regression to the D1–D3 official runs; the consistency checks, including deliberate-error tests; no anatomy in code; and a growth test adding iliopsoas with no code changes.
 
 **Shows:** Claim B, items 1–3.
 
@@ -90,13 +90,13 @@ Each stage gets its own scope decision with pre-stated acceptance criteria, as D
 
 ### D6. A measured squat, and validation
 
-**Data (proposed).** Scherpereel et al. (2023), *Scientific Data* 10:924, CC BY 4.0. It has:
+**Data (preferred candidate).** Scherpereel et al. (2023), *Scientific Data* 10:924. The article is published under CC BY 4.0; the dataset files have their own DOI, and their terms have not yet been checked. The study has:
 - squats with a 25 lb weight, from 12 adults;
 - motion capture at 200 Hz and force plates at 1000 Hz;
 - EMG from 8 muscles per leg;
 - OpenSim (gait2354-based) inverse kinematics and joint moments.
 
-The workspace cannot download it, so Corbin downloads the squat files and they are vendored with their licence. The alternative, Wang et al. (2022, Zenodo), has bodyweight squats with EMG, but its page states no licence, so it is usable only with the authors' permission.
+D6's scope decision checks the exact squat files and their reuse and redistribution terms (ChatGPT's D061-B02). The files are vendored publicly only if those terms allow it; otherwise a pinned acquisition record lets others obtain the same files. The workspace cannot download them, so Corbin would. The alternative, Wang et al. (2022, Zenodo), has bodyweight squats with EMG. Its terms are pending confirmation: the record page Claude read showed no licence, while OpenAIRE lists CC BY 3.0 NL alongside an unspecified entry (per ChatGPT's review).
 
 **Work.**
 - Map the measured motion to the planar model (sagittal angles, with the filter declared).
@@ -109,9 +109,9 @@ The workspace cannot download it, so Corbin downloads the squat files and they a
 - centre of pressure against the force plates;
 - EMG on/off timing against predicted activation, for the 6 recorded muscles that are in the 14-muscle set (gluteus maximus, biceps femoris, vastus lateralis, rectus femoris, tibialis anterior, medial gastrocnemius), plus gracilis and gluteus medius once D5 adds them.
 
-The thresholds will be argued from published inter-model differences, not chosen after the fact. Results are reported as they come out and never tuned to fit.
+The thresholds will be argued from published inter-model differences, not chosen after the fact. D6 completes the preregistered evaluation and reports every outcome, never tuned to fit. The squat is called "validated" only for the measures and conditions that meet the criteria, and the joint-moment comparison is described as a comparison with published inverse-dynamics estimates.
 
-**Shows:** Claim A, items 2 and 4. The squat becomes measured, not designed.
+**Shows:** Claim A, items 2 and 4, to the extent the preregistered criteria are met. The squat becomes measured, not designed.
 
 ### D7. The model performs the squat (forward simulation)
 
@@ -174,34 +174,32 @@ D4 → D5 → D6 → D7 → D9, with D8 running alongside from D6.
 
 Every stage ends with a complete result:
 - after **D4**, Claim B's core is shown;
-- after **D6**, the squat is validated against measured data;
-- after **D7**, it is fully recreated.
+- after **D6**, the preregistered evaluation against measured data is complete, with every outcome reported; validation is claimed only where the criteria are met;
+- after **D7**, forward tracking is reported against its own criteria.
 
 If time runs short, the first things to cut are D7's predictive squat and D8's global sensitivity analysis. D9 can be written after any stage.
 
 ## 5. How we work (proposed changes)
 
 1. **Pre-registration.** Each stage's scope decision states its acceptance and validation criteria before the results exist. A criterion changed after results are seen is an amendment that says so.
-2. **Two review tiers.**
-   - **Tier 1:** model, data, sources, results and claims. Full review, with independent execution where possible.
-   - **Tier 2:** tooling, viewer, formatting and wording that change no claim. The reviewer reads the diff and reports blocking findings only, with no rerun.
-
-   The builder states the tier, and the reviewer may raise it.
+2. **Review tiers: withdrawn (ChatGPT's D061-B03).** The existing boundary stays: the D-047 light path covers documentation wording and formatting only (D-051). Any change to executable behaviour keeps a targeted run of the affected path, plus a regeneration check for generated outputs. A future proposal for a separate path for executable changes would name the D-051 amendment for Corbin's decision.
 3. **Builder rotation.** ChatGPT builds one stage and Claude reviews it, so the record shows both models building and both reviewing. Suggested: D8, which needs only packages ChatGPT already has offline.
 4. **Findings log.** From now on each review finding is tagged with a kind, for D9's audit.
 
 ## 6. Decisions for Corbin
 
-| # | Decision | Recommendation |
-|---|---|---|
-| P1 | Accept this plan. Phase D is extended by stages D4–D9 with the exit criterion below, and Phases E and F are deferred to the larger project (D-040 amended) | Accept |
-| P2 | Muscle set for D5 | All 43 Gait2392 leg muscles |
-| P3 | Dataset for D6 (Corbin downloads it) | Scherpereel et al. (2023) |
-| P4 | Review tiers (§5.2) and builder rotation (§5.3) | Accept both |
-| P5 | D-028 (sampling assumptions), needed for D8 | Decide when D8 starts |
-| P6 | Whether a faculty expert can review the D9 report | Yes, if possible |
+**This round (Q67):** only Stage D4 is up for decision, as **D-062**. P2–P6 below are withdrawn until the outlook beyond D4 is decided.
 
-**Proposed Phase D exit criterion (replacing "mechanics validated before conditions are added"):** a squat measured in people is reproduced by a muscle-driven forward simulation of a model assembled from the ontology. The result carries independent verification, pre-registered validation results, stated uncertainty and an independent reproduction by the other model. It is not validated beyond the measured data used.
+| # | Decision | Status |
+|---|---|---|
+| P1 | The plan, and the D-040 amendment (Phases E and F deferred; new Phase D exit criterion) | Direction agreed tentatively (Q66). The D-040 amendment waits for the outlook beyond D4 |
+| P2 | Muscle set for D5 | Withdrawn for now |
+| P3 | Dataset for D6 | Withdrawn for now; data terms to be checked first (D061-B02) |
+| P4 | Review tiers and builder rotation | Tiers withdrawn (D061-B03); rotation withdrawn for now |
+| P5 | D-028 sampling assumptions, for D8 | Withdrawn for now |
+| P6 | A faculty expert reader for D9 | Withdrawn for now |
+
+**Outlook: Phase D exit criterion (not decided; replacing "mechanics validated before conditions are added"):** a squat measured in people is reproduced by a muscle-driven forward simulation of a model assembled from the ontology. The result carries independent verification, pre-registered validation results, stated uncertainty and an independent reproduction by the other model. It is not validated beyond the measured data used, and only for the measures that meet their preregistered criteria.
 
 ## 7. Risks
 
@@ -218,6 +216,8 @@ If time runs short, the first things to cut are D7's predictive squat and D8's g
 
 New in this plan (listed in `sources/SOURCES.md`):
 - **Scherpereel et al. (2023),** *Scientific Data* 10:924, [doi:10.1038/s41597-023-02840-6](https://doi.org/10.1038/s41597-023-02840-6); data at [doi:10.35090/gatech/70296](https://doi.org/10.35090/gatech/70296). Article page read; data not yet accessed.
-- **Wang, Basu, Durandau and Sartori (2022),** Zenodo [doi:10.5281/zenodo.6457662](https://doi.org/10.5281/zenodo.6457662). Record page read, as the alternative.
+- **Wang, Basu, Durandau and Sartori (2022),** Zenodo [doi:10.5281/zenodo.6457662](https://doi.org/10.5281/zenodo.6457662). Record page read, as the alternative; terms pending confirmation.
+
+Cited by ChatGPT's review (D061-B02), not accessed by Claude: the [Georgia Tech EPIC Lab dataset description](https://www.epic.gatech.edu/a-human-lower-limb-biomechanics-and-wearable-sensors-dataset-during-cyclic-and-non-cyclic-activities/) and the [OpenAIRE record for the Wang DOI](https://explore.openaire.eu/search/result?pid=10.5281%2Fzenodo.6457662).
 
 Gait2392, OpenSim 4.6 (including Moco) and De Groote et al. (2016) are already listed.
