@@ -2,7 +2,7 @@
 dataset:
   id: LB-QD:MUSCLES:GAIT2392
   version: 0.2.0
-  description: OpenSim Gait2392 parameters and path points of the 14 actuators named by the ontology's model views and specifications
+  description: OpenSim Gait2392 parameters and path points of the 16 actuators named by the ontology's model views and specifications
     (D-059 item 4; list read from the ontology and model_entity_id added, 0.2.0, D-062 item 4).
   generated_by: python -m tools.build_segment_datasets
   decision: D-059, D-062
@@ -4297,6 +4297,668 @@ observations:
     status: populated
     coordinate_context:
       frame_id: LB:FRAME:GAIT2392_CALCN_R
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:ILIACUS_R:MAXIMUM_ISOMETRIC_FORCE:
+    target: &id016
+      entity_ids:
+      - LB:MUS:ILIOPSOAS_ILIACUS_R
+      anatomical_scope: whole muscle
+      laterality: right
+      computational_representation: OpenSim Gait2392 actuator 'iliacus_r' (LB:ACT:G2392:ILIACUS_R)
+      model_entity_id: LB:ACT:G2392:ILIACUS_R
+    property_id: maximum_isometric_force
+    property_definition: Gait2392 maximum isometric force of 'iliacus_r', read as maximum fiber force (D-056).
+    property_role: parameter
+    value_form: scalar
+    value: 1073.0
+    unit: N
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r_max_isometric_force
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/max_isometric_force
+        value_directly_reported: true
+      - source_id: SRC:OPENSIM24_GAIT2392_FMAX
+        supports:
+        - provenance_of_gait2392_forces
+        evidence_domain: computational_model
+        claim_scope: 'OpenSim documentation (version 2.4), ''Gait 2392 Max Isometric Muscle Force'': Delp''s (1990) values,
+          scaled upward using Anderson and Pandy (1999) and Carhart (2000, reported in Yamaguchi 2001), not by one uniform
+          factor (D-059 item 4).'
+        value_directly_reported: false
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/max_isometric_force
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:ILIACUS_R:OPTIMAL_FIBER_LENGTH:
+    target: *id016
+    property_id: optimal_fiber_length
+    property_definition: Gait2392 optimal fiber length of 'iliacus_r'.
+    property_role: parameter
+    value_form: scalar
+    value: 0.1
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r_optimal_fiber_length
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/optimal_fiber_length
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/optimal_fiber_length
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:ILIACUS_R:TENDON_SLACK_LENGTH:
+    target: *id016
+    property_id: tendon_slack_length
+    property_definition: Gait2392 tendon slack length of 'iliacus_r'.
+    property_role: parameter
+    value_form: scalar
+    value: 0.1
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r_tendon_slack_length
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/tendon_slack_length
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/tendon_slack_length
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:ILIACUS_R:PENNATION_ANGLE_AT_OPTIMAL:
+    target: *id016
+    property_id: pennation_angle_at_optimal
+    property_definition: Gait2392 pennation angle of 'iliacus_r' at optimal fiber length.
+    property_role: parameter
+    value_form: scalar
+    value: 0.12217305
+    unit: rad
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r_pennation_angle_at_optimal
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/pennation_angle_at_optimal
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/pennation_angle_at_optimal
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:ILIACUS_R:MAXIMUM_CONTRACTION_VELOCITY:
+    target: *id016
+    property_id: maximum_contraction_velocity
+    property_definition: Gait2392 maximum contraction velocity of 'iliacus_r', in its own optimal fiber lengths per second.
+    property_role: parameter
+    value_form: scalar
+    value: 10.0
+    unit: optimal_fiber_lengths/s
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r_max_contraction_velocity
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/max_contraction_velocity
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/max_contraction_velocity
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+    normalization:
+      length_property: optimal_fiber_length
+      reference_observation: LB-QD:G2392:MUS:ILIACUS_R:OPTIMAL_FIBER_LENGTH
+      basis: OpenSim defines max_contraction_velocity in optimal fiber lengths per second
+  LB-QD:G2392:MUS:ILIACUS_R:PATH:01:
+    target: *id016
+    property_id: attachment_position
+    property_definition: Fixed path point 1 of 5 of 'iliacus_r' in the 'pelvis' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - -0.0674
+    - 0.0365
+    - 0.0854
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r-P1
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P1
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P1
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_PELVIS
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:ILIACUS_R:PATH:02:
+    target: *id016
+    property_id: attachment_position
+    property_definition: Fixed path point 2 of 5 of 'iliacus_r' in the 'pelvis' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - -0.0258
+    - -0.055
+    - 0.0811
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r-P2
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P2
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P2
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_PELVIS
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:ILIACUS_R:PATH:03:
+    target: *id016
+    property_id: attachment_position
+    property_definition: Conditional path point 3 of 5 of 'iliacus_r' in the 'pelvis' frame.
+    property_role: parameter
+    value_form: function
+    value:
+      kind: conditional
+      location:
+      - -0.0288
+      - -0.0805
+      - 0.0816
+      coordinate: Gait2392 hip_flexion_r (rad, flexion positive) = LB:DOF:HIP_FLEX_EXT_R
+      active_range:
+      - -1.5708
+      - 0.785398
+      activity_rule: active when lo - 1e-5 <= hip_flexion_r <= hi + 1e-5 (OpenSim ConditionalPathPoint::isActive at opensim-core
+        01683ac)
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r-P3
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P3
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P3
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_PELVIS
+      coordinate_id: LB:DOF:HIP_FLEX_EXT_R
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:ILIACUS_R:PATH:04:
+    target: *id016
+    property_id: attachment_position
+    property_definition: Fixed path point 4 of 5 of 'iliacus_r' in the 'femur_r' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - 0.0017
+    - -0.0543
+    - 0.0057
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r-P4
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P4
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P4
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_FEMUR_R
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:ILIACUS_R:PATH:05:
+    target: *id016
+    property_id: attachment_position
+    property_definition: Fixed path point 5 of 5 of 'iliacus_r' in the 'femur_r' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - -0.0193
+    - -0.0621
+    - 0.0129
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - iliacus_r-P5
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P5
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/iliacus_r/GeometryPath/PathPointSet/iliacus_r-P5
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_FEMUR_R
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:PSOAS_R:MAXIMUM_ISOMETRIC_FORCE:
+    target: &id017
+      entity_ids:
+      - LB:MUS:ILIOPSOAS_PSOAS_MAJOR_R
+      anatomical_scope: whole muscle
+      laterality: right
+      computational_representation: OpenSim Gait2392 actuator 'psoas_r' (LB:ACT:G2392:PSOAS_R)
+      model_entity_id: LB:ACT:G2392:PSOAS_R
+    property_id: maximum_isometric_force
+    property_definition: Gait2392 maximum isometric force of 'psoas_r', read as maximum fiber force (D-056).
+    property_role: parameter
+    value_form: scalar
+    value: 1113.0
+    unit: N
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r_max_isometric_force
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/max_isometric_force
+        value_directly_reported: true
+      - source_id: SRC:OPENSIM24_GAIT2392_FMAX
+        supports:
+        - provenance_of_gait2392_forces
+        evidence_domain: computational_model
+        claim_scope: 'OpenSim documentation (version 2.4), ''Gait 2392 Max Isometric Muscle Force'': Delp''s (1990) values,
+          scaled upward using Anderson and Pandy (1999) and Carhart (2000, reported in Yamaguchi 2001), not by one uniform
+          factor (D-059 item 4).'
+        value_directly_reported: false
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/max_isometric_force
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:PSOAS_R:OPTIMAL_FIBER_LENGTH:
+    target: *id017
+    property_id: optimal_fiber_length
+    property_definition: Gait2392 optimal fiber length of 'psoas_r'.
+    property_role: parameter
+    value_form: scalar
+    value: 0.1
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r_optimal_fiber_length
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/optimal_fiber_length
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/optimal_fiber_length
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:PSOAS_R:TENDON_SLACK_LENGTH:
+    target: *id017
+    property_id: tendon_slack_length
+    property_definition: Gait2392 tendon slack length of 'psoas_r'.
+    property_role: parameter
+    value_form: scalar
+    value: 0.16
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r_tendon_slack_length
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/tendon_slack_length
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/tendon_slack_length
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:PSOAS_R:PENNATION_ANGLE_AT_OPTIMAL:
+    target: *id017
+    property_id: pennation_angle_at_optimal
+    property_definition: Gait2392 pennation angle of 'psoas_r' at optimal fiber length.
+    property_role: parameter
+    value_form: scalar
+    value: 0.13962634
+    unit: rad
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r_pennation_angle_at_optimal
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/pennation_angle_at_optimal
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/pennation_angle_at_optimal
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+  LB-QD:G2392:MUS:PSOAS_R:MAXIMUM_CONTRACTION_VELOCITY:
+    target: *id017
+    property_id: maximum_contraction_velocity
+    property_definition: Gait2392 maximum contraction velocity of 'psoas_r', in its own optimal fiber lengths per second.
+    property_role: parameter
+    value_form: scalar
+    value: 10.0
+    unit: optimal_fiber_lengths/s
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r_max_contraction_velocity
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/max_contraction_velocity
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/max_contraction_velocity
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model parameter
+      assumptions: []
+    status: populated
+    normalization:
+      length_property: optimal_fiber_length
+      reference_observation: LB-QD:G2392:MUS:PSOAS_R:OPTIMAL_FIBER_LENGTH
+      basis: OpenSim defines max_contraction_velocity in optimal fiber lengths per second
+  LB-QD:G2392:MUS:PSOAS_R:PATH:01:
+    target: *id017
+    property_id: attachment_position
+    property_definition: Fixed path point 1 of 5 of 'psoas_r' in the 'pelvis' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - -0.0647
+    - 0.0887
+    - 0.0289
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r-P1
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P1
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P1
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_PELVIS
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:PSOAS_R:PATH:02:
+    target: *id017
+    property_id: attachment_position
+    property_definition: Fixed path point 2 of 5 of 'psoas_r' in the 'pelvis' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - -0.0238
+    - -0.057
+    - 0.0759
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r-P2
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P2
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P2
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_PELVIS
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:PSOAS_R:PATH:03:
+    target: *id017
+    property_id: attachment_position
+    property_definition: Conditional path point 3 of 5 of 'psoas_r' in the 'pelvis' frame.
+    property_role: parameter
+    value_form: function
+    value:
+      kind: conditional
+      location:
+      - -0.0288
+      - -0.0805
+      - 0.0816
+      coordinate: Gait2392 hip_flexion_r (rad, flexion positive) = LB:DOF:HIP_FLEX_EXT_R
+      active_range:
+      - -1.5708
+      - 0.785398
+      activity_rule: active when lo - 1e-5 <= hip_flexion_r <= hi + 1e-5 (OpenSim ConditionalPathPoint::isActive at opensim-core
+        01683ac)
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r-P3
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P3
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P3
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_PELVIS
+      coordinate_id: LB:DOF:HIP_FLEX_EXT_R
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:PSOAS_R:PATH:04:
+    target: *id017
+    property_id: attachment_position
+    property_definition: Fixed path point 4 of 5 of 'psoas_r' in the 'femur_r' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - 0.0016
+    - -0.0507
+    - 0.0038
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r-P4
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P4
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P4
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_FEMUR_R
+      coordinate_id: null
+      convention_source_id: null
+      axis: x anterior, y superior, z right (Gait2392 body frame)
+      reference_pose: Gait2392 default pose (all coordinates zero)
+  LB-QD:G2392:MUS:PSOAS_R:PATH:05:
+    target: *id017
+    property_id: attachment_position
+    property_definition: Fixed path point 5 of 5 of 'psoas_r' in the 'femur_r' frame.
+    property_role: parameter
+    value_form: vector
+    value:
+    - -0.0188
+    - -0.0597
+    - 0.0104
+    unit: m
+    datum_kind: model_derived
+    provenance:
+      source_claims:
+      - source_id: SRC:GAIT2392_OSIM
+        supports:
+        - psoas_r-P5
+        evidence_domain: computational_model
+        claim_scope: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P5
+        value_directly_reported: true
+      source_value_location: gait2392_millard2012muscle.osim, ForceSet/psoas_r/GeometryPath/PathPointSet/psoas_r-P5
+      retrieval_date: '2026-10-28'
+      transformation_history: []
+    applicability: *id002
+    derivation:
+      inputs: []
+      formula: published model path point
+      assumptions: []
+    status: populated
+    coordinate_context:
+      frame_id: LB:FRAME:GAIT2392_FEMUR_R
       coordinate_id: null
       convention_source_id: null
       axis: x anterior, y superior, z right (Gait2392 body frame)

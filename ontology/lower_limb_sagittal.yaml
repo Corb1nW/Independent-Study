@@ -883,6 +883,36 @@ entities:
       through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
     evidence:
     - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ILIACUS_R:
+    name: Gait2392 actuator iliacus_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: iliacus_r
+    side: right
+    represents: LB:MUS:ILIOPSOAS_ILIACUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added by the Stage D4 growth test (D-062 item 8), in the
+      squat_d4_iliopsoas specification. Its third path point is switched by the hip coordinate.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:PSOAS_R:
+    name: Gait2392 actuator psoas_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: psoas_r
+    side: right
+    represents: LB:MUS:ILIOPSOAS_PSOAS_MAJOR_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added by the Stage D4 growth test (D-062 item 8), in the
+      squat_d4_iliopsoas specification. Its third path point is switched by the hip coordinate.
+    simplifications:
+    - Gait2392 places this actuator's first path point (its origin) on the pelvis frame, so in the model the psoas
+      does not cross the low-back joint, which the model also locks. The ontology states no origin for the psoas
+      major, so the anatomical origin is not compared here (D-062 item 7, C5).
+    evidence:
+    - SRC:GAIT2392_OSIM
 relationship_additions:
 # D-062 item 5 (the demo review's P1): knee edges for four muscles defined in hip.yaml, which cannot refer to the
 # knee joints defined here. Checked against SRC:STATPEARLS_THIGH_MUSCLES (statpearls.com/point-of-care/24169) on
@@ -1207,6 +1237,16 @@ models:
     - no_passive_fiber_force_in_baseline
     - fiber_damping_zero
     - conditional_path_length_jumps_retained
+  squat_d4_iliopsoas:
+    kind: executable_specification
+    extends: squat_d4
+    decision: D-062 item 8
+    description: 'The Stage D4 growth test: squat_d4 with Gait2392''s iliacus_r and psoas_r added as data only (no
+      change to src/ or tools/). Their anatomy was already in hip.yaml with evidence; each has a path point switched
+      by the hip coordinate.'
+    add_actuators:
+    - LB:ACT:G2392:ILIACUS_R
+    - LB:ACT:G2392:PSOAS_R
 sources:
   SRC:STATPEARLS_THIGH_MUSCLES:
     title: 'Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles'
