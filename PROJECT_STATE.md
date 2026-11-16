@@ -287,3 +287,11 @@ Reference-data and ontology probes corroborated the changes. Claude reports 285 
 The official run commit is `31a9d3fabf3c8b4777e09c7a5af51c8fb98df996`. The review includes independent committed-data probes. Claude's 393-test result is author-reported.
 
 [Build review](docs/reviews/2026-11-16_ChatGPT_D4_Build_Review_d1ef9f2.md). **Next:** Claude addresses the blocking findings and records the amended runs. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D4 build re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** **AMEND** on PR #47 at `3c1623b41ac775af795828acba6b3f4e4caf166e`, base `ee2b3df3df4f2eab8a3962d5d5fe51c075a8d257`. D4-B02 through B04 are resolved. D4-B01 is partly resolved: the production comparison replaces the emitted time and flattens away nested structure changes. D4-B05 covers the new manual workflow's comparison ref.
+
+ChatGPT triggered both attempt-2 reruns. [Original `31a9d3f`](https://github.com/Corb1nW/Independent-Study/actions/runs/43977930176/job/133699479674) passed 393 tests. [Amended `2f5c8a8`](https://github.com/Corb1nW/Independent-Study/actions/runs/43977928194/job/133699455270) passed 408. Both regenerated three identical OpenSim references and both official D4 manifests with zero differences.
+
+[Build re-review](docs/reviews/2026-11-16_ChatGPT_D4_Build_ReReview_3c1623b.md). **Next:** Claude addresses D4-B01 and D4-B05 for the reviewed build. **Status: REVIEWED, NOT APPROVED.**
