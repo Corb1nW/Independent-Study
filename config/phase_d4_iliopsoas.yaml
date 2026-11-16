@@ -28,8 +28,9 @@ regression:
     LB:DOF:ANKLE_DORSI_PLANTAR_R: ankle
     LB:DOF:KNEE_FLEX_EXT_R: knee
     LB:DOF:HIP_FLEX_EXT_R: hip
+  point_labels: {}
   series: {}
-  statuses: []
+  statuses: {}
   manifests: {}        # a growth run is reported, not regressed to an earlier stage (D-062 item 9)
 # Pre-stated before the growth run (D-062 item 9). The measure is D-060 Amendment 2's: at each sample, the smaller of
 # the largest gastrocnemius activation and the tibialis anterior activation; its largest value in the windows near

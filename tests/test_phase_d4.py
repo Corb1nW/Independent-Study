@@ -756,26 +756,98 @@ def test_stored_precision_comparison():
     assert d4r.stored_precision_difference([[1.5, None]], [[1.5, 2.0]], 3)[0] == float("inf")
 
 
-def test_regression_catches_a_changed_official_value(tmp_path, spec):
-    """A2 is a real comparison: a copy of an official manifest with one activation changed by 2e-6 fails."""
+@pytest.fixture(scope="module")
+def regression_case(spec):
+    """The runner's raw output for two cases, with the context A2's derived statuses need."""
     cfg = d4r.load_config()
     from src import squat_d1 as sq1
     _, d1p = sq1.load_config(ROOT / cfg["d1_config"])
     _, d2p = d2r.load_config(ROOT / cfg["d2_config"])
     tol = yaml.safe_load((ROOT / cfg["d3_config"]).read_text(encoding="utf-8"))["tolerances"]
-    _, _, raw = d4r.run_case(spec, "gait2392", "moving_knee", d1p, d2p, tol, False)
-    raw["body"] = "gait2392"
-    roles = cfg["regression"]["manifests"]["moving_knee"]
-    reg = cfg["regression"]
-    good = d4r.regression(raw, roles, reg)
-    assert good["passed"] and good["largest_excess"] == 0.0
-    official = json.loads((ROOT / roles["mechanics_and_muscles"]).read_text(encoding="utf-8"))
+    raws = {}
+    for v in ("moving_knee", "fixed_knee"):
+        _, _, raw = d4r.run_case(spec, "gait2392", v, d1p, d2p, tol, False)
+        raw["body"] = "gait2392"
+        raws[v] = raw
+    ref = json.loads((ROOT / cfg["references"]["moving_knee"]["path"]).read_text(encoding="utf-8"))
+    model = ma.assemble(spec, "gait2392", "moving_knee")
+    oracle = {"moving_knee": d4r.reference_comparison(model, ref, cfg["references"]["moving_knee"]["kinematics"])}
+    return cfg, raws, {"oracle": oracle, "tol": tol, "d2p": d2p}
+
+
+def _changed_manifest(tmp_path, role_cfg, change):
+    official = json.loads((ROOT / role_cfg["path"]).read_text(encoding="utf-8"))
     run = next(r for r in official["runs"] if r["body"] == "gait2392")
-    run["series"]["activation"]["tib_ant_r"][100] += 2e-6
+    change(run)
     copy = tmp_path / "changed.json"
     copy.write_text(json.dumps(official), encoding="utf-8")
-    bad = d4r.regression(raw, {"changed": str(copy)}, reg)
-    assert not bad["passed"] and bad["by_manifest"]["changed"]["series"]["activation"]["excess_over_half_unit"] > 0
+    return {"changed": dict(role_cfg, path=str(copy))}
+
+
+def test_a2_compares_every_required_series_and_status(regression_case):
+    """D4-B01: every series and status of the pinned D1-D3 manifests is compared, including time and positions."""
+    cfg, raws, ctx = regression_case
+    reg = cfg["regression"]
+    for v, roles in reg["manifests"].items():
+        result = d4r.regression(raws[v], roles, reg, ctx)
+        assert result["passed"] and result["largest_excess"] == 0.0 and not result["problems"], v
+        for role, m in roles.items():
+            official = json.loads((ROOT / m["path"]).read_text(encoding="utf-8"))
+            run = next(r for r in official["runs"] if r["body"] == "gait2392")
+            got = result["by_manifest"][role]
+            assert set(got["series"]) == set(run["series"]), (v, role)
+            assert set(got["statuses"]) == set(run["status"]), (v, role)
+    assert "points_m" in reg["manifests"]["fixed_knee"]["mechanics"]["series"]
+    assert "t_s" in reg["manifests"]["moving_knee"]["mechanics_and_muscles"]["series"]
+
+
+@pytest.mark.parametrize("label, change, expect", [
+    ("body point", lambda r: r["series"]["d1_points_m"]["knee"]["x"].__setitem__(100, r["series"]["d1_points_m"]["knee"]["x"][100] + 1e-5),
+     "series"),
+    ("time stamp", lambda r: r["series"]["t_s"].__setitem__(7, r["series"]["t_s"][7] + 1e-6), "series"),
+    ("status", lambda r: r["status"].update(optimizer_verification="failed"), "status"),
+    ("omitted series", lambda r: r["series"].pop("t_s"), "problem"),
+    ("omitted status", lambda r: r["status"].pop("kinematics_verification"), "problem"),
+    ("extra series", lambda r: r["series"].update(new_series=[0.0] * 301), "problem"),
+])
+def test_a2_catches_a_changed_or_missing_official_field(tmp_path, regression_case, label, change, expect):
+    """D4-B01: a changed body-point sample, time stamp or status, or an omitted or unexpected field, fails A2."""
+    cfg, raws, ctx = regression_case
+    roles = _changed_manifest(tmp_path, cfg["regression"]["manifests"]["moving_knee"]["mechanics_and_muscles"], change)
+    result = d4r.regression(raws["moving_knee"], roles, cfg["regression"], ctx)
+    assert not result["passed"], label
+    got = result["by_manifest"].get("changed", {})
+    if expect == "series":
+        assert result["largest_excess"] > 0
+    elif expect == "status":
+        assert not got["statuses"]["optimizer_verification"]["equal"]
+    else:
+        assert result["problems"]
+
+
+def test_a2_rejects_a_nonfinite_replacement(regression_case):
+    """D4-B01: a finite stored value with a NaN or infinite new value is infinite excess, never a pass."""
+    assert d4r.stored_precision_difference([0.123457], [float("nan")], 6)[0] == float("inf")
+    assert d4r.stored_precision_difference([0.123457], [float("inf")], 6)[0] == float("inf")
+    assert d4r.stored_precision_difference(["passed"], [1.0], 6)[0] == float("inf")
+    cfg, raws, ctx = regression_case
+    raw = dict(raws["moving_knee"])
+    raw["activation"] = raw["activation"].copy()
+    raw["activation"][3, 120] = float("nan")
+    roles = cfg["regression"]["manifests"]["moving_knee"]
+    result = d4r.regression(raw, roles, cfg["regression"], ctx)
+    assert not result["passed"] and result["largest_excess"] == float("inf")
+
+
+def test_a2_derived_status_mappings(regression_case):
+    """The two D2/D3 statuses whose meaning differs from D4's are mapped as stated and agree."""
+    cfg, raws, ctx = regression_case
+    st = cfg["regression"]["statuses"]
+    assert st["d1_consistency"]["derived"] == "torque_agreement"
+    assert st["kinematics_verification"]["derived"] == "reference_kinematics"
+    assert d4r._derived_status("d1_consistency", st["d1_consistency"], raws["fixed_knee"], dict(ctx, reg=cfg["regression"])) == "passed"
+    bad = dict(ctx, oracle={"moving_knee": {"largest_kinematics_difference_m": 1.0}}, reg=cfg["regression"])
+    assert d4r._derived_status("kinematics_verification", st["kinematics_verification"], raws["moving_knee"], bad) == "failed"
 
 
 def test_d2_loader_reads_its_view_not_every_actuator_record():
@@ -886,3 +958,102 @@ def test_a7_baseline_unchanged_by_the_growth(spec):
 def test_a8_hip_module_and_phase_b_unchanged():
     hip = AnatomyOntology(HIP)
     assert hip.added_edges == [] and "LB:ACT:G2392:PSOAS_R" not in hip.entities
+
+
+# =============================================================================================================
+# Review D4-B02 to D4-B04 (ChatGPT, PR #48)
+# =============================================================================================================
+import subprocess  # noqa: E402
+
+from src.run_manifest import VERIFIED, manifest_header  # noqa: E402
+
+
+def test_c1_is_checked_per_actuator(spec):
+    """D4-B02: with the knee crossing removed from one of the two gastrocnemius actuators' paths, the muscle-level
+    union still shows both joints, yet C1 fails and names that actuator."""
+    m = ma.assemble(spec, "gait2392", "moving_knee")
+    frames = cs.actuator_frames(m)
+    femur, tibia = m.segments[SEG["thigh"]].reference_frame, m.segments[SEG["shank"]].reference_frame
+    frames["LB:ACT:G2392:MED_GAS_R"] = [tibia if f == femur else f for f in frames["LB:ACT:G2392:MED_GAS_R"]]
+    r = cs.check_c1(spec, cs.derived_crossings(spec, frames))
+    assert r["per_muscle"]["LB:MUS:GASTROCNEMIUS_R"]["derived"] == ["LB:JOINT:ANKLE_R", "LB:JOINT:KNEE_R"]
+    assert not r["passed"]
+    assert r["failures"] == [{"actuator": "LB:ACT:G2392:MED_GAS_R", "muscle": "LB:MUS:GASTROCNEMIUS_R",
+                              "missing_CROSSES": [], "declared_but_not_crossed": ["LB:JOINT:KNEE_R"]}]
+    assert r["per_actuator"]["LB:ACT:G2392:LAT_GAS_R"]["agrees"]
+
+
+def _consumed(spec):
+    out = {}
+    for b in ("female", "male", "gait2392"):
+        for v in ("moving_knee", "fixed_knee"):
+            for name, ids in ma.assemble(spec, b, v).consumed.items():
+                out.setdefault(name, []).extend(ids)
+    return out
+
+
+def test_c4_traces_every_structural_entity(spec):
+    """D4-B03: every represented segment, joint and coordinate has an entity-level basis."""
+    r = cs.check_c4(spec, _consumed(spec))
+    assert r["passed"]
+    basis = r["structural_basis"]
+    assert set(basis) == set(spec.segments) | set(spec.joints) | set(spec.coordinates) and len(basis) == 13
+    assert all(e["traced"] for e in basis.values())
+    assert "LB-QD:G2392:JOINT:KNEE_R_MOVING" in [x["record"] for x in basis["LB:JOINT:KNEE_R"]["basis"]["records"]]
+    assert basis["LB:DOF:KNEE_FLEX_EXT_R"]["basis"] == {"declared_model_convention":
+                                                         spec.ontology.get("LB:DOF:KNEE_FLEX_EXT_R")["convention"]}
+    assert basis["LB:DOF:HIP_FLEX_EXT_R"]["basis"]["convention_source"] == "SRC:ISB_WU_2002"
+    assert basis["LB:JOINT:MTP_R"]["declared_state"] == "locked at zero"
+
+
+def test_c4_fails_for_a_coordinate_without_a_basis(schema):
+    """D4-B03: removing the knee coordinate's declared convention leaves it untraced; C4 fails naming it."""
+    onto = AnatomyOntology([HIP, LOWER])
+    onto.entities["LB:DOF:KNEE_FLEX_EXT_R"].pop("convention")
+    sp = load_spec("squat_d4", onto, QuantitativeSchema(SCHEMA, ontology=onto))
+    r = cs.check_c4(sp, _consumed(sp))
+    assert not r["passed"]
+    assert {"entity": "LB:DOF:KNEE_FLEX_EXT_R", "problem": "represented coordinate has no traceable basis"} in r["failures"]
+
+
+def test_c4_fails_for_a_joint_without_a_basis(schema):
+    """D4-B03: the hip joint without its evidence and without a record that names it fails C4, naming it, while
+    every numeric input stays valid."""
+    onto = AnatomyOntology([HIP, LOWER])
+    onto.entities["LB:JOINT:HIP_R"].pop("evidence")
+    sp = load_spec("squat_d4", onto, QuantitativeSchema(SCHEMA, ontology=onto))
+    consumed = _consumed(sp)
+    rec = sp.datasets["geometry"]["observations"]["LB-QD:G2392:JOINT:HIP_R"]
+    rec["target"] = dict(rec["target"], entity_ids=["LB:JOINT:HIP_L"])   # still a valid joint record, not this joint
+    r = cs.check_c4(sp, consumed)
+    assert {"entity": "LB:JOINT:HIP_R", "problem": "represented joint has no traceable basis"} in r["failures"]
+    assert not [f for f in r["failures"] if "dataset" in f]          # the numeric gate still passes
+
+
+def test_a9_inventory_includes_the_active_code(spec):
+    """D4-B04: the D1 configuration loader and the datum validator are verified inputs, with every loaded module of
+    src/ and tools/."""
+    cfg = d4r.load_config()
+    paths = d4r.input_paths(cfg, spec, d4r.CONFIG)
+    rel = {Path(p).resolve().relative_to(ROOT).as_posix() for p in paths.values()}
+    for f in ("src/squat_d1.py", "src/datum_model.py", "src/quantitative.py", "src/model_assembly.py",
+              "tools/run_phase_d4.py", "sources/vendor/opensim-models/gait2392_millard2012muscle.osim"):
+        assert f in rel, f
+
+
+def test_a9_a_dirty_d1_loader_prevents_a_verified_manifest(spec, tmp_path):
+    """D4-B04: in a clean checkout of HEAD the inputs verify; editing src/squat_d1.py there makes verification fail."""
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+    wt = tmp_path / "wt"
+    subprocess.run(["git", "worktree", "add", "--detach", str(wt), head], cwd=ROOT, capture_output=True, check=True)
+    try:
+        cfg = d4r.load_config()
+        paths = {k: str(v) for k, v in d4r.input_paths(cfg, spec, d4r.CONFIG, root=wt.resolve()).items()}
+        status, _ = d4r.verify_inputs(wt.resolve(), paths, head)
+        assert status == VERIFIED
+        loader = wt / "src" / "squat_d1.py"
+        loader.write_text(loader.read_text(encoding="utf-8") + "\n# local edit\n", encoding="utf-8")
+        with pytest.raises(ValueError, match="working file differs from HEAD: src/squat_d1.py"):
+            manifest_header(wt.resolve(), paths, head)
+    finally:
+        subprocess.run(["git", "worktree", "remove", "--force", str(wt)], cwd=ROOT, capture_output=True)

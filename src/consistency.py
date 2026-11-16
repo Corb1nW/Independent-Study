@@ -1,9 +1,9 @@
 """Anatomy and model check each other (D-062 item 7 with Amendment 1): checks C1-C5, the required-edge check and the
 mirror check (item 5).
 
-- C1, crossings by topology: the modelled joints between the frames that carry an actuator's path points must equal
-  its muscle's declared CROSSES, restricted to modelled joints. Merged joints on that route are listed as "crossed,
-  not modelled".
+- C1, crossings by topology: for EACH actuator, the modelled joints between the frames that carry its path points must
+  equal its muscle's declared CROSSES, restricted to modelled joints. Merged joints on that route are listed as
+  "crossed, not modelled".
 - C2, leverage by geometry: moment arms over the whole motion, without reading CROSSES. A coordinate with
   |R| > 1e-9 m must belong to a C1 crossing or to a declared coupling; a crossing whose largest |R| is below 1 mm is
   recorded as "crosses, negligible leverage".
@@ -13,7 +13,9 @@ mirror check (item 5).
   reference, every disagreement must also appear in the reference with the same sign at the same poses, and is then
   recorded as a deviation.
 - C4, evidence: every represented muscle, every edge and capability the checks use, and every actuator resolve to a
-  registered source; every consumed observation passes the D-055 traceability gate.
+  registered source; every consumed observation passes the D-055 traceability gate; every represented segment, joint
+  and coordinate has an entity-level basis (its evidence, the sourced records that represent it, or for a coordinate
+  its convention), or C4 fails naming it.
 - C5, the deviation register: represented, simplified and omitted elements, and every direction disagreement.
 - Required edges: a represented muscle needs its C1 crossings as CROSSES and the crossed joints its in-plane
   capabilities name as ACTS_ON; its counterpart on the other side needs the same edges, side swapped.
@@ -112,17 +114,25 @@ def actuator_frames(model):
 
 
 def check_c1(spec, crossings):
+    """C1 per actuator (ChatGPT D4-B02): each actuator's derived modelled crossings must equal its muscle's declared
+    CROSSES restricted to modelled joints. A failure names the actuator. The per-muscle union is kept as a summary."""
     onto, modelled = spec.ontology, [j for j, _, _ in spec.tree]
-    failures, per_muscle = [], {}
+    failures, per_muscle, per_actuator = [], {}, {}
     for m, acts in muscles(spec).items():
-        derived = sorted({j for a in acts for j in crossings[a][0]}, key=modelled.index)
         declared = [j for j in onto.related(m, "CROSSES") if j in modelled]
-        per_muscle[m] = {"actuators": acts, "derived": derived, "declared_modelled": declared,
+        for a in acts:
+            derived = crossings[a][0]
+            missing, extra = set(derived) - set(declared), set(declared) - set(derived)
+            per_actuator[a] = {"muscle": m, "derived": derived, "declared_modelled": declared,
+                               "crossed_not_modelled": crossings[a][1], "agrees": not missing and not extra}
+            if missing or extra:
+                failures.append({"actuator": a, "muscle": m, "missing_CROSSES": sorted(missing),
+                                 "declared_but_not_crossed": sorted(extra)})
+        per_muscle[m] = {"actuators": acts,
+                         "derived": sorted({j for a in acts for j in crossings[a][0]}, key=modelled.index),
+                         "declared_modelled": declared,
                          "crossed_not_modelled": sorted({j for a in acts for j in crossings[a][1]})}
-        missing, extra = set(derived) - set(declared), set(declared) - set(derived)
-        if missing or extra:
-            failures.append({"muscle": m, "missing_CROSSES": sorted(missing), "declared_but_not_crossed": sorted(extra)})
-    return {"passed": not failures, "failures": failures, "per_muscle": per_muscle}
+    return {"passed": not failures, "failures": failures, "per_actuator": per_actuator, "per_muscle": per_muscle}
 
 
 # --------------------------------------------------------------------------------------------- C2
@@ -231,6 +241,60 @@ def check_c3(spec, arms, references=None):
 
 
 # --------------------------------------------------------------------------------------------- C4
+CONVENTION_MARK = "Declared model convention"   # how a coordinate's own convention text identifies itself
+
+
+def structural_basis(spec, consumed):
+    """Entity-level trace for every represented segment, joint and coordinate (ChatGPT D4-B03).
+
+    Bases, any of which suffices:
+    - evidence: the entity's own registered sources;
+    - records: consumed dataset records whose target names the entity (for a segment, the entity or one of its merged
+      parts), with the sources their claims cite;
+    - for a coordinate, its convention: a registered convention source, or a convention text that identifies itself
+      as a declared model convention.
+    Merged joints also carry the specification's declared state (an assumption, listed, not a basis by itself)."""
+    onto = spec.ontology
+    sources = set(onto.sources)
+    targets = {}
+    for name, ids in consumed.items():
+        role = next(r for r, f in spec.dataset_files.items() if f == name)
+        data = spec.datasets[role]
+        known = sources | set(data.get("sources") or {})
+        for oid in sorted(set(ids)):
+            rec = data["observations"][oid]
+            cited = [c.get("source_id") for c in (rec.get("provenance") or {}).get("source_claims") or []]
+            cited = [c for c in cited if c in known]
+            if not cited:
+                continue
+            for e in (rec.get("target") or {}).get("entity_ids") or []:
+                targets.setdefault(e, []).append({"record": oid, "sources": cited})
+    out = {}
+    elements = ([(x, "segment") for x in spec.segments] + [(x, "joint") for x in spec.joints]
+                + [(x, "coordinate") for x in spec.coordinates])
+    for eid, kind in elements:
+        e = onto.get(eid)
+        basis = {}
+        ev = [x for x in e.get("evidence", []) if x in sources]
+        if ev:
+            basis["evidence"] = ev
+        linked = [eid] + ([p for p in spec.parts.get(eid, []) if p != eid] if kind == "segment" else [])
+        recs = [r for x in linked for r in targets.get(x, [])]
+        if recs:
+            basis["records"] = recs
+        if kind == "coordinate":
+            ref = e.get("convention_reference")
+            if ref in sources:
+                basis["convention_source"] = ref
+            if str(e.get("convention", "")).startswith(CONVENTION_MARK):
+                basis["declared_model_convention"] = e["convention"]
+        entry = {"kind": kind, "basis": basis, "traced": bool(basis)}
+        if kind == "joint" and eid in spec.raw.get("merged_joints", {}):
+            entry["declared_state"] = spec.raw["merged_joints"][eid].get("state")
+        out[eid] = entry
+    return out
+
+
 def check_c4(spec, consumed):
     onto, failures = spec.ontology, []
     sources = set(onto.sources)
@@ -253,13 +317,12 @@ def check_c4(spec, consumed):
             gate[name] = require_traceable(spec.schema, spec.datasets[role], sorted(set(ids)))
         except ValueError as exc:
             failures.append({"dataset": name, "problem": str(exc)})
-    structural = [e for e in list(spec.segments) + list(spec.joints) + list(spec.coordinates)
-                  if not onto.get(e).get("evidence")]
+    structure = structural_basis(spec, consumed)
+    for eid, entry in structure.items():
+        if not entry["traced"]:
+            failures.append({"entity": eid, "problem": f"represented {entry['kind']} has no traceable basis"})
     return {"passed": not failures, "failures": failures, "traceability": gate,
-            "capabilities_checked": sorted(motions),
-            "structural_entities_without_own_evidence": structural,
-            "note": "Structural entities (segments, joints, coordinates) carry no evidence of their own; their numbers "
-                    "are traced through the dataset gate above."}
+            "capabilities_checked": sorted(motions), "structural_basis": structure}
 
 
 # ---------------------------------------------------------------------------------- required edges

@@ -25,8 +25,9 @@ import yaml
 from src import consistency as cs
 from src import model_assembly as ma
 from src import muscle_paths as mp
+from src import squat_d1 as sq          # its configuration loader reads the D1 motion, gravity and contact parameters
 from src.model_spec import load_spec
-from src.run_manifest import manifest_header
+from src.run_manifest import manifest_header, verify_inputs  # noqa: F401  (verify_inputs used by tests)
 from tools import run_phase_d2 as d2r
 from tools.oracle_coverage import check_reference
 
@@ -35,14 +36,54 @@ CONFIG = ROOT / "config" / "phase_d4_assembled.yaml"
 REQUIRED = {"model_id", "decision", "specification", "baseline_variant", "d1_config", "d2_config", "d3_config",
             "bodies", "variants", "references", "direction_check_reference_variants", "regression", "hypotheses",
             "assumptions", "omitted_physics"}
+# Data files read by the run besides the ontology, datasets, configurations, references and manifests, which come
+# from the specification and the configuration. Project code is not listed one file at a time: every module of src/ and tools/
+# loaded in this process is verified (ChatGPT D4-B04).
 INPUTS = {name: ROOT / rel for name, rel in {
     "schema": "ontology/quantitative_schema.yaml",
     "source_degroote_header": "sources/vendor/opensim-core/DeGrooteFregly2016Muscle.h",
-    "model_spec": "src/model_spec.py", "model_assembly": "src/model_assembly.py", "muscle_paths": "src/muscle_paths.py",
-    "consistency": "src/consistency.py", "muscle_model": "src/muscles_d2.py", "ontology_code": "src/ontology.py",
-    "quantitative": "src/quantitative.py", "input_gate": "src/input_gate.py", "run_manifest": "src/run_manifest.py",
-    "oracle_tool": "tools/make_d2_oracle.py", "oracle_coverage": "tools/oracle_coverage.py",
-    "d2_runner": "tools/run_phase_d2.py", "runner": "tools/run_phase_d4.py"}.items()}
+    "source_osim_model": "sources/vendor/opensim-models/gait2392_millard2012muscle.osim",  # read by oracle_coverage
+}.items()}
+CODE_DIRS = ("src", "tools")
+
+
+def code_inputs(root=ROOT):
+    """{input name: path} for every module of the project's src/ and tools/ loaded in this process (the active code
+    dependencies of the run), relative to ROOT and re-rooted at `root`."""
+    out = {}
+    for mod in list(sys.modules.values()):
+        f = getattr(mod, "__file__", None)
+        if not f:
+            continue
+        path = Path(f).resolve()
+        if path.suffix != ".py" or not path.is_relative_to(ROOT):
+            continue
+        rel = path.relative_to(ROOT)
+        if rel.parts[0] in CODE_DIRS:
+            out["code_" + rel.with_suffix("").as_posix().replace("/", "_")] = Path(root) / rel
+    return dict(sorted(out.items()))
+
+
+def input_paths(cfg, spec, config_path, root=ROOT):
+    """Every file the run reads, by name, re-rooted at `root`: data files, specification datasets and ontology
+    modules, configurations, references, pinned manifests and the loaded project code."""
+    def rr(p):
+        return Path(root) / Path(p).resolve().relative_to(ROOT)
+    paths = {k: rr(v) for k, v in INPUTS.items()}
+    paths.update({f"ontology_{p.stem}": rr(p) for p in spec.schema.ontology_paths()})
+    paths.update({f"dataset_{role}": rr(ROOT / "ontology" / "quantitative_data" / f)
+                  for role, f in spec.dataset_files.items()})
+    paths.update(config=rr(config_path), d1_config=rr(ROOT / cfg["d1_config"]), d2_config=rr(ROOT / cfg["d2_config"]),
+                 d3_config=rr(ROOT / cfg["d3_config"]))
+    paths.update({f"reference_{v}": rr(ROOT / r["path"]) for v, r in cfg["references"].items()})
+    for v, roles in (cfg["regression"].get("manifests") or {}).items():
+        paths.update({f"official_{v}_{role}": rr(ROOT / m["path"]) for role, m in roles.items()})
+    for name, rule in (cfg["regression"].get("statuses") or {}).items():
+        if "manifest" in rule:
+            paths[f"status_{name}_manifest"] = rr(ROOT / rule["manifest"])
+    paths.update({f"hypothesis_{h['id']}_comparison": rr(ROOT / h["comparison"]) for h in cfg["hypotheses"]})
+    paths.update(code_inputs(root))
+    return paths
 
 
 def load_config(path=CONFIG):
@@ -84,19 +125,26 @@ def _flatten(x):
 def stored_precision_difference(stored, new, rounded_to=0):
     """Largest excess of |new - stored| over half a unit of the series' last stored decimal, in units of that half
     unit. The decimals are those the producing runner rounded to (`rounded_to`), or more if the stored values show
-    more. 0 means equal at the stored precision; entries missing in both (no value) count as equal."""
+    more. 0 means equal at the stored precision. An entry with no stored value (null) must have no new value either;
+    a stored number must have a finite new number; a shape difference or a non-numeric entry is infinite excess
+    (ChatGPT D4-B01)."""
     flat_s = _flatten(stored)
+    try:
+        n = [float(x) for x in _flatten(new)]
+    except (TypeError, ValueError):
+        return float("inf"), rounded_to
     digits = max([rounded_to] + [d for d in map(_decimals, flat_s) if d is not None])
     half = 0.5 * 10.0 ** (-digits)
-    n = [float(x) for x in _flatten(new)]
-    worst = 0.0
     if len(flat_s) != len(n):
         return float("inf"), digits
+    worst = 0.0
     for a, b in zip(flat_s, n):
-        if a is None or (isinstance(a, float) and not math.isfinite(a)):
-            if math.isfinite(b):
+        if a is None or (isinstance(a, float) and math.isnan(a)):
+            if not math.isnan(b):
                 return float("inf"), digits
             continue
+        if isinstance(a, bool) or not isinstance(a, (int, float)) or not math.isfinite(a) or not math.isfinite(b):
+            return float("inf"), digits
         excess = abs(float(a) - b) - half * (1 + 1e-9) - 1e-15
         worst = max(worst, excess / half if excess > 0 else 0.0)
     return worst, digits
@@ -165,7 +213,9 @@ def run_case(spec, body, variant, d1p, d2p, tol, full_series):
         "normalized_fiber_velocity": {n: _r(mus["v_norm"][j], 5) for j, n in enumerate(names)},
         "muscle_path_xy_m": mus["drawing"],
     }
-    raw = {"q": q, "tau": tau, "grf": res["grf"], "cop": res["cop_x"], "terms": res["moving_centre_terms"],
+    raw = {"t": res["t"], "kin": res["kinematics"],
+           "joint_segment": {seg.inbound.joint: sid for sid, seg in model.segments.items() if seg.inbound},
+           "q": q, "tau": tau, "grf": res["grf"], "cop": res["cop_x"], "terms": res["moving_centre_terms"],
            "activation": mus["activation"], "t_star": t_star, "reserve": mus["reserve"], "needed": mus["needed"],
            "force": mus["force"], "l_norm": mus["l_norm"], "v_norm": mus["v_norm"], "drawing": mus["drawing"],
            "names": names, "status": status, "contact": res["contact"]}
@@ -228,15 +278,33 @@ def reference_comparison(model, ref, kinematics_map=None):
 
 
 # ---------------------------------------------------------------------------------------- regression
-def _quantity(raw, rule, labels, coords):
-    """The new values for one official series, arranged as the official manifest stores it."""
+def _point(raw, rule):
+    """A position series (2 x n) under a legacy label: a joint centre, a centre of mass, or the drawing point
+    joint centre + 2 x (centre of mass - joint centre) of a segment (D1's upper-body drawing convention)."""
+    kin = raw["kin"]
+    if rule["quantity"] == "joint_centre":
+        return kin[raw["joint_segment"][rule["joint"]]]["joint"]
+    if rule["quantity"] == "centre_of_mass":
+        return kin[rule["segment"]]["c"]
+    if rule["quantity"] == "drawing_point":
+        k = kin[rule["segment"]]
+        return k["joint"] + 2 * (k["c"] - k["joint"])
+    raise ValueError(f"unknown point quantity {rule['quantity']}")
+
+
+def _quantity(raw, rule, reg):
+    """The new values for one official series, arranged as the official manifest stores it: (values, keys) where
+    keys name the manifest's sub-series in the order of the values' first axis, or None for a plain list."""
     q = rule["quantity"]
     if q == "moving_centre_term":
         return raw["terms"][rule["joint"]], None
+    if q == "points":
+        labels = list(reg["point_labels"])
+        return [_point(raw, reg["point_labels"][k]) for k in labels], labels
     values = raw[q]
     index = rule.get("index")
     if index == "coordinate":
-        return values, [labels[c] for c in coords]
+        return values, [reg["coordinate_labels"][c] for c in reg["coordinate_labels"]]
     if index == "actuator":
         return values, list(raw["names"])
     if index == "component":
@@ -244,30 +312,88 @@ def _quantity(raw, rule, labels, coords):
     return values, None
 
 
-def regression(raw, case_cfg, reg):
-    """A2: every listed series and status of the official manifests equal at the precision each manifest stores."""
-    out, worst = {}, 0.0
-    labels, coords = reg["coordinate_labels"], list(reg["coordinate_labels"])
-    for role, path in case_cfg.items():
-        official = json.loads((ROOT / path).read_text(encoding="utf-8"))
+def _stored(series, name, keys, components=None):
+    """The stored values in the order of `keys`; a points series is stored as {label: {x: [...], y: [...]}}."""
+    s = series[name]
+    if keys is None:
+        return s
+    if set(s) != set(keys):
+        raise KeyError(f"{name}: stored keys {sorted(s)} differ from {sorted(keys)}")
+    out = [s[k] for k in keys]
+    if out and isinstance(out[0], dict):
+        out = [[v[c] for c in ("x", "y")] for v in out]
+    return out
+
+
+def _derived_status(name, rule, raw, context):
+    """A status of an earlier stage whose meaning differs from D4's per-case statuses, mapped as the configuration
+    states it."""
+    kind = rule["derived"]
+    if kind == "torque_agreement":
+        official = json.loads((ROOT / rule["manifest"]).read_text(encoding="utf-8"))
         run = next(r for r in official["runs"] if r["body"] == raw["body"])
-        s = run["series"]
-        result = {}
-        for name, rule in reg["series"].items():
+        stored = np.array([run["series"][rule["series"]][context["reg"]["coordinate_labels"][c]]
+                           for c in context["reg"]["coordinate_labels"]], float)
+        diff = float(np.max(np.abs(np.round(raw["tau"], rule["decimals"]) - stored)))
+        return "passed" if diff <= context["d2p"][rule["tolerance_parameter"]] else "failed"
+    if kind == "reference_kinematics":
+        o = (context.get("oracle") or {}).get(rule["reference_variant"], {})
+        err = o.get("largest_kinematics_difference_m")
+        return "passed" if err is not None and err < context["tol"]["kinematics_oracle_m"] else "failed"
+    raise ValueError(f"{name}: unknown derived status {kind}")
+
+
+def regression(raw, case_cfg, reg, context=None):
+    """A2 (ChatGPT D4-B01): for each pinned manifest, the run's series and status key sets must equal the
+    configured required sets; every required series must equal this run at the stored precision and every required
+    status must equal this run's, directly or through a stated mapping. A missing, extra or unmapped field fails."""
+    context = dict(context or {}, reg=reg)
+    out, worst, problems = {}, 0.0, []
+    for role, m in case_cfg.items():
+        official = json.loads((ROOT / m["path"]).read_text(encoding="utf-8"))
+        runs = [r for r in official["runs"] if r["body"] == raw["body"]]
+        if len(runs) != 1:
+            problems.append(f"{role}: {len(runs)} runs for body {raw['body']}")
+            continue
+        run = runs[0]
+        s, st = run.get("series", {}), run.get("status", {})
+        for kind, have, want in (("series", set(s), set(m["series"])), ("status", set(st), set(m["statuses"]))):
+            for k in sorted(want - have):
+                problems.append(f"{role}: required {kind} {k} missing from the manifest")
+            for k in sorted(have - want):
+                problems.append(f"{role}: manifest {kind} {k} is not in the required set")
+        result, statuses = {}, {}
+        for name in m["series"]:
+            rule = reg["series"].get(name)
+            if rule is None:
+                problems.append(f"{role}: series {name} has no mapping")
+                continue
             if name not in s:
                 continue
-            new, keys = _quantity(raw, rule, labels, coords)
-            stored = s[name] if keys is None else [s[name][k] for k in keys]
+            try:
+                new, keys = _quantity(raw, rule, reg)
+                stored = _stored(s, name, keys)
+            except (KeyError, ValueError) as exc:
+                problems.append(f"{role}: series {name}: {exc}")
+                continue
             excess, digits = stored_precision_difference(_nan_list(stored), new, rule["decimals"])
             result[name] = {"stored_decimals": digits, "excess_over_half_unit": excess}
             worst = max(worst, excess)
-        st = run["status"]
-        status_match = {k: st[k] == raw["status"][k] for k in reg["statuses"] if k in st}
-        out[role] = {"manifest": path, "commit_sha": official["commit_sha"], "series": result,
-                     "statuses_equal": status_match}
-    ok = worst == 0.0 and all(all(v["statuses_equal"].values()) for v in out.values()) and \
-        all(v["series"] for v in out.values())
-    return {"passed": ok, "largest_excess": worst, "by_manifest": out}
+        for name in m["statuses"]:
+            rule = reg["statuses"].get(name)
+            if rule is None:
+                problems.append(f"{role}: status {name} has no mapping")
+                continue
+            if name not in st:
+                continue
+            mine = raw["status"].get(rule["same"]) if "same" in rule else _derived_status(name, rule, raw, context)
+            statuses[name] = {"manifest": st[name], "this_run": mine, "equal": st[name] == mine,
+                              "mapping": rule}
+        out[role] = {"manifest": m["path"], "commit_sha": official["commit_sha"], "series": result,
+                     "statuses": statuses}
+    ok = (not problems and worst == 0.0
+          and all(v["equal"] for o in out.values() for v in o["statuses"].values()))
+    return {"passed": ok, "largest_excess": worst, "problems": problems, "by_manifest": out}
 
 
 def _nan_list(stored):
@@ -311,21 +437,12 @@ def hypothesis(h, runs_raw, baseline):
 # ------------------------------------------------------------------------------------------- manifest
 def build_manifest(commit_sha, config_path=CONFIG):
     cfg = load_config(config_path)
-    from src import squat_d1 as sq          # the D1 configuration loader (motion, gravity, contact parameters)
     d1_cfg, d1p = sq.load_config(ROOT / cfg["d1_config"])
     d2_cfg, d2p = d2r.load_config(ROOT / cfg["d2_config"])
     tol = yaml.safe_load((ROOT / cfg["d3_config"]).read_text(encoding="utf-8"))["tolerances"]
     spec = load_spec(cfg["specification"])
     refs = {v: json.loads((ROOT / r["path"]).read_text(encoding="utf-8")) for v, r in cfg["references"].items()}
-    data_files = {f"ontology_{p.stem}": p for p in spec.schema.ontology_paths()}
-    data_files.update({f"dataset_{role}": ROOT / "ontology" / "quantitative_data" / f for role, f in
-                       spec.dataset_files.items()})
-    paths = dict(INPUTS, **data_files, config=config_path, d1_config=ROOT / cfg["d1_config"], d2_config=ROOT / cfg["d2_config"],
-                 d3_config=ROOT / cfg["d3_config"],
-                 **{f"reference_{v}": ROOT / r["path"] for v, r in cfg["references"].items()},
-                 **{f"official_{v}_{role}": ROOT / p for v, roles in cfg["regression"].get("manifests", {}).items()
-                    for role, p in roles.items()},
-                 **{f"hypothesis_{h['id']}_comparison": ROOT / h["comparison"] for h in cfg["hypotheses"]})
+    paths = input_paths(cfg, spec, config_path)
     manifest = manifest_header(ROOT, {k: str(v) for k, v in paths.items()}, commit_sha)
     runs, raws, models = [], {}, []
     for body in cfg["bodies"]:
@@ -361,9 +478,13 @@ def build_manifest(commit_sha, config_path=CONFIG):
     regressions = {}
     for v, roles in (reg_cfg.get("manifests") or {}).items():
         for body in cfg["bodies"]:
-            regressions[f"{body} | {v}"] = regression(raws[(body, v)], roles, reg_cfg)
+            regressions[f"{body} | {v}"] = regression(raws[(body, v)], roles, reg_cfg,
+                                                      {"oracle": oracle, "tol": tol, "d2p": d2p})
     reg_ok = all(r["passed"] for r in regressions.values())
     hyps = [hypothesis(h, raws, cfg["baseline_variant"]) for h in cfg["hypotheses"]]
+    late = sorted(set(code_inputs()) - set(paths))
+    if late:     # fail closed: code loaded after the provenance check was not verified
+        raise ValueError(f"project modules loaded after input verification: {late}")
     statuses = [r["status"] for r in runs]
     status = {
         "mechanics_verification": "passed" if all(s["mechanics_verification"] == "passed" for s in statuses) else "failed",
