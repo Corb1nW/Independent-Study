@@ -70,7 +70,20 @@ def test_knee_edges_added_on_both_sides_with_their_evidence(onto):
         assert e["target"] in onto.related(e["entity"], e["predicate"])
     assert onto.edge_origin("LB:MUS:SEMITENDINOSUS_L", "CROSSES", "LB:JOINT:KNEE_L") == "lower_limb_sagittal"
     assert onto.edge_origin("LB:MUS:SEMITENDINOSUS_L", "CROSSES", "LB:JOINT:HIP_L") is None
-    assert onto.edge_evidence("LB:MUS:SEMITENDINOSUS_L", "CROSSES", "LB:JOINT:HIP_L") == ["SRC:STATPEARLS_HIP"]
+    assert onto.edge_evidence("LB:MUS:SEMITENDINOSUS_L", "CROSSES", "LB:JOINT:HIP_L") == \
+        ["SRC:STATPEARLS_HIP", "SRC:STATPEARLS_THIGH_MUSCLES"]          # the entity's evidence (Amendment 3)
+
+
+def test_the_four_muscles_cite_the_thigh_muscles_chapter_in_hip_module_alone():
+    """D-062 Amendment 3 (Q71): the chapter that supports the knee edges is also part of the eight entities' evidence,
+    registered once, in hip.yaml, which still loads on its own."""
+    hip = AnatomyOntology(HIP)
+    assert "SRC:STATPEARLS_THIGH_MUSCLES" in hip.sources
+    for base in REPAIRED:
+        for side in "RL":
+            assert hip.get(f"LB:MUS:{base}_{side}")["evidence"] == ["SRC:STATPEARLS_HIP", "SRC:STATPEARLS_THIGH_MUSCLES"]
+    lower = yaml.safe_load(LOWER.read_text(encoding="utf-8"))
+    assert "SRC:STATPEARLS_THIGH_MUSCLES" not in lower["sources"]
 
 
 def test_the_edge_evidence_is_a_registered_project_source():

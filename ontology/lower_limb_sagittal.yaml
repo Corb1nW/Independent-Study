@@ -2,7 +2,7 @@
 ontology_module:
   extends: LB-AO
   module: lower_limb_sagittal
-  version: 0.3.0
+  version: 0.3.1
   description: Knee, ankle, foot, shank and upper-body segments, coordinates and model frames for the planar squat
     (Phase D, D-058); muscles and model actuators for Stage D2 (D-059, 0.2.0).
   decision: D-058, D-059
@@ -916,7 +916,8 @@ entities:
 relationship_additions:
 # D-062 item 5 (the demo review's P1): knee edges for four muscles defined in hip.yaml, which cannot refer to the
 # knee joints defined here. Checked against SRC:STATPEARLS_THIGH_MUSCLES (statpearls.com/point-of-care/24169) on
-# 2026-11-16 before adding (paraphrased in 'basis'). SRC:STATPEARLS_HIP, which these entities cite, was also read
+# 2026-11-16 before adding (paraphrased in 'basis'); since D-062 Amendment 3 it is registered in hip.yaml and is
+# also part of these entities' evidence. SRC:STATPEARLS_HIP, which these entities cite, was also read
 # (as statpearls.com/point-of-care/32220, the chapter of the same title, editor S. Sharma): its accessible text names these muscles only for their
 # innervation, so it is not cited for these edges.
 - entity: LB:MUS:BICEPS_FEMORIS_LONG_R
@@ -1248,14 +1249,6 @@ models:
     - LB:ACT:G2392:ILIACUS_R
     - LB:ACT:G2392:PSOAS_R
 sources:
-  SRC:STATPEARLS_THIGH_MUSCLES:
-    title: 'Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles'
-    publisher: StatPearls
-    url: https://statpearls.com/point-of-care/24169
-    supports:
-    - vasti innervation and knee extension
-    - rectus femoris crosses hip and knee
-    retrieval_date: '2026-11-10'
   SRC:STATPEARLS_GASTROCNEMIUS:
     title: 'Anatomy, Bony Pelvis and Lower Limb: Gastrocnemius Muscle'
     publisher: StatPearls (editor M. A. Varacallo; chapter authors not shown on the page read)

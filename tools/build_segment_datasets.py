@@ -497,10 +497,11 @@ def muscles():
             d["coordinate_context"]["coordinate_id"] = ctx_coord
             obs[f"LB-QD:G2392:MUS:{key}:PATH:{k:02d}"] = d
     return {
-        "dataset": {"id": "LB-QD:MUSCLES:GAIT2392", "version": "0.2.0",
+        "dataset": {"id": "LB-QD:MUSCLES:GAIT2392", "version": "0.3.0",
                     "description": (f"OpenSim Gait2392 parameters and path points of the {len(model_actuators())} "
                                     "actuators named by the ontology's model views and specifications (D-059 item 4; "
-                                    "list read from the ontology and model_entity_id added, 0.2.0, D-062 item 4)."),
+                                    "list read from the ontology and model_entity_id added, 0.2.0, D-062 item 4; "
+                                    "iliacus and psoas added for the growth test, 0.3.0, D-062 item 8)."),
                     "generated_by": "python -m tools.build_segment_datasets",
                     "decision": "D-059, D-062"},
         "sources": {

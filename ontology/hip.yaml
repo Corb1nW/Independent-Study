@@ -1,6 +1,6 @@
 ontology:
   id: LB-AO
-  version: 0.4.0
+  version: 0.4.1
   module: pelvis_hip_complex
   description: Reference ontology for pelvis and hip anatomy, biomechanics, and model abstractions.
   principles:
@@ -20,6 +20,18 @@ sources:
     - major muscle attachments
     - major muscle innervation
     - hip stability
+  SRC:STATPEARLS_THIGH_MUSCLES:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles'
+    publisher: StatPearls
+    url: https://statpearls.com/point-of-care/24169
+    supports:
+    - vasti innervation and knee extension
+    - rectus femoris crosses hip and knee
+    - insertions of biceps femoris (shared tendon on the fibular head), semimembranosus and semitendinosus below the
+      knee; the hamstrings flex the knee; all four quadriceps muscles extend the knee (re-read 2026-11-16, D-062)
+    retrieval_date: '2026-11-10'
+    note: Registered here since D-062 Amendment 3 (moved from lower_limb_sagittal.yaml), so that hip.yaml entities can
+      cite it and hip.yaml still loads on its own.
   SRC:ISB_WU_2002:
     title: 'ISB recommendation on definitions of joint coordinate system: ankle, hip, spine'
     citation: Wu G, et al. Journal of Biomechanics. 2002;35(4):543-548. PMID 11934426.
@@ -1667,6 +1679,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:RECTUS_FEMORIS_L:
     name: Left Rectus Femoris
     class: SkeletalMuscle
@@ -1690,6 +1703,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:SARTORIUS_R:
     name: Right Sartorius
     class: SkeletalMuscle
@@ -1764,6 +1778,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:SEMITENDINOSUS_L:
     name: Left Semitendinosus
     class: SkeletalMuscle
@@ -1787,6 +1802,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:SEMIMEMBRANOSUS_R:
     name: Right Semimembranosus
     class: SkeletalMuscle
@@ -1812,6 +1828,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:SEMIMEMBRANOSUS_L:
     name: Left Semimembranosus
     class: SkeletalMuscle
@@ -1835,6 +1852,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:BICEPS_FEMORIS_LONG_R:
     name: Right Biceps Femoris Long Head
     class: SkeletalMuscle
@@ -1860,6 +1878,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:BICEPS_FEMORIS_LONG_L:
     name: Left Biceps Femoris Long Head
     class: SkeletalMuscle
@@ -1883,6 +1902,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:PIRIFORMIS_R:
     name: Right Piriformis
     class: SkeletalMuscle
