@@ -255,3 +255,27 @@ The raw generator hash rejects a Git-clean checkout with CRLF on `tools/make_d2_
 **Reviewed by (model): ChatGPT.** **AGREE** on PR #44 at `3e6104d824cd3854273933e989a73d85be981162`, base `cef38be756c460d19d31ac26502b1bc6c9a71d80`. DEMO-B01 is resolved. The actual demo script advances to 1.00 s after one second of callbacks at 60, 120 and 144 Hz. Pause, resume and restart passed. The demo rebuilt byte for byte and all 285 tests passed.
 
 P1 stays visible in the demo and is deferred to the next ontology–model consistency stage, currently proposed as D4 in PR #43. [Re-review record](docs/reviews/2026-11-11_ChatGPT_Squat_Demo_ReReview_3e6104d.md). **Next:** Corbin decides on the demo merge. **Status: REVIEWED, NOT APPROVED.**
+
+## D-061 squat proof-of-concept scope review (2026-11-11)
+
+**Reviewed by (model): ChatGPT.** PR #43 at `57bfeaa7ac1beebceeff2b572aa3e2d5cd29c1e8`, proposal base `cef38be756c460d19d31ac26502b1bc6c9a71d80`. **AMEND.** D4 is the right first stage. The crossing check must distinguish path topology from leverage and cover the deferred knee links. D6 needs confirmed data terms for public vendoring and validation claims conditional on the evaluation. P4 needs to preserve D-051's review boundary or explicitly amend it with targeted checks of executable changes.
+
+At the reviewed SHA, 285 tests passed, integrity passed, 9/9 invalid probes were rejected, and the segment dataset check passed. A geometric counterexample showed that a path can cross a joint with zero moment arm. The data archives and future builds remain to be checked in their stage reviews.
+
+[Review record](docs/reviews/2026-11-11_ChatGPT_D061_Scope_57bfeaa.md). **Next:** Claude amends D-061 and Corbin decides on the plan. **Status: REVIEWED, NOT APPROVED.**
+
+## D-062 scope and D-061 Amendment 1 re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** PR #43 at `551efea2279dd2fe89610e50752de41acf173d1b`, base `c29572becc1e495b78a7efe643a516b63f9c3ba4`. **AMEND on D-062.** D-061 now narrows the proposed work to D4, separates topology from leverage, makes D6 evidence claims conditional, and withdraws the review tiers. D-062 must account for the fixed-knee lateral gastrocnemius sign difference, detect symmetric missing knee links through required crossings, and specify the data-driven hip endpoint mapping.
+
+At the pinned SHA, 285 tests passed, integrity passed, 9/9 invalid probes were rejected, and the dataset check passed. Reviewer probes confirmed the fixed-knee sign difference with matched OpenSim and verified bilateral equality despite the current knee omissions.
+
+[Re-review record](docs/reviews/2026-11-16_ChatGPT_D062_D061_Amendment1_ReReview_551efea.md). **Next:** Claude amends D-062 and Corbin decides on the D4 scope. **Status: REVIEWED, NOT APPROVED.**
+
+## D-062 Amendment 1 re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** PR #43 at `3dcbb72a4f90c0e5b1d670c1046486940cf00f3b`, base `c29572becc1e495b78a7efe643a516b63f9c3ba4`. **AGREE** on the D4 scope. D062-B01 through B03 are resolved in the proposal. The amended fixed-knee check uses its OpenSim reference, the required-edge check catches paired omissions, and the hip endpoint resolves through the bony pelvis. D061-B02's deferred wording is corrected.
+
+Reference-data and ontology probes corroborated the changes. Claude reports 285 passing tests, integrity and dataset checks passed, and 9/9 invalid probes rejected. Implementation remains the D4 build.
+
+[Re-review record](docs/reviews/2026-11-16_ChatGPT_D062_Amendment1_ReReview_3dcbb72.md). **Next:** Corbin decides the amended D-062 scope. **Status: REVIEWED, NOT APPROVED.**
