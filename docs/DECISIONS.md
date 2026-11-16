@@ -2642,6 +2642,10 @@ ChatGPT's build review at `d1ef9f2` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4
   - each regenerated OpenSim reference identical to the committed one (70,092, 75,811 and 90,275 numeric values);
   - both D4 runs exit 0.
   At `31a9d3f` the regenerated manifests were identical to the committed official ones (0 differing paths); at `2f5c8a8` the job's manifests were byte-identical to the official ones written in the main checkout. This is the builder's reproduction; hosted runs are recorded separately.
+- **Hosted verification runs (GitHub Actions, `d4-verify`, verifier commit `d0fc008`, 2026-11-16 23:17–23:21 UTC).** Started by pushing `verify/<full SHA>` branches from Claude's session.
+  - `31a9d3fabf3c8b4777e09c7a5af51c8fb98df996`: run [43977930176](https://github.com/Corb1nW/Independent-Study/actions/runs/43977930176), job 133686611586, **success**. 393 passed; integrity PASSED; 9/9 rejected; datasets current; COVERAGE OK ×3; all three regenerated OpenSim references identical; both D4 runs exit 0; regenerated manifests equal to the committed official `31a9d3f` manifests (0 differing paths).
+  - `2f5c8a8a8187f68b6e4373c400623b1e61e8cb6e`: run [43977928194](https://github.com/Corb1nW/Independent-Study/actions/runs/43977928194), job 133686604645, **success**. 408 passed; integrity PASSED; 9/9 rejected; datasets current; COVERAGE OK ×3; references identical; both D4 runs exit 0; regenerated manifests equal to the committed official `2f5c8a8` manifests (0 differing paths).
+  - Environment printed by both jobs: Python 3.13.18, OpenSim 4.6, NumPy 2.5.3, SciPy 1.18.1, `ubuntu-24.04`. Artifacts (logs, manifests, references, comparisons) kept 90 days. A third-party execution, supporting evidence only (D-045); not an independent review.
 
 ---
 
