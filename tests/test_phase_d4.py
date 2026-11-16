@@ -798,3 +798,78 @@ def test_regenerated_references_record_their_model(path, mode):
     ref = json.loads((ROOT / path).read_text(encoding="utf-8"))
     assert ref["provenance"]["model_specification"] == "squat_d2"
     assert check_reference(ref, mode) == []
+
+
+# =============================================================================================================
+# Step 4: the iliopsoas growth test (item 8), criterion A7. The growth commit itself changed no file in src/ or tools/
+# (recorded in D-062's build record with the commit's file list).
+# =============================================================================================================
+GROWTH = "squat_d4_iliopsoas"
+GROWTH_REF = ROOT / "tests" / "data" / "d4_iliopsoas_oracle_reference.json"
+NEW = ("LB:ACT:G2392:ILIACUS_R", "LB:ACT:G2392:PSOAS_R")
+
+
+@pytest.fixture(scope="module")
+def growth(onto, schema):
+    return load_spec(GROWTH, onto, schema)
+
+
+def test_a7_growth_specification_extends_the_baseline(growth, spec):
+    assert growth.raw["extends"] == "squat_d4"
+    assert growth.actuators == spec.actuators + list(NEW)
+    assert growth.segments == spec.segments and growth.tree == spec.tree
+
+
+def test_a7_new_points_are_switched_by_the_hip_coordinate(growth):
+    m = ma.assemble(growth, "gait2392", "moving_knee")
+    hip = m.coordinates.index("LB:DOF:HIP_FLEX_EXT_R")
+    for aid in NEW:
+        (act,) = [a for a in m.actuators if a.id == aid]
+        cond = [p for p in act.points if p.kind == "conditional"]
+        assert len(cond) == 1 and cond[0].coordinate == hip
+        q, _, _ = _motion()
+        active = [ma.point_active(cond[0], q[:, i]) for i in range(q.shape[1])]
+        assert active[0] and not all(active)          # switches off during the squat, as hip flexion passes 45 deg
+
+
+def test_a7_new_actuator_geometry_matches_opensim(growth):
+    ref = json.loads(GROWTH_REF.read_text(encoding="utf-8"))
+    assert check_reference(ref, "moving") == []
+    assert ref["provenance"]["model_specification"] == GROWTH and ref["actuators"][-2:] == ["iliacus_r", "psoas_r"]
+    assert any(k.startswith("edge_hip_flexion") for g in ref["geometry"] for k in g)
+    m = ma.assemble(growth, "gait2392", "moving_knee")
+    by_name = {a.name: a for a in m.actuators}
+    for g in ref["geometry"]:
+        q = np.array(g["q"])
+        frames = ma.segment_frames(m, q)
+        for name in ref["actuators"]:
+            L, R, _ = mp.path(m, by_name[name], q, frames)
+            assert abs(L - g["length_m"][name]) < 1e-9, (name, g["kind"])
+            assert np.max(np.abs(R - np.array(g["moment_arm_m"][name]))) < 1e-9, (name, g["kind"])
+
+
+def test_a7_consistency_checks_pass_for_the_grown_model(growth):
+    q, _, _ = _motion()
+    models = [ma.assemble(growth, b, v) for b, v in CASES]
+    arms = {(m.body, m.variant): mp.moment_arm_series(m, q) for m in models}
+    r = cs.run_checks(growth, models, arms, {"fixed_knee": _reference_arms()})
+    for key in ("C1_crossings", "C2_leverage", "C3_actions", "C4_evidence", "required_edges", "mirror"):
+        assert r[key]["passed"], key
+    per = r["C1_crossings"]["per_muscle"]
+    assert per["LB:MUS:ILIOPSOAS_PSOAS_MAJOR_R"]["derived"] == ["LB:JOINT:HIP_R"]
+    elements = {e["entity"] for e in r["C5_deviation_register"]["simplified"]["elements"]}
+    assert "LB:ACT:G2392:PSOAS_R" in elements
+    omitted = r["C5_deviation_register"]["omitted"]["muscles_crossing_a_modelled_joint_without_an_actuator"]
+    assert "LB:MUS:ILIOPSOAS_ILIACUS_R" not in omitted and "LB:MUS:SARTORIUS_R" in omitted
+
+
+def test_a7_baseline_unchanged_by_the_growth(spec):
+    """Adding actuators to the ontology and dataset leaves squat_d4 and the D2 view at 14 actuators."""
+    assert len(spec.actuators) == 14
+    assert len(m2.load_actuators(1.0)[0]) == 14
+    assert oracle_tool.actuators_for("squat_d2") == oracle_tool.ACTUATORS
+
+
+def test_a8_hip_module_and_phase_b_unchanged():
+    hip = AnatomyOntology(HIP)
+    assert hip.added_edges == [] and "LB:ACT:G2392:PSOAS_R" not in hip.entities
