@@ -169,6 +169,12 @@ class QuantitativeSchema:
             return list(alias["replaced_by"])
         raise KeyError(observation_id)
 
+    def observations_for_model_entity(self, dataset, model_entity_id, property_id=None):
+        """Observations whose target.model_entity_id names this computational element (LB-QPS 0.9.0), in file order."""
+        return {k: v for k, v in dataset["observations"].items()
+                if (v.get("target") or {}).get("model_entity_id") == model_entity_id
+                and (property_id is None or v.get("property_id") == property_id)}
+
     def observations_for_target(self, dataset, entity_id):
         return {k: v for k, v in self.dataset_observations(dataset).items()
                 if entity_id in v.get("target", {}).get("entity_ids", [])}
@@ -340,6 +346,14 @@ class QuantitativeSchema:
             if not self.property_applies_to_entity(definition["property_id"], t):
                 errors.append(f"property {definition['property_id']} does not apply to {t} "
                               f"(class {ids[t]['class']})")
+        model_entity = (d.get("target") or {}).get("model_entity_id")
+        if model_entity is not None:
+            allowed = self.data.get("model_entity_classes") or []
+            if model_entity not in ids:
+                errors.append(f"target.model_entity_id {model_entity} does not exist in the ontology")
+            elif ids[model_entity].get("class") not in allowed:
+                errors.append(f"target.model_entity_id {model_entity} has class {ids[model_entity].get('class')}; "
+                              f"allowed: {', '.join(allowed)}")
         for field in ("frame_id", "coordinate_id"):
             ref = ctx.get(field)
             if ref and ref not in ids:

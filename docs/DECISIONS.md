@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 29 (2026-11-16), Q68 and Q69 recorded; D-062 Amendment 1 (ChatGPT's D062-B01 to B03). 28 (2026-11-11), A-18, Q66 and Q67 recorded; D-061 Amendment 1 (narrowed to Stage D4; ChatGPT's D061-B01 to B03); D-062 (Stage D4 scope) proposed. 27 (2026-11-11): A-17 and Q65 recorded (Stage D3 merged); D-061 (squat proof-of-concept plan) proposed. 26 (2026-11-11): D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Revision:** 30 (2026-11-16), Q70 recorded; D-062 Accepted; Amendment 2 (Stage D4 build, step 1: ontology and schema). 29 (2026-11-16), Q68 and Q69 recorded; D-062 Amendment 1 (ChatGPT's D062-B01 to B03). 28 (2026-11-11), A-18, Q66 and Q67 recorded; D-061 Amendment 1 (narrowed to Stage D4; ChatGPT's D061-B01 to B03); D-062 (Stage D4 scope) proposed. 27 (2026-11-11): A-17 and Q65 recorded (Stage D3 merged); D-061 (squat proof-of-concept plan) proposed. 26 (2026-11-11): D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -180,6 +180,7 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q67** | 2026-11-11 19:16 | “Alright chat had some amendment suggestions and so do I. I want to focus just D4 for now, we can focus on where we take it from there once we get there. So focus on just D4 for this push” | After ChatGPT's scope review of D-061 (PR #46: AMEND at `57bfeaa`; D061-B01, B02, B03). Direct: this session. Claude's reading: Corbin's own amendment is to limit this round to Stage D4; if he has further amendments, they are not yet stated | D-061 narrowed to Stage D4 (Amendment 1); D-062 (Stage D4 scope) proposed |
 | **Q68** | 2026-11-16 11:49 | “chat still has amendment suggestions, check them out” | After ChatGPT's re-review of D-062 and D-061 Amendment 1 (PR #46: AMEND at `551efea`; D062-B01, B02, B03; a non-blocking wording note under D061-B02). Claude checked the three findings against the repository, agreed with each, and asked before writing or pushing anything. Direct: this session | Findings checked; see Q69 |
 | **Q69** | 2026-11-16 12:07 | “yes, this is your job. when there is ammenments you either disagree or you do them” | At 12:06 Corbin wrote “chat claims you have not published your improvement, provide a command to to chat if this is in accurate”. Claude answered that ChatGPT was right: nothing had been pushed, and PR #43's branch was still at `551efea`. Claude then asked whether to write and push the D-062 amendment. Direct: this session | Claude writes D-062 Amendment 1, accepting all three findings. Claude's reading: a standing direction for the builder to answer every reviewer amendment by doing it or disagreeing with evidence, without waiting to be asked. It matches the Builder skill's “After review” step, so no new rule or file |
+| **Q70** | 2026-11-16 16:16 | “Chat agreed and so do I so lets move on” | After ChatGPT's re-review of D-062 Amendment 1 (PR #46: **AGREE** at `3dcbb72`, no blocking findings; recorded at 15:59). Direct: this session. Claude's reading, stated to Corbin in the same session and open to correction: D-062 is Accepted at `3dcbb72` with Amendment 1, including its four structural choices (`relationship_additions`, `target.model_entity_id`, the iliopsoas growth run with H1, and the derived endpoint rule), and the Stage D4 build starts | D-062 Accepted; Stage D4 build started (Amendment 2) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
@@ -296,7 +297,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Accepted (Q58) | Implemented (A-13, A-14) | Independently executed (PR #36); fixes in review |
 | D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Accepted (Q62) | Built; merged (A-17) | ChatGPT AGREE after Amendments 2 and 3 (PR #42); run reproduced at `9805d41` |
 | D-061 | Squat proof of concept: plan for Stages D4–D9 (ontology-assembled model, full Gait2392 leg muscles, measured squat and validation, forward simulation, uncertainty, report) | Claude; direction Corbin (Q65) | Direction agreed tentatively (Q66); narrowed to Stage D4 (Q67, Amendment 1) | Not started | ChatGPT: AMEND at `57bfeaa` (PR #46); findings answered in Amendment 1 and D-062 |
-| D-062 | Stage D4: the squat model assembled from the ontology (generic assembler, anatomy–model consistency checks, knee-crossing repair, iliopsoas growth test) | Claude; direction Corbin (Q66, Q67) | Proposed; Amendment 1 (Q68, Q69) | Not started | ChatGPT: AMEND at `551efea` (PR #46); findings answered in Amendment 1, re-review pending |
+| D-062 | Stage D4: the squat model assembled from the ontology (generic assembler, anatomy–model consistency checks, knee-crossing repair, iliopsoas growth test) | Claude; direction Corbin (Q66, Q67) | Accepted (Q70) at `3dcbb72`; Amendment 1 (Q68, Q69); Amendment 2 (build record) | In progress: step 1 of 4 (ontology and schema) | ChatGPT: AMEND at `551efea`, AGREE at `3dcbb72` (PR #46); build review pending |
 
 ---
 
@@ -2251,12 +2252,12 @@ Claude's evaluation before Q65 found four gaps:
 - **D061-B03 (Medium), review tiers.** Accepted. P4 is withdrawn. The D-047 light path (documentation wording and formatting only, as incorporated in D-051) stays as it is, and executable changes keep their run checks. Any future proposal for a separate path for executable changes will name the D-051 amendment for Corbin's decision.
 
 ### D-062  Stage D4: the squat model assembled from the ontology
-- **Decision status:** Proposed
-- **Implementation status:** Not started
-- **Verification status:** Not applicable
+- **Decision status:** Accepted (Q70) at `3dcbb72`, with Amendment 1. Status before: Proposed
+- **Implementation status:** In progress: step 1 of 4 (ontology and schema; Amendment 2)
+- **Verification status:** Step 1 reported by author; build review by ChatGPT pending
 - **Date:** 2026-11-11
-- **Proposed by:** Claude (Phase D builder) · **Reviewed by:** ChatGPT, AMEND at `551efea` (PR #46: D062-B01, B02, B03); answered in Amendment 1, re-review pending
-- **Approval basis:** pending. Direction from Corbin: Q65, Q66, Q67; Q68 and Q69 (Amendment 1)
+- **Proposed by:** Claude (Phase D builder) · **Reviewed by:** ChatGPT, AMEND at `551efea` (PR #46: D062-B01, B02, B03); answered in Amendment 1; **AGREE at `3dcbb72`** (PR #46)
+- **Approval basis:** Q70 (accepted at `3dcbb72`). Direction from Corbin: Q65, Q66, Q67; Q68 and Q69 (Amendment 1)
 - **Evidence:**
   - D-058 to D-060 and their official runs (D1 `dd89fff`, D2 `7ac0f2d`, D3 `d3efc56`);
   - the merged demo review's P1 (A-18);
@@ -2475,6 +2476,37 @@ Changes:
 
 *For Corbin.* One more structural choice, which he can change: the endpoint rule above, rather than ChatGPT's other option, an explicit endpoint table in the model data. The rule adds no new data and derives every endpoint, including the hip, from the ontology as it stands.
 
+
+**Amendment 2 (2026-11-16): build record, step 1 of 4: ontology and schema (Q70). Reported by author; ChatGPT's build review pending.**
+
+*Built.*
+- **Coordinate conventions (item 2).** `LB:DOF:HIP_FLEX_EXT_R` (`hip.yaml`, now 0.4.0), `LB:DOF:KNEE_FLEX_EXT_R` and `LB:DOF:ANKLE_DORSI_PLANTAR_R` (`lower_limb_sagittal.yaml`, now 0.3.0) gain `positive_motion`, `negative_motion` and `model_coordinates` (Gait2392 `hip_flexion_r` +1, `knee_angle_r` −1, `ankle_angle_r` +1). A test checks them against the sign table that the D2 oracle tool already used. The prose `coordinate` text of conditional and moving path points is kept and checked against the new fields.
+- **Relationship additions (item 5).** `src/ontology.py` reads a `relationship_additions` block in a later module. An addition targets an entity from an earlier module, uses a controlled predicate and existing targets, and names its evidence. It cannot remove, replace or duplicate an edge. The loader records which module added each edge (`added_edges`, `edge_origin`, `edge_evidence`). The primary module cannot carry additions, and `hip.yaml` still loads on its own, unchanged.
+- **The P1 repair.** `CROSSES` and `ACTS_ON` to the same-side knee for biceps femoris long head, semimembranosus, semitendinosus and rectus femoris, both sides: 16 edges on 8 entities.
+  - *Source check, done before adding, as item 5 requires.* `SRC:STATPEARLS_THIGH_MUSCLES` (statpearls.com/point-of-care/24169, read 2026-11-16) supports each edge: semimembranosus inserts on the medial tibial condyle; semitendinosus on the upper medial tibial shaft; the long and short heads of the biceps femoris share a tendon inserting on the fibular head; the hamstrings flex the knee; all four quadriceps muscles, rectus femoris included, extend the knee.
+  - `SRC:STATPEARLS_HIP` was also read, as the chapter of the same title on statpearls.com (point-of-care/32220, editor S. Sharma, updated 2023-07-24). Its accessible text names these four muscles only for their innervation. So the edges cite `SRC:STATPEARLS_THIGH_MUSCLES` alone, not "both sources" as item 5 anticipated. The NCBI copy (NBK526019) was not reachable from this session.
+- **Schema LB-QPS 0.9.0 (item 4).** `target.model_entity_id`, optional; when present it must exist in the ontology with class `CoordinateFrame`, `ModelJoint` or `ModelActuator` (`model_entity_classes`). `QuantitativeSchema.observations_for_model_entity` finds records through it.
+- **Regenerated datasets.** `segments_gait2392.yaml` 0.3.0 and `muscles_gait2392.yaml` 0.2.0 carry the field on the 21 body records, the `back` joint record and all 121 actuator records. Compared with the files at `3dcbb72`, every observation ID, value and every other field is identical; only `model_entity_id` and the dataset headers (version, description, decision) differ. `segments_de_leva_1996.yaml` is unchanged.
+- **The generator reads the ontology.** `tools/build_segment_datasets.py` takes its actuator list from the ontology's model views and specifications (in order of first appearance), each actuator's target from its entity, path-point frames from `model_element`, and conditional or moving point coordinates from `model_coordinates`. Its hard-coded actuator table is gone. The OpenSim oracle tool is changed in step 3, before the growth commit.
+- **The specification `squat_d4` (item 1)**, in `lower_limb_sagittal.yaml`'s `models` block. `src/model_spec.py` reads it, checks every reference against the ontology and the datasets, and derives:
+  - each joint's segments by the endpoint rule;
+  - the parts and frames of each model segment;
+  - the tree from the ground segment.
+
+  The derived structure matches ChatGPT's probe at `3dcbb72`: the hip resolves to pelvis (through the bony pelvis) and thigh; subtalar to the foot at both ends; low back to pelvis and torso, both merged into the HAT; the lumped MTP is merged with no stated endpoints.
+- **Tests.** `tests/test_phase_d4.py`, 40 tests at this step. They include the two endpoint-rule mutations of Amendment 1's A5 (the bony pelvis without a representation, and a second represented complex). One D1 test was adapted: `test_ontology_modules_load_together_and_keep_existing_ids` now allows exactly the listed additions on `hip.yaml` entities, and nothing else.
+
+*Choices within the builder's delegated scope (code structure, internal names, data layout of the specification).*
+1. **Specification layout.** Joints carry `child_frame`, because the ontology cannot say which of the foot's three model frames a merged joint leads to. Locations that differ by variant are a map `{variant: record}`. Body rules use `mass_fraction_terms: [count, [records]]`, which keeps D1's order of summation, plus `length_to` or `shape: scaled_reference`. The HAT's half share per leg is `bilateral_share`. An extension may only add actuators (`extends`, `add_actuators`).
+2. **`model_element: {model, name}`** on the 7 Gait2392 frames, the 14 actuators and the model joint `back` (22 entities). Code then finds model elements without parsing IDs or prose.
+3. **A model segment's frames are its computational model's frames** (those with a `model_element`). The anatomical pelvis frame `LB:FRAME:PELVIS` is therefore not a frame of the HAT.
+4. **`model_entity_id` on joint-location records only for a model joint.** The anatomical joints have no separate model-joint entity, so their records keep `entity_ids` only, and the specification names them directly.
+
+*For Corbin (new, not blocking the build).* The four muscles' existing `knee_flexion` / `knee_extension` capabilities cite only `SRC:STATPEARLS_HIP`, whose accessible text does not state them (see the source check). The capabilities themselves are supported by `SRC:STATPEARLS_THIGH_MUSCLES`. Adding that source to the four entities' evidence is a change to scientific content, so it is left as a proposal; the build does not depend on it.
+
+*Checks at this step.* 325 tests collected; all pass except the two provenance-verifying runners, which refuse a working tree with uncommitted inputs and pass once the step is committed (re-run after the commit; see the handoff). `python -m src.integrity` passed; probes 9/9 rejected; `python -m tools.build_segment_datasets --check` passed.
+
+*Next steps:* step 2, the generic assembler, dynamics and muscle geometry with the A1–A3 regression; step 3, checks C1–C5 and A4–A6 with the oracle tool reading the specification; step 4, the iliopsoas growth and the official runs.
 ---
 
 ## 6. Open items
@@ -2526,8 +2558,12 @@ Changes:
 | ~~Re-review the D3-B04 fix~~ AGREE; PRs #41 and #42 merged (A-17) | ChatGPT; Corbin | Done |
 | ~~Review D-061~~ AMEND at `57bfeaa` (PR #46): D061-B01, B02, B03; answered in D-061 Amendment 1 and D-062 | ChatGPT; Claude | Done |
 | ~~Review D-062 (Stage D4 scope) and D-061 Amendment 1 at the head of PR #43, blocking findings only~~ AMEND at `551efea` (PR #46): D062-B01, B02, B03; D-061 Amendment 1 resolved; answered in D-062 Amendment 1 | ChatGPT; Claude | Done |
-| Re-review D-062 Amendment 1 at the head of PR #43, blocking findings only | ChatGPT | Next |
-| Decide D-062; then the Stage D4 build | Corbin | After ChatGPT's review |
+| ~~Re-review D-062 Amendment 1 at the head of PR #43, blocking findings only~~ AGREE at `3dcbb72` (PR #46) | ChatGPT | Done |
+| ~~Decide D-062~~ Accepted at `3dcbb72` (Q70) | Corbin | Done |
+| Merge PR #43 (D-061 Amendment 1 and D-062) and PR #46 (ChatGPT's reviews) | Corbin | Any time |
+| Build Stage D4 in four reviewable steps (D-062 Amendment 2) | Claude | In progress: step 1 done |
+| Review the Stage D4 build, step by step or at the end | ChatGPT | After each pushed step |
+| Decide whether to add `SRC:STATPEARLS_THIGH_MUSCLES` to the evidence of the four muscles whose knee capabilities cite only `SRC:STATPEARLS_HIP` (D-062 Amendment 2) | Corbin | Any time |
 | Decide the outlook beyond D4 (D-061 Stages D5–D9; D-040 amendment) | Corbin | When D4 is done (Q67) |
 | Confirm or correct the interpretation of Q59 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
@@ -2579,6 +2615,7 @@ Changes:
 | 27 | 2026-11-11 | Claude | A-17 and Q65 added to §4; D-060 marked accepted by merge; new D-061 (squat proof-of-concept plan, Proposed) with `docs/plans/2026-11-11_squat_proof_of_concept_plan.md`; index and open items | Q65; D-061 pending ChatGPT review and Corbin's decision |
 | 28 | 2026-11-11 | Claude | A-18, Q66 and Q67 added to §4; D-061 Amendment 1 (narrowed to Stage D4 per Q67; ChatGPT's D061-B01 to B03 answered); new D-062 (Stage D4 scope, Proposed); index and open items | Q66, Q67; D-062 pending ChatGPT review and Corbin's decision |
 | 29 | 2026-11-16 | Claude | Q68 and Q69 added to §4 with an interpretation; D-062 Amendment 1 (ChatGPT's D062-B01 to B03 accepted: C3 direction check per knee variant with thresholds on magnitude, required-edge check and new A4, endpoint rule; A5 additions); replaced D-062 sentences marked; review line, index and open items; plan risk-row wording (D061-B02 note) | Q68, Q69; D-062 pending ChatGPT re-review and Corbin's decision |
+| 30 | 2026-11-16 | Claude | Q70 added to §4 with an interpretation; D-062 Accepted (Q70); D-062 Amendment 2 (Stage D4 build record, step 1: coordinate conventions, relationship additions and the knee-edge repair, LB-QPS 0.9.0 `model_entity_id`, regenerated datasets, the `squat_d4` specification and its loader); index and open items | Q70 |
 
 ## 8. References
 

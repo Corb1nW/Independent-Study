@@ -131,8 +131,14 @@ def test_new_fraction_bounds(schema):
 # ---------------------------------------------------------------------- ontology
 def test_ontology_modules_load_together_and_keep_existing_ids(schema):
     hip_only = AnatomyOntology(ROOT / "ontology" / "hip.yaml")
+    # Since D-062 item 5 a later module may ADD relationships to hip.yaml entities (never remove or replace them).
+    # Every hip.yaml entity is unchanged apart from exactly those listed additions.
+    added = {(e["entity"], e["predicate"], e["target"]) for e in schema.ontology.added_edges}
     for eid, entity in hip_only.entities.items():
-        assert schema.ontology.get(eid) == entity
+        merged = deepcopy(schema.ontology.get(eid))
+        for pred, targets in merged.get("relationships", {}).items():
+            merged["relationships"][pred] = [t for t in targets if (eid, pred, t) not in added]
+        assert merged == entity
     assert "LB:JOINT:KNEE_R" in schema.ontology.entities
     assert schema.property_applies_to_entity("range_of_motion", "LB:JOINT:KNEE_R")  # D-031 through the hierarchy
 

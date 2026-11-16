@@ -1,6 +1,6 @@
 ontology:
   id: LB-AO
-  version: 0.3.0
+  version: 0.4.0
   module: pelvis_hip_complex
   description: Reference ontology for pelvis and hip anatomy, biomechanics, and model abstractions.
   principles:
@@ -2236,6 +2236,15 @@ entities:
       PART_OF:
       - LB:JOINT:HIP_R
     convention_reference: SRC:ISB_WU_2002
+    positive_motion: hip_flexion
+    negative_motion: hip_extension
+    model_coordinates:
+    - model: gait2392
+      coordinate: hip_flexion_r
+      sign: 1
+    convention_fields_note: 'positive_motion, negative_motion and model_coordinates added for the squat_d4 model
+      (D-062 item 2): the capability names this coordinate increases and decreases, and the OpenSim Gait2392
+      coordinate equal to sign x this coordinate.'
   LB:DOF:HIP_AB_AD_R:
     name: Right Hip Abduction/Adduction
     class: JointCoordinate
