@@ -1092,6 +1092,11 @@ models:
     bilateral_share:
       LB:SEG:HAT: 0.5
     bilateral_share_assumption: Bilateral symmetry; one leg carries half of the HAT (D-058).
+    scaled_actuator_parameters:
+    - optimal_fiber_length
+    - tendon_slack_length
+    scaled_actuator_parameters_note: Lengths scaled by the body's geometry scale, as in D-059 item 7; maximum isometric
+      force, pennation and maximum contraction velocity are not scaled.
     actuators:
     - LB:ACT:G2392:GLUT_MAX1_R
     - LB:ACT:G2392:GLUT_MAX2_R

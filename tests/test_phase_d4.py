@@ -294,3 +294,223 @@ def test_an_extension_may_only_add_actuators(schema):
     onto.data["models"]["squat_d4_ext"] = {"kind": "executable_specification", "extends": "squat_d4", "segments": []}
     with pytest.raises(SpecError, match="may only add actuators"):
         load_spec("squat_d4_ext", onto, schema)
+
+
+# =============================================================================================================
+# Step 2: the generic assembler, dynamics and muscle geometry (items 3 and 6), criteria A1 and A3.
+# Regression oracles: src/squat_d1.py (fixed knee), src/squat_d3.py (moving knee; frozen = D1), src/muscles_d2.py.
+# =============================================================================================================
+import dataclasses  # noqa: E402
+import json  # noqa: E402
+import re  # noqa: E402
+
+import numpy as np  # noqa: E402
+
+from src import model_assembly as ma  # noqa: E402
+from src import muscle_paths as mp  # noqa: E402
+from src import muscles_d2 as m2  # noqa: E402
+from src import squat_d1 as sq  # noqa: E402
+from src import squat_d3 as d3  # noqa: E402
+from tools import run_phase_d2 as d2r  # noqa: E402
+from tools.oracle_coverage import check_reference  # noqa: E402
+
+D1_CFG, D1P = sq.load_config(ROOT / "config" / "phase_d1_squat.yaml")
+_, D2P = d2r.load_config()
+D3_TOL = yaml.safe_load((ROOT / "config" / "phase_d3_moving_knee.yaml").read_text(encoding="utf-8"))["tolerances"]
+CASES = [(b, v) for b in ("female", "male", "gait2392") for v in ("fixed_knee", "moving_knee")]
+# A1 tolerances, stated in D-062 before the build.
+A1 = {"tau": 1e-9, "length": 1e-12, "arm": 1e-12, "t_star": 1e-7, "activation": 1e-6}
+SEG = {"foot": "LB:SEG:FOOT_R", "shank": "LB:SEG:SHANK_R", "thigh": "LB:SEG:THIGH_R", "hat": "LB:SEG:HAT"}
+
+
+def _motion():
+    t = np.linspace(0, D1P["period"], int(D1P["samples"]))
+    return sq.Motion(D1P["start_angles"], D1P["depth_angles"], D1P["period"])(t)
+
+
+@pytest.fixture(scope="module")
+def assembled(spec):
+    return {(b, v): ma.assemble(spec, b, v) for b, v in CASES}
+
+
+@pytest.fixture(scope="module")
+def oracles(schema):
+    """The D1-D3 modules for each case (the regression oracles, D-062 item 6)."""
+    out = {}
+    for b, v in CASES:
+        body = d3.build_body(b, QuantitativeSchema(SCHEMA), frozen=(v == "fixed_knee"))
+        s = d2r.body_scale(body.base)
+        acts, _ = m2.load_actuators(s, QuantitativeSchema(SCHEMA))
+        joints = m2.d1_joints(s, QuantitativeSchema(SCHEMA))
+        if v == "moving_knee":
+            joints = dataclasses.replace(joints, moving_knee=body.knee)
+        out[(b, v)] = (body, acts, joints)
+    return out
+
+
+def test_derived_angle_map_equals_d1(assembled):
+    for m in assembled.values():
+        assert np.array_equal(m.B[1:], sq.B_MAP)
+        assert m.B[0].tolist() == [0.0, 0.0, 0.0]          # the ground segment does not turn
+
+
+@pytest.mark.parametrize("body,variant", CASES)
+def test_a1_body_parameters_and_scale(assembled, oracles, body, variant):
+    m, (b, _, _) = assembled[(body, variant)], oracles[(body, variant)]
+    assert m.scale == d2r.body_scale(b.base)
+    assert (m.body_mass, m.stature) == (b.base.body_mass, b.base.stature)
+    for key, sid in (("shank", SEG["shank"]), ("thigh", SEG["thigh"]), ("hat", SEG["hat"])):
+        old, new = b.base.segments[key], m.segments[sid]
+        assert new.mass == pytest.approx(old.mass, rel=1e-14) and new.inertia == pytest.approx(old.inertia, rel=1e-12)
+    assert m.segments[SEG["foot"]].mass == pytest.approx(b.base.foot.mass, rel=1e-14)
+    assert np.allclose(m.segments[SEG["foot"]].com, b.base.foot.com, atol=1e-15)
+    assert np.allclose(m.contact["heel"][:2], b.base.foot.heel, atol=1e-15)
+    assert np.allclose(m.contact["ball"][:2], b.base.foot.ball, atol=1e-15)
+    assert m.ground_y == pytest.approx(b.base.foot.ground_y, abs=1e-15)
+    assert 2 * m.per_side_mass() / m.body_mass - 1 == pytest.approx(2 * b.base.per_leg_mass() / b.base.body_mass - 1,
+                                                                      abs=1e-14)
+
+
+@pytest.mark.parametrize("body,variant", CASES)
+def test_a1_kinematics_and_torques_regress_to_d1_d3(assembled, oracles, body, variant):
+    m, (b, _, _) = assembled[(body, variant)], oracles[(body, variant)]
+    q, qd, qdd = _motion()
+    g = D1P["gravity"]
+    old, new = d3.inverse_dynamics(b, q, qd, qdd, g), ma.inverse_dynamics(m, q, qd, qdd, g)
+    assert np.max(np.abs(old["tau"] - new["tau"])) < A1["tau"]
+    if variant == "fixed_knee":     # D3 frozen reproduces D1; check against D1 itself as well
+        assert np.max(np.abs(sq.inverse_dynamics(b.base, q, qd, qdd, g)["tau"] - new["tau"])) < A1["tau"]
+    assert np.max(np.abs(old["grf"] - new["grf"])) < 1e-9
+    assert np.nanmax(np.abs(old["cop_x"] - new["cop_x"])) < 1e-12
+    ko, kn = old["kinematics"], new["kinematics"]
+    pairs = [(ko["knee"], kn[SEG["thigh"]]["joint"]), (ko["hip"], kn[SEG["hat"]]["joint"])]
+    for o, s in (("com_shank", "shank"), ("com_thigh", "thigh"), ("com_hat", "hat")):
+        pairs += [(ko[o][0], kn[SEG[s]]["c"]), (ko[o][2], kn[SEG[s]]["ac"])]
+    for a, c in pairs:
+        assert np.max(np.abs((a[0] if isinstance(a, tuple) else a) - c)) < 1e-12
+    if variant == "moving_knee":
+        assert np.max(np.abs(old["knee_translation_term"] - new["moving_centre_terms"]["LB:JOINT:KNEE_R"])) < 1e-9
+    else:
+        assert not np.any(new["moving_centre_terms"]["LB:JOINT:KNEE_R"])
+
+
+@pytest.mark.parametrize("body,variant", CASES)
+def test_a1_muscle_geometry_regresses_to_d2_d3(assembled, oracles, body, variant):
+    m, (_, acts, joints) = assembled[(body, variant)], oracles[(body, variant)]
+    assert [a.name for a in acts] == [a.name for a in m.actuators]
+    for a, b in zip(acts, m.actuators):
+        assert (a.f0, a.l_opt, a.l_ts, a.alpha0, a.v_max, a.entity) == (b.f0, b.l_opt, b.l_ts, b.alpha0, b.v_max, b.entity)
+    q, _, _ = _motion()
+    worst_l = worst_r = 0.0
+    for i in range(q.shape[1]):
+        frames = ma.segment_frames(m, q[:, i])
+        for a, b in zip(acts, m.actuators):
+            L0, R0, p0 = m2.path(a, q[:, i], joints)
+            L1, R1, p1 = mp.path(m, b, q[:, i], frames)
+            assert len(p0) == len(p1)
+            worst_l, worst_r = max(worst_l, abs(L0 - L1)), max(worst_r, float(np.max(np.abs(R0 - R1))))
+    assert worst_l < A1["length"] and worst_r < A1["arm"]
+
+
+@pytest.mark.parametrize("body,variant", CASES)
+def test_a1_recruitment_regresses_to_d2_d3(assembled, oracles, body, variant):
+    m, (b, acts, joints) = assembled[(body, variant)], oracles[(body, variant)]
+    q, qd, qdd = _motion()
+    g, delta = D1P["gravity"], D2P["solver_band_delta"]
+    tau_old = d3.inverse_dynamics(b, q, qd, qdd, g)["tau"]
+    new = mp.recruit_series(m, q, qd, ma.inverse_dynamics(m, q, qd, qdd, g)["tau"], delta, second_solver=False,
+                            needed_reserve=False)
+    t_old = np.zeros(q.shape[1])
+    for i in range(q.shape[1]):
+        Cm = np.zeros((3, len(acts)))
+        for j, a in enumerate(acts):
+            L, R, _ = m2.path(a, q[:, i], joints)
+            Cm[:, j] = m2.unit_tendon_force(a, m2.fiber_state(a, L, -R @ qd[:, i])) * R
+        rec = m2.recruit(Cm, tau_old[:, i], delta=delta, second_solver=False)
+        t_old[i] = rec.t_star
+        assert np.max(np.abs(rec.activation - new["activation"][:, i])) < A1["activation"]
+    assert np.max(np.abs(t_old - new["t_star"])) < A1["t_star"]
+    eps = D2P["epsilon_reserve"]
+    assert (np.max(t_old) <= eps) == (np.max(new["t_star"]) <= eps)          # identical muscle-feasibility status
+    assert not new["flags"]
+
+
+@pytest.mark.parametrize("body,variant", CASES)
+def test_a3_mechanics_checks_on_the_assembled_model(assembled, oracles, body, variant):
+    m, (b, _, _) = assembled[(body, variant)], oracles[(body, variant)]
+    res = ma.run(m, D1P)
+    checks = ma.check_residuals(m, D1P, res)
+    for key in ("newton_euler_vs_kane_N_m", "static_virtual_work_N_m", "energy_W", "local_one_step_rad_at_1ms",
+                "short_horizon_0p1s_rad_at_1ms"):
+        assert abs(checks[key]) <= D3_TOL[key], key
+    assert checks["newton_identity_per_side_N"] <= D3_TOL["newton_identity_N"]
+    assert abs(checks["mass_bookkeeping_relative"]) <= D3_TOL["mass_fraction_sum"]
+    old = d3.run(b, D1P)
+    assert res["contact"]["feasible"] == old["contact"]["feasible"]          # identical contact status
+    assert res["contact"]["cop_min_m"] == pytest.approx(old["contact"]["cop_min_m"], abs=1e-12)
+
+
+@pytest.mark.parametrize("variant,path,mode", [("fixed_knee", "tests/data/d2_oracle_reference.json", "fixed"),
+                                               ("moving_knee", "tests/data/d3_oracle_reference.json", "moving")])
+def test_a3_assembled_geometry_matches_opensim(assembled, variant, path, mode):
+    ref = json.loads((ROOT / path).read_text(encoding="utf-8"))
+    assert check_reference(ref, mode) == []
+    m = assembled[("gait2392", variant)]
+    by_name = {a.name: a for a in m.actuators}
+    assert set(ref["actuators"]) <= set(by_name)
+    for g in ref["geometry"]:
+        q = np.array(g["q"])
+        frames = ma.segment_frames(m, q)
+        for name in ref["actuators"]:
+            L, R, _ = mp.path(m, by_name[name], q, frames)
+            assert abs(L - g["length_m"][name]) < 1e-9, (name, g["kind"])
+            assert np.max(np.abs(R - np.array(g["moment_arm_m"][name]))) < 1e-9, (name, g["kind"])
+
+
+def test_a3_assembled_kinematics_match_opensim(assembled):
+    ref = json.loads((ROOT / "tests" / "data" / "d3_oracle_reference.json").read_text(encoding="utf-8"))
+    m = assembled[("gait2392", "moving_knee")]
+    zero = np.zeros((3, 1))
+    for row in ref["kinematics"]:
+        q = np.array(row["q"])[:, None]
+        k = ma.kinematics(m, q, zero, zero)
+        mine = {"knee_m": k[SEG["shank"]]["o"], "hip_m": k[SEG["thigh"]]["o"], "pelvis_origin_m": k[SEG["hat"]]["o"],
+                "femur_com_m": k[SEG["thigh"]]["c"], "tibia_com_m": k[SEG["shank"]]["c"]}
+        for key, v in mine.items():
+            assert np.max(np.abs(v[:, 0] - np.array(row[key][:2]))) < D3_TOL["kinematics_oracle_m"], key
+
+
+def test_moving_centre_derivatives_by_differences(assembled):
+    """The moving joint centre's first and second derivatives agree with central differences of its value."""
+    m = assembled[("male", "moving_knee")]
+    ib = m.segments[SEG["thigh"]].inbound
+    assert ib.moving
+    h = 1e-5
+    for qk in (0.1, 0.7, 1.3):
+        v, d, dd = ib.outer_point(qk)
+        vp, vm = ib.outer_point(qk + h)[0], ib.outer_point(qk - h)[0]
+        assert np.max(np.abs((vp - vm) / (2 * h) - d)) < 1e-9
+        assert np.max(np.abs((vp - 2 * v + vm) / h ** 2 - dd)) < 1e-4
+
+
+# ----------------------------------------------------------------------------- A6: no anatomy in the code
+ANATOMY_TERMS = ("knee", "hip", "ankle", "foot", "feet", "heel", "toe", "toes", "leg", "legs", "thigh", "shank",
+                 "pelvis", "pelvic", "torso", "trunk", "femur", "femoral", "tibia", "tibial", "talus", "calcaneus",
+                 "calcn", "lumbar", "gluteus", "glut", "vastus", "gastrocnemius", "soleus", "hamstring",
+                 "hamstrings", "quadriceps", "iliacus", "psoas", "iliopsoas", "rectus", "biceps", "semimembranosus",
+                 "semitendinosus", "subtalar", "metatarsophalangeal", "mtp", "hat", "forearm", "hand", "head",
+                 "sagittal", "flexion", "extension", "dorsiflexion", "plantarflexion")
+NEW_MODULES = ("src/model_spec.py", "src/model_assembly.py", "src/muscle_paths.py")
+
+
+@pytest.mark.parametrize("path", NEW_MODULES)
+def test_a6_no_anatomy_or_ontology_ids_in_the_new_modules(path):
+    text = (ROOT / path).read_text(encoding="utf-8")
+    assert not re.search(r"\bLB(:|-QD)", text), "ontology or dataset ID in code"
+    words = set(re.findall(r"[a-z]+", text.lower()))
+    assert not words & set(ANATOMY_TERMS), sorted(words & set(ANATOMY_TERMS))
+
+
+def test_a6_scan_would_catch_a_planted_term(tmp_path):
+    text = (ROOT / NEW_MODULES[1]).read_text(encoding="utf-8") + "\n# knee\n"
+    assert set(re.findall(r"[a-z]+", text.lower())) & set(ANATOMY_TERMS) == {"knee"}

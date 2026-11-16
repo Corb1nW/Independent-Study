@@ -19,7 +19,6 @@ from .ontology import AnatomyOntology
 from .quantitative import QuantitativeSchema
 
 ROOT = Path(__file__).resolve().parents[1]
-ONTOLOGY_FILES = (ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "lower_limb_sagittal.yaml")
 SCHEMA_FILE = ROOT / "ontology" / "quantitative_schema.yaml"
 DATA = ROOT / "ontology" / "quantitative_data"
 
@@ -28,7 +27,7 @@ SEGMENT_CLASS, FRAME_CLASS, COMPLEX_CLASS = "RigidBodySegment", "CoordinateFrame
 COORDINATE_CLASS, ACTUATOR_CLASS = "JointCoordinate", "ModelActuator"
 RULES = ("direct", "composite", "scaled_fraction")
 SCALES = ("reference", "stature_ratio_to_reference")
-EXTENSION_FIELDS = {"kind", "extends", "decision", "description", "add_actuators"}
+EXTENDING_FIELDS = {"kind", "extends", "decision", "description", "add_actuators"}
 
 
 class SpecError(ValueError):
@@ -155,7 +154,8 @@ class ModelSpec:
 
 # --------------------------------------------------------------------------------- loading
 def default_ontology():
-    return AnatomyOntology(list(ONTOLOGY_FILES))
+    """The ontology modules the quantitative schema names (its `ontology` field), loaded together."""
+    return AnatomyOntology(QuantitativeSchema(SCHEMA_FILE, ontology=False).ontology_paths())
 
 
 def default_schema(ontology=None):
@@ -163,8 +163,8 @@ def default_schema(ontology=None):
 
 
 def raw_specification(onto, name):
-    """The specification's fields, with `extends` resolved: an extension adds actuators and may restate its decision
-    and description; it changes nothing else (D-062 item 8)."""
+    """The specification's fields, with `extends` resolved: a specification that extends another adds actuators and
+    may restate its decision and description; it changes nothing else (D-062 item 8)."""
     models = onto.data["models"]
     if name not in models:
         raise SpecError(f"no model specification {name!r}")
@@ -173,9 +173,9 @@ def raw_specification(onto, name):
         raise SpecError(f"{name} is not an {KIND}")
     if "extends" not in raw:
         return raw
-    extra = set(raw) - EXTENSION_FIELDS
+    extra = set(raw) - EXTENDING_FIELDS
     if extra:
-        raise SpecError(f"{name}: an extension may only add actuators; unsupported fields {sorted(extra)}")
+        raise SpecError(f"{name}: a specification that extends another may only add actuators; unsupported fields {sorted(extra)}")
     base = raw_specification(onto, raw["extends"])
     added = list(raw.get("add_actuators") or [])
     clash = set(added) & set(base["actuators"])
