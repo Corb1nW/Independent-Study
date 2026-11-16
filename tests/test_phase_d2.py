@@ -68,7 +68,9 @@ def test_muscle_inputs_pass_the_traceability_gate():
 
 def test_actuator_entities_represent_existing_muscles_and_hip_module_stands_alone():
     onto = AnatomyOntology([ROOT / "ontology/hip.yaml", ROOT / "ontology/lower_limb_sagittal.yaml"])
-    acts = {k: v for k, v in onto.entities.items() if v["class"] == "ModelActuator"}
+    # The D2 view's actuators (Stage D4's growth test added two more to the ontology, outside this view; D-062 item 8).
+    acts = {k: onto.entities[k] for k in onto.data["models"]["squat_d2"]["represents"]
+            if onto.entities[k]["class"] == "ModelActuator"}
     assert len(acts) == 14
     for v in acts.values():
         assert onto.entities[v["represents"]]["class"] == "SkeletalMuscle"
