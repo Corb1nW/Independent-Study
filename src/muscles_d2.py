@@ -237,17 +237,21 @@ class Actuator:
     points: list = field(default_factory=list)
 
 
+VIEW = "squat_d2"   # the ontology model view whose actuators Stage D2 uses (D-059 item 11)
+
+
 def load_actuators(scale=1.0, schema=None):
-    """The 14 actuators from the muscle dataset, lengths scaled by `scale` (D-059 item 7)."""
+    """The 14 actuators of the squat_d2 view, from the muscle dataset, lengths scaled by `scale` (D-059 item 7).
+
+    Since Stage D4 (D-062) the list comes from the view in the ontology rather than from every actuator record in the
+    dataset, so that actuators added for later stages do not change Stage D2 or D3 (their regression role)."""
     schema = schema or QuantitativeSchema(ROOT / "ontology" / "quantitative_schema.yaml")
     d = schema.load_dataset(DATA / MUSCLES)
     obs = d["observations"]
     used = []
-    names = []
-    for oid in obs:
-        m = re.fullmatch(r"LB-QD:G2392:MUS:(\w+):MAXIMUM_ISOMETRIC_FORCE", oid)
-        if m:
-            names.append(m.group(1))
+    onto = schema.ontology
+    names = [onto.model_element(a)[1].upper() for a in onto.data["models"][VIEW]["represents"]
+             if onto.get(a).get("class") == "ModelActuator"]
     acts = []
     for key in names:
         def v(prop):

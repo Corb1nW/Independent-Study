@@ -500,7 +500,8 @@ ANATOMY_TERMS = ("knee", "hip", "ankle", "foot", "feet", "heel", "toe", "toes", 
                  "hamstrings", "quadriceps", "iliacus", "psoas", "iliopsoas", "rectus", "biceps", "semimembranosus",
                  "semitendinosus", "subtalar", "metatarsophalangeal", "mtp", "hat", "forearm", "hand", "head",
                  "sagittal", "flexion", "extension", "dorsiflexion", "plantarflexion")
-NEW_MODULES = ("src/model_spec.py", "src/model_assembly.py", "src/muscle_paths.py")
+NEW_MODULES = ("src/model_spec.py", "src/model_assembly.py", "src/muscle_paths.py", "src/consistency.py",
+               "tools/run_phase_d4.py")
 
 
 @pytest.mark.parametrize("path", NEW_MODULES)
@@ -514,3 +515,279 @@ def test_a6_no_anatomy_or_ontology_ids_in_the_new_modules(path):
 def test_a6_scan_would_catch_a_planted_term(tmp_path):
     text = (ROOT / NEW_MODULES[1]).read_text(encoding="utf-8") + "\n# knee\n"
     assert set(re.findall(r"[a-z]+", text.lower())) & set(ANATOMY_TERMS) == {"knee"}
+
+
+# =============================================================================================================
+# Step 3: the consistency checks C1-C5, required edges and mirror (item 7, Amendment 1), criteria A4 and A5.
+# =============================================================================================================
+from src import consistency as cs  # noqa: E402
+
+FIXED_REF = ROOT / "tests" / "data" / "d2_oracle_reference.json"
+BFL = ("LB:MUS:BICEPS_FEMORIS_LONG_R", "LB:MUS:BICEPS_FEMORIS_LONG_L")
+
+
+def _reference_arms(path=FIXED_REF, change=None):
+    ref = json.loads(Path(path).read_text(encoding="utf-8"))
+    rows = sorted((g for g in ref["geometry"] if g["kind"] == "d1_sample"), key=lambda g: g["index"])
+    arms = {n: np.array([g["moment_arm_m"][n] for g in rows]).T for n in ref["actuators"]}
+    if change:
+        change(arms)
+    return arms
+
+
+@pytest.fixture(scope="module")
+def arm_series(assembled):
+    q, _, _ = _motion()
+    return {case: mp.moment_arm_series(m, q) for case, m in assembled.items()}
+
+
+def _checks(onto, schema, arm_series, references="default", extra_actuator=None):
+    spec = load_spec("squat_d4", onto, schema)
+    models = [ma.assemble(spec, "gait2392", "moving_knee")]
+    if references == "default":
+        references = {"fixed_knee": _reference_arms()}
+    return cs.run_checks(spec, models, arm_series, references)
+
+
+def _onto(change=None, repaired=True, tmp_path=None):
+    if repaired:
+        onto = AnatomyOntology([HIP, LOWER])
+    else:
+        module = yaml.safe_load(LOWER.read_text(encoding="utf-8"))
+        module.pop("relationship_additions")
+        path = tmp_path / "unrepaired.yaml"
+        path.write_text(yaml.safe_dump(module, sort_keys=False), encoding="utf-8")
+        onto = AnatomyOntology([HIP, path])
+    if change:
+        change(onto)
+    return onto
+
+
+def _drop(onto, eid, pred, target):
+    onto.entities[eid]["relationships"][pred].remove(target)
+
+
+def test_a4_all_checks_pass_on_the_repaired_ontology(onto, schema, arm_series):
+    r = _checks(onto, schema, arm_series)
+    assert r["passed"]
+    for key in ("C1_crossings", "C2_leverage", "C3_actions", "C4_evidence", "required_edges", "mirror"):
+        assert r[key]["passed"], key
+
+
+def test_a4_on_the_unrepaired_ontology(schema, arm_series, tmp_path):
+    """C1 flags exactly the four right-side muscles; the required-edge check flags their knee CROSSES and ACTS_ON on
+    both sides (eight entities, no others); the mirror check passes, as expected for a symmetric omission."""
+    onto = _onto(repaired=False, tmp_path=tmp_path)
+    r = _checks(onto, QuantitativeSchema(SCHEMA, ontology=onto), arm_series)
+    flagged = {f["muscle"]: f["missing_CROSSES"] for f in r["C1_crossings"]["failures"]}
+    assert flagged == {f"LB:MUS:{b}_R": ["LB:JOINT:KNEE_R"] for b in REPAIRED}
+    missing = {(m["entity"], m["predicate"], m["target"]) for m in r["required_edges"]["missing"]}
+    assert missing == {(f"LB:MUS:{b}_{s}", p, f"LB:JOINT:KNEE_{s}") for b in REPAIRED for s in "RL"
+                       for p in ("CROSSES", "ACTS_ON")}
+    assert r["mirror"]["passed"]
+
+
+def test_a5_deleting_a_crossing_fails_c1_naming_the_muscle(schema, arm_series):
+    onto = _onto(lambda o: _drop(o, BFL[0], "CROSSES", "LB:JOINT:KNEE_R"))
+    r = _checks(onto, schema, arm_series)
+    assert [f["muscle"] for f in r["C1_crossings"]["failures"]] == [BFL[0]]
+    assert not r["passed"]
+
+
+def test_a5_deleting_an_action_fails_c3(schema, arm_series):
+    onto = _onto(lambda o: _drop(o, BFL[0], "ACTS_ON", "LB:JOINT:KNEE_R"))
+    r = _checks(onto, schema, arm_series)
+    assert r["C1_crossings"]["passed"] and not r["C3_actions"]["passed"]
+    assert {"muscle": BFL[0], "capability": "knee_flexion", "joint_missing_from_ACTS_ON": "LB:JOINT:KNEE_R"} in \
+        r["C3_actions"]["structural_failures"]
+
+
+def test_a5_swapping_a_capability_fails_the_direction_check(schema, arm_series):
+    def swap(o):
+        caps = o.entities[BFL[0]]["mechanical_capabilities"]
+        caps[caps.index("knee_flexion")] = "knee_extension"
+    r = _checks(_onto(swap), schema, arm_series)
+    fails = r["C3_actions"]["direction_failures"]
+    moving = [f for f in fails if f["case"][1] == "moving_knee"]
+    assert {tuple(f["case"]) for f in moving} == {(b, "moving_knee") for b in ("female", "male", "gait2392")}
+    assert all(d["actuator"] == "LB:ACT:G2392:BIFEMLH_R" and d["drives"] == "knee_flexion"
+               for f in moving for d in f["direction_disagreements"])
+
+
+def test_a5_a_path_through_a_joint_centre_crosses_with_negligible_leverage(spec):
+    """ChatGPT's counterexample (D061-B01): anchors on two segments at ChatGPT's probe coordinates, routed through the
+    fixed joint centre. The length is constant, so the moment arm is zero; C1 counts the crossing, C2 accepts it and
+    records negligible leverage."""
+    m = ma.assemble(spec, "gait2392", "fixed_knee")
+    thigh, shank = m.segments[SEG["thigh"]], m.segments[SEG["shank"]]
+    femur, tibia = thigh.reference_frame, shank.reference_frame
+    centre = thigh.inbound.outer_point(0.0)[0]          # the fixed joint centre in the thigh's coordinates
+    pts = [ma.PathPoint(femur, SEG["thigh"], "fixed", location=centre + np.array([-0.21, 0.06, 0.0])),
+           ma.PathPoint(femur, SEG["thigh"], "fixed", location=centre),
+           ma.PathPoint(tibia, SEG["shank"], "fixed", location=np.array([0.22, -0.07, 0.0]))]
+    probe = dataclasses.replace(m.actuators[0], points=pts)
+    probe.id = "probe"
+    m.actuators = [probe]
+    q, _, _ = _motion()
+    ids, R = mp.moment_arm_series(m, q)
+    lengths = [mp.path(m, probe, q[:, i])[0] for i in range(q.shape[1])]
+    assert max(lengths) - min(lengths) < 1e-12 and float(np.max(np.abs(R))) < 1e-9
+    crossings = cs.derived_crossings(spec, {"probe": [p.frame for p in pts]})
+    assert crossings["probe"][0] == ["LB:JOINT:KNEE_R"]
+    c2 = cs.check_c2(spec, crossings, {("gait2392", "fixed_knee"): (ids, R)})
+    assert c2["passed"] and [n["joint"] for n in c2["crosses_negligible_leverage"]] == ["LB:JOINT:KNEE_R"]
+
+
+def test_a5_fixed_knee_c3_fails_when_the_reference_lacks_the_disagreement(schema, arm_series):
+    """Amendment 1: with the lateral gastrocnemius disagreement removed from a copy of the fixed-knee reference, the
+    fixed-knee C3 fails, naming lat_gas_r."""
+    def remove(arms):
+        r = arms["lat_gas_r"]
+        r[1] = np.where(r[1] < 0, abs(r[1]), r[1])
+    r = _checks(AnatomyOntology([HIP, LOWER]), schema, arm_series,
+                references={"fixed_knee": _reference_arms(change=remove)})
+    fails = [f for f in r["C3_actions"]["direction_failures"] if "unconfirmed_by_reference" in f]
+    assert {tuple(f["case"]) for f in fails} == {(b, "fixed_knee") for b in ("female", "male", "gait2392")}
+    assert {u["actuator"] for f in fails for u in f["unconfirmed_by_reference"]} == {"LB:ACT:G2392:LAT_GAS_R"}
+
+
+def test_a5_fixed_knee_without_a_reference_would_fail_pass_fail(schema, arm_series):
+    r = _checks(AnatomyOntology([HIP, LOWER]), schema, arm_series, references={})
+    cases = {tuple(f["case"]) for f in r["C3_actions"]["direction_failures"]}
+    assert cases == {(b, "fixed_knee") for b in ("female", "male", "gait2392")}
+
+
+def test_fixed_knee_direction_deviations_are_registered(onto, schema, arm_series):
+    """C5 (Amendment 1): with the fixed knee, lateral gastrocnemius (at least 1 mm, 49 poses, 126-174) and medial
+    gastrocnemius (below 1 mm, 29 poses) drive knee extension; the moving knee has none."""
+    r = _checks(onto, schema, arm_series)
+    for body, extreme in (("female", -2.973741e-3), ("male", -2.984025e-3), ("gait2392", -3.085149e-3)):
+        e = r["C3_actions"]["direction"][f"{body} | fixed_knee"]
+        assert e["reference_confirmed"] and e["same_samples_as_reference"]
+        (lat,) = e["disagreements_at_least_1mm"]
+        assert (lat["actuator"], lat["samples"], lat["first_sample"], lat["last_sample"]) == \
+            ("LB:ACT:G2392:LAT_GAS_R", 49, 126, 174)
+        assert lat["extreme_moment_arm_m"] == pytest.approx(extreme, abs=1e-9) and lat["extreme_sample"] == 150
+        small = {d["actuator"]: d for d in e["disagreements_above_numerical_zero"]}
+        assert small["LB:ACT:G2392:MED_GAS_R"]["samples"] == 29
+        assert abs(small["LB:ACT:G2392:MED_GAS_R"]["extreme_moment_arm_m"]) < 1e-3
+        assert not r["C3_actions"]["direction"][f"{body} | moving_knee"]["disagreements_above_numerical_zero"]
+    reg = r["C5_deviation_register"]
+    assert set(reg["direction_disagreements"]) == {f"{b} | fixed_knee" for b in ("female", "male", "gait2392")}
+
+
+def test_a5_left_deletion_fails_required_edges_and_mirror(schema, arm_series):
+    r = _checks(_onto(lambda o: _drop(o, BFL[1], "CROSSES", "LB:JOINT:KNEE_L")), schema, arm_series)
+    assert not r["required_edges"]["passed"] and not r["mirror"]["passed"] and r["C1_crossings"]["passed"]
+    assert r["mirror"]["differences"] == [{"pair": list(BFL), "predicates": ["CROSSES"]}]
+
+
+def test_a5_deletion_on_both_sides_fails_required_edges_and_c1_not_mirror(schema, arm_series):
+    def both(o):
+        _drop(o, BFL[0], "CROSSES", "LB:JOINT:KNEE_R")
+        _drop(o, BFL[1], "CROSSES", "LB:JOINT:KNEE_L")
+    r = _checks(_onto(both), schema, arm_series)
+    assert not r["required_edges"]["passed"] and not r["C1_crossings"]["passed"] and r["mirror"]["passed"]
+
+
+def test_c5_register_contents(onto, schema, arm_series):
+    reg = _checks(onto, schema, arm_series)["C5_deviation_register"]
+    assert reg["represented"]["modelled_joints"] == ["LB:JOINT:ANKLE_R", "LB:JOINT:KNEE_R", "LB:JOINT:HIP_R"]
+    assert reg["simplified"]["merged_segments"] == {"LB:SEG:HAT": ["LB:SEG:HAT", "LB:SEG:PELVIS", "LB:SEG:TORSO"]}
+    merged = {j["joint"]: j for j in reg["simplified"]["locked_or_merged_joints"]}
+    assert merged["LB:JOINT:MTP_R"]["note"] == "merged; endpoints not stated in the ontology"
+    assert reg["simplified"]["crossed_not_modelled"]["LB:MUS:GASTROCNEMIUS_R"] == ["LB:JOINT:SUBTALAR_R"]
+    omitted = reg["omitted"]
+    assert omitted["coordinates"] == ["LB:DOF:HIP_AB_AD_R", "LB:DOF:HIP_ROTATION_R"]
+    assert {"LB:MUS:SARTORIUS_R", "LB:MUS:ADDUCTOR_LONGUS_R", "LB:MUS:ILIOPSOAS_ILIACUS_R"} <= \
+        set(omitted["muscles_crossing_a_modelled_joint_without_an_actuator"])
+    assert "external_rotation" in omitted["out_of_plane_capabilities"]["LB:MUS:GLUTEUS_MAXIMUS_R"]
+
+
+def test_c4_fails_without_registered_evidence(schema, arm_series):
+    onto = _onto(lambda o: o.entities["LB:MUS:SOLEUS_R"].update({"evidence": []}))
+    r = _checks(onto, schema, arm_series)
+    assert not r["C4_evidence"]["passed"]
+    assert {"entity": "LB:MUS:SOLEUS_R", "problem": "no registered evidence"} in r["C4_evidence"]["failures"]
+
+
+# ------------------------------------------------------------- the runner and the generic oracle tool (A2, A7 prep)
+import xml.etree.ElementTree as ET  # noqa: E402
+
+from tools import make_d2_oracle as oracle_tool  # noqa: E402
+from tools import run_phase_d4 as d4r  # noqa: E402
+
+
+def test_runner_configuration_loads_and_rejects_unknown_fields(tmp_path):
+    cfg = d4r.load_config()
+    assert cfg["specification"] == "squat_d4" and cfg["baseline_variant"] == "moving_knee"
+    bad = dict(cfg, extra=1)
+    path = tmp_path / "bad.yaml"
+    path.write_text(yaml.safe_dump(bad), encoding="utf-8")
+    with pytest.raises(ValueError, match="must be exactly"):
+        d4r.load_config(path)
+
+
+def test_stored_precision_comparison():
+    assert d4r.stored_precision_difference([0.123457], [0.1234565], 6)[0] == 0.0
+    assert d4r.stored_precision_difference([0.123457], [0.1234575001], 6)[0] > 0      # one unit off at 6 decimals
+    assert d4r.stored_precision_difference([0.0, 0.0], [0.0, 4e-2], 9)[0] > 0       # zeros are compared at 9 decimals
+    assert d4r.stored_precision_difference([[1.5, None]], [[1.5, float("nan")]], 3)[0] == 0.0
+    assert d4r.stored_precision_difference([[1.5, None]], [[1.5, 2.0]], 3)[0] == float("inf")
+
+
+def test_regression_catches_a_changed_official_value(tmp_path, spec):
+    """A2 is a real comparison: a copy of an official manifest with one activation changed by 2e-6 fails."""
+    cfg = d4r.load_config()
+    from src import squat_d1 as sq1
+    _, d1p = sq1.load_config(ROOT / cfg["d1_config"])
+    _, d2p = d2r.load_config(ROOT / cfg["d2_config"])
+    tol = yaml.safe_load((ROOT / cfg["d3_config"]).read_text(encoding="utf-8"))["tolerances"]
+    _, _, raw = d4r.run_case(spec, "gait2392", "moving_knee", d1p, d2p, tol, False)
+    raw["body"] = "gait2392"
+    roles = cfg["regression"]["manifests"]["moving_knee"]
+    reg = cfg["regression"]
+    good = d4r.regression(raw, roles, reg)
+    assert good["passed"] and good["largest_excess"] == 0.0
+    official = json.loads((ROOT / roles["mechanics_and_muscles"]).read_text(encoding="utf-8"))
+    run = next(r for r in official["runs"] if r["body"] == "gait2392")
+    run["series"]["activation"]["tib_ant_r"][100] += 2e-6
+    copy = tmp_path / "changed.json"
+    copy.write_text(json.dumps(official), encoding="utf-8")
+    bad = d4r.regression(raw, {"changed": str(copy)}, reg)
+    assert not bad["passed"] and bad["by_manifest"]["changed"]["series"]["activation"]["excess_over_half_unit"] > 0
+
+
+def test_d2_loader_reads_its_view_not_every_actuator_record():
+    acts, _ = m2.load_actuators(1.0)
+    onto = AnatomyOntology([HIP, LOWER])
+    assert [a.name for a in acts] == [onto.model_element(a)[1] for a in onto.data["models"]["squat_d2"]["represents"]]
+    assert "re.fullmatch" not in (ROOT / "src" / "muscles_d2.py").read_text(encoding="utf-8")
+
+
+def test_oracle_tool_reads_actuators_from_the_ontology():
+    assert oracle_tool.ACTUATORS == oracle_tool.actuators_for("squat_d2") == oracle_tool.actuators_for("squat_d4")
+    assert len(oracle_tool.ACTUATORS) == 14
+
+
+def test_oracle_tool_finds_switches_driven_by_any_coordinate():
+    """The generic state generator handles points switched by hip flexion (the iliopsoas case of D-062 item 8)
+    before any iliopsoas data exist; knee-driven states keep their existing keys."""
+    root = ET.fromstring(oracle_tool.matched_model_xml("moving"))
+    states = oracle_tool.geometry_states(root, ["iliacus_r", "psoas_r"])
+    sides = [s for s in states if s["kind"] == "switch_side"]
+    assert sides and all("edge_hip_flexion_gait2392" in s for s in sides)
+    assert {s["side"] for s in sides} == {"flexion_side", "extension_side"}
+    edges = [s for s in states if s["kind"] == "switch_edge"]
+    assert [round(s["edge_hip_flexion_gait2392"], 9) for s in edges] == [round(0.785398 + 1e-5, 9)]
+    assert edges[0]["q"][2] == edges[0]["edge_hip_flexion_gait2392"]
+    knee = oracle_tool.geometry_states(root)
+    assert any("edge_knee_angle_gait2392" in s for s in knee) and not any("edge_hip_flexion_gait2392" in s for s in knee)
+
+
+@pytest.mark.parametrize("path,mode", [("tests/data/d2_oracle_reference.json", "fixed"),
+                                       ("tests/data/d3_oracle_reference.json", "moving")])
+def test_regenerated_references_record_their_model(path, mode):
+    ref = json.loads((ROOT / path).read_text(encoding="utf-8"))
+    assert ref["provenance"]["model_specification"] == "squat_d2"
+    assert check_reference(ref, mode) == []

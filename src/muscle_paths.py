@@ -87,3 +87,14 @@ def recruit_series(model, q, qd, tau, delta, second_solver=True, needed_reserve=
             worst["activation_difference"] = max(worst["activation_difference"], rec.solvers["activation_difference"])
     out["worst"] = worst
     return out
+
+
+def moment_arm_series(model, q):
+    """(actuator IDs, moment arms: actuators x coordinates x samples) over a motion."""
+    q = np.asarray(q, float)
+    R = np.zeros((len(model.actuators), len(model.coordinates), q.shape[1]))
+    for i in range(q.shape[1]):
+        frames = segment_frames(model, q[:, i])
+        for j, a in enumerate(model.actuators):
+            R[j, :, i] = path(model, a, q[:, i], frames)[1]
+    return [a.id for a in model.actuators], R

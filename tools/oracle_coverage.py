@@ -40,12 +40,12 @@ def _finite(values):
     return all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) for v in values)
 
 
-def expected_states(knee_mode):
-    """The states tools/make_d2_oracle.py generates for this knee mode, in file order."""
+def expected_states(knee_mode, actuators=None):
+    """The states tools/make_d2_oracle.py generates for this knee mode and actuator list, in file order."""
     root = ET.fromstring(oracle.matched_model_xml(knee_mode))
-    geometry = oracle.geometry_states(root)
+    geometry = oracle.geometry_states(root, actuators)
     forces = [{"passive": passive, "kind": st.get("kind", "motion"), "q": st["q"], "qdot": st["qdot"], "activation": a}
-              for passive in (False, True) for st in oracle.force_states(root) for a in oracle.ACTIVATIONS]
+              for passive in (False, True) for st in oracle.force_states(root, actuators) for a in oracle.ACTIVATIONS]
     q, _, _ = oracle.d1_poses()
     unmodified = [{"index": i, "q": q[:, i].tolist()} for i in range(0, q.shape[1], 10)]
     kinematics = [{"index": i, "q": q[:, i].tolist()} for i in range(q.shape[1])] if knee_mode == "moving" else None
@@ -77,11 +77,13 @@ def check_reference(ref, knee_mode):
         problems.append("matched model hash does not match the copy the current tool builds")
     if prov.get("tool_sha256") != _sha(TOOL.read_bytes()):
         problems.append("recorded oracle-tool hash does not match tools/make_d2_oracle.py")
-    if ref.get("actuators") != oracle.ACTUATORS:
-        problems.append("actuator list differs from the 14 Stage D2 actuators")
-    exp = expected_states(knee_mode)
-    _compare_rows("geometry", ref.get("geometry"), exp["geometry"],
-                  ("kind", "index", "q", "side", "edge_knee_angle_gait2392", "knee_angle_gait2392"), problems)
+    model = prov.get("model_specification", oracle.DEFAULT_MODEL)
+    actuators = oracle.actuators_for(model)
+    if ref.get("actuators") != actuators:
+        problems.append(f"actuator list differs from the {len(actuators)} actuators of {model}")
+    exp = expected_states(knee_mode, actuators)
+    geometry_keys = sorted({k for row in exp["geometry"] for k in row})
+    _compare_rows("geometry", ref.get("geometry"), exp["geometry"], geometry_keys, problems)
     _compare_rows("forces", ref.get("forces"), exp["forces"], ("passive", "kind", "q", "qdot", "activation"), problems)
     _compare_rows("unmodified_geometry", ref.get("unmodified_geometry"), exp["unmodified_geometry"],
                   ("index", "q"), problems)
@@ -91,14 +93,14 @@ def check_reference(ref, knee_mode):
         problems.append("kinematics present in a fixed-knee reference")
     for name in ("geometry", "unmodified_geometry"):
         for k, row in enumerate(ref.get(name) or []):
-            for a in oracle.ACTUATORS:
+            for a in actuators:
                 L, R = row.get("length_m", {}).get(a), row.get("moment_arm_m", {}).get(a)
                 if L is None or R is None or len(R) != 3 or not _finite([L, *R]):
                     problems.append(f"{name}[{k}]: missing or non-finite values for {a}")
                     break
     for k, row in enumerate(ref.get("forces") or []):
         vals = row.get("values", {})
-        if set(vals) != set(oracle.ACTUATORS) or not all(
+        if set(vals) != set(actuators) or not all(
                 set(FORCE_KEYS) <= set(v) and _finite([v[key] for key in FORCE_KEYS]) for v in vals.values()):
             problems.append(f"forces[{k}]: missing or non-finite force values")
     for k, row in enumerate(ref.get("kinematics") or []):
