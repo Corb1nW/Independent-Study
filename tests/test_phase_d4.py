@@ -193,8 +193,15 @@ def test_dataset_records_name_their_model_element(onto, schema):
 
 
 def test_generator_reads_its_actuator_list_from_the_ontology(onto):
+    """The dataset covers every actuator any model view or specification names, in order of first appearance."""
+    expected = []
+    for spec in onto.data["models"].values():
+        for a in list(spec.get("represents") or []) + list(spec.get("actuators") or []) + list(spec.get("add_actuators") or []):
+            if onto.get(a).get("class") == "ModelActuator" and onto.model_element(a)[1] not in expected:
+                expected.append(onto.model_element(a)[1])
     names = list(bsd.model_actuators())
-    assert names == [onto.model_element(a)[1] for a in onto.data["models"]["squat_d2"]["represents"]]
+    assert names == expected
+    assert names[:14] == [onto.model_element(a)[1] for a in onto.data["models"]["squat_d2"]["represents"]]
     assert not hasattr(bsd, "D2_ACTUATORS")
 
 
