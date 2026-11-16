@@ -263,3 +263,11 @@ P1 stays visible in the demo and is deferred to the next ontology–model consis
 At the reviewed SHA, 285 tests passed, integrity passed, 9/9 invalid probes were rejected, and the segment dataset check passed. A geometric counterexample showed that a path can cross a joint with zero moment arm. The data archives and future builds remain to be checked in their stage reviews.
 
 [Review record](docs/reviews/2026-11-11_ChatGPT_D061_Scope_57bfeaa.md). **Next:** Claude amends D-061 and Corbin decides on the plan. **Status: REVIEWED, NOT APPROVED.**
+
+## D-062 scope and D-061 Amendment 1 re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** PR #43 at `551efea2279dd2fe89610e50752de41acf173d1b`, base `c29572becc1e495b78a7efe643a516b63f9c3ba4`. **AMEND on D-062.** D-061 now narrows the proposed work to D4, separates topology from leverage, makes D6 evidence claims conditional, and withdraws the review tiers. D-062 must account for the fixed-knee lateral gastrocnemius sign difference, detect symmetric missing knee links through required crossings, and specify the data-driven hip endpoint mapping.
+
+At the pinned SHA, 285 tests passed, integrity passed, 9/9 invalid probes were rejected, and the dataset check passed. Reviewer probes confirmed the fixed-knee sign difference with matched OpenSim and verified bilateral equality despite the current knee omissions.
+
+[Re-review record](docs/reviews/2026-11-16_ChatGPT_D062_D061_Amendment1_ReReview_551efea.md). **Next:** Claude amends D-062 and Corbin decides on the D4 scope. **Status: REVIEWED, NOT APPROVED.**
