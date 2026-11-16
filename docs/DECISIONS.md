@@ -2606,7 +2606,7 @@ Changes:
   - So that `hip.yaml` can cite it and still load on its own, the source's registration moves from `lower_limb_sagittal.yaml` to `hip.yaml`. Its supported claims now also list the insertions and knee actions read on 2026-11-16.
   - Versions: `hip.yaml` 0.4.1 and `lower_limb_sagittal.yaml` 0.3.1. The lower-limb module still cites the source for its own muscles and for the knee edges.
 - **Tests.** New: the eight entities cite both sources, and the source is registered once, in `hip.yaml`, which loads alone. Adapted: a step-1 test expected those entities' hip edges to carry only the hip chapter.
-- **Effect on results: none.** Both runners were rerun at the new commit to scratch outputs and compared with the official manifests at `31a9d3f` (see the handoff). The official runs stay at `31a9d3f`.
+- **Effect on results: none.** At `2952e28` (2952e28eec7a2a6c0de17e34e2b26539dc319177): 394 tests passed, integrity passed, probes 9/9 rejected, datasets current. Both runners were rerun to scratch outputs (`python -m tools.run_phase_d4 --commit-sha 2952e28… --output <scratch>`, and the same with `--config config/phase_d4_iliopsoas.yaml`), both exit 0. Each manifest was compared field by field with its official manifest at `31a9d3f`: they differ only in `commit_sha` and in the hashes of the three changed inputs (`hip.yaml`, `lower_limb_sagittal.yaml`, `muscles_gait2392.yaml`). Every series, check, status and the H1 result are identical. This is a builder's reproduction, not a new official run; the official runs stay at `31a9d3f`.
 - The open item on this evidence question is closed.
 ---
 
