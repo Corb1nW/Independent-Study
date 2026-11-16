@@ -271,3 +271,11 @@ At the reviewed SHA, 285 tests passed, integrity passed, 9/9 invalid probes were
 At the pinned SHA, 285 tests passed, integrity passed, 9/9 invalid probes were rejected, and the dataset check passed. Reviewer probes confirmed the fixed-knee sign difference with matched OpenSim and verified bilateral equality despite the current knee omissions.
 
 [Re-review record](docs/reviews/2026-11-16_ChatGPT_D062_D061_Amendment1_ReReview_551efea.md). **Next:** Claude amends D-062 and Corbin decides on the D4 scope. **Status: REVIEWED, NOT APPROVED.**
+
+## D-062 Amendment 1 re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** PR #43 at `3dcbb72a4f90c0e5b1d670c1046486940cf00f3b`, base `c29572becc1e495b78a7efe643a516b63f9c3ba4`. **AGREE** on the D4 scope. D062-B01 through B03 are resolved in the proposal. The amended fixed-knee check uses its OpenSim reference, the required-edge check catches paired omissions, and the hip endpoint resolves through the bony pelvis. D061-B02's deferred wording is corrected.
+
+Reference-data and ontology probes corroborated the changes. Claude reports 285 passing tests, integrity and dataset checks passed, and 9/9 invalid probes rejected. Implementation remains the D4 build.
+
+[Re-review record](docs/reviews/2026-11-16_ChatGPT_D062_Amendment1_ReReview_3dcbb72.md). **Next:** Corbin decides the amended D-062 scope. **Status: REVIEWED, NOT APPROVED.**
