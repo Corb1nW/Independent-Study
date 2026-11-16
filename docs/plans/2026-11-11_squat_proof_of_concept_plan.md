@@ -205,7 +205,7 @@ If time runs short, the first things to cut are D7's predictive squat and D8's g
 
 | Risk | Handling |
 |---|---|
-| Dataset files are hard to access or in an awkward format | Check the squat files first in D6's scope; the alternative dataset needs permission |
+| Dataset files are hard to access or in an awkward format | Check the squat files first in D6's scope, and verify the terms of both candidate datasets there |
 | The measured squat is weighted (25 lb) and recorded with gait2354 | Model the load explicitly; compare joint moments, not model internals |
 | Forward simulation with compliant tendons is numerically stiff | Rigid-tendon forward simulation first; Moco as an independent check |
 | Validation fails | A legitimate result: reported, explained and kept |
