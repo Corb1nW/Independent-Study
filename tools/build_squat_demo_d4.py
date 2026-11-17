@@ -10,11 +10,16 @@ limits; and how the stage serves the proof-of-concept plan (D-061).
 
 Presentation only. It changes no model, data or result, and it reads only pinned inputs, so it rebuilds byte for byte
 on any later commit:
-- simulation series, statuses, checks, consistency results, regression, oracle comparisons and H1: copied from the
-  two official Stage D4 manifests at af21e78 (rounded for display);
+- the three run manifests: read only as the archived official files, identified by SHA-256 and archive commit in
+  OFFICIAL below. A working copy that differs is ignored in favour of the archived Git blob (and the build stops if
+  that is unavailable), so an edited file at a default path cannot reach the page under the official label
+  (ChatGPT D4-DEMO-02). Manifests passed with --assembled, --growth or --d3 that are not the official files build a
+  page marked "custom inputs" throughout, with no provenance claim;
+- simulation series, statuses, checks, consistency results, regression, oracle comparisons, H1 and each body's
+  actuator parameters: copied from the two official Stage D4 manifests at af21e78 (rounded for display);
 - ontology content (entity names, relationships, the relationship additions, coordinate conventions, the model
   specification): read from the exact ontology files those runs used, by the Git blob IDs the manifests record;
-- check tolerances: from the D3 configuration file, by the blob ID the manifests record;
+- check tolerances: from the D3 and D2 configuration files, by the blob IDs the manifests record;
 - joint positions for the stick figure: the official Stage D3 manifest's body points. D4's regression (criterion A2)
   showed they equal the assembled model's at the stored precision; the build checks that the D4 muscle drawings
   equal D3's as well, so the figure and the muscles come from the same model;
@@ -36,6 +41,15 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSEMBLED = "results/phase_d/2026-11-16_d4_assembled_runs_af21e78.json"
 GROWTH = "results/phase_d/2026-11-16_d4_iliopsoas_runs_af21e78.json"
 D3 = "results/phase_d/2026-11-11_d3_moving_knee_runs_d3efc56.json"
+# The archived official manifests: path, the commit that archived them, SHA-256 of the file.
+OFFICIAL = {
+    "assembled": (ASSEMBLED, "ba4c9216ff00407fc3c97f4e9ddfe27745ab5a1a",
+                  "e13e8654e7670a5e81e4c4ed5db8d5929ae705532020e2d1993cc67f86004758"),
+    "growth": (GROWTH, "ba4c9216ff00407fc3c97f4e9ddfe27745ab5a1a",
+               "6121e2e3c8220e2a7e51ea36e9abbd9a919e817196b2966fd5f2fb8b222b32ca"),
+    "d3": (D3, "b5967e799fa22dcc0625d0575707d29cb19362b8",
+           "d393797ec76cb89cce78073367c75a5af5bef7a2eebf41787a5a4f6006ddfa42"),
+}
 LABELS = {"female": "Female", "male": "Male", "gait2392": "Gait2392"}
 LONG = {"female": "de Leva (1996) female reference body", "male": "de Leva (1996) male reference body",
         "gait2392": "OpenSim Gait2392 generic model"}
@@ -177,6 +191,38 @@ def load(path):
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
+def _git_bytes(*args):
+    try:
+        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise SystemExit(f"git {' '.join(args)} is not available ({exc}); build from a clone with history") from exc
+
+
+def official_text(key, root=ROOT):
+    """An official manifest exactly as archived: the working file at `root` if its SHA-256 is the recorded one,
+    otherwise the file at its archive commit, checked against the same SHA-256. Never the edited working copy."""
+    path, commit, digest = OFFICIAL[key]
+    working = Path(root) / path
+    if working.exists():
+        data = working.read_bytes()
+        if hashlib.sha256(data).hexdigest() == digest:
+            return data.decode("utf-8")
+    data = _git_bytes("show", f"{commit}:{path}")
+    if hashlib.sha256(data).hexdigest() != digest:
+        raise SystemExit(f"{path} at {commit} does not match its recorded SHA-256")
+    return data.decode("utf-8")
+
+
+def load_official():
+    """(assembled, growth, d3), the archived official manifests."""
+    return tuple(json.loads(official_text(k)) for k in ("assembled", "growth", "d3"))
+
+
+def is_official(path, key):
+    """True when a manifest file given on the command line is byte for byte the official file for its role."""
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest() == OFFICIAL[key][2]
+
+
 def pinned_text(record):
     """The text of an input file exactly as a run read it: the working-tree file if its SHA-256 still matches the
     manifest's record, otherwise the Git blob the manifest records."""
@@ -185,12 +231,7 @@ def pinned_text(record):
         data = path.read_bytes()
         if hashlib.sha256(data).hexdigest() == record["sha256"]:
             return data.decode("utf-8")
-    try:
-        data = subprocess.run(["git", "cat-file", "-p", record["git_blob_id"]], cwd=ROOT, capture_output=True,
-                              check=True).stdout
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise SystemExit(f"{record['path']}: changed since the run and blob {record['git_blob_id']} is not available "
-                         f"({exc}); build from a clone with history") from exc
+    data = _git_bytes("cat-file", "-p", record["git_blob_id"])
     if hashlib.sha256(data).hexdigest() != record["sha256"]:
         raise SystemExit(f"{record['path']}: blob {record['git_blob_id']} does not match the manifest's SHA-256")
     return data.decode("utf-8")
@@ -248,11 +289,16 @@ def runs_of(manifest, d3, order3):
             "segments": {k: {"mass_kg": round(v["mass_kg"], 4), "com_m": v["com_m"], "inertia": round(v["inertia_kg_m2"], 5)}
                          for k, v in x["segments_per_side"].items()},
             "verification": x["verification"], "reserve": x["reserve_summary"],
+            "params": {a["name"]: {"fmax": a["max_isometric_force_N"],
+                                   "lopt_mm": round(a["optimal_fiber_length_m"] * 1000, 1),
+                                   "lts_mm": round(a["tendon_slack_length_m"] * 1000, 1),
+                                   "penn_deg": round(float(np.degrees(a["pennation_at_optimal_rad"])), 1)}
+                       for a in x["actuators"]},
         }
     return out
 
 
-def checks_of(manifest, tol):
+def checks_of(manifest, tol, d2p):
     """Mechanics residuals for every run (both knees), with the tolerance each was checked against."""
     rows = {}
     for x in manifest["runs"]:
@@ -265,7 +311,9 @@ def checks_of(manifest, tol):
     for k, row in rows.items():
         row["tolerance"] = tol[tkey.get(k, k)]
     opt = {k: max(abs(x["verification"][k]) for x in manifest["runs"]) for k in manifest["runs"][0]["verification"]}
-    return {"mechanics": rows, "optimizer": opt,
+    solver = {k: {"value": d2p[k]["value"], "unit": d2p[k]["unit"]}
+              for k in ("kkt_tolerance", "second_solver_t_star_tolerance", "second_solver_activation_tolerance")}
+    return {"mechanics": rows, "optimizer": opt, "solver_tolerances": solver,
             "optimizer_passed": all(x["status"]["optimizer_verification"] == "passed" for x in manifest["runs"]),
             "runs": len(manifest["runs"])}
 
@@ -370,9 +418,6 @@ def muscle_cards(manifest, ents, srcs, additions, cons):
             "evidence": [{"id": s, "title": srcs.get(s, {}).get("title", s), "url": srcs.get(s, {}).get("url")}
                          for s in e.get("evidence", [])],
             "c1": c1, "c2": cons["c2"][a["name"]],
-            "fmax": a["max_isometric_force_N"], "lopt_mm": round(a["optimal_fiber_length_m"] * 1000, 1),
-            "lts_mm": round(a["tendon_slack_length_m"] * 1000, 1),
-            "penn_deg": round(float(np.degrees(a["pennation_at_optimal_rad"])), 1),
         }
     return out
 
@@ -431,7 +476,7 @@ def acceptance_view(assembled, growth):
 
 
 # ------------------------------------------------------------------ data
-def build_data(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3)):
+def build_data(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3), official=True):
     for p in REVIEWS.values():
         if not (ROOT / p).exists():
             raise SystemExit(f"cited review record missing: {p}")
@@ -439,6 +484,7 @@ def build_data(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3)):
     if ontology(growth)[0] != ents:
         raise SystemExit("the two D4 manifests read different ontology files")
     tol = yaml.safe_load(pinned_text(assembled["inputs"]["d3_config"]))["tolerances"]
+    d2p = yaml.safe_load(pinned_text(assembled["inputs"]["d2_config"]))["parameters"]
     order3 = [a["name"] for a in d3["runs"][0]["actuators"]]
     cons = consistency_view(assembled, ents)
     coords, merged, spec = coordinate_views(ents, "squat_d4", models)
@@ -459,7 +505,7 @@ def build_data(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3)):
                  "coordinates": coords, "merged": merged, "variants": spec["variants"],
                  "actuators": len(assembled["specification"]["actuators"])},
         "consistency": cons, "additions": additions_view(additions, ents, srcs),
-        "regression": regression_view(assembled), "checks": checks_of(assembled, tol),
+        "regression": regression_view(assembled), "checks": checks_of(assembled, tol, d2p),
         "oracle": assembled["oracle_references"], "growth": growth_view(growth, assembled, models, ents),
         "status": assembled["status"], "acceptance": acceptance_view(assembled, growth),
         "timeline": [{"date": d, "who": w, "text": t, "verdict": v, "ref": ref} for d, w, t, v, ref in TIMELINE],
@@ -469,8 +515,9 @@ def build_data(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3)):
         "inputs": {"assembled": len(assembled["verified_input_files"]),
                    "code_modules": sum(k.startswith("code_") for k in assembled["inputs"]),
                    "provenance": assembled["commit_provenance_status"]},
-        "manifests": {"assembled": [paths[0], assembled["commit_sha"]], "growth": [paths[1], growth["commit_sha"]],
-                      "d3": [paths[2], d3["commit_sha"]]},
+        "manifests": {"assembled": [str(paths[0]), assembled["commit_sha"]], "growth": [str(paths[1]), growth["commit_sha"]],
+                      "d3": [str(paths[2]), d3["commit_sha"]]},
+        "official": official,
     }
 
 
@@ -481,19 +528,27 @@ def spec_name(manifest):
 TEMPLATE = (Path(__file__).with_name("squat_demo_d4_template.html")).read_text(encoding="utf-8")
 
 
-def render(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3)):
-    data = json.dumps(build_data(assembled, growth, d3, paths), separators=(",", ":"), allow_nan=False)
+def render(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3), official=True):
+    data = json.dumps(build_data(assembled, growth, d3, paths, official), separators=(",", ":"), allow_nan=False)
     return TEMPLATE.replace("__DATA__", data.replace("</", "<\\/"))
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("--assembled", default=ASSEMBLED)
-    p.add_argument("--growth", default=GROWTH)
-    p.add_argument("--d3", default=D3)
+    p.add_argument("--assembled", help="a D4 manifest other than the official one (the page is marked custom)")
+    p.add_argument("--growth", help="a growth manifest other than the official one (the page is marked custom)")
+    p.add_argument("--d3", help="a D3 manifest other than the official one (the page is marked custom)")
     p.add_argument("--output", type=Path, default=ROOT / "SQUAT_DEMO_D4.html")
     a = p.parse_args()
-    html = render(load(a.assembled), load(a.growth), load(a.d3), (a.assembled, a.growth, a.d3))
+    given = (a.assembled, a.growth, a.d3)
+    official = load_official()
+    if all(g is None or is_official(g, k) for g, k in zip(given, ("assembled", "growth", "d3"))):
+        html = render(*official)
+    else:
+        chosen = tuple(json.loads(Path(g).read_text(encoding="utf-8")) if g else m for g, m in zip(given, official))
+        paths = tuple(g or d for g, d in zip(given, (ASSEMBLED, GROWTH, D3)))
+        html = render(*chosen, paths, official=False)
+        print("Custom inputs: the page is marked as not built from the official records")
     a.output.write_text(html, encoding="utf-8", newline="\n")
     print(f"Demo written to {a.output} ({len(html.encode()) / 1e6:.2f} MB)")
 

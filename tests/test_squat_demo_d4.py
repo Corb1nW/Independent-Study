@@ -18,7 +18,10 @@ PAGE = ROOT / "SQUAT_DEMO_D4.html"
 
 @pytest.fixture(scope="module")
 def manifests():
-    return demo.load(demo.ASSEMBLED), demo.load(demo.GROWTH), demo.load(demo.D3)
+    try:
+        return demo.load_official()
+    except SystemExit as exc:   # a working copy changed and a shallow checkout lacks the archive commit
+        pytest.skip(f"official manifests need Git history: {exc}")
 
 
 @pytest.fixture(scope="module")
@@ -127,3 +130,91 @@ def test_pinned_reader_falls_back_to_the_recorded_blob(manifests):
             pytest.skip(f"blob needs Git history: {exc}")
         raise
     assert __import__("hashlib").sha256(text.encode("utf-8")).hexdigest() == record["sha256"]
+
+
+# ---------------------------------------------------------------- ChatGPT's D4-DEMO-01 to 03
+
+def test_card_parameters_are_the_selected_body_and_set(manifests, data):
+    """D4-DEMO-01: fibre and slack lengths scale with each body; the card reads them from the shown run."""
+    assembled, growth, _ = manifests
+    for key, m in (("d4", assembled), ("growth", growth)):
+        for run in m["runs"]:
+            if run["variant"] != "moving_knee":
+                continue
+            shown = data["sets"][key][run["body"]]["params"]
+            assert set(shown) == {a["name"] for a in run["actuators"]}
+            for a in run["actuators"]:
+                assert shown[a["name"]] == {"fmax": a["max_isometric_force_N"],
+                                            "lopt_mm": round(a["optimal_fiber_length_m"] * 1000, 1),
+                                            "lts_mm": round(a["tendon_slack_length_m"] * 1000, 1),
+                                            "penn_deg": round(float(__import__("numpy").degrees(a["pennation_at_optimal_rad"])), 1)}
+    g = data["sets"]["d4"]["gait2392"]["params"]["bifemlh_r"]
+    f = data["sets"]["d4"]["female"]["params"]["bifemlh_r"]
+    assert (g["lopt_mm"], g["lts_mm"]) == (109.0, 326.0) and (f["lopt_mm"], f["lts_mm"]) == (105.1, 314.2)
+    assert all("lopt_mm" not in m for m in data["muscles"].values())   # no body-independent copy left
+    assert "r.params[selected]" in demo.TEMPLATE
+
+
+def _altered_copy(tmp_path):
+    """The official assembled manifest at its default path under a scratch root, with the female mass changed and
+    every metadata field, including the execution SHA and provenance label, left as it was (ChatGPT's probe)."""
+    m = json.loads(demo.official_text("assembled"))
+    run = next(r for r in m["runs"] if r["body"] == "female")
+    run["body_mass_kg"] += 1.0
+    path = tmp_path / demo.ASSEMBLED
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(m), encoding="utf-8")
+    return path, m
+
+
+def test_an_edited_manifest_at_the_default_path_cannot_reach_the_page(tmp_path, manifests):
+    """D4-DEMO-02: the edited working copy is ignored in favour of the archived file; the page keeps the official
+    values under the official label."""
+    path, altered = _altered_copy(tmp_path)
+    try:
+        text = demo.official_text("assembled", root=tmp_path)
+    except SystemExit as exc:
+        pytest.skip(f"archive commit needs Git history: {exc}")
+    official = json.loads(text)
+    assert official == manifests[0] and official["commit_sha"] == altered["commit_sha"]
+    female = lambda m: next(r for r in m["runs"] if r["body"] == "female")["body_mass_kg"]  # noqa: E731
+    assert female(official) != female(altered)
+
+
+def test_an_edited_manifest_given_explicitly_is_marked_custom(tmp_path, manifests):
+    """D4-DEMO-02: the same file passed on the command line is not official, and the page says so instead of
+    carrying the official provenance."""
+    path, altered = _altered_copy(tmp_path)
+    assert not demo.is_official(path, "assembled")
+    assert demo.is_official(ROOT / demo.ASSEMBLED, "assembled") or pytest.skip("working copy differs from the archive")
+    data = page_data(demo.render(altered, manifests[1], manifests[2], (path, demo.GROWTH, demo.D3), official=False))
+    assert data["official"] is False
+    assert page_data(PAGE.read_text(encoding="utf-8"))["official"] is True
+    assert 'id="custom" hidden' in demo.TEMPLATE and "if (!DATA.official)" in demo.TEMPLATE
+
+
+def test_a_wrong_archive_record_stops_the_build(tmp_path, monkeypatch):
+    path, commit, _ = demo.OFFICIAL["assembled"]
+    monkeypatch.setitem(demo.OFFICIAL, "assembled", (path, commit, "0" * 64))
+    with pytest.raises(SystemExit):
+        demo.official_text("assembled", root=tmp_path)
+
+
+def test_solver_checks_show_their_configured_units_and_tolerances(data):
+    """D4-DEMO-03: KKT is dimensionless with tolerance 1e-8; the second solvers agree within their tolerances."""
+    import yaml
+    d2 = yaml.safe_load((ROOT / "config" / "phase_d2_muscles.yaml").read_text(encoding="utf-8"))["parameters"]
+    tol = data["checks"]["solver_tolerances"]
+    for k in ("kkt_tolerance", "second_solver_t_star_tolerance", "second_solver_activation_tolerance"):
+        assert tol[k] == {"value": d2[k]["value"], "unit": d2[k]["unit"]}
+    assert tol["kkt_tolerance"]["unit"] == "1"
+    opt = data["checks"]["optimizer"]
+    assert opt["largest_kkt_residual"] <= tol["kkt_tolerance"]["value"]
+    assert opt["second_solver_activation_difference"] <= tol["second_solver_activation_tolerance"]["value"]
+    assert opt["second_solver_t_star_difference_N_m"] <= tol["second_solver_t_star_tolerance"]["value"]
+
+
+def test_a5_text_describes_probes_and_the_positive_control():
+    t = demo.TEMPLATE
+    assert "Six failure probes" in t and "positive control" in t
+    assert "Each test changes one thing with all path data fixed" not in t
