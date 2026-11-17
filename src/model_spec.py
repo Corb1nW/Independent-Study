@@ -415,7 +415,7 @@ def load_spec(name, ontology=None, schema=None):
         need(isinstance(d["basis"], str) and len(d["basis"].strip()) >= 20,
              f"expected deviation {d['actuator']} {d['coordinate']}: a basis (source or model basis) is required")
         for v in d.get("variants") or []:
-            key = (d["actuator"], d["coordinate"], v)
+            key = (d["actuator"], d["coordinate"], v, d["drives"])   # an actuator may disagree both ways at different poses
             need(key not in seen, f"expected deviation declared twice: {key}")
             seen.add(key)
 

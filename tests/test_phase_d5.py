@@ -135,8 +135,27 @@ def test_a_stale_declaration_fails(arms, references):
              "variants": ["moving_knee"], "drives": "ankle_plantarflexion", "basis": "a test declaration that never occurs"}]
     r = _checks(_onto(), arms, references, spec_change=stale)
     (f,) = [f for f in r["C3_actions"]["direction_failures"] if "stale_declarations" in f]
-    assert f["stale_declarations"] == [{"actuator": "LB:ACT:G2392:TIB_ANT_R",
-                                        "coordinate": "LB:DOF:ANKLE_DORSI_PLANTAR_R", "variant": "moving_knee"}]
+    assert f["stale_declarations"] == [{"actuator": "LB:ACT:G2392:TIB_ANT_R", "coordinate": "LB:DOF:ANKLE_DORSI_PLANTAR_R",
+                                        "variant": "moving_knee", "drives": "ankle_plantarflexion"}]
+
+
+def test_both_motions_of_one_coordinate_can_be_declared_separately(arms, references):
+    """Step 1 follow-up: the key includes the motion driven, so one actuator may declare both motions of a coordinate;
+    each declaration must still match a disagreement, so the unused one is stale."""
+    def both(spec):
+        d = spec.raw["expected_direction_deviations"][0]
+        spec.raw["expected_direction_deviations"] = [d, dict(d, drives="knee_flexion")]
+    r = _checks(_onto(), arms, references, spec_change=both)
+    (f,) = [f for f in r["C3_actions"]["direction_failures"] if "stale_declarations" in f]
+    assert f["stale_declarations"] == [{"actuator": "LB:ACT:G2392:LAT_GAS_R", "coordinate": KNEE, "variant": "fixed_knee",
+                                        "drives": "knee_flexion"}]
+    onto = _onto()
+    dev = onto.data["models"]["squat_d4"]["expected_direction_deviations"]
+    dev.append(dict(dev[0], drives="knee_flexion"))
+    load_spec("squat_d4", onto, default_schema(onto))       # accepted: a different motion is a different key
+    dev.append(dict(dev[0]))
+    with pytest.raises(SpecError, match="declared twice"):
+        load_spec("squat_d4", onto, default_schema(onto))
 
 
 @pytest.mark.parametrize("bad, message", [

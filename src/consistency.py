@@ -208,11 +208,13 @@ def _summarize(spec, entries, R_by_act):
 
 
 def declared_deviations(spec):
-    """{(actuator, coordinate, variant): declaration} from the specification (D-063 Amendment 1)."""
+    """{(actuator, coordinate, variant, motion driven): declaration} from the specification (D-063 Amendment 1). The
+    motion is part of the key: an actuator may drive both of a coordinate's motions against its capabilities, at
+    different poses, and each is declared separately."""
     out = {}
     for d in spec.raw.get("expected_direction_deviations") or []:
         for v in d["variants"]:
-            out[(d["actuator"], d["coordinate"], v)] = d
+            out[(d["actuator"], d["coordinate"], v, d["drives"])] = d
     return out
 
 
@@ -249,10 +251,10 @@ def check_c3(spec, arms, references=None):
         ref = references.get(variant)
         undeclared, unconfirmed, accepted = [], [], []
         for a, c, n, sgn in material:
-            d = declared.get((a, c, variant))
             info = spec.coordinate_info[c]
             drives = info.positive_motion if sgn > 0 else info.negative_motion
-            if d is None or d["drives"] != drives:
+            d = declared.get((a, c, variant, drives))
+            if d is None:
                 undeclared.append((a, c, n, sgn))
                 continue
             name = onto.model_element(a)[1]
@@ -260,7 +262,7 @@ def check_c3(spec, arms, references=None):
             r_ref = float(ref[name][k][n]) if ref is not None and name in ref else 0.0
             if abs(r_ref) >= MATERIAL and (r_ref > 0) == (sgn > 0):
                 accepted.append((a, c, n, sgn))
-                used.add((a, c, variant))
+                used.add((a, c, variant, drives))
             else:
                 unconfirmed.append({"actuator": a, "coordinate": c, "sample": n,
                                     "reference_moment_arm_m": r_ref if ref is not None and name in ref else None})
@@ -275,8 +277,8 @@ def check_c3(spec, arms, references=None):
             failures.append({"case": [body, variant], "unconfirmed_by_reference": unconfirmed})
         direction[f"{body} | {variant}"] = entry
     variants_run = {v for _, v in arms}
-    stale = [{"actuator": a, "coordinate": c, "variant": v} for (a, c, v) in declared
-             if v in variants_run and a in spec.actuators and (a, c, v) not in used]
+    stale = [{"actuator": a, "coordinate": c, "variant": v, "drives": m} for (a, c, v, m) in declared
+             if v in variants_run and a in spec.actuators and (a, c, v, m) not in used]
     if stale:
         failures.append({"stale_declarations": stale})
     return {"passed": not structural and not failures, "structural_failures": structural,

@@ -679,7 +679,8 @@ def test_a5_fixed_knee_without_a_reference_fails(schema, arm_series):
     cases = {tuple(f["case"]) for f in fails if "unconfirmed_by_reference" in f}
     assert cases == {(b, "fixed_knee") for b in ("female", "male", "gait2392")}
     assert [f["stale_declarations"] for f in fails if "stale_declarations" in f] == [
-        [{"actuator": "LB:ACT:G2392:LAT_GAS_R", "coordinate": "LB:DOF:KNEE_FLEX_EXT_R", "variant": "fixed_knee"}]]
+        [{"actuator": "LB:ACT:G2392:LAT_GAS_R", "coordinate": "LB:DOF:KNEE_FLEX_EXT_R", "variant": "fixed_knee",
+          "drives": "knee_extension"}]]
 
 
 def test_fixed_knee_direction_deviations_are_registered(onto, schema, arm_series):
