@@ -361,3 +361,84 @@ def test_step2_crossings_are_limited_to_what_the_sources_name():
 def test_step2_hip_module_still_loads_alone():
     onto = AnatomyOntology([HIP])
     assert "LB:MUS:GLUTEUS_MEDIUS_R" in onto.entities and "LB:MUS:TIBIALIS_POSTERIOR_R" not in onto.entities
+
+
+# ------------------------------------------------------------------- steps 3-4: actuators as data (item 3)
+D5_FIXED = ROOT / "tests" / "data" / "d5_fixed_oracle_reference.json"
+D5_MOVING = ROOT / "tests" / "data" / "d5_moving_oracle_reference.json"
+TRUNK = {"ercspn_r", "intobl_r", "extobl_r"}
+
+
+def test_squat_d5_has_every_gait2392_leg_actuator():
+    import re
+    osim = (ROOT / "sources" / "vendor" / "opensim-models" / "gait2392_millard2012muscle.osim").read_text(encoding="utf-8")
+    leg = set(re.findall(r'<Millard2012EquilibriumMuscle name="([a-z_0-9]+_r)"', osim)) - TRUNK
+    spec = load_spec("squat_d5")
+    names = {spec.ontology.model_element(a)[1] for a in spec.actuators}
+    assert len(leg) == 43 and names == leg
+    assert raw_specification(spec.ontology, "squat_d5")["extends"] == "squat_d4_iliopsoas"
+
+
+def test_gem_is_lumped_over_the_two_gemelli():
+    onto = default_ontology()
+    a = onto.get("LB:ACT:G2392:GEM_R")
+    assert a["represented_scope"] == "lumped"
+    assert represented(onto, "LB:ACT:G2392:GEM_R") == ["LB:MUS:SUPERIOR_GEMELLUS_R", "LB:MUS:INFERIOR_GEMELLUS_R"]
+    assert "SRC:DELP_ISB_PARAMETERS" in a["evidence"] and "interpretation" in a["note"]
+    assert "LB:MUS:OBTURATOR_INTERNUS_R" not in {m for x in load_spec("squat_d5").actuators
+                                                 for m in represented(onto, x)}
+
+
+@pytest.fixture(scope="module")
+def d5_arms(motion):
+    spec = load_spec("squat_d5")
+    q = ma.run(ma.assemble(spec, "gait2392", "moving_knee"), motion)["q"]
+    models = {("gait2392", v): ma.assemble(spec, "gait2392", v) for v in ("moving_knee", "fixed_knee")}
+    return spec, models, {k: mp.moment_arm_series(m, q) for k, m in models.items()}
+
+
+def test_d5_actuator_geometry_matches_opensim(d5_arms):
+    """A1 on the reference body: every actuator's moment arms at the 301 D1 samples equal OpenSim 4.6's, both knees."""
+    spec, models, arms = d5_arms
+    for variant, path in (("fixed_knee", D5_FIXED), ("moving_knee", D5_MOVING)):
+        ref = _reference_arms(path)
+        ids, R = arms[("gait2392", variant)]
+        assert len(ids) == 43
+        for i, a in enumerate(ids):
+            np.testing.assert_allclose(R[i], ref[spec.ontology.model_element(a)[1]], atol=1e-9, rtol=0, err_msg=a)
+
+
+def test_d5_checks_pass_with_every_declaration_confirmed(d5_arms):
+    spec, models, arms = d5_arms
+    refs = {"fixed_knee": _reference_arms(D5_FIXED), "moving_knee": _reference_arms(D5_MOVING)}
+    r = cs.run_checks(spec, list(models.values()), arms, refs)
+    assert r["passed"], {k: v.get("passed") for k, v in r.items() if isinstance(v, dict)}
+    declared = {(d["actuator"], d["coordinate"], v, d["drives"]) for d in spec.raw["expected_direction_deviations"]
+                for v in d["variants"]}
+    confirmed = {(d["actuator"], d["coordinate"], case.split(" | ")[1], d["drives"])
+                 for case, e in r["C3_actions"]["direction"].items() for d in e["declared_and_confirmed"]}
+    assert confirmed == declared
+    for d in spec.raw["expected_direction_deviations"]:
+        assert d["basis"].startswith(("Model basis:", "Model and source disagree:")), d["actuator"]
+
+
+def test_without_its_declarations_squat_d5_fails_c3(d5_arms):
+    spec, models, arms = d5_arms
+    refs = {"fixed_knee": _reference_arms(D5_FIXED), "moving_knee": _reference_arms(D5_MOVING)}
+    spec2 = copy.copy(spec)
+    spec2.raw = dict(spec.raw, expected_direction_deviations=[])
+    r = cs.run_checks(spec2, list(models.values()), arms, refs)
+    undeclared = {d["actuator"] for f in r["C3_actions"]["direction_failures"] for d in f.get("undeclared", [])}
+    assert "LB:ACT:G2392:TFL_R" in undeclared and "LB:ACT:G2392:LAT_GAS_R" in undeclared
+
+
+def test_sourced_hip_and_knee_actions_both_sides():
+    onto = default_ontology()
+    for s in "RL":
+        assert "hip_flexion" in onto.get(f"LB:MUS:ADDUCTOR_LONGUS_{s}")["mechanical_capabilities"]
+        assert {"hip_flexion", "hip_extension"} <= set(onto.get(f"LB:MUS:ADDUCTOR_MAGNUS_{s}")["mechanical_capabilities"])
+        for m in ("GRACILIS", "SARTORIUS", "TENSOR_FASCIAE_LATAE"):
+            assert f"LB:JOINT:KNEE_{s}" in onto.related(f"LB:MUS:{m}_{s}", "CROSSES")
+            assert "knee_flexion" in onto.get(f"LB:MUS:{m}_{s}")["mechanical_capabilities"]
+    hip_alone = AnatomyOntology([HIP])
+    assert "LB:JOINT:KNEE_R" not in hip_alone.related("LB:MUS:GRACILIS_R", "CROSSES")   # added by the knee module
