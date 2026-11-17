@@ -290,3 +290,55 @@ def test_step1_code_names_no_anatomy():
     for path in ("src/consistency.py", "src/model_spec.py", "src/muscle_paths.py"):
         text = (ROOT / path).read_text(encoding="utf-8")
         assert "LB:" not in text, path
+
+
+# ------------------------------------------------------------------------------ step 2: leg anatomy (item 1)
+LEG_NEW = {"BICEPS_FEMORIS_SHORT": True, "POPLITEUS": False, "PLANTARIS": False, "TIBIALIS_POSTERIOR": True,
+           "FLEXOR_DIGITORUM_LONGUS": True, "FLEXOR_HALLUCIS_LONGUS": True, "FIBULARIS_LONGUS": True,
+           "FIBULARIS_BREVIS": True, "EXTENSOR_DIGITORUM_LONGUS": True, "EXTENSOR_HALLUCIS_LONGUS": True,
+           "FIBULARIS_TERTIUS": True}   # muscle -> modelled by Gait2392
+
+
+def _registered_read():
+    text = (ROOT / "sources" / "SOURCES.md").read_text(encoding="utf-8")
+    return {line.split("`")[1] for line in text.splitlines()
+            if line.startswith("| `SRC:") and line.rstrip().endswith("| Read |")}
+
+
+def test_step2_leg_muscles_exist_on_both_sides_with_read_evidence():
+    onto = default_ontology()
+    read = _registered_read()
+    for key, modelled in LEG_NEW.items():
+        for s in "RL":
+            e = onto.get(f"LB:MUS:{key}_{s}")
+            assert e["class"] == "SkeletalMuscle" and e["side"] == {"R": "right", "L": "left"}[s]
+            r = e["relationships"]
+            assert r["CROSSES"] and set(r["ACTS_ON"]) <= set(r["CROSSES"]) and r["INNERVATED_BY"]
+            assert all(j.endswith(f"_{s}") for j in r["CROSSES"])
+            assert e["evidence"] and set(e["evidence"]) <= set(onto.sources) and set(e["evidence"]) <= read, key
+            assert ("model_parameter_schema" in e) == modelled
+            for t in r["CROSSES"] + r["INNERVATED_BY"]:
+                assert t in onto.entities
+    assert cs.check_mirror(onto)["passed"]
+
+
+def test_step2_crossings_are_limited_to_what_the_sources_name():
+    """Conservative edges: the toe extensors and the fibulares cross only the ankle (their chapters name no other
+    joint); the long toe flexors also cross the metatarsophalangeal and interphalangeal joints the posterior-compartment
+    chapter names; tibialis posterior also crosses the subtalar joint it inverts."""
+    onto = default_ontology()
+    def joints(k):
+        return sorted(j.split(":")[-1] for j in onto.related(f"LB:MUS:{k}_R", "CROSSES"))
+    for k in ("EXTENSOR_DIGITORUM_LONGUS", "EXTENSOR_HALLUCIS_LONGUS", "FIBULARIS_TERTIUS", "FIBULARIS_LONGUS",
+              "FIBULARIS_BREVIS"):
+        assert joints(k) == ["ANKLE_R"], k
+    for k in ("FLEXOR_DIGITORUM_LONGUS", "FLEXOR_HALLUCIS_LONGUS"):
+        assert joints(k) == ["ANKLE_R", "MTP_R", "TOE_IP_R"], k
+    assert joints("TIBIALIS_POSTERIOR") == ["ANKLE_R", "SUBTALAR_R"]
+    assert joints("BICEPS_FEMORIS_SHORT") == ["KNEE_R"] and joints("POPLITEUS") == ["KNEE_R"]
+    assert joints("PLANTARIS") == ["ANKLE_R", "KNEE_R"]
+
+
+def test_step2_hip_module_still_loads_alone():
+    onto = AnatomyOntology([HIP])
+    assert "LB:MUS:GLUTEUS_MEDIUS_R" in onto.entities and "LB:MUS:TIBIALIS_POSTERIOR_R" not in onto.entities

@@ -29,6 +29,9 @@ sources:
     - rectus femoris crosses hip and knee
     - insertions of biceps femoris (shared tendon on the fibular head), semimembranosus and semitendinosus below the
       knee; the hamstrings flex the knee; all four quadriceps muscles extend the knee (re-read 2026-11-16, D-062)
+    - 'biceps femoris short head: linea aspera to the fibular head, knee flexion, lateral tibial rotation, common
+      peroneal nerve (the chapter is inconsistent on that nerve); sartorius, gracilis, adductors and pectineus: nerves and
+      sagittal actions (re-read 2026-11-17, D-063)'
     retrieval_date: '2026-11-10'
     note: Registered here since D-062 Amendment 3 (moved from lower_limb_sagittal.yaml), so that hip.yaml entities can
       cite it and hip.yaml still loads on its own.
