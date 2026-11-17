@@ -512,3 +512,36 @@ def test_second_solver_agrees_on_the_badly_scaled_d5_sample():
     s = np.array([3.0, 0.2, 7.0])[: Cm.shape[0]]
     a3, _ = m2.stage2_second(Cm * s[:, None], tau * s, band * s)
     assert np.max(np.abs(a3 - a2)) < 1e-8
+
+
+# ------------------------------------------------------------------------------- step 6: the results report
+D5_MANIFEST = ROOT / "results/phase_d/2026-11-17_d5_runs_4c0e320.json"
+D4_MANIFEST = ROOT / "results/phase_d/2026-11-16_d4_iliopsoas_runs_af21e78.json"
+
+
+def test_report_reads_the_official_manifests_and_states_h2_to_h4():
+    from tools import report_phase_d5 as rep
+    r = rep.build_report(D5_MANIFEST, D4_MANIFEST)
+    h = {x["id"]: x for x in r["hypotheses"]}
+    assert set(h) == {"H2", "H3", "H4"} and h["H3"]["premise_holds_in_d4"]
+    assert h["H4"]["values_N_m"]["male"]["d4"] == pytest.approx(5.81468) and not any(h["H4"]["reaches_zero"].values())
+    assert len(r["cases"]) == 6
+    for case in r["cases"].values():
+        assert case["actuators"] == {"d4": 16, "d5": 43}
+        for s in case["torque_shares_d5"].values():
+            total = sum(t["share"] for t in s["top"])
+            assert 0.0 <= s["out_of_plane_share"] <= 1.0 and total <= 1.0 + 1e-9
+    moving = r["cases"]["male | moving_knee"]["peak_activation"]
+    assert len(moving["shared"]) == 16 and len(moving["added_in_d5"]) == 27
+
+
+def test_report_refuses_swapped_or_unofficial_manifests(tmp_path):
+    from tools import report_phase_d5 as rep
+    with pytest.raises(ValueError, match="expected a squat_d5"):
+        rep.build_report(D4_MANIFEST, D5_MANIFEST)
+    m = json.loads(D5_MANIFEST.read_text(encoding="utf-8"))
+    m["commit_provenance_status"] = "unverified"
+    p = tmp_path / "d5.json"
+    p.write_text(json.dumps(m), encoding="utf-8")
+    with pytest.raises(ValueError, match="not an official run"):
+        rep.build_report(p, D4_MANIFEST)
