@@ -147,8 +147,8 @@ def test_c2_resolver_rejects_corrupt_source_evidence(tmp_path):
     project = tmp_path / "project"
     ontology = project / "ontology"
     (ontology / "quantitative_data").mkdir(parents=True)
-    for path in (ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "lower_limb_sagittal.yaml",  # module added in D-058
-                 ROOT / "ontology" / "quantitative_schema.yaml"):
+    modules = yaml.safe_load((ROOT / "ontology" / "quantitative_schema.yaml").read_text(encoding="utf-8"))["ontology"]
+    for path in [ROOT / "ontology" / n for n in [*modules, "quantitative_schema.yaml"]]:  # every module (D-058, D-063)
         shutil.copy2(path, ontology / path.name)
     dataset = yaml.safe_load(DATA.read_text(encoding="utf-8"))
     # Preserve the correct scalar, unit and model ID, but remove its evidence claims:

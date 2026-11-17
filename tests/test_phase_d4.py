@@ -61,10 +61,12 @@ def test_hip_module_still_loads_alone_without_knee_edges():
 
 
 def test_knee_edges_added_on_both_sides_with_their_evidence(onto):
-    added = {(e["entity"], e["predicate"], e["target"]) for e in onto.added_edges}
+    # D4's repair of these four muscles; D5 adds further sourced edges, tested in test_phase_d5 (D-063).
+    d4 = [e for e in onto.added_edges if any(e["entity"].startswith(f"LB:MUS:{b}_") for b in REPAIRED)]
+    added = {(e["entity"], e["predicate"], e["target"]) for e in d4}
     expected = {(f"LB:MUS:{b}_{s}", p, f"LB:JOINT:KNEE_{s}") for b in REPAIRED for s in "RL" for p in ("CROSSES", "ACTS_ON")}
-    assert added == expected and len(onto.added_edges) == 16
-    for e in onto.added_edges:
+    assert added == expected and len(d4) == 16
+    for e in d4:
         assert e["module"] == "lower_limb_sagittal" and e["evidence"] == ["SRC:STATPEARLS_THIGH_MUSCLES"]
         assert e["basis"].startswith("StatPearls, Thigh Muscles (read 2026-11-16)")
         assert e["target"] in onto.related(e["entity"], e["predicate"])
