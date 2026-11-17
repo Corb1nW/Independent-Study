@@ -19,14 +19,19 @@ What it does, in order (each step's log is in the artifact under `logs/`):
    with `tools/make_d2_oracle.py`, and a value-by-value comparison with the committed file (`compare_reference.py`);
 4. both D4 runs (`config/phase_d4_*.yaml`) with `--commit-sha` set to the commit under test;
 5. a comparison of each regenerated manifest with the committed official one for that commit (`compare_manifest.py`),
-   taken from the resolved comparison commit.
+   taken from the resolved comparison commit. Differences are grouped: residual-level (solver and check residuals,
+   whose size depends on the machine; reported), rounding-level (two numbers within 1e-12 × max(1, |a|, |b|): last-bit
+   differences in unrounded diagnostics from another processor's OpenBLAS kernel; reported), and other (any change to
+   a string, boolean, integer, key, length, or a larger numeric change; fails the job). The OpenSim reference
+   comparison (`compare_reference.py`) stays exact: it has been identical on every runner so far.
 
 Start a run:
 
 - **Before the workflow is on `main`:** push a branch named `verify/<full SHA>` whose tip contains this workflow
   (for example, at the head of PR #47): `git push origin <workflow commit>:refs/heads/verify/<full SHA>`.
 - **After it is on `main`:** Actions → d4-verify → Run workflow → `target_sha`, and optionally `compare_ref` (a SHA,
-  `origin/<branch>`, a branch or a tag).
+  `origin/<branch>`, a branch or a tag) and `openblas_coretype` (an OpenBLAS kernel such as `Haswell`, to check the
+  results under another processor's arithmetic; the log prints the kernel in use and the processor).
 - **Repeat a run:** open the run → Re-run all jobs.
 
 The same script runs locally in any Python 3.13 session: install `requirements.lock` with `--no-deps`, check out the

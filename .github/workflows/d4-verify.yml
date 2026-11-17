@@ -22,6 +22,10 @@ on:
         description: "SHA, branch or tag holding the official D4 manifests; if given, they must be there (default: this workflow's commit, comparison optional)"
         required: false
         default: ""
+      openblas_coretype:
+        description: "Optional OpenBLAS kernel to force (e.g. Haswell), to check results on another processor's arithmetic"
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -47,6 +51,7 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
           INPUT_SHA: ${{ inputs.target_sha }}
           INPUT_COMPARE: ${{ inputs.compare_ref }}
+          INPUT_OPENBLAS: ${{ inputs.openblas_coretype }}
           VERIFIER_SHA: ${{ github.sha }}
         run: |
           bash verifier/ci/d4-verify/resolve_inputs.sh > resolved.txt
@@ -84,7 +89,10 @@ jobs:
           TARGET_SHA: ${{ steps.target.outputs.sha }}
           COMPARE_REF: ${{ steps.target.outputs.compare }}
           COMPARISON: ${{ steps.target.outputs.comparison }}
-        run: bash verifier/ci/d4-verify/verify.sh target "$TARGET_SHA" "$COMPARE_REF" out "$COMPARISON"
+          OPENBLAS_REQUEST: ${{ steps.target.outputs.openblas }}
+        run: |
+          if [ -n "$OPENBLAS_REQUEST" ]; then export OPENBLAS_CORETYPE="$OPENBLAS_REQUEST"; fi
+          bash verifier/ci/d4-verify/verify.sh target "$TARGET_SHA" "$COMPARE_REF" out "$COMPARISON"
 
       - name: Upload logs, manifests and comparisons
         if: always()
