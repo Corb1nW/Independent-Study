@@ -30,7 +30,8 @@ Start a run:
 - **Before the workflow is on `main`:** push a branch named `verify/<full SHA>` whose tip contains this workflow
   (for example, at the head of PR #47): `git push origin <workflow commit>:refs/heads/verify/<full SHA>`.
 - **After it is on `main`:** Actions → d4-verify → Run workflow → `target_sha`, and optionally `compare_ref` (a SHA,
-  `origin/<branch>`, a branch or a tag).
+  `origin/<branch>`, a branch or a tag) and `openblas_coretype` (an OpenBLAS kernel such as `Haswell`, to check the
+  results under another processor's arithmetic; the log prints the kernel in use and the processor).
 - **Repeat a run:** open the run → Re-run all jobs.
 
 The same script runs locally in any Python 3.13 session: install `requirements.lock` with `--no-deps`, check out the

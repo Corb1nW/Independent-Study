@@ -6,8 +6,9 @@
 #   comparison  "required" when compare_ref was given explicitly (a missing manifest fails the job),
 #               "optional" when it defaults to the verifier's own commit (a missing manifest is reported as
 #               unavailable)
-# Environment: EVENT (github.event_name), REF_NAME (github.ref_name), INPUT_SHA, INPUT_COMPARE (workflow_dispatch
-# inputs), VERIFIER_SHA (github.sha).
+#   openblas    an OpenBLAS kernel name to force (OPENBLAS_CORETYPE), or empty for the processor's own
+# Environment: EVENT (github.event_name), REF_NAME (github.ref_name), INPUT_SHA, INPUT_COMPARE, INPUT_OPENBLAS
+# (workflow_dispatch inputs), VERIFIER_SHA (github.sha).
 set -euo pipefail
 if [ "${EVENT:-}" = "workflow_dispatch" ]; then T="${INPUT_SHA:-}"; else T="${REF_NAME#verify/}"; fi
 if ! [[ "$T" =~ ^[0-9a-f]{40}$ ]]; then
@@ -23,4 +24,9 @@ if [ -n "${INPUT_COMPARE:-}" ]; then
 else
   C="${VERIFIER_SHA:?}"; M=optional
 fi
-printf 'sha=%s\ncompare=%s\ncomparison=%s\n' "$T" "$C" "$M"
+O="${INPUT_OPENBLAS:-}"
+if ! [[ "$O" =~ ^[A-Za-z0-9]{0,32}$ ]]; then
+  echo "openblas_coretype must be an OpenBLAS kernel name (letters and digits only), or empty." >&2
+  exit 1
+fi
+printf 'sha=%s\ncompare=%s\ncomparison=%s\nopenblas=%s\n' "$T" "$C" "$M" "$O"

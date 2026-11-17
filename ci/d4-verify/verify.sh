@@ -58,6 +58,9 @@ step() {  # step NAME COMMAND... : run in the target checkout, log, record failu
   echo "verifier_commit=${GITHUB_SHA:-local}"
   python -c "import sys, platform; print('python', sys.version.replace(chr(10), ' ')); print('platform', platform.platform())"
   python -c "import opensim; print('opensim', opensim.__version__)"
+  echo "OPENBLAS_CORETYPE=${OPENBLAS_CORETYPE:-not set, so the kernel for this processor}"
+  OPENBLAS_VERBOSE=2 python -c "import numpy" 2>&1 | sed -n 's/^Core: /openblas kernel in use: /p'
+  grep -m1 "model name" /proc/cpuinfo 2>/dev/null || true
   python -m pip freeze
 } 2>&1 | tee "$OUT/logs/00_environment.log"
 [ "$(git -C "$TARGET_DIR" rev-parse HEAD)" = "$SHA" ] || { echo "checked-out HEAD is not $SHA"; exit 1; }
