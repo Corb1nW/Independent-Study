@@ -1,0 +1,447 @@
+# Stage D5 module (D-063 item 1): intrinsic foot muscles and plantar nerves, both sides. Loaded after
+# lower_limb_sagittal.yaml, whose metatarsophalangeal and toe interphalangeal joints it references. Crossings
+# are recorded only for joints this ontology has, where the chapter states them or they follow from the stated
+# attachments (each entry's note says which). No entity here has a model actuator.
+ontology_module:
+  extends: LB-AO
+  module: foot
+  version: 0.1.0
+  description: 'The intrinsic muscles of the foot and the plantar nerves, both sides (Stage D5, D-063 item 1): sourced anatomy
+    without model actuators.'
+  decision: D-063
+entities:
+  LB:NERVE:MEDIAL_PLANTAR:
+    name: Medial Plantar Nerve
+    class: PeripheralNerveOrNerveSource
+    note: Supplies abductor hallucis, flexor digitorum brevis, flexor hallucis brevis and the first lumbrical (StatPearls,
+      Foot Muscles).
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+  LB:NERVE:LATERAL_PLANTAR:
+    name: Lateral Plantar Nerve
+    class: PeripheralNerveOrNerveSource
+    note: Supplies the other intrinsic plantar muscles and the dorsal interossei; its deep branch supplies adductor hallucis
+      (StatPearls, Foot Muscles).
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+  LB:MUS:EXTENSOR_DIGITORUM_BREVIS_R:
+    name: Right Extensor Digitorum Brevis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities: &id001
+    - toe_extension
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Dorsal intrinsic: from the dorsolateral calcaneus to the extensor expansions of the long extensor''s tendons
+      for toes 2-4; extends the lateral digits; the chapter names no joint, the crossing follows from the stated attachments
+      (expansions to the middle and distal phalanges). No Gait2392 actuator.'
+  LB:MUS:EXTENSOR_HALLUCIS_BREVIS_R:
+    name: Right Extensor Hallucis Brevis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities: &id002
+    - great_toe_extension
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Dorsal intrinsic: from the dorsal calcaneus to the base of the hallux''s proximal phalanx; extends the great
+      toe; the crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:DORSAL_INTEROSSEI_FOOT_R:
+    name: Right Dorsal Interossei of the Foot (group of 4)
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id003
+    - toe_abduction
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Dorsal intrinsic, one entity for the chapter''s group of four: from adjacent metatarsals to the proximal phalanges
+      and extensor expansions of toes 2-4; abduct toes 2-4 at the metatarsophalangeal joints (stated). No Gait2392 actuator.'
+  LB:MUS:ABDUCTOR_HALLUCIS_R:
+    name: Right Abductor Hallucis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+    mechanical_capabilities: &id004
+    - great_toe_abduction
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 1: from the calcaneal tuberosity to the hallux''s proximal phalanx; abducts the great toe; the
+      crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:FLEXOR_DIGITORUM_BREVIS_R:
+    name: Right Flexor Digitorum Brevis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+    mechanical_capabilities: &id005
+    - toe_flexion
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 1: from the calcaneal tuberosity to the middle phalanges of toes 2-5; flexes them; the crossing
+      follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:ABDUCTOR_DIGITI_MINIMI_FOOT_R:
+    name: Right Abductor Digiti Minimi of the Foot
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id006
+    - little_toe_abduction
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 1: from the calcaneal tuberosity; the chapter states its insertion as the base of the fifth metatarsal
+      and names no joint, so no crossing of the joints in this ontology is recorded; abducts the fifth digit. No Gait2392
+      actuator.'
+  LB:MUS:QUADRATUS_PLANTAE_R:
+    name: Right Quadratus Plantae
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id007
+    - assists_long_toe_flexor
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 2: from the plantar calcaneus to the long toe flexor''s tendon; assists flexion of the distal phalanges
+      through that tendon; crosses no joint in this ontology. No Gait2392 actuator.'
+  LB:MUS:LUMBRICALS_FOOT_R:
+    name: Right Lumbricals of the Foot (group of 4)
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id008
+    - toe_flexion
+    - toe_interphalangeal_extension
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 2, one entity for the chapter''s group of four: from the long toe flexor''s tendons to the extensor
+      expansions of toes 2-5; flex the metatarsophalangeal joints and extend the interphalangeal joints (stated); the first
+      by the medial plantar nerve, the others by the lateral. No Gait2392 actuator.'
+  LB:MUS:FLEXOR_HALLUCIS_BREVIS_R:
+    name: Right Flexor Hallucis Brevis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+    mechanical_capabilities: &id009
+    - great_toe_flexion
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 3: from the cuboid and lateral cuneiform to the hallux''s proximal phalanx; flexes the great toe;
+      the crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:ADDUCTOR_HALLUCIS_R:
+    name: Right Adductor Hallucis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id010
+    - great_toe_adduction
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 3: oblique head from metatarsals 2-4, transverse head from the metatarsophalangeal ligaments of
+      digits 3-5, to the hallux''s proximal phalanx; adducts the great toe; deep branch of the lateral plantar nerve; the
+      crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:FLEXOR_DIGITI_MINIMI_BREVIS_FOOT_R:
+    name: Right Flexor Digiti Minimi Brevis of the Foot
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id011
+    - little_toe_flexion
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 3: from the base of the fifth metatarsal to the fifth digit''s proximal phalanx; flexes it; the
+      crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:PLANTAR_INTEROSSEI_FOOT_R:
+    name: Right Plantar Interossei of the Foot (group of 3)
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      ACTS_ON:
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: &id012
+    - toe_adduction
+    - toe_flexion
+    - toe_interphalangeal_extension
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 4, one entity for the chapter''s group of three: from metatarsals 3-5 to the corresponding proximal
+      phalanges; adduct and flex toes 3-5 and help the lumbricals extend the interphalangeal joints (stated). No Gait2392
+      actuator.'
+  LB:MUS:EXTENSOR_DIGITORUM_BREVIS_L:
+    name: Left Extensor Digitorum Brevis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities: *id001
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Dorsal intrinsic: from the dorsolateral calcaneus to the extensor expansions of the long extensor''s tendons
+      for toes 2-4; extends the lateral digits; the chapter names no joint, the crossing follows from the stated attachments
+      (expansions to the middle and distal phalanges). No Gait2392 actuator.'
+  LB:MUS:EXTENSOR_HALLUCIS_BREVIS_L:
+    name: Left Extensor Hallucis Brevis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities: *id002
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Dorsal intrinsic: from the dorsal calcaneus to the base of the hallux''s proximal phalanx; extends the great
+      toe; the crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:DORSAL_INTEROSSEI_FOOT_L:
+    name: Left Dorsal Interossei of the Foot (group of 4)
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id003
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Dorsal intrinsic, one entity for the chapter''s group of four: from adjacent metatarsals to the proximal phalanges
+      and extensor expansions of toes 2-4; abduct toes 2-4 at the metatarsophalangeal joints (stated). No Gait2392 actuator.'
+  LB:MUS:ABDUCTOR_HALLUCIS_L:
+    name: Left Abductor Hallucis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+    mechanical_capabilities: *id004
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 1: from the calcaneal tuberosity to the hallux''s proximal phalanx; abducts the great toe; the
+      crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:FLEXOR_DIGITORUM_BREVIS_L:
+    name: Left Flexor Digitorum Brevis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+    mechanical_capabilities: *id005
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 1: from the calcaneal tuberosity to the middle phalanges of toes 2-5; flexes them; the crossing
+      follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:ABDUCTOR_DIGITI_MINIMI_FOOT_L:
+    name: Left Abductor Digiti Minimi of the Foot
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id006
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 1: from the calcaneal tuberosity; the chapter states its insertion as the base of the fifth metatarsal
+      and names no joint, so no crossing of the joints in this ontology is recorded; abducts the fifth digit. No Gait2392
+      actuator.'
+  LB:MUS:QUADRATUS_PLANTAE_L:
+    name: Left Quadratus Plantae
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id007
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 2: from the plantar calcaneus to the long toe flexor''s tendon; assists flexion of the distal phalanges
+      through that tendon; crosses no joint in this ontology. No Gait2392 actuator.'
+  LB:MUS:LUMBRICALS_FOOT_L:
+    name: Left Lumbricals of the Foot (group of 4)
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id008
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 2, one entity for the chapter''s group of four: from the long toe flexor''s tendons to the extensor
+      expansions of toes 2-5; flex the metatarsophalangeal joints and extend the interphalangeal joints (stated); the first
+      by the medial plantar nerve, the others by the lateral. No Gait2392 actuator.'
+  LB:MUS:FLEXOR_HALLUCIS_BREVIS_L:
+    name: Left Flexor Hallucis Brevis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      INNERVATED_BY:
+      - LB:NERVE:MEDIAL_PLANTAR
+    mechanical_capabilities: *id009
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 3: from the cuboid and lateral cuneiform to the hallux''s proximal phalanx; flexes the great toe;
+      the crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:ADDUCTOR_HALLUCIS_L:
+    name: Left Adductor Hallucis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id010
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 3: oblique head from metatarsals 2-4, transverse head from the metatarsophalangeal ligaments of
+      digits 3-5, to the hallux''s proximal phalanx; adducts the great toe; deep branch of the lateral plantar nerve; the
+      crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:FLEXOR_DIGITI_MINIMI_BREVIS_FOOT_L:
+    name: Left Flexor Digiti Minimi Brevis of the Foot
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id011
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 3: from the base of the fifth metatarsal to the fifth digit''s proximal phalanx; flexes it; the
+      crossing follows from the stated attachments. No Gait2392 actuator.'
+  LB:MUS:PLANTAR_INTEROSSEI_FOOT_L:
+    name: Left Plantar Interossei of the Foot (group of 3)
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      ACTS_ON:
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      INNERVATED_BY:
+      - LB:NERVE:LATERAL_PLANTAR
+    mechanical_capabilities: *id012
+    evidence:
+    - SRC:STATPEARLS_FOOT_MUSCLES
+    note: 'Plantar layer 4, one entity for the chapter''s group of three: from metatarsals 3-5 to the corresponding proximal
+      phalanges; adduct and flex toes 3-5 and help the lumbricals extend the interphalangeal joints (stated). No Gait2392
+      actuator.'
+sources:
+  SRC:STATPEARLS_FOOT_MUSCLES:
+    title: Anatomy, Bony Pelvis and Lower Limb, Foot Muscles
+    publisher: StatPearls / NCBI Bookshelf (R. K. Card, B. Bordoni; last update 2025-12-09)
+    url: https://www.ncbi.nlm.nih.gov/books/NBK539705/
+    supports:
+    - 'the intrinsic foot muscles by layer: attachments, plantar and deep fibular nerves, actions (read 2026-11-17, D-063).
+      The chapter says 19 muscles lie within the foot but describes 12 entries, the lumbricals and the dorsal and plantar
+      interossei as groups (20 if counted one by one); the count is not reconciled in the chapter'
+    retrieval_date: '2026-11-17'

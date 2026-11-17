@@ -8,7 +8,7 @@ schema:
     treating population/model-specific values as universal anatomical facts.
 
 # Ontology module whose entity IDs, classes and sources this schema's data may reference.
-ontology: [hip.yaml, lower_limb_sagittal.yaml]   # several module files from 0.6.0 (D-058)
+ontology: [hip.yaml, lower_limb_sagittal.yaml, foot.yaml]   # several module files from 0.6.0 (D-058)
 
 controlled_vocabularies:
   datum_kind:

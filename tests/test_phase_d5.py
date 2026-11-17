@@ -442,3 +442,45 @@ def test_sourced_hip_and_knee_actions_both_sides():
             assert "knee_flexion" in onto.get(f"LB:MUS:{m}_{s}")["mechanical_capabilities"]
     hip_alone = AnatomyOntology([HIP])
     assert "LB:JOINT:KNEE_R" not in hip_alone.related("LB:MUS:GRACILIS_R", "CROSSES")   # added by the knee module
+
+
+# ------------------------------------------------------------------------------- step 5: the foot module
+FOOT_MUSCLES = ("EXTENSOR_DIGITORUM_BREVIS", "EXTENSOR_HALLUCIS_BREVIS", "DORSAL_INTEROSSEI_FOOT", "ABDUCTOR_HALLUCIS",
+                "FLEXOR_DIGITORUM_BREVIS", "ABDUCTOR_DIGITI_MINIMI_FOOT", "QUADRATUS_PLANTAE", "LUMBRICALS_FOOT",
+                "FLEXOR_HALLUCIS_BREVIS", "ADDUCTOR_HALLUCIS", "FLEXOR_DIGITI_MINIMI_BREVIS_FOOT", "PLANTAR_INTEROSSEI_FOOT")
+
+
+def test_foot_module_is_loaded_from_the_schema_by_every_tool():
+    files = ["hip.yaml", "lower_limb_sagittal.yaml", "foot.yaml"]
+    assert [m["file"] for m in default_ontology().modules] == files
+    assert [m["file"] for m in oracle_tool._ontology().modules] == files
+    from tools import build_segment_datasets as bsd
+    assert [m["file"] for m in bsd._onto().modules] == files
+
+
+def test_foot_muscles_both_sides_sourced_and_without_actuators():
+    onto = default_ontology()
+    read = _registered_read()
+    for key in FOOT_MUSCLES:
+        for s in "RL":
+            e = onto.get(f"LB:MUS:{key}_{s}")
+            assert e["evidence"] == ["SRC:STATPEARLS_FOOT_MUSCLES"] and "SRC:STATPEARLS_FOOT_MUSCLES" in read
+            assert "REPRESENTED_BY" not in e["relationships"] and "model_parameter_schema" not in e
+            assert set(onto.related(f"LB:MUS:{key}_{s}", "CROSSES")) <= {f"LB:JOINT:MTP_{s}", f"LB:JOINT:TOE_IP_{s}"}
+    assert cs.check_mirror(onto)["passed"]
+
+
+def test_c5_inventory_places_every_lower_limb_muscle(arms, references):
+    """Under squat_d4 (14 actuators) every muscle without an actuator lands in one inventory group: the new leg
+    muscles cross a modelled joint; most foot muscles cross only joints the model does not have; abductor digiti
+    minimi and quadratus plantae, for which the chapter names no joint of this ontology, cross none."""
+    onto = default_ontology()
+    spec = load_spec("squat_d4", onto, default_schema(onto))
+    r = cs.run_checks(spec, [ma.assemble(spec, "gait2392", "moving_knee")], arms, references)
+    inv = r["C5_deviation_register"]["omitted"]["muscles_without_an_actuator"]
+    assert {"LB:MUS:TIBIALIS_POSTERIOR_R", "LB:MUS:POPLITEUS_R", "LB:MUS:PLANTARIS_R"} <= set(inv["crossing_a_modelled_joint"])
+    assert {f"LB:MUS:{k}_R" for k in FOOT_MUSCLES} - {"LB:MUS:ABDUCTOR_DIGITI_MINIMI_FOOT_R", "LB:MUS:QUADRATUS_PLANTAE_R"} \
+        <= set(inv["crossing_only_joints_the_model_does_not_have"])
+    assert {"LB:MUS:ABDUCTOR_DIGITI_MINIMI_FOOT_R", "LB:MUS:QUADRATUS_PLANTAE_R"} <= set(inv["crossing_no_joint"])
+    total = sum(len(v) for v in inv.values()) + len(cs.muscles(spec))
+    assert total == sum(1 for e in onto.entities.values() if e.get("class") == "SkeletalMuscle") == 102
