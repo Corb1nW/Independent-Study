@@ -2670,9 +2670,21 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
   - *Fix, resolution.* `verify.sh` resolves the comparison ref to a commit (as given, or as `origin/<branch>`) before any check, and stops if it does not resolve ([`ci/d4-verify/verify.sh` L12–L42](https://github.com/Corb1nW/Independent-Study/blob/af21e7881825f426f82f3591623a49d5ef8f9734/ci/d4-verify/verify.sh#L12-L42)).
   - *Fix, explicit versus default.* An explicit `compare_ref` makes the comparison **required**: the job stops at once unless that commit holds exactly one official manifest of each D4 run for the target. The default, the verifier's own commit, makes it **optional**: a missing manifest is reported as "unavailable" in the summary. A manifest present while the run wrote none fails the job ([`ci/d4-verify/verify.sh` L90–L105](https://github.com/Corb1nW/Independent-Study/blob/af21e7881825f426f82f3591623a49d5ef8f9734/ci/d4-verify/verify.sh#L90-L105)).
   - *Local checks, all as expected.* The input script rejected a short SHA, a SHA or ref carrying a newline, shell text (`x"; echo PWNED; "` and `$(touch …)`), and a leading `-`; it accepted a valid push, a dispatch and a branch name. `verify.sh` stopped before any check on an unresolved ref, on a mistyped branch, on a required comparison whose commit (`8b230c9`) lacks the manifests, and on an unknown mode.
-  - *Hosted checks.* The manual route is exercised on GitHub and recorded below.
+  - *Hosted checks.* The manual route was exercised on GitHub, with a valid, an unresolved and an injected `compare_ref` (table below).
 - **Official runs at `af21e78`.** `python -m tools.run_phase_d4 --commit-sha af21e7881825f426f82f3591623a49d5ef8f9734 --output results/phase_d/2026-11-16_d4_assembled_runs_af21e78.json`, and the same with `--config config/phase_d4_iliopsoas.yaml`. Both exit 0, with provenance verified (35 and 32 files). A2 passed with zero excess in all six cases. Compared with `2f5c8a8`, each manifest differs only in `commit_sha` and the hash of `tools/run_phase_d4.py`.
-- **Checks.** At `af21e78`: 411 tests passed. Integrity, probes and datasets are run by the job below.
+- **Checks.** At `af21e78`: 411 tests passed (Claude's session); the hosted runs below repeat every check.
+- **Hosted verification runs (`d4-verify` at verifier commit `ba4c921`, 2026-11-17 00:23–00:28 UTC).** All runs printed Python 3.13.18 and OpenSim 4.6.
+
+| Route | Commit under test | Comparison | Run | Job | Result |
+|---|---|---|---|---|---|
+| push `verify/<SHA>` | `31a9d3f` | default (`ba4c921`, optional) | [43987261019](https://github.com/Corb1nW/Independent-Study/actions/runs/43987261019) | 133718511619 | success: 393 passed; integrity, 9/9 probes, datasets; references identical; both manifests 0 differing paths |
+| push `verify/<SHA>` | `af21e78` | default (`ba4c921`, optional) | [43987261365](https://github.com/Corb1nW/Independent-Study/actions/runs/43987261365) | 133718512785 | success: 411 passed; same checks; both manifests 0 differing paths |
+| manual, valid `compare_ref` | `af21e78` | `ba4c921…` (required) | [43987271547](https://github.com/Corb1nW/Independent-Study/actions/runs/43987271547) | 133718556315 | success: 411 passed; same checks; both manifests 0 differing paths |
+| manual, unresolved `compare_ref` | `af21e78` | `no-such-ref` (required) | [43987275190](https://github.com/Corb1nW/Independent-Study/actions/runs/43987275190) | 133718567816 | **failed as intended** at Verify, before any check: “COMPARE_REF no-such-ref does not resolve to a commit in the checkout” |
+| manual, shell text in `compare_ref` | `af21e78` | `x"; echo PWNED; "` | [43987278315](https://github.com/Corb1nW/Independent-Study/actions/runs/43987278315) | 133718576868 | **failed as intended** at input validation; the text was never executed |
+| push `verify/<SHA>`, commit without official runs | `2952e28` (Amendment 3) | default (`ba4c921`, optional) | [43987261574](https://github.com/Corb1nW/Independent-Study/actions/runs/43987261574) | 133718513634 | success: 394 passed; same checks; both comparisons reported **unavailable** |
+
+  The manual route (`workflow_dispatch`) was started through the GitHub API on `phase-d/claude-d4-build`. GitHub accepted it before the workflow is on `main`. These are third-party executions: supporting evidence only (D-045), not an independent review.
 
 ---
 
