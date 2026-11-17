@@ -2717,6 +2717,17 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
   - *Old against new script on the reproduced outputs:* Haswell assembled, Haswell iliopsoas and Sandybridge each had 9, 9 and 12 differences outside the residual group. The old script failed them; the new one reports them as rounding-level, with 0 other.
   - *Full job script on the failing scenario:* `verify.sh` at `31a9d3f` with `OPENBLAS_CORETYPE=Haswell` and a required comparison against `c744788` passed every step. Both manifest comparisons reported 9 rounding-level differences (largest 8.67e-19) and 0 other.
   - *Full suite:* `python -m pytest -q` passed 422 tests.
+- **Manual kernel option.** A manual run can force an OpenBLAS kernel (input `openblas_coretype`, validated: letters and digits only), so anyone can check the tolerance under another processor's arithmetic on demand. The job log prints the requested kernel, the kernel in use and the processor model.
+- **Hosted runs (`d4-verify`, 2026-11-17 01:27–01:32 UTC).**
+
+| Route | Commit under test | Verifier | Kernel; processor | Run | Job | Result |
+|---|---|---|---|---|---|---|
+| manual, required comparison | `31a9d3f` | `d5eec57` | Haswell forced; Intel Xeon 6975P-C | [43995780385](https://github.com/Corb1nW/Independent-Study/actions/runs/43995780385) | 133747376809 | success: 393 passed, all checks, references identical; manifests 43 and 48 differing paths, all residual- or rounding-level (largest 8.67e-19), 0 other |
+| manual, required comparison | `af21e78` | `d5eec57` | Haswell forced; AMD EPYC 9V74 | [43995783150](https://github.com/Corb1nW/Independent-Study/actions/runs/43995783150) | 133747385692 | success: 411 passed, same checks; the same 43 and 48 paths, 0 other |
+| push | `31a9d3f` | `5fe240d` | processor's own | [43995667625](https://github.com/Corb1nW/Independent-Study/actions/runs/43995667625) | 133746979266 | success: 393 passed; manifests 0 differing paths |
+| push | `af21e78` | `5fe240d` | processor's own | [43995667742](https://github.com/Corb1nW/Independent-Study/actions/runs/43995667742) | 133746979423 | success: 411 passed; manifests 0 differing paths |
+
+  The forced-Haswell runs reproduce the earlier failure's differences on both an Intel and an AMD processor, and now pass. That confirms the cause is the kernel choice. Supporting evidence only (D-045).
 
 ---
 
