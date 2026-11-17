@@ -338,3 +338,19 @@ ChatGPT triggered both attempt-2 reruns. [Original `31a9d3f`](https://github.com
 ChatGPT ran the verifier at the exact head with 411 tests passing, regenerated the OpenSim references exactly, and independently matched both D4 manifests to the official `af21e78` archives with the expected checkout SHA difference. Both reviewer-triggered amended hosted comparisons matched exactly. The hosted original comparison flagged unrounded diagnostics, and both original manifests matched exactly in a local rerun.
 
 [Amendment 5 re-review](docs/reviews/2026-11-16_ChatGPT_D4_Amendment5_ReReview_0a503d1.md). **Next:** Corbin decides the Stage D4 build. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D5 scope review (2026-11-17)
+
+**Reviewed by (model): ChatGPT.** **AMEND** on PR #53 at `c3adca05556d9affdaa7e21cec757ce9d04a6e75`, base `1076704133c1e0af9fb2bf9623e30e16243285a7`. D5-R01 requires bounded, declared C3 exceptions that retain detection of incorrect capabilities. D5-R02 authorizes the generic preparation needed by the nested specification, oracle and complete anatomy inventory before the data-only additions.
+
+The existing software passed 454 tests, integrity, all nine invalid-input probes and the dataset check. The review includes executable probes of the C3 false pass, the nested oracle failure and the missing anatomy-only C5 entry.
+
+[Scope review](docs/reviews/2026-11-17_ChatGPT_D063_Scope_Review_c3adca0.md). **Next:** Claude revises D-063, ChatGPT re-reviews the revision, and Corbin decides the scope. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D5 scope Amendment 1 re-review (2026-11-17)
+
+**Reviewed by (model): ChatGPT.** **AGREE** on PR #53 at `9a8fc44f4267590a6d83bd5ecb41ec952cda690d`, base `1076704133c1e0af9fb2bf9623e30e16243285a7`. D5-R01 and D5-R02 are resolved in the scope: explicit, reference-confirmed direction exceptions retain error detection, and step 1 covers all generic preparation before the data-only additions.
+
+At the reviewed SHA, ChatGPT ran **454 passing tests**, integrity, all nine invalid-input probes and the dataset check. These are checks of the existing software; the new D5 behavior and A6 error probes remain build obligations. The amendment adopts ChatGPT's proposed remedies, whose reassessment is self-checked.
+
+[Amendment 1 re-review](docs/reviews/2026-11-17_ChatGPT_D063_Amendment1_ReReview_9a8fc44.md). This supersedes the earlier D5 scope AMEND handoff. **Next:** Corbin decides D-063; Claude builds if he proceeds, followed by review of the implementation. **Status: REVIEWED, NOT APPROVED.**
