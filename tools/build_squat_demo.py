@@ -1,7 +1,14 @@
-"""Build the squat demonstration page: SQUAT_DEMO.html, one self-contained file at the repository root.
+"""Build the Stage D3 squat demonstration page: SQUAT_DEMO_D3.html, one self-contained file at the repository root.
 
     python -m tools.build_squat_demo
-    python -m tools.build_squat_demo --d1 <d1 manifest> --d2 <d2 manifest> --d3 <d3 manifest> --output SQUAT_DEMO.html
+    python -m tools.build_squat_demo --d1 <d1 manifest> --d2 <d2 manifest> --d3 <d3 manifest> --output SQUAT_DEMO_D3.html
+
+The page was published as SQUAT_DEMO.html (A-18) and renamed SQUAT_DEMO_D3.html when the Stage D4 page was added
+(Corbin, 2026-11-17: one demo per stage, named for it). The committed page is a snapshot: it presents Stages D1-D3 as
+they stood on 2026-11-11 and rebuilds byte for byte at 3e6104d (ChatGPT's demo re-review). This builder also reads the
+live ontology and docs/, so a rebuild on a later commit differs: since Stage D4 the four knee crossings are repaired,
+so the page's ontology-gap panel disappears, and the record counts are higher. The Stage D4 page is built by
+tools/build_squat_demo_d4.py, which reads pinned records instead.
 
 A presentation of Phase D so far (Stages D1-D3) for readers new to the project: the squat played back
 with its muscles, what went into the model, how it was built and checked, what it leaves out, and how it
@@ -231,7 +238,7 @@ def main():
     p.add_argument("--d1", default=D1)
     p.add_argument("--d2", default=D2)
     p.add_argument("--d3", default=D3)
-    p.add_argument("--output", type=Path, default=ROOT / "SQUAT_DEMO.html")
+    p.add_argument("--output", type=Path, default=ROOT / "SQUAT_DEMO_D3.html")
     a = p.parse_args()
     html = render(load(a.d1), load(a.d2), load(a.d3), (a.d1, a.d2, a.d3))
     a.output.write_text(html, encoding="utf-8", newline="\n")
