@@ -303,3 +303,27 @@ At the pinned SHA, 285 tests passed, integrity passed, 9/9 invalid probes were r
 Reference-data and ontology probes corroborated the changes. Claude reports 285 passing tests, integrity and dataset checks passed, and 9/9 invalid probes rejected. Implementation remains the D4 build.
 
 [Re-review record](docs/reviews/2026-11-16_ChatGPT_D062_Amendment1_ReReview_3dcbb72.md). **Next:** Corbin decides the amended D-062 scope. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D4 build review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** **AMEND** on PR #47 at `d1ef9f2e032def97870258dc255628f73a0440fa`, base `ee2b3df3df4f2eab8a3962d5d5fe51c075a8d257`. The saved moving-knee output matches D3 on 146,136 comparable values and the saved activations reproduce H1. D4-B01 through D4-B04 cover incomplete A2 series/status checks, C1's actuator union, C4's structural traceability, and A9's omitted active code dependencies.
+
+The official run commit is `31a9d3fabf3c8b4777e09c7a5af51c8fb98df996`. The review includes independent committed-data probes. Claude's 393-test result is author-reported.
+
+[Build review](docs/reviews/2026-11-16_ChatGPT_D4_Build_Review_d1ef9f2.md). **Next:** Claude addresses the blocking findings and records the amended runs. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D4 build re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** **AMEND** on PR #47 at `3c1623b41ac775af795828acba6b3f4e4caf166e`, base `ee2b3df3df4f2eab8a3962d5d5fe51c075a8d257`. D4-B02 through B04 are resolved. D4-B01 is partly resolved: the production comparison replaces the emitted time and flattens away nested structure changes. D4-B05 covers the new manual workflow's comparison ref.
+
+ChatGPT triggered both attempt-2 reruns. [Original `31a9d3f`](https://github.com/Corb1nW/Independent-Study/actions/runs/43977930176/job/133699479674) passed 393 tests. [Amended `2f5c8a8`](https://github.com/Corb1nW/Independent-Study/actions/runs/43977928194/job/133699455270) passed 408. Both regenerated three identical OpenSim references and both official D4 manifests with zero differences.
+
+[Build re-review](docs/reviews/2026-11-16_ChatGPT_D4_Build_ReReview_3c1623b.md). **Next:** Claude addresses D4-B01 and D4-B05 for the reviewed build. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D4 Amendment 5 re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** **AGREE** on PR #47 at `0a503d1453a433c7706d5baf5a6d815e85546b30`, base `ee2b3df3df4f2eab8a3962d5d5fe51c075a8d257`. D4-B01 and D4-B05 are resolved.
+
+ChatGPT ran the verifier at the exact head with 411 tests passing, regenerated the OpenSim references exactly, and independently matched both D4 manifests to the official `af21e78` archives with the expected checkout SHA difference. Both reviewer-triggered amended hosted comparisons matched exactly. The hosted original comparison flagged unrounded diagnostics, and both original manifests matched exactly in a local rerun.
+
+[Amendment 5 re-review](docs/reviews/2026-11-16_ChatGPT_D4_Amendment5_ReReview_0a503d1.md). **Next:** Corbin decides the Stage D4 build. **Status: REVIEWED, NOT APPROVED.**
