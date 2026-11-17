@@ -631,7 +631,7 @@ def test_a5_swapping_a_capability_fails_the_direction_check(schema, arm_series):
     moving = [f for f in fails if f["case"][1] == "moving_knee"]
     assert {tuple(f["case"]) for f in moving} == {(b, "moving_knee") for b in ("female", "male", "gait2392")}
     assert all(d["actuator"] == "LB:ACT:G2392:BIFEMLH_R" and d["drives"] == "knee_flexion"
-               for f in moving for d in f["direction_disagreements"])
+               for f in moving for d in f["undeclared"])     # D-063 Amendment 1: undeclared disagreements fail
 
 
 def test_a5_a_path_through_a_joint_centre_crosses_with_negligible_leverage(spec):
@@ -671,10 +671,15 @@ def test_a5_fixed_knee_c3_fails_when_the_reference_lacks_the_disagreement(schema
     assert {u["actuator"] for f in fails for u in f["unconfirmed_by_reference"]} == {"LB:ACT:G2392:LAT_GAS_R"}
 
 
-def test_a5_fixed_knee_without_a_reference_would_fail_pass_fail(schema, arm_series):
+def test_a5_fixed_knee_without_a_reference_fails(schema, arm_series):
+    """D-063 Amendment 1: a declared deviation needs the reference to confirm it; without one, every fixed-knee case
+    fails as unconfirmed, and the declaration, matched nowhere, is stale."""
     r = _checks(AnatomyOntology([HIP, LOWER]), schema, arm_series, references={})
-    cases = {tuple(f["case"]) for f in r["C3_actions"]["direction_failures"]}
+    fails = r["C3_actions"]["direction_failures"]
+    cases = {tuple(f["case"]) for f in fails if "unconfirmed_by_reference" in f}
     assert cases == {(b, "fixed_knee") for b in ("female", "male", "gait2392")}
+    assert [f["stale_declarations"] for f in fails if "stale_declarations" in f] == [
+        [{"actuator": "LB:ACT:G2392:LAT_GAS_R", "coordinate": "LB:DOF:KNEE_FLEX_EXT_R", "variant": "fixed_knee"}]]
 
 
 def test_fixed_knee_direction_deviations_are_registered(onto, schema, arm_series):
@@ -683,7 +688,8 @@ def test_fixed_knee_direction_deviations_are_registered(onto, schema, arm_series
     r = _checks(onto, schema, arm_series)
     for body, extreme in (("female", -2.973741e-3), ("male", -2.984025e-3), ("gait2392", -3.085149e-3)):
         e = r["C3_actions"]["direction"][f"{body} | fixed_knee"]
-        assert e["reference_confirmed"] and e["same_samples_as_reference"]
+        assert e["policy"] == "declared_and_reference_confirmed" and e["reference_available"]
+        assert e["declared_and_confirmed"] == e["disagreements_at_least_1mm"]     # D-063 Amendment 1
         (lat,) = e["disagreements_at_least_1mm"]
         assert (lat["actuator"], lat["samples"], lat["first_sample"], lat["last_sample"]) == \
             ("LB:ACT:G2392:LAT_GAS_R", 49, 126, 174)
@@ -694,6 +700,8 @@ def test_fixed_knee_direction_deviations_are_registered(onto, schema, arm_series
         assert not r["C3_actions"]["direction"][f"{body} | moving_knee"]["disagreements_above_numerical_zero"]
     reg = r["C5_deviation_register"]
     assert set(reg["direction_disagreements"]) == {f"{b} | fixed_knee" for b in ("female", "male", "gait2392")}
+    assert [(d["actuator"], d["variants"], d["drives"]) for d in reg["declared_direction_deviations"]] == [
+        ("LB:ACT:G2392:LAT_GAS_R", ["fixed_knee"], "knee_extension")]
 
 
 def test_a5_left_deletion_fails_required_edges_and_mirror(schema, arm_series):

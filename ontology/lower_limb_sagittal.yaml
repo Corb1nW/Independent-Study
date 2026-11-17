@@ -2,7 +2,7 @@
 ontology_module:
   extends: LB-AO
   module: lower_limb_sagittal
-  version: 0.3.1
+  version: 0.4.0
   description: Knee, ankle, foot, shank and upper-body segments, coordinates and model frames for the planar squat
     (Phase D, D-058); muscles and model actuators for Stage D2 (D-059, 0.2.0).
   decision: D-058, D-059
@@ -1238,6 +1238,16 @@ models:
     - no_passive_fiber_force_in_baseline
     - fiber_damping_zero
     - conditional_path_length_jumps_retained
+    expected_direction_deviations:   # D-063 Amendment 1 (ChatGPT D5-R01): declared, and confirmed by the OpenSim reference;
+    # only disagreements of at least 1 mm need a declaration (medial gastrocnemius peaks at 0.61 mm and is recorded in C5)
+    - actuator: LB:ACT:G2392:LAT_GAS_R
+      coordinate: LB:DOF:KNEE_FLEX_EXT_R
+      variants: [fixed_knee]
+      drives: knee_extension
+      basis: 'Model basis: with D1''s fixed knee centre, Gait2392''s lateral gastrocnemius path has a small knee-extension
+        moment arm near the deepest pose, although the muscle''s declared knee action is flexion (D-062 Amendment 1,
+        ChatGPT D062-B01, confirmed with matched OpenSim 4.6 geometry). Attributed to the simplified fixed knee: with
+        the moving knee the disagreement does not occur.'
   squat_d4_iliopsoas:
     kind: executable_specification
     extends: squat_d4

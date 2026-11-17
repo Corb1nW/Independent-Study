@@ -9,14 +9,17 @@ mirror check (item 5).
   recorded as "crosses, negligible leverage".
 - C3, actions: ACTS_ON within CROSSES; every in-plane capability names a joint in ACTS_ON; out-of-plane capabilities
   recorded. Direction: where |R| >= 1 mm, the motion the actuator drives (the coordinate's positive_motion for R > 0,
-  negative_motion for R < 0) must be a declared capability. Pass/fail by default; for a variant checked against a
-  reference, every disagreement must also appear in the reference with the same sign at the same poses, and is then
-  recorded as a deviation.
+  negative_motion for R < 0) must be a declared capability of a muscle it represents. A disagreement passes only when
+  the specification declares it (expected_direction_deviations: actuator, coordinate, variant, the motion it drives
+  and a basis) AND the OpenSim reference's own moment arm at that sample is at least 1 mm with the same sign, computed
+  from the reference alone, with no ontology capability (D-063 Amendment 1, ChatGPT D5-R01). Undeclared, unconfirmed
+  and stale declarations fail.
 - C4, evidence: every represented muscle, every edge and capability the checks use, and every actuator resolve to a
   registered source; every consumed observation passes the D-055 traceability gate; every represented segment, joint
   and coordinate has an entity-level basis (its evidence, the sourced records that represent it, or for a coordinate
   its convention), or C4 fails naming it.
-- C5, the deviation register: represented, simplified and omitted elements, and every direction disagreement.
+- C5, the deviation register: represented, simplified and omitted elements, every direction disagreement, the declared
+  deviations with their bases, and the complete inventory of muscles without an actuator (D-063 Amendment 1).
 - Required edges: a represented muscle needs its C1 crossings as CROSSES and the crossed joints its in-plane
   capabilities name as ACTS_ON; its counterpart on the other side needs the same edges, side swapped.
 - Mirror: paired entities have mirrored relationships among non-computational entities (one-sided changes).
@@ -25,7 +28,7 @@ Generic: no ontology IDs or anatomical terms here (criterion A6). Side counterpa
 convention (a side suffix) and are confirmed by the entities' `side` fields.
 """
 from .input_gate import require_traceable
-from .model_spec import SpecError, joint_endpoints
+from .model_spec import SpecError, joint_endpoints, represented
 
 NUMERICAL_ZERO = 1e-9      # m (D-062 C2)
 MATERIAL = 1e-3            # m (D-062 C2, C3)
@@ -52,10 +55,20 @@ def mirrored(onto, eid):
 
 
 def muscles(spec):
-    """{muscle: [actuators]} for the specification's actuators, in their order."""
+    """{muscle: [actuators]} for the specification's actuators, in their order. A lumped actuator is listed under
+    every muscle it represents (D-063 item 5)."""
     out = {}
     for a in spec.actuators:
-        out.setdefault(spec.ontology.get(a)["represents"], []).append(a)
+        for m in represented(spec.ontology, a):
+            out.setdefault(m, []).append(a)
+    return out
+
+
+def capabilities(onto, actuator):
+    """The mechanical capabilities of the muscles an actuator represents (their union for a lumped actuator)."""
+    out = []
+    for m in represented(onto, actuator):
+        out += [c for c in onto.get(m).get("mechanical_capabilities", []) if c not in out]
     return out
 
 
@@ -123,8 +136,15 @@ def check_c1(spec, crossings):
         for a in acts:
             derived = crossings[a][0]
             missing, extra = set(derived) - set(declared), set(declared) - set(derived)
-            per_actuator[a] = {"muscle": m, "derived": derived, "declared_modelled": declared,
-                               "crossed_not_modelled": crossings[a][1], "agrees": not missing and not extra}
+            if len(represented(onto, a)) == 1:
+                per_actuator[a] = {"muscle": m, "derived": derived, "declared_modelled": declared,
+                                   "crossed_not_modelled": crossings[a][1], "agrees": not missing and not extra}
+            else:   # lumped: checked against each represented muscle (D-063 item 5)
+                entry = per_actuator.setdefault(a, {"muscles": represented(onto, a), "derived": derived,
+                                                    "declared_modelled_per_muscle": {},
+                                                    "crossed_not_modelled": crossings[a][1], "agrees": True})
+                entry["declared_modelled_per_muscle"][m] = declared
+                entry["agrees"] = entry["agrees"] and not missing and not extra
             if missing or extra:
                 failures.append({"actuator": a, "muscle": m, "missing_CROSSES": sorted(missing),
                                  "declared_but_not_crossed": sorted(extra)})
@@ -160,7 +180,7 @@ def direction_disagreements(spec, acts, R, threshold):
     """[(actuator, coordinate, sample, sign)] where |R| >= threshold and the driven motion is not a capability."""
     onto, out = spec.ontology, []
     for i, a in enumerate(acts):
-        caps = set(onto.get(onto.get(a)["represents"]).get("mechanical_capabilities", []))
+        caps = set(capabilities(onto, a))
         for k, c in enumerate(spec.coordinates):
             info = spec.coordinate_info[c]
             for n in range(R.shape[2]):
@@ -187,10 +207,24 @@ def _summarize(spec, entries, R_by_act):
     return out
 
 
+def declared_deviations(spec):
+    """{(actuator, coordinate, variant): declaration} from the specification (D-063 Amendment 1)."""
+    out = {}
+    for d in spec.raw.get("expected_direction_deviations") or []:
+        for v in d["variants"]:
+            out[(d["actuator"], d["coordinate"], v)] = d
+    return out
+
+
 def check_c3(spec, arms, references=None):
-    """`references`: {variant: {actuator model name: array coordinates x samples}} for variants whose direction
-    disagreements must be confirmed by a reference (Amendment 1); other variants are pass/fail."""
-    onto, modelled = spec.ontology, [j for j, _, _ in spec.tree]
+    """`references`: {variant: {actuator model name: array coordinates x samples}}, the OpenSim moment arms on the
+    reference body, used only to confirm declared deviations.
+
+    Direction rule (D-063 Amendment 1, ChatGPT D5-R01), the same for every case: each disagreement of at least 1 mm must
+    be declared for its actuator, coordinate and variant, drive the declared motion, and be confirmed at that sample by
+    the reference's own moment arm (|r| >= 1 mm, same sign), which is read from the reference and never compared with
+    an ontology capability. A declaration that matches no disagreement on any body is stale. All three fail."""
+    onto = spec.ontology
     motions = in_plane_motions(spec)
     structural, out_of_plane = [], {}
     for m in muscles(spec):
@@ -205,39 +239,49 @@ def check_c3(spec, arms, references=None):
                     structural.append({"muscle": m, "capability": cap, "joint_missing_from_ACTS_ON": joint})
         out_of_plane[m] = [cap for cap in caps if cap not in motions]
     references = references or {}
+    declared = declared_deviations(spec)
+    used = set()
     direction, failures = {}, []
     for (body, variant), (acts, R) in arms.items():
         R_by_act = {a: R[i] for i, a in enumerate(acts)}
         material = direction_disagreements(spec, acts, R, MATERIAL)
         all_nonzero = direction_disagreements(spec, acts, R, NUMERICAL_ZERO)
-        entry = {"policy": "reference_confirmed" if variant in references else "pass_fail",
+        ref = references.get(variant)
+        undeclared, unconfirmed, accepted = [], [], []
+        for a, c, n, sgn in material:
+            d = declared.get((a, c, variant))
+            info = spec.coordinate_info[c]
+            drives = info.positive_motion if sgn > 0 else info.negative_motion
+            if d is None or d["drives"] != drives:
+                undeclared.append((a, c, n, sgn))
+                continue
+            name = onto.model_element(a)[1]
+            k = spec.coordinates.index(c)
+            r_ref = float(ref[name][k][n]) if ref is not None and name in ref else 0.0
+            if abs(r_ref) >= MATERIAL and (r_ref > 0) == (sgn > 0):
+                accepted.append((a, c, n, sgn))
+                used.add((a, c, variant))
+            else:
+                unconfirmed.append({"actuator": a, "coordinate": c, "sample": n,
+                                    "reference_moment_arm_m": r_ref if ref is not None and name in ref else None})
+        entry = {"policy": "declared_and_reference_confirmed",
                  "disagreements_at_least_1mm": _summarize(spec, material, R_by_act),
-                 "disagreements_above_numerical_zero": _summarize(spec, all_nonzero, R_by_act)}
-        if variant in references:
-            ref = references[variant]
-            unconfirmed = []
-            for a, c, n, sgn in material:
-                name = onto.model_element(a)[1]
-                k = spec.coordinates.index(c)
-                r_ref = ref[name][k][n] if name in ref else 0.0
-                if not (abs(r_ref) >= MATERIAL and (r_ref > 0) == (sgn > 0)):
-                    unconfirmed.append({"actuator": a, "coordinate": c, "sample": n})
-            ref_set = set()
-            for name, Rr in ref.items():
-                a = onto.entity_for_model_element(spec.model, name)
-                ref_set |= {(a, c, n, s) for (a2, c, n, s) in
-                            direction_disagreements(spec, [a], Rr[None, :, :], MATERIAL) if a2 == a}
-            if unconfirmed:
-                failures.append({"case": [body, variant], "unconfirmed_by_reference": unconfirmed})
-            entry["reference_confirmed"] = not unconfirmed
-            entry["same_samples_as_reference"] = set(material) == ref_set
-            if set(material) != ref_set:
-                failures.append({"case": [body, variant], "samples_differ_from_reference": True})
-        elif material:
-            failures.append({"case": [body, variant], "direction_disagreements": _summarize(spec, material, R_by_act)})
+                 "disagreements_above_numerical_zero": _summarize(spec, all_nonzero, R_by_act),
+                 "declared_and_confirmed": _summarize(spec, accepted, R_by_act),
+                 "reference_available": ref is not None}
+        if undeclared:
+            failures.append({"case": [body, variant], "undeclared": _summarize(spec, undeclared, R_by_act)})
+        if unconfirmed:
+            failures.append({"case": [body, variant], "unconfirmed_by_reference": unconfirmed})
         direction[f"{body} | {variant}"] = entry
+    variants_run = {v for _, v in arms}
+    stale = [{"actuator": a, "coordinate": c, "variant": v} for (a, c, v) in declared
+             if v in variants_run and a in spec.actuators and (a, c, v) not in used]
+    if stale:
+        failures.append({"stale_declarations": stale})
     return {"passed": not structural and not failures, "structural_failures": structural,
-            "direction_failures": failures, "direction": direction, "out_of_plane_capabilities": out_of_plane}
+            "direction_failures": failures, "direction": direction, "out_of_plane_capabilities": out_of_plane,
+            "declared_deviations": [dict(d) for d in spec.raw.get("expected_direction_deviations") or []]}
 
 
 # --------------------------------------------------------------------------------------------- C4
@@ -381,6 +425,15 @@ def deviation_register(spec, c1, c2, c3):
     omitted_muscles = sorted(m for m, e in onto.entities.items()
                              if e.get("class") == "SkeletalMuscle" and m not in represented_muscles
                              and set(onto.related(m, "CROSSES")) & set(modelled))
+    inventory = {"crossing_a_modelled_joint": [], "crossing_only_joints_the_model_does_not_have": [],
+                 "crossing_no_joint": []}
+    for m, e in sorted(onto.entities.items()):     # every muscle without an actuator (D-063 Amendment 1, D5-R02)
+        if e.get("class") != "SkeletalMuscle" or m in represented_muscles:
+            continue
+        crosses = set(onto.related(m, "CROSSES"))
+        key = ("crossing_a_modelled_joint" if crosses & set(modelled)
+               else "crossing_only_joints_the_model_does_not_have" if crosses else "crossing_no_joint")
+        inventory[key].append(m)
     owner = {p: s for s, ps in spec.parts.items() for p in ps}
     omitted_joints = []
     for j, e in onto.entities.items():
@@ -410,10 +463,12 @@ def deviation_register(spec, c1, c2, c3):
                        "assumptions": list(spec.raw.get("assumptions") or [])},
         "omitted": {"coordinates": list(spec.raw.get("omitted_coordinates") or []), "joints": sorted(omitted_joints),
                     "muscles_crossing_a_modelled_joint_without_an_actuator": omitted_muscles,
+                    "muscles_without_an_actuator": inventory,
                     "out_of_plane_capabilities": {m: v for m, v in c3["out_of_plane_capabilities"].items() if v}},
         "crosses_negligible_leverage": c2["crosses_negligible_leverage"],
         "direction_disagreements": {case: e["disagreements_above_numerical_zero"] for case, e in c3["direction"].items()
                                     if e["disagreements_above_numerical_zero"]},
+        "declared_direction_deviations": c3["declared_deviations"],
     }
 
 

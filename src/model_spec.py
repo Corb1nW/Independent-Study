@@ -27,7 +27,15 @@ SEGMENT_CLASS, FRAME_CLASS, COMPLEX_CLASS = "RigidBodySegment", "CoordinateFrame
 COORDINATE_CLASS, ACTUATOR_CLASS = "JointCoordinate", "ModelActuator"
 RULES = ("direct", "composite", "scaled_fraction")
 SCALES = ("reference", "stature_ratio_to_reference")
-EXTENDING_FIELDS = {"kind", "extends", "decision", "description", "add_actuators"}
+EXTENDING_FIELDS = {"kind", "extends", "decision", "description", "add_actuators", "expected_direction_deviations"}
+LUMPED = "lumped"   # represented_scope of an actuator that represents several muscles (D-063 item 5)
+DEVIATION_FIELDS = {"actuator", "coordinate", "variants", "drives", "basis"}
+
+
+def represented(onto, actuator):
+    """The muscles an actuator represents, as a list: one entity, or several for a lumped actuator (D-063 item 5)."""
+    rep = onto.get(actuator).get("represents")
+    return list(rep) if isinstance(rep, list) else [rep]
 
 
 class SpecError(ValueError):
@@ -176,7 +184,9 @@ def raw_specification(onto, name):
     extra = set(raw) - EXTENDING_FIELDS
     if extra:
         raise SpecError(f"{name}: a specification that extends another may only add actuators; unsupported fields {sorted(extra)}")
-    base = raw_specification(onto, raw["extends"])
+    base = raw_specification(onto, raw["extends"])     # recursive: any depth of `extends`
+    base["expected_direction_deviations"] = (list(base.get("expected_direction_deviations") or [])
+                                             + list(raw.get("expected_direction_deviations") or []))
     added = list(raw.get("add_actuators") or [])
     clash = set(added) & set(base["actuators"])
     if clash:
@@ -376,10 +386,38 @@ def load_spec(name, ontology=None, schema=None):
             need(model == raw["computational_model"], f"actuator {a} belongs to model {model}")
         except KeyError as exc:
             errors.append(str(exc))
-        need(onto.get(a).get("represents") in onto.entities, f"actuator {a} represents no known entity")
+        rep, scope = onto.get(a).get("represents"), onto.get(a).get("represented_scope")
+        if isinstance(rep, list):
+            need(scope == LUMPED and len(rep) > 1 and len(set(rep)) == len(rep),
+                 f"actuator {a}: a list in represents needs represented_scope {LUMPED!r} and two or more distinct entities")
+        else:
+            need(scope != LUMPED, f"actuator {a}: represented_scope {LUMPED!r} needs a list of represented entities")
+        for m in represented(onto, a):
+            need(m in onto.entities, f"actuator {a} represents no known entity ({m})")
         if "actuators" in datasets:
             recs = schema.observations_for_model_entity(datasets["actuators"], a)
             need(bool(recs), f"actuator {a} has no records with target.model_entity_id in {files['actuators']}")
+
+    # Expected direction deviations (D-063 Amendment 1): declared, each with a basis, checked by C3 against a reference.
+    deviations = list(raw.get("expected_direction_deviations") or [])
+    motions = {m: c for c, i in info.items() for m in (i.positive_motion, i.negative_motion)}
+    seen = set()
+    for d in deviations:
+        if not need(isinstance(d, dict) and set(d) == DEVIATION_FIELDS,
+                    f"an expected direction deviation needs exactly {sorted(DEVIATION_FIELDS)}: {d}"):
+            continue
+        need(d["actuator"] in actuators, f"expected deviation: {d['actuator']} is not an actuator of {name}")
+        need(d["coordinate"] in coords, f"expected deviation: {d['coordinate']} is not a retained coordinate")
+        need(motions.get(d["drives"]) == d["coordinate"],
+             f"expected deviation: {d['drives']} is not a motion of {d['coordinate']}")
+        need(isinstance(d["variants"], list) and bool(d["variants"]) and set(d["variants"]) <= set(raw["variants"]),
+             f"expected deviation: variants {d['variants']} must be variants of {name}")
+        need(isinstance(d["basis"], str) and len(d["basis"].strip()) >= 20,
+             f"expected deviation {d['actuator']} {d['coordinate']}: a basis (source or model basis) is required")
+        for v in d.get("variants") or []:
+            key = (d["actuator"], d["coordinate"], v)
+            need(key not in seen, f"expected deviation declared twice: {key}")
+            seen.add(key)
 
     # Per-segment share (bilateral symmetry).
     for s, share in (raw.get("bilateral_share") or {}).items():

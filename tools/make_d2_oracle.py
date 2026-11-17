@@ -46,20 +46,22 @@ DEFAULT_MODEL = "squat_d2"   # the ontology model whose actuators a reference co
 
 
 def _ontology():
+    """The ontology modules the quantitative schema names (D-063 Amendment 1: a new module is a data change)."""
     sys.path.insert(0, str(ROOT))
-    from src.ontology import AnatomyOntology
-    return AnatomyOntology([ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "lower_limb_sagittal.yaml"])
+    from src.model_spec import default_ontology
+    return default_ontology()
 
 
 def actuators_for(model=DEFAULT_MODEL):
     """Gait2392 names of a model's actuators, read from the ontology (D-062 item 4): a view's `represents`, or an
-    executable specification's `actuators` (with those of the specification it extends)."""
+    executable specification's `actuators`, resolved through any depth of `extends` by the shared resolver
+    (src/model_spec.py raw_specification; D-063 Amendment 1, ChatGPT D5-R02)."""
+    from src.model_spec import KIND, raw_specification
     onto = _ontology()
     spec = onto.data["models"][model]
-    ids = list(spec.get("actuators") or [])
-    if spec.get("extends") and spec.get("kind") == "executable_specification":
-        ids = list(onto.data["models"][spec["extends"]]["actuators"]) + list(spec.get("add_actuators") or [])
-    if not ids:
+    if spec.get("kind") == KIND:
+        ids = list(raw_specification(onto, model)["actuators"])
+    else:
         ids = [e for e in spec.get("represents", []) if onto.get(e).get("class") == "ModelActuator"]
     return [onto.model_element(a)[1] for a in ids]
 

@@ -36,6 +36,7 @@ CONFIG = ROOT / "config" / "phase_d4_assembled.yaml"
 REQUIRED = {"model_id", "decision", "specification", "baseline_variant", "d1_config", "d2_config", "d3_config",
             "bodies", "variants", "references", "direction_check_reference_variants", "regression", "hypotheses",
             "assumptions", "omitted_physics"}
+OPTIONAL = {"report_torque_shares"}   # D-063 A8: off unless a configuration asks for it
 # Data files read by the run besides the ontology, datasets, configurations, references and manifests, which come
 # from the specification and the configuration. Project code is not listed one file at a time: every module of src/ and tools/
 # loaded in this process is verified (ChatGPT D4-B04).
@@ -88,8 +89,11 @@ def input_paths(cfg, spec, config_path, root=ROOT):
 
 def load_config(path=CONFIG):
     cfg = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
-    if not isinstance(cfg, dict) or set(cfg) != REQUIRED:
-        raise ValueError("configuration fields must be exactly: " + ", ".join(sorted(REQUIRED)))
+    if not isinstance(cfg, dict) or not REQUIRED <= set(cfg) <= REQUIRED | OPTIONAL:
+        raise ValueError("configuration fields must be exactly: " + ", ".join(sorted(REQUIRED))
+                         + "; optional: " + ", ".join(sorted(OPTIONAL)))
+    if not isinstance(cfg.get("report_torque_shares", False), bool):
+        raise ValueError("report_torque_shares must be true or false")
     if cfg["baseline_variant"] not in cfg["variants"]:
         raise ValueError("baseline_variant must be one of the variants")
     for v in cfg["direction_check_reference_variants"]:
@@ -174,7 +178,7 @@ def stored_precision_difference(stored, new, rounded_to=0):
 
 
 # --------------------------------------------------------------------------------------------- one run
-def run_case(spec, body, variant, d1p, d2p, tol, full_series):
+def run_case(spec, body, variant, d1p, d2p, tol, full_series, shares=False):
     model = ma.assemble(spec, body, variant)
     res = ma.run(model, d1p)
     checks = ma.check_residuals(model, d1p, res)
@@ -244,6 +248,8 @@ def run_case(spec, body, variant, d1p, d2p, tol, full_series):
            "names": names, "status": status, "contact": res["contact"]}
     if full_series:
         out["series"] = series
+    if shares:
+        out["torque_shares"] = mp.torque_shares(names, coords, res["t"], mus["force"], mus["moment_arms"])
     return model, out, raw
 
 
@@ -467,7 +473,8 @@ def run_cases(spec, cfg, d1p, d2p, tol):
     runs, raws, models = [], {}, []
     for body in cfg["bodies"]:
         for variant in cfg["variants"]:
-            model, out, raw = run_case(spec, body, variant, d1p, d2p, tol, variant == cfg["baseline_variant"])
+            model, out, raw = run_case(spec, body, variant, d1p, d2p, tol, variant == cfg["baseline_variant"],
+                                       cfg.get("report_torque_shares", False))
             raw["body"] = body
             models.append(model)
             raws[(body, variant)] = raw

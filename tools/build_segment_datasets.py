@@ -25,7 +25,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from src.ontology import AnatomyOntology  # noqa: E402
+from src.model_spec import default_ontology  # noqa: E402
 VENDOR = ROOT / "sources" / "vendor"
 OSIM = VENDOR / "opensim-models" / "gait2392_millard2012muscle.osim"
 BMC = {"female": VENDOR / "bmc" / "BSPfemale_ZdeLeva.txt", "male": VENDOR / "bmc" / "BSPmale_ZdeLeva.txt"}
@@ -98,10 +98,10 @@ JOINTS = {"hip_r": ("LB:JOINT:HIP_R", "LB:FRAME:GAIT2392_PELVIS"),
 
 
 def _onto():
-    """The ontology (both modules, relationship additions applied), read once."""
+    """The ontology (the schema's modules, relationship additions applied), read once."""
     global _ONTOLOGY
     if _ONTOLOGY is None:
-        _ONTOLOGY = AnatomyOntology([ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "lower_limb_sagittal.yaml"])
+        _ONTOLOGY = default_ontology()   # the modules the schema names (D-063 Amendment 1)
     return _ONTOLOGY
 
 
@@ -439,7 +439,8 @@ def muscles():
         m = found[name]
         key = name.upper()
         a = _onto().get(actuator)
-        target = {"entity_ids": [a["represents"]], "anatomical_scope": a["represented_scope"], "laterality": a["side"],
+        reps = a["represents"] if isinstance(a["represents"], list) else [a["represents"]]   # lumped (D-063 item 5)
+        target = {"entity_ids": list(reps), "anatomical_scope": a["represented_scope"], "laterality": a["side"],
                   "computational_representation": f"OpenSim Gait2392 actuator '{name}' ({actuator})",
                   "model_entity_id": actuator}
         base = f"gait2392_millard2012muscle.osim, ForceSet/{name}"
