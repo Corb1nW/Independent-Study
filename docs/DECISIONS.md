@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 35 (2026-11-16), A-20 and Q74 recorded; Stage D4 build accepted (Q74) and merged (A-20); D-062 Amendment 6 (verification job: rounding-level tolerance in the manifest comparison). 34 (2026-11-16), Q73 recorded; D-062 Amendment 5 (ChatGPT's re-review: D4-B01 remainder and D4-B05 fixed; official runs repeated at `af21e78`). 33 (2026-11-16), Q72 recorded; D-062 Amendment 4 (ChatGPT's D4-B01 to B04 fixed; official runs repeated at `2f5c8a8`; D4 verification job). 32 (2026-11-16), A-19 and Q71 recorded; D-062 Amendment 3 (muscle dataset version 0.3.0; thigh-muscles chapter added to eight entities' evidence). 31 (2026-11-16), D-062 Amendment 2 completed: Stage D4 built in four steps, official runs at `31a9d3f`. 30 (2026-11-16), Q70 recorded; D-062 Accepted; Amendment 2 (Stage D4 build, step 1: ontology and schema). 29 (2026-11-16), Q68 and Q69 recorded; D-062 Amendment 1 (ChatGPT's D062-B01 to B03). 28 (2026-11-11), A-18, Q66 and Q67 recorded; D-061 Amendment 1 (narrowed to Stage D4; ChatGPT's D061-B01 to B03); D-062 (Stage D4 scope) proposed. 27 (2026-11-11): A-17 and Q65 recorded (Stage D3 merged); D-061 (squat proof-of-concept plan) proposed. 26 (2026-11-11): D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Revision:** 36 (2026-11-17), D-062 Amendment 6 revised for ChatGPT's D4-V01 (type-strict manifest comparison; margin stated as 3.33e-10). 35 (2026-11-16), A-20 and Q74 recorded; Stage D4 build accepted (Q74) and merged (A-20); D-062 Amendment 6 (verification job: rounding-level tolerance in the manifest comparison). 34 (2026-11-16), Q73 recorded; D-062 Amendment 5 (ChatGPT's re-review: D4-B01 remainder and D4-B05 fixed; official runs repeated at `af21e78`). 33 (2026-11-16), Q72 recorded; D-062 Amendment 4 (ChatGPT's D4-B01 to B04 fixed; official runs repeated at `2f5c8a8`; D4 verification job). 32 (2026-11-16), A-19 and Q71 recorded; D-062 Amendment 3 (muscle dataset version 0.3.0; thigh-muscles chapter added to eight entities' evidence). 31 (2026-11-16), D-062 Amendment 2 completed: Stage D4 built in four steps, official runs at `31a9d3f`. 30 (2026-11-16), Q70 recorded; D-062 Accepted; Amendment 2 (Stage D4 build, step 1: ontology and schema). 29 (2026-11-16), Q68 and Q69 recorded; D-062 Amendment 1 (ChatGPT's D062-B01 to B03). 28 (2026-11-11), A-18, Q66 and Q67 recorded; D-061 Amendment 1 (narrowed to Stage D4; ChatGPT's D061-B01 to B03); D-062 (Stage D4 scope) proposed. 27 (2026-11-11): A-17 and Q65 recorded (Stage D3 merged); D-061 (squat proof-of-concept plan) proposed. 26 (2026-11-11): D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -303,7 +303,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-059 | Stage D2: muscle forces for the D1 squat by static optimization | Claude (builder, Q38 interpretation); direction Corbin (Q54, Q55, Q57) | Accepted (Q58) | Implemented (A-13, A-14) | Independently executed (PR #36); fixes in review |
 | D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Accepted (Q62) | Built; merged (A-17) | ChatGPT AGREE after Amendments 2 and 3 (PR #42); run reproduced at `9805d41` |
 | D-061 | Squat proof of concept: plan for Stages D4–D9 (ontology-assembled model, full Gait2392 leg muscles, measured squat and validation, forward simulation, uncertainty, report) | Claude; direction Corbin (Q65) | Direction agreed tentatively (Q66); narrowed to Stage D4 (Q67, Amendment 1) | Not started | ChatGPT: AMEND at `57bfeaa` (PR #46); findings answered in Amendment 1 and D-062 |
-| D-062 | Stage D4: the squat model assembled from the ontology (generic assembler, anatomy–model consistency checks, knee-crossing repair, iliopsoas growth test) | Claude; direction Corbin (Q66, Q67) | Accepted (Q70) at `3dcbb72`; Amendment 1 (Q68, Q69); Amendment 2 (build record); Amendment 3 (Q71); Amendment 4 (Q72); Amendment 5 (Q73); build accepted (Q74); Amendment 6 (Q74) | Built and merged (A-20, `b74d888`); official runs at `af21e78` (earlier `2f5c8a8`, `31a9d3f`) | ChatGPT: AMEND at `551efea`, AGREE at `3dcbb72` (PR #46); build review AMEND at `d1ef9f2`, re-review AMEND at `3c1623b` with both reruns reproduced, AGREE at `0a503d1` (PR #48); review of Amendment 6 pending |
+| D-062 | Stage D4: the squat model assembled from the ontology (generic assembler, anatomy–model consistency checks, knee-crossing repair, iliopsoas growth test) | Claude; direction Corbin (Q66, Q67) | Accepted (Q70) at `3dcbb72`; Amendment 1 (Q68, Q69); Amendment 2 (build record); Amendment 3 (Q71); Amendment 4 (Q72); Amendment 5 (Q73); build accepted (Q74); Amendment 6 (Q74) | Built and merged (A-20, `b74d888`); official runs at `af21e78` (earlier `2f5c8a8`, `31a9d3f`) | ChatGPT: AMEND at `551efea`, AGREE at `3dcbb72` (PR #46); build review AMEND at `d1ef9f2`, re-review AMEND at `3c1623b` with both reruns reproduced, AGREE at `0a503d1` (PR #48); Amendment 6: AMEND at `a40e7fb` (PR #50, D4-V01), fixed; re-review pending |
 
 ---
 
@@ -2688,30 +2688,30 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 
   The manual route (`workflow_dispatch`) was started through the GitHub API on `phase-d/claude-d4-build`. GitHub accepted it before the workflow is on `main`. These are third-party executions: supporting evidence only (D-045), not an independent review.
 
-**Amendment 6 (2026-11-16): the verification job's manifest comparison tolerates last-bit differences (Q74). Reported by author; ChatGPT's review pending. No change to the model, its code, data or results.**
+**Amendment 6 (2026-11-16): the verification job's manifest comparison tolerates last-bit differences (Q74). Reported by author. ChatGPT: AMEND at `a40e7fb` (PR #50, D4-V01), fixed in the revision below; re-review pending. No change to the model, its code, data or results.**
 
 - **The problem.** ChatGPT's last rerun of the `31a9d3f` job (job 133725256696, a runner reporting `azure` in its platform) failed at the manifest comparison: 43 and 49 differing paths, of which 9 per manifest fell outside the residual group. ChatGPT found them to be unrounded diagnostics with changes up to 8.67e-19 m and judged them non-blocking (AGREE at `0a503d1`). `compare_manifest.py` treated every non-residual number as exact, so a run on a different processor could fail with no change in any result.
 - **The cause, reproduced.** OpenBLAS picks its matrix kernel by processor type. At `31a9d3f`, Claude reran the assembled D4 run with `OPENBLAS_CORETYPE=Haswell`, the kernel also used on AMD Zen processors (Claude's session runs the AVX-512 kernel).
   - *Haswell:* exactly the hosted failure, 43 differing paths with 34 residual-level and 9 other. The 9 are the C3 direction and C5 register `extreme_moment_arm_m` values of the fixed-knee cases, each 1 to 8 units in the last place (at most 8.67e-19 m).
   - *Sandybridge:* 12 such values, at most 1.9e-17 relative.
   - *Unchanged in both:* every stored series, status, check verdict and H1. Disabling NumPy's AVX-512 paths changed only residuals.
-- **The fix (`ci/d4-verify/compare_manifest.py`).** A third group, **rounding-level**, covers two numbers within |a − b| ≤ 1e-12 × max(1, |a|, |b|); they are reported with the largest relative difference, and do not fail. Everything else outside the residual group still fails:
-  - a string, boolean, integer, key or length change;
-  - a boolean replaced by a number, now compared type-strictly;
-  - a NaN replacing a number;
+- **The fix (`ci/d4-verify/compare_manifest.py`, as revised for D4-V01).** Keys, list lengths and leaf types are compared exactly everywhere, including under the residual paths; integers, strings and booleans must be equal; two NaNs compare equal and a NaN or infinity against anything else fails. Only a changed pair of finite floats is then classified: residual-level under the residual paths (reported, as before), or, elsewhere, a third group, **rounding-level**, for |a − b| ≤ 1e-12 × max(1, |a|, |b|), reported with the largest relative difference and not failing. Everything else fails:
+  - a missing or added key, a changed length, or a leaf of another JSON type (an integer written as a float, a boolean for a number, a string, null, a list), wherever it occurs;
+  - a string, boolean or integer change, including a fractional sample index;
+  - a NaN or infinity replacing a number;
   - any larger numeric change.
-
-  Two identical NaNs now compare equal.
 - **Why 1e-12.**
-  - *Real changes stay above it.* A real change to a stored series value is at least one unit of its last decimal. In the official D4 manifests the smallest such change is 5.7e-10 under the rule (one unit of the knee angle 1.745329252 rad), more than 500 times the tolerance.
+  - *Real changes stay above it.* A real change to a stored series value is at least one unit of its last decimal. In the official D4 manifests the smallest such change is 3.33e-10 under the rule (one unit of the final time 3.000000000 s, stored to 9 decimals), about 333 times the tolerance. (The first version of this amendment said 5.7e-10, from the knee angle; ChatGPT's review measured the smaller step and Claude confirmed it over the `31a9d3f` and `af21e78` manifests.)
   - *Noise stays below it.* The largest rounding-level difference seen is 1.9e-17, more than 50,000 times below the tolerance.
   - *Rejected alternative.* Rounding the diagnostics in the runner would change the official results and could still flip a value on a rounding boundary.
 - **Unchanged.** The residual group, and the OpenSim reference comparison (`compare_reference.py`), which stays exact. Every regenerated reference has been identical on every runner so far, including the one that tripped the manifest comparison.
-- **Tests.** `tests/test_d4_verify_tools.py` (11 tests):
+- **Tests.** `tests/test_d4_verify_tools.py` (24 tests after the D4-V01 revision):
   - identical manifests pass;
   - 8 units in the last place on a C3 moment arm pass as rounding-level;
-  - real changes still fail: that moment arm moved by 1e-9 m, one unit of the knee angle's last decimal, a status, a boolean replaced by 1, an integer sample index, a list length, NaN for a number;
-  - a residual change is reported, not failed;
+  - real changes still fail: that moment arm moved by 1e-9 m, one unit of the knee angle's last decimal, one unit of the final time's last decimal (the smallest real change), a status, a boolean replaced by 1, an integer sample index changed by 1, by 3.75e-11 or written as a float, a list length, NaN for a number;
+  - malformed residuals fail on the official manifest: `largest_kkt_residual` removed, or replaced by `false`, NaN, infinity, a string, a list or null, and a key added under the residual paths;
+  - two NaNs compare equal; the command line rejects a fractional sample index;
+  - a finite residual change is reported, not failed;
   - the tolerance rule itself.
 - **Checks in Claude's session.**
   - *Old against new script on the reproduced outputs:* Haswell assembled, Haswell iliopsoas and Sandybridge each had 9, 9 and 12 differences outside the residual group. The old script failed them; the new one reports them as rounding-level, with 0 other.
@@ -2728,6 +2728,11 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 | push | `af21e78` | `5fe240d` | processor's own | [43995667742](https://github.com/Corb1nW/Independent-Study/actions/runs/43995667742) | 133746979423 | success: 411 passed; manifests 0 differing paths |
 
   The forced-Haswell runs reproduce the earlier failure's differences on both an Intel and an AMD processor, and now pass. That confirms the cause is the kernel choice. Supporting evidence only (D-045).
+- **Revision after ChatGPT's review (D4-V01, 2026-11-17).** ChatGPT's review at `a40e7fb` (PR #50, AMEND) showed that the residual exemption was applied before checking what changed, so a missing residual or one replaced by `false`, NaN, a string or a list passed, and that integers and floats were interchangeable under the tolerance, so a C3 `extreme_sample` of `150.0000000000375` passed. Claude agrees with both points and the required fix, and applied it as stated (the fix above). Checks in Claude's session (Python 3.13.18, packages from `ci/d4-verify/requirements.lock`):
+  - *The new cases catch the defect:* against the reviewed comparator, 12 of the 24 tests fail (every new D4-V01 case and the extended tolerance-rule test); against the revised one, all 24 pass.
+  - *Real Haswell outputs still pass:* both D4 configurations rerun at `af21e78` with `OPENBLAS_CORETYPE=Haswell`; the revised comparator reports 43 and 48 differing paths (34 and 39 residual-level, 9 and 9 rounding-level, largest 8.67e-19), 0 other, exit 0, the same as the reviewed one.
+  - *No residual path in the official `af21e78` manifests holds an integer,* so type-strict comparison cannot fail a valid residual.
+  - *Full suite:* 435 passed; `python -m src.integrity` PASSED; probes 9/9 REJECTED.
 
 ---
 
@@ -2787,7 +2792,8 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 | ~~Review the Stage D4 build at the head of its PR, blocking findings only~~ AMEND at `d1ef9f2` (PR #48): D4-B01 to D4-B04; all fixed (D-062 Amendment 4) | ChatGPT; Claude | Done |
 | ~~Re-review D-062 Amendment 4 at the head of PR #47~~ AMEND at `3c1623b` (PR #48): both reruns reproduced; D4-B01 remainder and D4-B05 fixed (D-062 Amendment 5) | ChatGPT; Claude | Done |
 | ~~Re-review D-062 Amendment 5 at the head of PR #47~~ AGREE at `0a503d1` (PR #48) | ChatGPT | Done |
-| Review D-062 Amendment 6 (verification job's rounding-level tolerance) at the head of its PR | ChatGPT | Next |
+| ~~Review D-062 Amendment 6 (verification job's rounding-level tolerance) at the head of its PR~~ AMEND at `a40e7fb` (PR #50): D4-V01; fixed in Amendment 6's revision | ChatGPT; Claude | Done |
+| Re-review D-062 Amendment 6's D4-V01 revision at the head of PR #49 | ChatGPT | Next |
 | ~~Decide the Stage D4 build and merge~~ Accepted (Q74); PRs #47 and #48 merged (A-20) | Corbin | Done |
 | ~~Decide whether to add `SRC:STATPEARLS_THIGH_MUSCLES` to the evidence of the four muscles whose knee capabilities cite only `SRC:STATPEARLS_HIP`~~ Added on both sides (Q71, D-062 Amendment 3) | Corbin | Done |
 | Decide the outlook beyond D4 (D-061 Stages D5–D9; D-040 amendment) | Corbin | Now: D4 is done (Q67, Q74) |
@@ -2847,6 +2853,7 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 | 33 | 2026-11-16 | Claude | Q72 added to §4 with an interpretation; D-062 Amendment 4 (ChatGPT's D4-B01 to B04: A2 compares every stored series and status, C1 per actuator, C4 structural bases, A9 inventory of the active code; the `d4-verify` job; official runs repeated at `2f5c8a8`); index and open items | Q72 |
 | 34 | 2026-11-16 | Claude | Q73 added to §4 with an interpretation; D-062 Amendment 5 (ChatGPT's re-review: A2 keeps the emitted time and checks nested shapes, D4-B01; `d4-verify` input handling and required comparison, D4-B05; official runs repeated at `af21e78`); index and open items | Q73 |
 | 35 | 2026-11-16 | Claude | A-20 and Q74 added to §4 with an interpretation; Stage D4 build accepted and merged; D-062 Amendment 6 (verification job: rounding-level tolerance in the manifest comparison, cause reproduced with OpenBLAS kernels); index and open items | Q74 |
+| 36 | 2026-11-17 | Claude | D-062 Amendment 6 revised after ChatGPT's AMEND at `a40e7fb` (PR #50): D4-V01 fixed (keys, lengths and leaf types compared exactly; exemptions only for changed finite floats; integers exact), tests 11 → 24, margin corrected to 3.33e-10; index and open items | Q74 |
 
 ## 8. References
 

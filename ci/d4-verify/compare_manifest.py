@@ -2,23 +2,26 @@
 
     python compare_manifest.py COMMITTED.json REGENERATED.json REPORT.json
 
-Every differing path is reported in one of three groups:
+Structure and types are compared exactly first: a key present in only one file, a list of another length, or two
+leaves of different JSON types (an integer and a float, a number and a boolean, a string or null, a list or object in
+place of a number) is always a failure, wherever it occurs. Integers, strings and booleans must be equal. Two NaNs
+compare equal; a NaN against any other number is a failure. Only a changed pair of finite floats is then classified:
 
 - residual-level: solver and check residuals, whose size depends on the machine (paths matching RESIDUALS); reported,
   never failing. Their pass/fail verdicts are compared exactly, because statuses and check verdicts are strings or
   booleans.
-- rounding-level: two numbers that differ by at most TOLERANCE * max(1, |a|, |b|). Unrounded diagnostics (for
+- rounding-level: two finite floats that differ by at most TOLERANCE * max(1, |a|, |b|). Unrounded diagnostics (for
   example the extreme moment arms in C3 and C5) can differ in their last few binary digits on another processor,
   because OpenBLAS picks its kernel by processor type. Reproduced in Claude's session with OPENBLAS_CORETYPE=Haswell
   at 31a9d3f: 9 such values, 1 to 8 units in the last place (at most 8.7e-19 m), the same 43 differing paths as
   ChatGPT's hosted rerun on another runner type; with Sandybridge, at most 1.9e-17 (relative). Reported, not failing.
-- other: anything else, including any change in a string, a boolean, an integer, a list's length or a key, and any
-  numeric change larger than the tolerance. Fails.
+- other: everything else, including every structural or type difference above and any change between finite floats
+  larger than the tolerance. Fails.
 
 Why 1e-12: every stored series value is rounded, so a real change to one is at least one unit of its last decimal.
-In the official D4 manifests the smallest such change, measured by the rule above, is 5.7e-10 (one unit of the knee
-angle 1.745329252 rad), more than 500 times the tolerance; the largest rounding-level difference seen is 1.9e-17,
-more than 50,000 times below it. Exit 1 if any "other" difference exists.
+In the official D4 manifests the smallest such change, measured by the rule above, is 3.33e-10 (one unit of the
+final time 3.000000000 s, stored to 9 decimals; ChatGPT's D4-V01 review), about 333 times the tolerance; the largest
+rounding-level difference seen is 1.9e-17, more than 50,000 times below it. Exit 1 if any "other" difference exists.
 """
 import json
 import math
@@ -28,43 +31,57 @@ RESIDUALS = ("/checks/residuals/", "/verification/", "largest_", "_difference", 
 TOLERANCE = 1e-12
 
 
-def _number(x):
-    return isinstance(x, (int, float)) and not isinstance(x, bool)
+def _finite_float(x):
+    return type(x) is float and math.isfinite(x)
 
 
 def within_rounding(a, b):
-    """True when a and b are numbers (not booleans) that differ by at most TOLERANCE * max(1, |a|, |b|)."""
-    if not (_number(a) and _number(b)) or not (math.isfinite(a) and math.isfinite(b)):
+    """True when a and b are finite floats that differ by at most TOLERANCE * max(1, |a|, |b|)."""
+    if not (_finite_float(a) and _finite_float(b)):
         return False
     return abs(a - b) <= TOLERANCE * max(1.0, abs(a), abs(b))
 
 
+def _kind(x):
+    return "null" if x is None else type(x).__name__
+
+
 def walk(a, b, path, out):
-    if isinstance(a, dict) and isinstance(b, dict):
+    """Append (path, text, pair) for every difference. pair is (a, b) only for two finite floats that differ;
+    every other difference (structure, type, integer, string, boolean, NaN) has pair None and always fails."""
+    if type(a) is not type(b):
+        out.append((path, f"type {_kind(a)} vs {_kind(b)}: {a!r} vs {b!r}", None))
+    elif isinstance(a, dict):
         for k in sorted(set(a) | set(b)):
             if k not in a or k not in b:
                 out.append((f"{path}/{k}", "present in only one file", None))
             else:
                 walk(a[k], b[k], f"{path}/{k}", out)
-    elif isinstance(a, list) and isinstance(b, list):
+    elif isinstance(a, list):
         if len(a) != len(b):
             out.append((path, f"length {len(a)} vs {len(b)}", None))
         else:
             for i, (x, y) in enumerate(zip(a, b)):
                 walk(x, y, f"{path}[{i}]", out)
-    elif type(a) is bool or type(b) is bool:
-        if type(a) is not type(b) or a != b:
-            out.append((path, f"{a!r} vs {b!r}", None))
-    elif a != b and not (_number(a) and _number(b) and math.isnan(a) and math.isnan(b)):
-        out.append((path, f"{a!r} vs {b!r}", (a, b)))
+    elif isinstance(a, float):
+        if math.isnan(a) and math.isnan(b):
+            return
+        if a != b:
+            pair = (a, b) if math.isfinite(a) and math.isfinite(b) else None
+            out.append((path, f"{a!r} vs {b!r}", pair))
+    elif a != b:
+        out.append((path, f"{a!r} vs {b!r}", None))
 
 
 def classify(diffs):
+    """Only changed pairs of finite floats may be residual- or rounding-level; everything else is "other"."""
     residual, rounding, other = [], [], []
     for path, text, pair in diffs:
-        if any(r in path for r in RESIDUALS):
+        if pair is None:
+            other.append(f"{path}: {text}")
+        elif any(r in path for r in RESIDUALS):
             residual.append(f"{path}: {text}")
-        elif pair is not None and within_rounding(*pair):
+        elif within_rounding(*pair):
             rounding.append((f"{path}: {text}", abs(pair[0] - pair[1]) / max(1.0, abs(pair[0]), abs(pair[1]))))
         else:
             other.append(f"{path}: {text}")
