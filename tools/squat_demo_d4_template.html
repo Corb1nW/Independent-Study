@@ -197,7 +197,7 @@ footer { margin-top: 48px; padding-block: 22px 40px; border-top: 1px solid var(-
   <div class="stagebar"><span class="eyebrow">Independent Study · LB-AO musculoskeletal digital twin · Phase D</span>
     <span class="now">Stage D4 · D-062</span><span>Previous stage: <a href="SQUAT_DEMO_D3.html">SQUAT_DEMO_D3.html</a> (D1–D3)</span></div>
   <h1>Stage D4: the squat, assembled from the ontology</h1>
-  <p class="lede">Through Stage D3 the squat's numbers came from sourced datasets, but its <b>structure</b> was written in Python: the segment chain, the joint signs, which frame belongs to which body, how the upper body and foot were combined, and which coordinate switches a muscle path. In Stage D4 the ontology states that structure. Generic code that names no anatomy reads it, builds the model and runs it. The assembled model reproduces every official D1–D3 result at the stored precision. Anatomy and model check each other on every run, and two hip flexors were added as data alone. Everything below is <b>verified</b>, meaning computed correctly. None of it is yet <b>validated</b> against measured people.</p>
+  <p class="lede" id="lede">Through Stage D3 the squat's numbers came from sourced datasets, but its <b>structure</b> was written in Python: the segment chain, the joint signs, which frame belongs to which body, how the upper body and foot were combined, and which coordinate switches a muscle path. In Stage D4 the ontology states that structure. Generic code that names no anatomy reads it, builds the model and runs it. The assembled model reproduces every official D1–D3 result at the stored precision. Anatomy and model check each other on every run, and two hip flexors were added as data alone. Everything below is <b>verified</b>, meaning computed correctly. None of it is yet <b>validated</b> against measured people.</p>
   <div class="stats" id="stats"></div>
   <p class="callout" id="custom" hidden><b>Custom inputs.</b> This page was built from manifests that are not the official Stage D4 and D3 records. Nothing on it carries their provenance.</p>
 </header>
@@ -206,7 +206,7 @@ footer { margin-top: 48px; padding-block: 22px 40px; border-top: 1px solid var(-
 <section class="chapter" id="sim">
   <div class="chap-head"><span class="chap-num">01 · THE ASSEMBLED MODEL, RUNNING</span>
     <h2>The same squat, now built by the ontology</h2>
-    <p>The motion is the designed D1 squat: 1.5 s down, 1.5 s up, foot flat. At each of 301 samples the model solves inverse dynamics, then shares the joint torques among the muscles with the two-stage least-effort rule from D2. Switch between the official D4 model (14 Gait2392 muscles) and the growth run (16, with iliacus and psoas). Both are D4's own official runs at <code id="sim-commit"></code>, with the moving knee.</p>
+    <p>The motion is the designed D1 squat: 1.5 s down, 1.5 s up, foot flat. At each of 301 samples the model solves inverse dynamics, then shares the joint torques among the muscles with the two-stage least-effort rule from D2. Switch between the <span id="sim-d4">official</span> D4 model (14 Gait2392 muscles) and the growth run (16, with iliacus and psoas). <span id="sim-source">Both are D4's own official runs at <code id="sim-commit"></code>, with the moving knee.</span></p>
   </div>
   <div class="controls" role="group" aria-label="Playback">
     <div class="seg" id="bodies" role="group" aria-label="Body"></div>
@@ -220,7 +220,7 @@ footer { margin-top: 48px; padding-block: 22px 40px; border-top: 1px solid var(-
       <svg id="figure" viewBox="0 0 400 450" role="img" aria-label="Stick figure squatting with coloured muscle lines"></svg>
       <div class="legend"><span>Activation 0</span><span class="ramp"></span><span>1</span></div>
       <div class="joints" id="joints"></div>
-      <p class="small" style="margin:8px 0 0">The bones are drawn from the official D3 run's joint positions. D4's regression (section 5) showed that the assembled model's positions equal them at the stored precision. The page builder checks that D4's muscle paths equal D3's at every sample.</p>
+      <p class="small" style="margin:8px 0 0" id="fig-source">The bones are drawn from the official D3 run's joint positions. D4's regression (section 5) showed that the assembled model's positions equal them at the stored precision. The page builder checks that D4's muscle paths equal D3's at every sample.</p>
     </div>
     <div class="stack">
       <div class="panel">
@@ -321,7 +321,7 @@ footer { margin-top: 48px; padding-block: 22px 40px; border-top: 1px solid var(-
 <!-- 5 -->
 <section class="chapter" id="regression">
   <div class="chap-head"><span class="chap-num">05 · REGRESSION</span>
-    <h2>Nothing was lost: every official D1–D3 result reproduced</h2>
+    <h2 id="reg-h">Nothing was lost: every official D1–D3 result reproduced</h2>
     <p>Criterion A2 compares the assembled model's output with the official manifests of D1 (<code>dd89fff</code>), D2 (<code>7ac0f2d</code>) and D3 (<code>d3efc56</code>). Every stored series and status is compared at the precision that manifest stores. A stored value with <i>d</i> decimals passes if the new value is within half a unit of the <i>d</i>-th decimal. The <b>excess</b> is how far beyond that half unit the worst value lies: 0 means every number rounds to the stored one. The fixed-knee variant is compared with D1 and D2, and the moving knee with D3. Shapes are checked before values (D4-B01), and the time compared is the time the run emitted.</p>
   </div>
   <div class="panel scroll-x"><table class="t" id="reg-t"></table></div>
@@ -440,7 +440,17 @@ $("stats").innerHTML = [
   [`${agrees} AGREE`, `review verdicts, after ${amends} AMEND verdicts whose findings were all fixed`],
 ].map(([b, s, c]) => `<div class="stat ${c || ""}"><b>${b}</b><span>${s}</span></div>`).join("");
 $("sim-commit").textContent = DATA.manifests.assembled[1].slice(0, 7);
-if (!DATA.official) { $("custom").hidden = false; document.title += " (custom inputs)"; }
+if (!DATA.official) {
+  $("custom").hidden = false; document.title += " (custom inputs)";
+  $("sim-source").textContent = "Both come from manifests supplied as custom inputs, not from the official D4 records; this page claims no provenance or verification for them.";
+}
+if (!DATA.official) {
+  $("lede").innerHTML = "Stage D4 moved the squat model's <b>structure</b> from Python into the ontology: generic code that names no anatomy reads it, builds the model and runs it. <b>This copy of the page was built from custom manifests</b>, so the results shown are whatever those files contain. It makes no claim that they reproduce D1–D3, pass their checks or were verified. Build the page without input options for the official Stage D4 record.";
+  $("sim-d4").textContent = "supplied";
+  $("reg-h").textContent = "Regression to D1–D3, as recorded in the supplied manifest";
+}
+if (!DATA.official) $("fig-source").textContent = "The bones are drawn from the supplied D3 manifest's joint positions; the builder checked that the supplied D4 muscle paths match it at every sample. No provenance is claimed for either.";
+const CUSTOM_PILL = '<span class="pill plain">not claimed: custom inputs</span>';
 
 // ---------------------------------------------------------------- controls
 function segControl(id, items, current, onPick) {
@@ -726,7 +736,7 @@ const LAB = Object.fromEntries(BODIES.map(b => [b, DATA.sets.d4[b].label]));
 $("reg-t").innerHTML = `<thead><tr><th>Body</th><th>Knee</th><th>Compared with</th><th>Manifest commit</th><th class="num">Series</th><th class="num">Stored decimals</th><th class="num">Statuses</th><th class="num">Largest excess</th><th></th></tr></thead><tbody>` +
   REG.rows.map(x => `<tr><td>${LAB[x.body]}</td><td>${x.variant.replace("_", " ")}</td><td>${ROLE[x.role] || esc(x.role)}<br><span class="small" title="${esc(x.series_names.join(", "))}">${x.series_names.slice(0, 4).map(esc).join(", ")}${x.series_names.length > 4 ? ", …" : ""}</span></td>
     <td class="mono">${x.commit.slice(0, 7)}</td><td class="num">${x.series}</td><td class="num">${x.decimals.join(", ")}</td><td class="num">${x.statuses}${x.statuses_equal ? " equal" : " DIFFER"}</td><td class="num">${x.largest_excess}</td><td>${pill(x.largest_excess === 0 && x.statuses_equal)}</td></tr>`).join("") + `</tbody>`;
-$("reg-note").innerHTML = `The assembled model reproduces the D1, D2 and D3 official results to the last stored digit, for every body, both knees and every stored series and status. So the verification of D1–D3 carries over to it instead of being redone. That includes ChatGPT's independent re-runs of D1 and D2 and its reproduction of D3. The assembled model's own checks then pass too (section 6). In-process regression (A1) is tighter still: it compares against the D1–D3 modules at 10<sup>−9</sup> N·m and 10<sup>−12</sup> m.`;
+$("reg-note").innerHTML = !DATA.official ? `The table shows the regression as recorded in the supplied custom manifest. This page does not vouch for it. The official records are on the page built without input options.` : `The assembled model reproduces the D1, D2 and D3 official results to the last stored digit, for every body, both knees and every stored series and status. So the verification of D1–D3 carries over to it instead of being redone. That includes ChatGPT's independent re-runs of D1 and D2 and its reproduction of D3. The assembled model's own checks then pass too (section 6). In-process regression (A1) is tighter still: it compares against the D1–D3 modules at 10<sup>−9</sup> N·m and 10<sup>−12</sup> m.`;
 
 // ---------------------------------------------------------------- 6 verification
 const CK = DATA.checks;
@@ -753,8 +763,8 @@ $("oracle-t").innerHTML = `<thead><tr><th>Reference</th><th class="num">Actuator
 $("feas-t").innerHTML = `<thead><tr><th>Body</th><th>Moving knee (baseline)</th><th>Fixed knee (regression)</th></tr></thead><tbody>` +
   BODIES.map(b => `<tr><td>${LAB[b]}</td>${["moving_knee", "fixed_knee"].map(v => { const s = DATA.status.muscle_feasibility[`${b} | ${v}`]; return `<td>${s === "feasible" ? '<span class="pill ok">feasible</span>' : '<span class="pill flag">flagged</span>'}</td>`; }).join("")}</tr>`).join("") + `</tbody>`;
 $("acc-t").innerHTML = `<thead><tr><th>Criterion</th><th>Requirement</th><th>Evidence</th><th></th></tr></thead><tbody>` +
-  DATA.acceptance.map(a => `<tr><td><b>${a.id}</b> ${esc(a.name)}</td><td style="font-size:13px">${esc(a.text)}</td><td class="small">${esc(a.evidence)}</td><td>${a.from_manifest ? pill(a.passed, "pass (manifest)", "fail") : '<span class="pill plain">see tests</span>'}</td></tr>`).join("") + `</tbody>`;
-$("verif-note").innerHTML = `<b>Verified is not the same as validated.</b> ${esc(DATA.what_checks_show)}`;
+  DATA.acceptance.map(a => `<tr><td><b>${a.id}</b> ${esc(a.name)}</td><td style="font-size:13px">${esc(a.text)}</td><td class="small">${esc(a.evidence)}</td><td>${!DATA.official ? CUSTOM_PILL : a.from_manifest ? pill(a.passed, "pass (manifest)", "fail") : '<span class="pill plain">see tests</span>'}</td></tr>`).join("") + `</tbody>`;
+$("verif-note").innerHTML = DATA.official ? `<b>Verified is not the same as validated.</b> ${esc(DATA.what_checks_show)}` : `<b>Custom inputs.</b> The checks above are as recorded in the supplied manifests; this page claims no verification for them. Verified is not the same as validated in any case.`;
 
 // ---------------------------------------------------------------- 7 growth
 $("growth-facts").innerHTML = [
@@ -762,7 +772,7 @@ $("growth-facts").innerHTML = [
     <dt>Specification</dt><dd><code>squat_d4_iliopsoas</code> extends <code>${esc(G.spec.extends)}</code>; an extension may only add actuators</dd></dl>`,
   `<h3>Checked</h3><dl class="facts"><dt>OpenSim</dt><dd>${GO.moving_knee.actuators_compared.length} actuators; lengths within ${sci(GO.moving_knee.largest_length_difference_m)} m, moment arms ${sci(GO.moving_knee.largest_moment_arm_difference_m)} m</dd>
     <dt>C1–C5</dt><dd>${pill(G.consistency_passed)}</dd><dt>Mechanics, optimizer</dt><dd>${pill(G.status.mechanics_verification === "passed")} ${pill(G.status.optimizer_verification === "passed")}</dd>
-    <dt>Provenance</dt><dd class="mono">${esc(G.provenance)} (${G.input_files} files)</dd></dl>`,
+    <dt>Provenance</dt><dd${G.provenance ? ' class="mono"' : ""}>${G.provenance ? `${esc(G.provenance)} (${G.input_files} files)` : CUSTOM_PILL}</dd></dl>`,
   `<h3>Why this is a real test</h3><p style="margin:0;font-size:14px;color:var(--ink-2)">Each new actuator has a path point switched by the hip coordinate (ontology notes on ${G.added.map(a => `<code>${esc(a.id)}</code>`).join(" and ")}). A specification-driven pipeline that only worked because its first data happened to fit the old code would fail here. The new points ran through the generic path code without a code change, and they matched OpenSim to machine precision.</p>`,
 ].map(x => `<div class="panel">${x}</div>`).join("");
 $("h1-statement").innerHTML = `<b>${esc(H.id)}:</b> “${esc(H.statement)}” Measure: in the near-standing windows ${H.windows_s.map(w => `${w[0].toFixed(2)}–${w[1].toFixed(2)} s`).join(" and ")}, the larger of the two gastrocnemius activations and the tibialis anterior activation are taken at each sample. The co-activation is the largest value over the windows of the smaller of the two. It counts as removed if it is at most ${H.removed_if_at_most}. ${esc(H.note)}`;
@@ -791,7 +801,7 @@ function peaksTable() {
 
 // ---------------------------------------------------------------- 8 record
 const vclass = v => /^AMEND/.test(v) ? "amend" : v === "AGREE" ? "agree" : v;
-$("timeline").innerHTML = DATA.timeline.map(x => `<li><span class="d">${x.date}</span><span class="w">${esc(x.who)}</span>
+$("timeline").innerHTML = (DATA.official ? "" : `<li><span class="d"></span><span class="w"></span><span class="small">Context from the project records. It describes the official Stage D4 runs, not this page's custom inputs.</span></li>`) + DATA.timeline.map(x => `<li><span class="d">${x.date}</span><span class="w">${esc(x.who)}</span>
   <span>${esc(x.text)} <span class="verdict ${vclass(x.verdict)}">${esc(x.verdict)}</span><span class="ref">${esc(x.ref)}</span></span></li>`).join("");
 
 // ---------------------------------------------------------------- 9 limits
@@ -803,7 +813,7 @@ $("validity").innerHTML = `
   <dt>Sources</dt><dd><span class="pill plain">${esc(SV.status)}</span></dd>
   <dt>Muscles</dt><dd>${esc(SV.muscle_validity)}</dd>`;
 $("limits-list").innerHTML = [
-  `<b>Same model, new route.</b> D4 deliberately changes nothing in what is modelled. Every D1–D3 assumption applies unchanged. The run's own statement: ${DATA.assumptions.map(a => esc(a.replace(/\.?$/, "."))).join(" ")}`,
+  `<b>Same model, new route.</b> D4 deliberately changes nothing in what is modelled. Every D1–D3 assumption applies unchanged. ${DATA.official ? "The run's own statement" : "The supplied manifest's statement, not vouched for"}: ${DATA.assumptions.map(a => esc(a.replace(/\.?$/, "."))).join(" ")}`,
   `<b>Designed motion.</b> The squat is prescribed, not measured, and the model computes backwards from it. Nothing is compared with real people yet (D6), and the model does not yet perform the motion itself (D7).`,
   `<b>Muscles.</b> 14 (or 16) of Gait2392's 43 leg muscles. ${C.register.omitted.muscles.length} ontology muscles that cross a modelled joint have no actuator (section 4, C5). Tendons are rigid, there is no passive fibre force, and strengths are Gait2392's generic values, scaled in size only.`,
   `<b>Fixed knee.</b> Kept only for the regression. It reproduces D2's shortfall for the male and Gait2392 bodies and the gastrocnemius direction quirk. The moving knee is the baseline.`,

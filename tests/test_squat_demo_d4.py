@@ -218,3 +218,33 @@ def test_a5_text_describes_probes_and_the_positive_control():
     t = demo.TEMPLATE
     assert "Six failure probes" in t and "positive control" in t
     assert "Each test changes one thing with all path data fixed" not in t
+
+
+def test_explicit_edited_growth_makes_no_official_claim(tmp_path, monkeypatch):
+    """D4-DEMO-02 (re-review): the edited growth file given with --growth, execution SHA and provenance fields intact,
+    builds a page whose embedded data carries no provenance, verified-input count or acceptance status, and whose
+    template replaces every official or verified description of the loaded data."""
+    import sys
+    try:
+        growth = json.loads(demo.official_text("growth"))
+    except SystemExit as exc:
+        pytest.skip(f"archive commit needs Git history: {exc}")
+    next(r for r in growth["runs"] if r["body"] == "female")["body_mass_kg"] += 1.0
+    edited, out = tmp_path / "growth.json", tmp_path / "page.html"
+    edited.write_text(json.dumps(growth), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["build", "--growth", str(edited), "--output", str(out)])
+    demo.main()
+    html = out.read_text(encoding="utf-8")
+    d = page_data(html)
+    assert d["official"] is False
+    assert d["sets"]["growth"]["female"]["mass"] == growth["runs"][0]["body_mass_kg"]   # the custom data is shown
+    assert d["growth"]["provenance"] is None and d["growth"]["input_files"] is None
+    assert d["inputs"] == {"assembled": None, "code_modules": None, "provenance": None}
+    assert all(a["passed"] is None for a in d["acceptance"])
+    assert "verified_git_head_and_inputs" not in html
+    for gate in ('$("lede").innerHTML = "Stage D4 moved', '$("sim-d4").textContent = "supplied"',
+                 '$("reg-h").textContent = "Regression to D1–D3, as recorded in the supplied manifest"',
+                 "\"The supplied manifest's statement, not vouched for\"", '$("sim-source").textContent', '$("fig-source").textContent', "!DATA.official ? CUSTOM_PILL",
+                 "G.provenance ? ", "!DATA.official ? `The table shows the regression as recorded",
+                 "DATA.official ? `<b>Verified is not the same", "(!DATA.official ? \"\" : `\n  <div><b>Built from</b>"):
+        assert gate in html, gate

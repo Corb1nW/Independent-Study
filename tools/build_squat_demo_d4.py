@@ -14,7 +14,8 @@ on any later commit:
   OFFICIAL below. A working copy that differs is ignored in favour of the archived Git blob (and the build stops if
   that is unavailable), so an edited file at a default path cannot reach the page under the official label
   (ChatGPT D4-DEMO-02). Manifests passed with --assembled, --growth or --d3 that are not the official files build a
-  page marked "custom inputs" throughout, with no provenance claim;
+  page marked "custom inputs" throughout: their provenance, verified-input counts and acceptance statuses are
+  removed (strip_claims), and no text calls them official;
 - simulation series, statuses, checks, consistency results, regression, oracle comparisons, H1 and each body's
   actuator parameters: copied from the two official Stage D4 manifests at af21e78 (rounded for display);
 - ontology content (entity names, relationships, the relationship additions, coordinate conventions, the model
@@ -98,8 +99,8 @@ TIMELINE = [
     ("2026-11-16", "ChatGPT", "Re-review, triggering both hosted reruns itself: A2 replaced the emitted time and "
      "flattened nested structure; the manual workflow's comparison ref needed validation.", "AMEND (D4-B01 rest, B05)",
      REVIEWS["b2"]),
-    ("2026-11-16", "Claude", "D-062 Amendment 5: both fixed; official runs repeated at af21e78, the runs this page "
-     "shows.", "amendment", "D-062 Amendment 5"),
+    ("2026-11-16", "Claude", "D-062 Amendment 5: both fixed; official runs repeated at af21e78, the runs the "
+     "official page shows.", "amendment", "D-062 Amendment 5"),
     ("2026-11-16", "ChatGPT", "Re-review: ran the verifier at the head (411 tests), regenerated the OpenSim references "
      "exactly and matched both D4 manifests to the official af21e78 files.", "AGREE", REVIEWS["b3"]),
     ("2026-11-16", "Corbin", "\"I agree and merged the pulls\": Stage D4 build accepted (Q74); PRs #47 and #48 merged "
@@ -528,8 +529,21 @@ def spec_name(manifest):
 TEMPLATE = (Path(__file__).with_name("squat_demo_d4_template.html")).read_text(encoding="utf-8")
 
 
+def strip_claims(data):
+    """For a page built from custom manifests: remove every provenance and verification claim the inputs carry about
+    themselves (execution provenance, verified-input counts, acceptance statuses), so nothing on the page vouches for
+    files that are not the official records (ChatGPT D4-DEMO-02). The stage history stays, labelled as context."""
+    data["inputs"] = {"assembled": None, "code_modules": None, "provenance": None}
+    data["growth"]["provenance"] = None
+    data["growth"]["input_files"] = None
+    for a in data["acceptance"]:
+        a["passed"] = None
+    return data
+
+
 def render(assembled, growth, d3, paths=(ASSEMBLED, GROWTH, D3), official=True):
-    data = json.dumps(build_data(assembled, growth, d3, paths, official), separators=(",", ":"), allow_nan=False)
+    built = build_data(assembled, growth, d3, paths, official)
+    data = json.dumps(built if official else strip_claims(built), separators=(",", ":"), allow_nan=False)
     return TEMPLATE.replace("__DATA__", data.replace("</", "<\\/"))
 
 
