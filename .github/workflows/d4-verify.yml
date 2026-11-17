@@ -19,7 +19,7 @@ on:
         description: "Full 40-character commit SHA to verify"
         required: true
       compare_ref:
-        description: "Ref or SHA holding the committed official D4 manifests (default: this workflow's commit)"
+        description: "SHA, branch or tag holding the official D4 manifests; if given, they must be there (default: this workflow's commit, comparison optional)"
         required: false
         default: ""
 
@@ -30,23 +30,28 @@ jobs:
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash      # bash --noprofile --norc -eo pipefail: a failing command in a pipe fails the step
     steps:
-      - name: Resolve the commit under test
-        id: target
-        env:
-          INPUT_SHA: ${{ inputs.target_sha }}
-          INPUT_COMPARE: ${{ inputs.compare_ref }}
-        run: |
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then T="$INPUT_SHA"; else T="${GITHUB_REF_NAME#verify/}"; fi
-          echo "$T" | grep -Eq '^[0-9a-f]{40}$' || { echo "target must be a full 40-character SHA, got '$T'"; exit 1; }
-          C="$INPUT_COMPARE"; [ -n "$C" ] || C="$GITHUB_SHA"
-          echo "sha=$T" >> "$GITHUB_OUTPUT"; echo "compare=$C" >> "$GITHUB_OUTPUT"
-          echo "Commit under test: $T"; echo "Official manifests compared from: $C"; echo "Verifier commit: $GITHUB_SHA"
-
       - name: Check out the verifier (this workflow's commit)
         uses: actions/checkout@v4
         with:
           path: verifier
+
+      # Inputs reach the shell only as environment variables and are validated by the script (ChatGPT D4-B05).
+      - name: Resolve the commit under test
+        id: target
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_SHA: ${{ inputs.target_sha }}
+          INPUT_COMPARE: ${{ inputs.compare_ref }}
+          VERIFIER_SHA: ${{ github.sha }}
+        run: |
+          bash verifier/ci/d4-verify/resolve_inputs.sh > resolved.txt
+          cat resolved.txt
+          cat resolved.txt >> "$GITHUB_OUTPUT"
 
       - name: Check out the commit under test
         uses: actions/checkout@v4
@@ -75,7 +80,11 @@ jobs:
           git config --global commit.gpgsign false
 
       - name: Verify
-        run: bash verifier/ci/d4-verify/verify.sh target "${{ steps.target.outputs.sha }}" "${{ steps.target.outputs.compare }}" out
+        env:
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+          COMPARE_REF: ${{ steps.target.outputs.compare }}
+          COMPARISON: ${{ steps.target.outputs.comparison }}
+        run: bash verifier/ci/d4-verify/verify.sh target "$TARGET_SHA" "$COMPARE_REF" out "$COMPARISON"
 
       - name: Upload logs, manifests and comparisons
         if: always()

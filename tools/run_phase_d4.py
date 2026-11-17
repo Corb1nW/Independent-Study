@@ -122,12 +122,35 @@ def _flatten(x):
     return [x]
 
 
+def _is_sequence(x):
+    return isinstance(x, (list, tuple)) or (isinstance(x, np.ndarray) and x.ndim > 0)
+
+
+def shape_difference(stored, new, path=""):
+    """Where the nesting of `new` first differs from `stored` (a sequence against a value, or a different length at
+    any level, including each frame and actuator of a ragged muscle path), or None when they have the same shape
+    (ChatGPT D4-B01: flattening alone would accept two frames merged into one)."""
+    if _is_sequence(stored) != _is_sequence(new):
+        return f"{path or '/'}: {'sequence' if _is_sequence(stored) else 'value'} stored, " \
+               f"{'sequence' if _is_sequence(new) else 'value'} new"
+    if _is_sequence(stored):
+        if len(stored) != len(new):
+            return f"{path or '/'}: length {len(stored)} stored, {len(new)} new"
+        for i, (a, b) in enumerate(zip(stored, new)):
+            d = shape_difference(a, b, f"{path}[{i}]")
+            if d:
+                return d
+    return None
+
+
 def stored_precision_difference(stored, new, rounded_to=0):
     """Largest excess of |new - stored| over half a unit of the series' last stored decimal, in units of that half
     unit. The decimals are those the producing runner rounded to (`rounded_to`), or more if the stored values show
     more. 0 means equal at the stored precision. An entry with no stored value (null) must have no new value either;
     a stored number must have a finite new number; a shape difference or a non-numeric entry is infinite excess
-    (ChatGPT D4-B01)."""
+    (ChatGPT D4-B01). The nested shapes must agree before the values are compared leaf by leaf."""
+    if shape_difference(stored, new) is not None:
+        return float("inf"), rounded_to
     flat_s = _flatten(stored)
     try:
         n = [float(x) for x in _flatten(new)]
@@ -378,6 +401,9 @@ def regression(raw, case_cfg, reg, context=None):
                 continue
             excess, digits = stored_precision_difference(_nan_list(stored), new, rule["decimals"])
             result[name] = {"stored_decimals": digits, "excess_over_half_unit": excess}
+            shape = shape_difference(stored, new)
+            if shape:
+                result[name]["shape_difference"] = shape
             worst = max(worst, excess)
         for name in m["statuses"]:
             rule = reg["statuses"].get(name)
@@ -435,6 +461,30 @@ def hypothesis(h, runs_raw, baseline):
 
 
 # ------------------------------------------------------------------------------------------- manifest
+def run_cases(spec, cfg, d1p, d2p, tol):
+    """Every body and variant of the configuration: (runs, raws, models). The raw output keeps the time the run
+    emitted, the same array its published `t_s` comes from (ChatGPT D4-B01: A2 compares what the run produced)."""
+    runs, raws, models = [], {}, []
+    for body in cfg["bodies"]:
+        for variant in cfg["variants"]:
+            model, out, raw = run_case(spec, body, variant, d1p, d2p, tol, variant == cfg["baseline_variant"])
+            raw["body"] = body
+            models.append(model)
+            raws[(body, variant)] = raw
+            runs.append(out)
+    return runs, raws, models
+
+
+def run_regressions(cfg, raws, context):
+    """A2 for every body and every variant that has pinned manifests."""
+    reg_cfg = cfg["regression"]
+    out = {}
+    for v, roles in (reg_cfg.get("manifests") or {}).items():
+        for body in cfg["bodies"]:
+            out[f"{body} | {v}"] = regression(raws[(body, v)], roles, reg_cfg, context)
+    return out
+
+
 def build_manifest(commit_sha, config_path=CONFIG):
     cfg = load_config(config_path)
     d1_cfg, d1p = sq.load_config(ROOT / cfg["d1_config"])
@@ -444,14 +494,7 @@ def build_manifest(commit_sha, config_path=CONFIG):
     refs = {v: json.loads((ROOT / r["path"]).read_text(encoding="utf-8")) for v, r in cfg["references"].items()}
     paths = input_paths(cfg, spec, config_path)
     manifest = manifest_header(ROOT, {k: str(v) for k, v in paths.items()}, commit_sha)
-    runs, raws, models = [], {}, []
-    for body in cfg["bodies"]:
-        for variant in cfg["variants"]:
-            model, out, raw = run_case(spec, body, variant, d1p, d2p, tol, variant == cfg["baseline_variant"])
-            raw.update({"body": body, "t": np.linspace(0.0, d1p["period"], int(d1p["samples"]))})
-            models.append(model)
-            raws[(body, variant)] = raw
-            runs.append(out)
+    runs, raws, models = run_cases(spec, cfg, d1p, d2p, tol)
     # Consistency (C1-C5) over every body and variant.
     q = raws[(cfg["bodies"][0], cfg["variants"][0])]["q"]
     arms = {(m.body, m.variant): mp.moment_arm_series(m, q) for m in models}
@@ -474,12 +517,7 @@ def build_manifest(commit_sha, config_path=CONFIG):
                     and o.get("largest_kinematics_difference_m", 0.0) < tol["kinematics_oracle_m"]
                     for o in oracle.values())
     # Regression to the official manifests (A2).
-    reg_cfg = cfg["regression"]
-    regressions = {}
-    for v, roles in (reg_cfg.get("manifests") or {}).items():
-        for body in cfg["bodies"]:
-            regressions[f"{body} | {v}"] = regression(raws[(body, v)], roles, reg_cfg,
-                                                      {"oracle": oracle, "tol": tol, "d2p": d2p})
+    regressions = run_regressions(cfg, raws, {"oracle": oracle, "tol": tol, "d2p": d2p})
     reg_ok = all(r["passed"] for r in regressions.values())
     hyps = [hypothesis(h, raws, cfg["baseline_variant"]) for h in cfg["hypotheses"]]
     late = sorted(set(code_inputs()) - set(paths))

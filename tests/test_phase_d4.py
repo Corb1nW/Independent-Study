@@ -758,21 +758,19 @@ def test_stored_precision_comparison():
 
 @pytest.fixture(scope="module")
 def regression_case(spec):
-    """The runner's raw output for two cases, with the context A2's derived statuses need."""
-    cfg = d4r.load_config()
+    """The runner's raw output for the Gait2392 body in both knee variants, produced by the build path's own case
+    loop (`run_cases`), with the context A2's derived statuses need."""
+    cfg = dict(d4r.load_config(), bodies=["gait2392"])
     from src import squat_d1 as sq1
     _, d1p = sq1.load_config(ROOT / cfg["d1_config"])
     _, d2p = d2r.load_config(ROOT / cfg["d2_config"])
     tol = yaml.safe_load((ROOT / cfg["d3_config"]).read_text(encoding="utf-8"))["tolerances"]
-    raws = {}
-    for v in ("moving_knee", "fixed_knee"):
-        _, _, raw = d4r.run_case(spec, "gait2392", v, d1p, d2p, tol, False)
-        raw["body"] = "gait2392"
-        raws[v] = raw
+    _, raws, _ = d4r.run_cases(spec, cfg, d1p, d2p, tol)
+    raws = {v: raws[("gait2392", v)] for v in ("moving_knee", "fixed_knee")}
     ref = json.loads((ROOT / cfg["references"]["moving_knee"]["path"]).read_text(encoding="utf-8"))
     model = ma.assemble(spec, "gait2392", "moving_knee")
     oracle = {"moving_knee": d4r.reference_comparison(model, ref, cfg["references"]["moving_knee"]["kinematics"])}
-    return cfg, raws, {"oracle": oracle, "tol": tol, "d2p": d2p}
+    return cfg, raws, {"oracle": oracle, "tol": tol, "d2p": d2p, "d1p": d1p}
 
 
 def _changed_manifest(tmp_path, role_cfg, change):
@@ -809,6 +807,9 @@ def test_a2_compares_every_required_series_and_status(regression_case):
     ("omitted series", lambda r: r["series"].pop("t_s"), "problem"),
     ("omitted status", lambda r: r["status"].pop("kinematics_verification"), "problem"),
     ("extra series", lambda r: r["series"].update(new_series=[0.0] * 301), "problem"),
+    ("two path frames merged", lambda r: r["series"].__setitem__(
+        "muscle_path_xy_m", [r["series"]["muscle_path_xy_m"][0] + r["series"]["muscle_path_xy_m"][1]]
+        + r["series"]["muscle_path_xy_m"][2:]), "shape"),
 ])
 def test_a2_catches_a_changed_or_missing_official_field(tmp_path, regression_case, label, change, expect):
     """D4-B01: a changed body-point sample, time stamp or status, or an omitted or unexpected field, fails A2."""
@@ -819,6 +820,9 @@ def test_a2_catches_a_changed_or_missing_official_field(tmp_path, regression_cas
     got = result["by_manifest"].get("changed", {})
     if expect == "series":
         assert result["largest_excess"] > 0
+    elif expect == "shape":
+        assert result["largest_excess"] == float("inf")
+        assert got["series"]["muscle_path_xy_m"]["shape_difference"] == "/: length 300 stored, 301 new"
     elif expect == "status":
         assert not got["statuses"]["optimizer_verification"]["equal"]
     else:
@@ -848,6 +852,52 @@ def test_a2_derived_status_mappings(regression_case):
     assert d4r._derived_status("d1_consistency", st["d1_consistency"], raws["fixed_knee"], dict(ctx, reg=cfg["regression"])) == "passed"
     bad = dict(ctx, oracle={"moving_knee": {"largest_kinematics_difference_m": 1.0}}, reg=cfg["regression"])
     assert d4r._derived_status("kinematics_verification", st["kinematics_verification"], raws["moving_knee"], bad) == "failed"
+
+
+def test_a2_compares_the_emitted_time_on_the_build_path(spec, regression_case, monkeypatch):
+    """D4-B01 (re-review): the time a run emits is the time A2 compares. Shift sample 7 of the time the dynamics
+    returns by 1 microsecond; through the build path (`run_cases`, `run_regressions`) the published series carries
+    the shifted value and A2 fails on `t_s`. Unshifted, the same path passes."""
+    cfg, _, ctx = regression_case
+    small = dict(cfg, variants=["moving_knee"], baseline_variant="moving_knee",
+                 regression=dict(cfg["regression"], manifests={"moving_knee": cfg["regression"]["manifests"]["moving_knee"]}))
+    run = ma.run
+
+    def shifted(model, d1p):
+        res = run(model, d1p)
+        res["t"] = np.array(res["t"], float)
+        res["t"][7] += 1e-6
+        return res
+
+    monkeypatch.setattr(ma, "run", shifted)
+    runs, raws, _ = d4r.run_cases(spec, small, ctx["d1p"], ctx["d2p"], ctx["tol"])
+    assert runs[0]["series"]["t_s"][7] == pytest.approx(0.070001, abs=1e-12)
+    result = d4r.run_regressions(small, raws, ctx)["gait2392 | moving_knee"]
+    assert not result["passed"]
+    assert result["by_manifest"]["mechanics_and_muscles"]["series"]["t_s"]["excess_over_half_unit"] > 0
+    monkeypatch.setattr(ma, "run", run)
+    _, raws, _ = d4r.run_cases(spec, small, ctx["d1p"], ctx["d2p"], ctx["tol"])
+    assert d4r.run_regressions(small, raws, ctx)["gait2392 | moving_knee"]["passed"]
+
+
+def test_a2_checks_the_nested_shape_before_the_values():
+    """D4-B01 (re-review): two frames of the committed D3 muscle paths merged into one keep the same flattened
+    numbers but fail A2; so does any change in the number of actuators in a frame or points in a path."""
+    official = json.loads((ROOT / "results/phase_d/2026-11-11_d3_moving_knee_runs_d3efc56.json").read_text(encoding="utf-8"))
+    paths = next(r for r in official["runs"] if r["body"] == "gait2392")["series"]["muscle_path_xy_m"]
+    merged = [paths[0] + paths[1]] + paths[2:]
+    assert d4r._flatten(merged) == d4r._flatten(paths)             # the bypass ChatGPT found: same flat sequence
+    assert d4r.stored_precision_difference(paths, merged, 5)[0] == float("inf")
+    assert d4r.shape_difference(paths, merged) == "/: length 301 stored, 300 new"
+    assert d4r.stored_precision_difference(paths, deepcopy(paths), 5)[0] == 0.0
+    fewer = deepcopy(paths)
+    fewer[5] = fewer[5][:-1]                                        # an actuator dropped from one frame
+    assert d4r.shape_difference(paths, fewer) == "[5]: length 14 stored, 13 new"
+    moved = deepcopy(paths)
+    moved[9][0] = moved[9][0][:-1] + [moved[9][0][-1][0]]           # a point's [x, y] turned into a bare x
+    assert d4r.shape_difference(paths, moved).startswith("[9][0]")
+    assert d4r.stored_precision_difference([[1.0, 2.0]], np.array([[1.0, 2.0]]), 1)[0] == 0.0
+    assert d4r.stored_precision_difference([[1.0, 2.0]], np.array([1.0, 2.0]), 1)[0] == float("inf")
 
 
 def test_d2_loader_reads_its_view_not_every_actuator_record():
