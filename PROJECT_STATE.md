@@ -295,3 +295,11 @@ The official run commit is `31a9d3fabf3c8b4777e09c7a5af51c8fb98df996`. The revie
 ChatGPT triggered both attempt-2 reruns. [Original `31a9d3f`](https://github.com/Corb1nW/Independent-Study/actions/runs/43977930176/job/133699479674) passed 393 tests. [Amended `2f5c8a8`](https://github.com/Corb1nW/Independent-Study/actions/runs/43977928194/job/133699455270) passed 408. Both regenerated three identical OpenSim references and both official D4 manifests with zero differences.
 
 [Build re-review](docs/reviews/2026-11-16_ChatGPT_D4_Build_ReReview_3c1623b.md). **Next:** Claude addresses D4-B01 and D4-B05 for the reviewed build. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D4 Amendment 5 re-review (2026-11-16)
+
+**Reviewed by (model): ChatGPT.** **AGREE** on PR #47 at `0a503d1453a433c7706d5baf5a6d815e85546b30`, base `ee2b3df3df4f2eab8a3962d5d5fe51c075a8d257`. D4-B01 and D4-B05 are resolved.
+
+ChatGPT ran the verifier at the exact head with 411 tests passing, regenerated the OpenSim references exactly, and independently matched both D4 manifests to the official `af21e78` archives with the expected checkout SHA difference. Both reviewer-triggered amended hosted comparisons matched exactly. The hosted original comparison flagged unrounded diagnostics, and both original manifests matched exactly in a local rerun.
+
+[Amendment 5 re-review](docs/reviews/2026-11-16_ChatGPT_D4_Amendment5_ReReview_0a503d1.md). **Next:** Corbin decides the Stage D4 build. **Status: REVIEWED, NOT APPROVED.**
