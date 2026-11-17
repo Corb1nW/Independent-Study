@@ -484,3 +484,31 @@ def test_c5_inventory_places_every_lower_limb_muscle(arms, references):
     assert {"LB:MUS:ABDUCTOR_DIGITI_MINIMI_FOOT_R", "LB:MUS:QUADRATUS_PLANTAE_R"} <= set(inv["crossing_no_joint"])
     total = sum(len(v) for v in inv.values()) + len(cs.muscles(spec))
     assert total == sum(1 for e in onto.entities.values() if e.get("class") == "SkeletalMuscle") == 102
+
+
+# ------------------------------------------------------------- step 6: the second stage-2 solver on badly scaled rows
+def test_second_solver_agrees_on_the_badly_scaled_d5_sample():
+    """Male, fixed knee, sample 120 of squat_d5: unscaled, Clarabel stopped at AlmostSolved 1.3e-3 away from the
+    certified active-set answer and failed the 1e-5 agreement check. With each joint's rows scaled by its largest
+    entry it solves and agrees."""
+    from src import muscle_paths as mp, muscles_d2 as m2, squat_d1 as sq
+    _, d1p = sq.load_config(ROOT / "config/phase_d1_squat.yaml")
+    model = ma.assemble(load_spec("squat_d5"), "male", "fixed_knee")
+    res = ma.run(model, d1p)
+    i = 120
+    q, qd, tau = res["q"][:, i], res["qd"][:, i], res["tau"][:, i]
+    frames = mp.segment_frames(model, q)
+    Cm = np.zeros((len(model.coordinates), len(model.actuators)))
+    for j, a in enumerate(model.actuators):
+        L, R, _ = mp.path(model, a, q, frames)
+        Cm[:, j] = m2.unit_tendon_force(a, m2.fiber_state(a, L, -R @ qd)) * R
+    t_star, _, _ = m2.stage1(Cm, tau)
+    band = t_star + 1e-6
+    a1, kkt = m2.stage2(Cm, tau, band)
+    a2, status = m2.stage2_second(Cm, tau, band)
+    assert max(kkt.values()) < 1e-10
+    assert status == "Solved" and np.max(np.abs(np.clip(a1, 0, 1) - a2)) < 1e-8
+    # The scaling leaves the problem unchanged: rescaling C and tau by any positive row factors gives the same answer.
+    s = np.array([3.0, 0.2, 7.0])[: Cm.shape[0]]
+    a3, _ = m2.stage2_second(Cm * s[:, None], tau * s, band * s)
+    assert np.max(np.abs(a3 - a2)) < 1e-8
