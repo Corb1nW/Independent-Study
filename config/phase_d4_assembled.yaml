@@ -1,0 +1,116 @@
+# Stage D4: the squat model assembled from the ontology (D-062). Every value here is labeled.
+# The model's structure, bodies and actuators come from the specification squat_d4 in ontology/lower_limb_sagittal.yaml.
+# The motion and contact parameters come from the D1 configuration, the muscle parameters, force law and recruitment
+# settings from the D2 configuration, and the mechanics tolerances from the D3 configuration. Nothing new is chosen.
+model_id: PHASE_D4_ASSEMBLED_SQUAT_DEMONSTRATION
+decision: D-062
+specification: squat_d4
+baseline_variant: moving_knee
+d1_config: config/phase_d1_squat.yaml
+d2_config: config/phase_d2_muscles.yaml
+d3_config: config/phase_d3_moving_knee.yaml
+bodies: [female, male, gait2392]
+variants: [moving_knee, fixed_knee]
+# OpenSim oracle references (geometry for the reference body; kinematics where the reference has them), per variant.
+references:
+  fixed_knee:
+    path: tests/data/d2_oracle_reference.json
+    coverage_mode: fixed      # the mode tools/oracle_coverage.py checks the reference against
+  moving_knee:
+    path: tests/data/d3_oracle_reference.json
+    coverage_mode: moving
+    kinematics:
+      knee_m: [origin, LB:SEG:SHANK_R]
+      hip_m: [origin, LB:SEG:THIGH_R]
+      pelvis_origin_m: [origin, LB:SEG:HAT]
+      femur_com_m: [com, LB:SEG:THIGH_R]
+      tibia_com_m: [com, LB:SEG:SHANK_R]
+# D-062 Amendment 1 (D062-B01): with the fixed knee, every direction disagreement must appear in the fixed-knee reference.
+direction_check_reference_variants: [fixed_knee]
+# Criterion A2 (ChatGPT D4-B01): for each pinned manifest, the series and status keys of every run must equal the
+# required sets listed under `manifests`; each required series must equal this run at the stored precision and each
+# required status must equal this run's, directly (`same`) or through the stated mapping (`derived`).
+regression:
+  coordinate_labels:
+    LB:DOF:ANKLE_DORSI_PLANTAR_R: ankle
+    LB:DOF:KNEE_FLEX_EXT_R: knee
+    LB:DOF:HIP_FLEX_EXT_R: hip
+  # The assembled positions under the labels the D1-D3 manifests use (points_m, d1_points_m).
+  point_labels:
+    knee: {quantity: joint_centre, joint: LB:JOINT:KNEE_R}
+    hip: {quantity: joint_centre, joint: LB:JOINT:HIP_R}
+    com_shank: {quantity: centre_of_mass, segment: LB:SEG:SHANK_R}
+    com_thigh: {quantity: centre_of_mass, segment: LB:SEG:THIGH_R}
+    com_hat: {quantity: centre_of_mass, segment: LB:SEG:HAT}
+    hat_drawing_top: {quantity: drawing_point, segment: LB:SEG:HAT}   # hip + 2 x HAT centre-of-mass vector (D1's note)
+  # Each official series, the quantity of this run it must equal, how its entries are keyed, and the decimals the
+  # D1, D2 and D3 runners rounded it to (tools/run_phase_d1.py, run_phase_d2.py, run_phase_d3.py). A series is
+  # compared at that precision, or finer if its stored values show more decimals.
+  series:
+    t_s: {quantity: t, decimals: 9}
+    q_rad: {quantity: q, index: coordinate, decimals: 9}
+    tau_per_leg_N_m: {quantity: tau, index: coordinate, decimals: 6}
+    grf_per_leg_N: {quantity: grf, index: component, components: [x, y], decimals: 6}
+    cop_x_m: {quantity: cop, decimals: 9}
+    points_m: {quantity: points, decimals: 6}
+    d1_points_m: {quantity: points, decimals: 6}
+    knee_translation_term_N_m: {quantity: moving_centre_term, joint: LB:JOINT:KNEE_R, decimals: 6}
+    activation: {quantity: activation, index: actuator, decimals: 6}
+    t_star_N_m: {quantity: t_star, decimals: 9}
+    reserve_per_joint_N_m: {quantity: reserve, index: coordinate, decimals: 9}
+    smallest_needed_reserve_per_joint_N_m: {quantity: needed, index: coordinate, decimals: 9}
+    tendon_force_N: {quantity: force, index: actuator, decimals: 3}
+    normalized_fiber_length: {quantity: l_norm, index: actuator, decimals: 5}
+    normalized_fiber_velocity: {quantity: v_norm, index: actuator, decimals: 5}
+    muscle_path_xy_m: {quantity: drawing, decimals: 5}
+  # Statuses: `same` names this run's status with the same meaning. `derived` states a semantic mapping for a status
+  # whose meaning differs from D4's per-case statuses.
+  statuses:
+    mechanics_verification: {same: mechanics_verification}
+    contact_feasibility: {same: contact_feasibility}
+    source_validation: {same: source_validation}
+    optimizer_verification: {same: optimizer_verification}
+    muscle_feasibility: {same: muscle_feasibility}
+    force_law_domain: {same: force_law_domain}
+    # D2: its torques equal the official D1 torques within d1_consistency_N_m (tools/run_phase_d2.py, d1_consistency).
+    # Mapped: this run's torques, rounded as D1 stored them, against the same D1 manifest and D2 tolerance.
+    d1_consistency:
+      derived: torque_agreement
+      manifest: results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json
+      series: tau_per_leg_N_m
+      decimals: 6
+      tolerance_parameter: d1_consistency_N_m
+    # D3: the Gait2392 moving-knee kinematics agree with the OpenSim reference within kinematics_oracle_m, reported
+    # for every body (tools/run_phase_d3.py). Mapped: this run's comparison with the moving-knee reference.
+    kinematics_verification:
+      derived: reference_kinematics
+      reference_variant: moving_knee
+  manifests:
+    fixed_knee:
+      mechanics:
+        path: results/phase_d/2026-11-04_d1_squat_runs_dd89fff.json
+        series: [t_s, q_rad, tau_per_leg_N_m, grf_per_leg_N, cop_x_m, points_m]
+        statuses: [mechanics_verification, contact_feasibility, source_validation]
+      muscles:
+        path: results/phase_d/2026-11-10_d2_muscle_runs_7ac0f2d.json
+        series: [t_s, q_rad, tau_per_leg_N_m, d1_points_m, activation, t_star_N_m, reserve_per_joint_N_m,
+                 smallest_needed_reserve_per_joint_N_m, tendon_force_N, normalized_fiber_length,
+                 normalized_fiber_velocity, muscle_path_xy_m]
+        statuses: [mechanics_verification, contact_feasibility, source_validation, d1_consistency,
+                   optimizer_verification, muscle_feasibility, force_law_domain]
+    moving_knee:
+      mechanics_and_muscles:
+        path: results/phase_d/2026-11-11_d3_moving_knee_runs_d3efc56.json
+        series: [t_s, q_rad, tau_per_leg_N_m, knee_translation_term_N_m, grf_per_leg_N, cop_x_m, d1_points_m,
+                 activation, t_star_N_m, reserve_per_joint_N_m, smallest_needed_reserve_per_joint_N_m, tendon_force_N,
+                 normalized_fiber_length, normalized_fiber_velocity, muscle_path_xy_m]
+        statuses: [mechanics_verification, kinematics_verification, contact_feasibility, source_validation,
+                   optimizer_verification, muscle_feasibility, force_law_domain]
+hypotheses: []
+assumptions:
+  - "Model structure, bodies and actuators: the squat_d4 specification (D-062), assembled by generic code; the same model as Stages D1-D3, which the regression to their official manifests shows"
+  - "Baseline: Gait2392's moving knee in both mechanics and muscle geometry (D-060); the fixed-knee variant is run for the regression to D1 and D2"
+  - "Motion, contact, force law and recruitment exactly as configured for D1 and D2; their assumptions apply unchanged"
+omitted_physics:
+  status: deliberate_demonstration_simplifications
+  listed_in: "the manifest's consistency.C5_deviation_register, generated from the ontology (D-062 item 7)"

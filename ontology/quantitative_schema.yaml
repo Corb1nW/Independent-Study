@@ -1,6 +1,6 @@
 schema:
   id: LB-QPS
-  version: 0.8.0
+  version: 0.9.0
   name: Lower-Body Quantitative Property Schema
   module: pelvis_hip_complex
   purpose: >-
@@ -63,6 +63,11 @@ controlled_vocabularies:
     - alternative_estimate
     - conflict
 
+# Computational elements a datum may name in target.model_entity_id (LB-QPS 0.9.0, D-062 item 4): the model element
+# the value describes (a model body frame, a model joint or a model actuator), as opposed to the anatomical
+# entity_ids. Optional; when present it must exist in the ontology with one of these classes.
+model_entity_classes: [CoordinateFrame, ModelJoint, ModelActuator]
+
 # Deprecated property names kept resolvable after a rename (D-039 Amendment 1).
 property_aliases:
   pennation_angle:
@@ -87,6 +92,7 @@ quantitative_datum_template:
     anatomical_scope: null
     laterality: null
     computational_representation: null
+    model_entity_id: null
   property_id: null
   property_definition: null
   property_role: null
@@ -414,6 +420,8 @@ validation_rules:
   - A populated datum is stored in the property's canonical unit; any other unit must be dimensionally compatible and converted, with the conversion recorded in transformation_history. The last recorded conversion must produce the stored value and unit.
   - Populated scalar values must respect the property's physical bounds.
   - Every target, frame and coordinate ID must exist in the ontology, and the property must apply to each target's class (including through IS_A); a side-specific coordinate may only be used by targets on the same side.
+  # Added in 0.9.0 (D-062 item 4)
+  - target.model_entity_id, when present, must exist in the ontology and be one of model_entity_classes; it names the computational element the value describes, and code finds model values through it rather than through observation-ID patterns.
   - Every source_claim must cite a known source.
   - An assumed datum requires a stated rationale (derivation.assumptions).
   - A model_derived datum requires a derivation formula and the model it belongs to (applicability.model_id).

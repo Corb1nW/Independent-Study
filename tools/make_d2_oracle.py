@@ -1,6 +1,7 @@
 """OpenSim oracle for Stage D2 (D-059 item 8 with Amendments 1 and 2).
 
     python -m tools.make_d2_oracle --output tests/data/d2_oracle_reference.json
+    python -m tools.make_d2_oracle --knee moving --spec squat_d4_iliopsoas --output <file>   # any ontology model
     python -m tools.make_d2_oracle --matched-copy-only out.osim   # no OpenSim needed
 
 Writes a reference file of values computed by OpenSim (pip package `opensim` 4.6) on a
@@ -21,6 +22,9 @@ passive strain 0.6, tendon strain 0.049.
 
 Ordinary tests read the reference file; they never import OpenSim. The values come from
 OpenSim, never from src/muscles_d2.py.
+
+Since Stage D4 (D-062 item 4) the actuator list is read from an ontology model (default: the D2 view squat_d2),
+and spline knots and conditional switches are found for whichever coordinate drives each point.
 """
 import argparse
 import hashlib
@@ -38,8 +42,39 @@ ROOT = Path(__file__).resolve().parents[1]
 OSIM = ROOT / "sources" / "vendor" / "opensim-models" / "gait2392_millard2012muscle.osim"
 KNEE_DATUM = ROOT / "ontology" / "quantitative_data" / "segments_gait2392.yaml"
 CONFIG = ROOT / "config" / "phase_d1_squat.yaml"
-ACTUATORS = ["glut_max1_r", "glut_max2_r", "glut_max3_r", "bifemlh_r", "semimem_r", "semiten_r", "vas_med_r",
-             "vas_int_r", "vas_lat_r", "rect_fem_r", "med_gas_r", "lat_gas_r", "soleus_r", "tib_ant_r"]
+DEFAULT_MODEL = "squat_d2"   # the ontology model whose actuators a reference covers unless --spec names another
+
+
+def _ontology():
+    sys.path.insert(0, str(ROOT))
+    from src.ontology import AnatomyOntology
+    return AnatomyOntology([ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "lower_limb_sagittal.yaml"])
+
+
+def actuators_for(model=DEFAULT_MODEL):
+    """Gait2392 names of a model's actuators, read from the ontology (D-062 item 4): a view's `represents`, or an
+    executable specification's `actuators` (with those of the specification it extends)."""
+    onto = _ontology()
+    spec = onto.data["models"][model]
+    ids = list(spec.get("actuators") or [])
+    if spec.get("extends") and spec.get("kind") == "executable_specification":
+        ids = list(onto.data["models"][spec["extends"]]["actuators"]) + list(spec.get("add_actuators") or [])
+    if not ids:
+        ids = [e for e in spec.get("represents", []) if onto.get(e).get("class") == "ModelActuator"]
+    return [onto.model_element(a)[1] for a in ids]
+
+
+def coordinate_motions():
+    """{Gait2392 coordinate name: (positive motion, negative motion, sign)} from the ontology's coordinates."""
+    onto, out = _ontology(), {}
+    for e in onto.entities.values():
+        for mc in e.get("model_coordinates", []):
+            if mc["model"] == "gait2392":
+                out[mc["coordinate"]] = (e["positive_motion"], e["negative_motion"], mc["sign"])
+    return out
+
+
+ACTUATORS = actuators_for()
 COORDS = {"ankle": "ankle_angle_r", "knee": "knee_angle_r", "hip": "hip_flexion_r"}
 # OpenSim coordinate = sign x D1 coordinate (knee: Gait2392 flexion is negative).
 SIGN = {"ankle": 1.0, "knee": -1.0, "hip": 1.0}
@@ -108,53 +143,77 @@ def d1_poses():
     return start[:, None] + amp * (1 - np.cos(w * t)), amp * w * np.sin(w * t), depth
 
 
-def geometry_states(tree_root):
-    """Poses for the geometry check: D1 samples, spline knots and both sides of each conditional switch."""
+def _key(coordinate):
+    """State keys name the Gait2392 coordinate without its side suffix (knee_angle_r -> knee_angle_gait2392)."""
+    return coordinate[:-2] + "_gait2392" if coordinate.endswith("_r") else coordinate + "_gait2392"
+
+
+def geometry_states(tree_root, actuators=None):
+    """Poses for the geometry check: D1 samples, spline knots and both sides of each conditional switch.
+
+    Knots and switches are found for whichever coordinate drives each moving or conditional point (D-062 item 8);
+    in D1's motion every coordinate follows the driving one in proportion."""
+    actuators = ACTUATORS if actuators is None else actuators
     q, _, depth = d1_poses()
     states = [{"kind": "d1_sample", "index": i, "q": q[:, i].tolist()} for i in range(q.shape[1])]
-    ratio = depth / depth[1]                       # ankle and hip follow the knee in D1's motion
+    names = list(COORDS.values())
+    motions = coordinate_motions()
     muscles = {m.get("name"): m for m in tree_root.iter("Millard2012EquilibriumMuscle")}
-    knots, edges = set(), set()
-    for name in ACTUATORS:
+    knots, edges = {}, {}
+    for name in actuators:
         for p in muscles[name].find(".//PathPointSet/objects"):
             if p.tag == "MovingPathPoint":
                 for ax in "xyz":
                     s = p.find(f"{ax}_location")[0]
                     if s.tag == "SimmSpline":
-                        knots.update(float(v) for v in s.findtext("x").split())
+                        coord = p.findtext(f"socket_{ax}_coordinate").split("/")[-1]
+                        knots.setdefault(coord, set()).update(float(v) for v in s.findtext("x").split())
             if p.tag == "ConditionalPathPoint":
+                coord = p.findtext("socket_coordinate").split("/")[-1]
                 lo, hi = map(float, p.findtext("range").split())
-                edges.update((lo - ACTIVITY_TOL, hi + ACTIVITY_TOL))
-    for k in sorted(knots):
-        qk = -k
-        if 0.0 <= qk <= depth[1]:
-            states.append({"kind": "spline_knot", "knee_angle_gait2392": k, "q": (ratio * qk).tolist()})
-    for e in sorted(edges):
-        qk = -e
-        if 0.0 < qk < depth[1]:
-            for side, off in (("flexion_side", SWITCH_OFFSET), ("extension_side", -SWITCH_OFFSET)):
-                states.append({"kind": "switch_side", "edge_knee_angle_gait2392": e, "side": side,
-                               "q": (ratio * (qk + off)).tolist()})
-            # Exactly at the widened edge, where OpenSim's inclusive rule counts the point as active
-            # (ChatGPT note D2-BN01). q_knee = -e exactly, so the OpenSim knee angle equals e.
-            q_edge = (ratio * qk).tolist()
-            q_edge[1] = qk
-            states.append({"kind": "switch_edge", "edge_knee_angle_gait2392": e, "q": q_edge})
+                edges.setdefault(coord, set()).update((lo - ACTIVITY_TOL, hi + ACTIVITY_TOL))
+    for coord in names:
+        if coord not in knots:
+            continue
+        c, sign = names.index(coord), motions[coord][2]
+        ratio = depth / depth[c]                   # the other coordinates follow this one in D1's motion
+        for k in sorted(knots[coord]):
+            qc = sign * k
+            if 0.0 <= qc <= depth[c]:
+                states.append({"kind": "spline_knot", _key(coord): k, "q": (ratio * qc).tolist()})
+    for coord in names:
+        if coord not in edges:
+            continue
+        c, (pos, neg, sign) = names.index(coord), motions[coord]
+        ratio = depth / depth[c]
+        sides = ((pos.split("_", 1)[1] + "_side", SWITCH_OFFSET), (neg.split("_", 1)[1] + "_side", -SWITCH_OFFSET))
+        for e in sorted(edges[coord]):
+            qc = sign * e
+            if 0.0 < qc < depth[c]:
+                for side, off in sides:
+                    states.append({"kind": "switch_side", "edge_" + _key(coord): e, "side": side,
+                                   "q": (ratio * (qc + off)).tolist()})
+                # Exactly at the widened edge, where OpenSim's inclusive rule counts the point as active
+                # (ChatGPT note D2-BN01). q_c = sign x e exactly, so the OpenSim coordinate equals e.
+                q_edge = (ratio * qc).tolist()
+                q_edge[c] = qc
+                states.append({"kind": "switch_edge", "edge_" + _key(coord): e, "q": q_edge})
     return states
 
 
-def force_states(tree_root=None):
+def force_states(tree_root=None, actuators=None):
     """States for the assembled force law: poses across the motion with shortening and lengthening speeds,
     and both sides of every conditional switch (ChatGPT note D2-BN01)."""
     q, qd, depth = d1_poses()
     out = []
+    names = list(COORDS.values())
     if tree_root is not None:
-        ratio = depth / depth[1]
-        for st in geometry_states(tree_root):
+        for st in geometry_states(tree_root, actuators):
             if st["kind"] in ("switch_side", "switch_edge"):
+                key = next(k for k in st if k.startswith("edge_"))
+                ratio = depth / depth[names.index(next(n for n in names if "edge_" + _key(n) == key))]
                 for sgn in (1.0, -1.0):
-                    out.append({"kind": st["kind"], "side": st.get("side", "edge"),
-                                "edge_knee_angle_gait2392": st["edge_knee_angle_gait2392"],
+                    out.append({"kind": st["kind"], "side": st.get("side", "edge"), key: st[key],
                                 "q": st["q"], "qdot": (sgn * 0.5 * ratio).tolist()})
     for i in (0, 40, 75, 110, 150, 190, 225, 260):
         for scale in (1.0, -1.0, 3.0, -3.0):
@@ -274,7 +333,11 @@ def main():
     ap.add_argument("--matched-copy-only")
     ap.add_argument("--knee", choices=("fixed", "moving"), default="fixed",
                     help="fixed: Stage D2 reference (default); moving: Stage D3 reference with kinematics (D-060)")
+    ap.add_argument("--spec", default=DEFAULT_MODEL,
+                    help="ontology model whose actuators the reference covers (default: the D2 view, squat_d2)")
     args = ap.parse_args()
+    global ACTUATORS
+    ACTUATORS = actuators_for(args.spec)
     xml = matched_model_xml(args.knee)
     if args.matched_copy_only:
         Path(args.matched_copy_only).write_bytes(xml)
@@ -298,6 +361,7 @@ def main():
             "matched_model_sha256": sha256(xml), "tool": "tools/make_d2_oracle.py",
             "tool_sha256": sha256(Path(__file__).read_bytes()),
             "knee_mode": args.knee,
+            "model_specification": args.spec,
             "matched_model_changes": ([] if args.knee == "moving" else
                                       ["knee_r translation1/2 -> Constant at LB-QD:G2392:JOINT:KNEE_R"])
                                      + ["ankle_r rotation1 axis -> 0 0 1; rotation3 axis -> 1 0 0",

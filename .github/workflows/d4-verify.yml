@@ -1,0 +1,95 @@
+# Stage D4 verification job (D-062). Checks out a full commit SHA and runs, with pinned dependencies: the full test
+# suite, the integrity check, the invalid-input probes, the dataset check, the oracle coverage checks and a fresh
+# OpenSim regeneration of each oracle reference, and both D4 runs; then compares the regenerated manifests with the
+# committed official ones. Logs, manifests, references and comparisons are uploaded as an artifact.
+#
+# Two ways to start it:
+#   - push a branch named verify/<full 40-character SHA> (works before this file is on main);
+#   - Actions > d4-verify > Run workflow, with target_sha (needs this file on the default branch).
+# A run can be repeated with "Re-run all jobs"; each re-run is a fresh execution on a new runner.
+# Supporting evidence only (D-045, D-051 item 10): it checks software behaviour, not anatomical validity.
+name: d4-verify
+
+on:
+  push:
+    branches: ["verify/**"]
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Full 40-character commit SHA to verify"
+        required: true
+      compare_ref:
+        description: "SHA, branch or tag holding the official D4 manifests; if given, they must be there (default: this workflow's commit, comparison optional)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash      # bash --noprofile --norc -eo pipefail: a failing command in a pipe fails the step
+    steps:
+      - name: Check out the verifier (this workflow's commit)
+        uses: actions/checkout@v4
+        with:
+          path: verifier
+
+      # Inputs reach the shell only as environment variables and are validated by the script (ChatGPT D4-B05).
+      - name: Resolve the commit under test
+        id: target
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_SHA: ${{ inputs.target_sha }}
+          INPUT_COMPARE: ${{ inputs.compare_ref }}
+          VERIFIER_SHA: ${{ github.sha }}
+        run: |
+          bash verifier/ci/d4-verify/resolve_inputs.sh > resolved.txt
+          cat resolved.txt
+          cat resolved.txt >> "$GITHUB_OUTPUT"
+
+      - name: Check out the commit under test
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          path: target
+          fetch-depth: 0
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install the pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --no-deps -r verifier/ci/d4-verify/requirements.lock
+          python -m pip check
+          python --version
+          python -c "import opensim; print('opensim', opensim.__version__)"
+
+      - name: Configure Git for the tests that create commits
+        run: |
+          git config --global user.name "d4-verify"
+          git config --global user.email "d4-verify@users.noreply.github.com"
+          git config --global commit.gpgsign false
+
+      - name: Verify
+        env:
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+          COMPARE_REF: ${{ steps.target.outputs.compare }}
+          COMPARISON: ${{ steps.target.outputs.comparison }}
+        run: bash verifier/ci/d4-verify/verify.sh target "$TARGET_SHA" "$COMPARE_REF" out "$COMPARISON"
+
+      - name: Upload logs, manifests and comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d4-verify-${{ steps.target.outputs.sha }}
+          path: out/
+          retention-days: 90

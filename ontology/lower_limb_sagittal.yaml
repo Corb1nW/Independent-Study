@@ -2,7 +2,7 @@
 ontology_module:
   extends: LB-AO
   module: lower_limb_sagittal
-  version: 0.2.0
+  version: 0.3.1
   description: Knee, ankle, foot, shank and upper-body segments, coordinates and model frames for the planar squat
     (Phase D, D-058); muscles and model actuators for Stage D2 (D-059, 0.2.0).
   decision: D-058, D-059
@@ -102,6 +102,12 @@ entities:
       - LB:JOINT:KNEE_R
     convention: 'Declared model convention (D-058 Amendment 1, A4): relative sagittal angle between thigh and shank
       frames, flexion positive, zero in the Gait2392 default pose. Not attributed to a published convention.'
+    positive_motion: knee_flexion
+    negative_motion: knee_extension
+    model_coordinates:
+    - model: gait2392
+      coordinate: knee_angle_r
+      sign: -1
   LB:DOF:ANKLE_DORSI_PLANTAR_R:
     name: Right Ankle Dorsiflexion/Plantarflexion
     class: JointCoordinate
@@ -112,6 +118,12 @@ entities:
     convention: 'Declared model convention (D-058 Amendment 1, A4): relative sagittal angle between foot and shank
       frames, dorsiflexion positive, zero in the Gait2392 default pose. Not attributed to Wu et al. 2002, whose
       definitions were not checked for the planar case.'
+    positive_motion: ankle_dorsiflexion
+    negative_motion: ankle_plantarflexion
+    model_coordinates:
+    - model: gait2392
+      coordinate: ankle_angle_r
+      sign: 1
   LB:JOINT:KNEE_L:
     name: Left Knee Joint
     class: SynovialHingeJoint
@@ -171,6 +183,9 @@ entities:
   LB:JOINT:LUMBAR_GAIT2392:
     name: Gait2392 Low-Back Joint (pelvis to torso)
     class: ModelJoint
+    model_element:
+      model: gait2392
+      name: back
     relationships:
       CONNECTS:
       - LB:SEG:PELVIS
@@ -304,6 +319,9 @@ entities:
   LB:FRAME:GAIT2392_PELVIS:
     name: Gait2392 body frame 'pelvis'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: pelvis
     relationships:
       PART_OF:
       - LB:SEG:PELVIS
@@ -312,6 +330,9 @@ entities:
   LB:FRAME:GAIT2392_FEMUR_R:
     name: Gait2392 body frame 'femur_r'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: femur_r
     relationships:
       PART_OF:
       - LB:SEG:THIGH_R
@@ -320,6 +341,9 @@ entities:
   LB:FRAME:GAIT2392_TIBIA_R:
     name: Gait2392 body frame 'tibia_r'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: tibia_r
     relationships:
       PART_OF:
       - LB:SEG:SHANK_R
@@ -328,6 +352,9 @@ entities:
   LB:FRAME:GAIT2392_TALUS_R:
     name: Gait2392 body frame 'talus_r'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: talus_r
     relationships:
       PART_OF:
       - LB:SEG:FOOT_R
@@ -336,6 +363,9 @@ entities:
   LB:FRAME:GAIT2392_CALCN_R:
     name: Gait2392 body frame 'calcn_r'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: calcn_r
     relationships:
       PART_OF:
       - LB:SEG:FOOT_R
@@ -344,6 +374,9 @@ entities:
   LB:FRAME:GAIT2392_TOES_R:
     name: Gait2392 body frame 'toes_r'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: toes_r
     relationships:
       PART_OF:
       - LB:SEG:FOOT_R
@@ -352,6 +385,9 @@ entities:
   LB:FRAME:GAIT2392_TORSO:
     name: Gait2392 body frame 'torso'
     class: CoordinateFrame
+    model_element:
+      model: gait2392
+      name: torso
     relationships:
       PART_OF:
       - LB:SEG:TORSO
@@ -654,6 +690,9 @@ entities:
   LB:ACT:G2392:GLUT_MAX1_R:
     name: Gait2392 actuator glut_max1_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_max1_r
     side: right
     represents: LB:MUS:GLUTEUS_MAXIMUS_R
     represented_scope: superior compartment (Gait2392 part 1 of 3)
@@ -665,6 +704,9 @@ entities:
   LB:ACT:G2392:GLUT_MAX2_R:
     name: Gait2392 actuator glut_max2_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_max2_r
     side: right
     represents: LB:MUS:GLUTEUS_MAXIMUS_R
     represented_scope: middle compartment (Gait2392 part 2 of 3)
@@ -676,6 +718,9 @@ entities:
   LB:ACT:G2392:GLUT_MAX3_R:
     name: Gait2392 actuator glut_max3_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_max3_r
     side: right
     represents: LB:MUS:GLUTEUS_MAXIMUS_R
     represented_scope: inferior compartment (Gait2392 part 3 of 3)
@@ -687,6 +732,9 @@ entities:
   LB:ACT:G2392:BIFEMLH_R:
     name: Gait2392 actuator bifemlh_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: bifemlh_r
     side: right
     represents: LB:MUS:BICEPS_FEMORIS_LONG_R
     represented_scope: whole muscle
@@ -698,6 +746,9 @@ entities:
   LB:ACT:G2392:SEMIMEM_R:
     name: Gait2392 actuator semimem_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: semimem_r
     side: right
     represents: LB:MUS:SEMIMEMBRANOSUS_R
     represented_scope: whole muscle
@@ -709,6 +760,9 @@ entities:
   LB:ACT:G2392:SEMITEN_R:
     name: Gait2392 actuator semiten_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: semiten_r
     side: right
     represents: LB:MUS:SEMITENDINOSUS_R
     represented_scope: whole muscle
@@ -720,6 +774,9 @@ entities:
   LB:ACT:G2392:VAS_MED_R:
     name: Gait2392 actuator vas_med_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: vas_med_r
     side: right
     represents: LB:MUS:VASTUS_MEDIALIS_R
     represented_scope: whole muscle
@@ -731,6 +788,9 @@ entities:
   LB:ACT:G2392:VAS_INT_R:
     name: Gait2392 actuator vas_int_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: vas_int_r
     side: right
     represents: LB:MUS:VASTUS_INTERMEDIUS_R
     represented_scope: whole muscle
@@ -742,6 +802,9 @@ entities:
   LB:ACT:G2392:VAS_LAT_R:
     name: Gait2392 actuator vas_lat_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: vas_lat_r
     side: right
     represents: LB:MUS:VASTUS_LATERALIS_R
     represented_scope: whole muscle
@@ -753,6 +816,9 @@ entities:
   LB:ACT:G2392:RECT_FEM_R:
     name: Gait2392 actuator rect_fem_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: rect_fem_r
     side: right
     represents: LB:MUS:RECTUS_FEMORIS_R
     represented_scope: whole muscle
@@ -764,6 +830,9 @@ entities:
   LB:ACT:G2392:MED_GAS_R:
     name: Gait2392 actuator med_gas_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: med_gas_r
     side: right
     represents: LB:MUS:GASTROCNEMIUS_R
     represented_scope: medial head
@@ -775,6 +844,9 @@ entities:
   LB:ACT:G2392:LAT_GAS_R:
     name: Gait2392 actuator lat_gas_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: lat_gas_r
     side: right
     represents: LB:MUS:GASTROCNEMIUS_R
     represented_scope: lateral head
@@ -786,6 +858,9 @@ entities:
   LB:ACT:G2392:SOLEUS_R:
     name: Gait2392 actuator soleus_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: soleus_r
     side: right
     represents: LB:MUS:SOLEUS_R
     represented_scope: whole muscle
@@ -797,6 +872,9 @@ entities:
   LB:ACT:G2392:TIB_ANT_R:
     name: Gait2392 actuator tib_ant_r
     class: ModelActuator
+    model_element:
+      model: gait2392
+      name: tib_ant_r
     side: right
     represents: LB:MUS:TIBIALIS_ANTERIOR_R
     represented_scope: whole muscle
@@ -805,6 +883,123 @@ entities:
       through REPRESENTED_BY, while hip.yaml muscles do not, so that hip.yaml still loads on its own.
     evidence:
     - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ILIACUS_R:
+    name: Gait2392 actuator iliacus_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: iliacus_r
+    side: right
+    represents: LB:MUS:ILIOPSOAS_ILIACUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added by the Stage D4 growth test (D-062 item 8), in the
+      squat_d4_iliopsoas specification. Its third path point is switched by the hip coordinate.
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:PSOAS_R:
+    name: Gait2392 actuator psoas_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: psoas_r
+    side: right
+    represents: LB:MUS:ILIOPSOAS_PSOAS_MAJOR_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added by the Stage D4 growth test (D-062 item 8), in the
+      squat_d4_iliopsoas specification. Its third path point is switched by the hip coordinate.
+    simplifications:
+    - Gait2392 places this actuator's first path point (its origin) on the pelvis frame, so in the model the psoas
+      does not cross the low-back joint, which the model also locks. The ontology states no origin for the psoas
+      major, so the anatomical origin is not compared here (D-062 item 7, C5).
+    evidence:
+    - SRC:GAIT2392_OSIM
+relationship_additions:
+# D-062 item 5 (the demo review's P1): knee edges for four muscles defined in hip.yaml, which cannot refer to the
+# knee joints defined here. Checked against SRC:STATPEARLS_THIGH_MUSCLES (statpearls.com/point-of-care/24169) on
+# 2026-11-16 before adding (paraphrased in 'basis'); since D-062 Amendment 3 it is registered in hip.yaml and is
+# also part of these entities' evidence. SRC:STATPEARLS_HIP, which these entities cite, was also read
+# (as statpearls.com/point-of-care/32220, the chapter of the same title, editor S. Sharma): its accessible text names these muscles only for their
+# innervation, so it is not cited for these edges.
+- entity: LB:MUS:BICEPS_FEMORIS_LONG_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): the long and short heads of the biceps femoris share a tendon that inserts at the head of the fibula; the hamstrings flex the knee.'
+  decision: D-062 item 5
+- entity: LB:MUS:BICEPS_FEMORIS_LONG_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): the long and short heads of the biceps femoris share a tendon that inserts at the head of the fibula; the hamstrings flex the knee.'
+  decision: D-062 item 5
+- entity: LB:MUS:SEMIMEMBRANOSUS_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): semimembranosus inserts at the medial condyle of the tibia; the hamstrings flex the knee.'
+  decision: D-062 item 5
+- entity: LB:MUS:SEMIMEMBRANOSUS_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): semimembranosus inserts at the medial condyle of the tibia; the hamstrings flex the knee.'
+  decision: D-062 item 5
+- entity: LB:MUS:SEMITENDINOSUS_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): semitendinosus inserts at the medial part of the upper tibial shaft; the hamstrings flex the knee.'
+  decision: D-062 item 5
+- entity: LB:MUS:SEMITENDINOSUS_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): semitendinosus inserts at the medial part of the upper tibial shaft; the hamstrings flex the knee.'
+  decision: D-062 item 5
+- entity: LB:MUS:RECTUS_FEMORIS_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): rectus femoris is one of the four quadriceps muscles, all of which extend the knee (the source is already registered as supporting that rectus femoris crosses hip and knee).'
+  decision: D-062 item 5
+- entity: LB:MUS:RECTUS_FEMORIS_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-16): rectus femoris is one of the four quadriceps muscles, all of which extend the knee (the source is already registered as supporting that rectus femoris crosses hip and knee).'
+  decision: D-062 item 5
 models:
   squat_d1:
     represents:
@@ -854,15 +1049,206 @@ models:
     - fiber_damping_zero
     - gait2392_muscle_paths_on_d1_kinematics
     - conditional_path_length_jumps_retained
+  squat_d4:
+    kind: executable_specification
+    decision: D-062
+    description: 'The Stage D4 squat model, stated here and assembled by generic code (src/model_assembly.py). The
+      segment tree is not restated: it is derived from joint CONNECTS, bone REPRESENTED_BY and frame PART_OF, with
+      the endpoint rule of D-062 Amendment 1. Values stay in the datasets named below.'
+    computational_model: gait2392
+    plane: sagittal
+    datasets:
+      geometry: segments_gait2392.yaml
+      anthropometry: segments_de_leva_1996.yaml
+      actuators: muscles_gait2392.yaml
+    segments:
+    - LB:SEG:FOOT_R
+    - LB:SEG:SHANK_R
+    - LB:SEG:THIGH_R
+    - LB:SEG:HAT
+    ground:
+      segment: LB:SEG:FOOT_R
+      reference_frame: LB:FRAME:GAIT2392_TALUS_R
+      contact_points:
+        heel: LB:FRAME:GAIT2392_CALCN_R
+        ball: LB:FRAME:GAIT2392_TOES_R
+      ground_line_through: heel
+      assumption: 'Foot fixed flat on the ground; heel = origin of the calcaneus frame (subtalar joint), ball = origin
+        of the toes frame (metatarsophalangeal joint), ground line through the heel point (D-058; demonstration
+        assumptions).'
+    variants:
+      moving_knee:
+        description: Gait2392's moving knee in both the dynamics and the muscle geometry (D-060). The D4 baseline.
+      fixed_knee:
+        description: D1's fixed knee centre (Gait2392's knee location at knee angle 0, linearly interpolated; D-058).
+          Kept for the regression to D1 and D2.
+    modelled_joints:
+      LB:JOINT:ANKLE_R:
+        coordinate: LB:DOF:ANKLE_DORSI_PLANTAR_R
+        child_frame: LB:FRAME:GAIT2392_TALUS_R
+        location: LB-QD:G2392:JOINT:ANKLE_R
+      LB:JOINT:KNEE_R:
+        coordinate: LB:DOF:KNEE_FLEX_EXT_R
+        child_frame: LB:FRAME:GAIT2392_TIBIA_R
+        location:
+          moving_knee: LB-QD:G2392:JOINT:KNEE_R_MOVING
+          fixed_knee: LB-QD:G2392:JOINT:KNEE_R
+      LB:JOINT:HIP_R:
+        coordinate: LB:DOF:HIP_FLEX_EXT_R
+        child_frame: LB:FRAME:GAIT2392_FEMUR_R
+        location: LB-QD:G2392:JOINT:HIP_R
+    merged_joints:
+      LB:JOINT:LUMBAR_GAIT2392:
+        into: LB:SEG:HAT
+        child_frame: LB:FRAME:GAIT2392_TORSO
+        location: LB-QD:G2392:JOINT:BACK
+        state: locked at zero
+      LB:JOINT:SUBTALAR_R:
+        into: LB:SEG:FOOT_R
+        child_frame: LB:FRAME:GAIT2392_CALCN_R
+        location: LB-QD:G2392:JOINT:SUBTALAR_R
+        state: locked at zero
+      LB:JOINT:MTP_R:
+        into: LB:SEG:FOOT_R
+        child_frame: LB:FRAME:GAIT2392_TOES_R
+        location: LB-QD:G2392:JOINT:MTP_R
+        state: locked at zero
+    retained_coordinates:
+    - LB:DOF:ANKLE_DORSI_PLANTAR_R
+    - LB:DOF:KNEE_FLEX_EXT_R
+    - LB:DOF:HIP_FLEX_EXT_R
+    omitted_coordinates:
+    - LB:DOF:HIP_AB_AD_R
+    - LB:DOF:HIP_ROTATION_R
+    bilateral_share:
+      LB:SEG:HAT: 0.5
+    bilateral_share_assumption: Bilateral symmetry; one leg carries half of the HAT (D-058).
+    scaled_actuator_parameters:
+    - optimal_fiber_length
+    - tendon_slack_length
+    scaled_actuator_parameters_note: Lengths scaled by the body's geometry scale, as in D-059 item 7; maximum isometric
+      force, pennation and maximum contraction velocity are not scaled.
+    actuators:
+    - LB:ACT:G2392:GLUT_MAX1_R
+    - LB:ACT:G2392:GLUT_MAX2_R
+    - LB:ACT:G2392:GLUT_MAX3_R
+    - LB:ACT:G2392:BIFEMLH_R
+    - LB:ACT:G2392:SEMIMEM_R
+    - LB:ACT:G2392:SEMITEN_R
+    - LB:ACT:G2392:VAS_MED_R
+    - LB:ACT:G2392:VAS_INT_R
+    - LB:ACT:G2392:VAS_LAT_R
+    - LB:ACT:G2392:RECT_FEM_R
+    - LB:ACT:G2392:MED_GAS_R
+    - LB:ACT:G2392:LAT_GAS_R
+    - LB:ACT:G2392:SOLEUS_R
+    - LB:ACT:G2392:TIB_ANT_R
+    bodies:
+      gait2392:
+        body_mass: LB-QD:G2392:BODY_MASS
+        stature: LB-QD:G2392:STATURE
+        geometry_scale: reference
+        segment_rules:
+          LB:SEG:FOOT_R:
+            rule: composite
+          LB:SEG:SHANK_R:
+            rule: direct
+          LB:SEG:THIGH_R:
+            rule: direct
+          LB:SEG:HAT:
+            rule: composite
+      female:
+        body_mass: LB-QD:DELEVA:F:BODY_MASS
+        stature: LB-QD:DELEVA:F:STATURE
+        geometry_scale: stature_ratio_to_reference
+        segment_rules:
+          LB:SEG:FOOT_R:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:F:FOOT:MASS_FRACTION]]
+            shape: scaled_reference
+          LB:SEG:SHANK_R:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:F:SHANK:MASS_FRACTION]]
+            center_of_mass_fraction: LB-QD:DELEVA:F:SHANK:CENTER_OF_MASS_FRACTION
+            radius_of_gyration_fraction: LB-QD:DELEVA:F:SHANK:RADIUS_OF_GYRATION_FRACTION
+            length_to: LB-QD:G2392:JOINT:ANKLE_R
+          LB:SEG:THIGH_R:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:F:THIGH:MASS_FRACTION]]
+            center_of_mass_fraction: LB-QD:DELEVA:F:THIGH:CENTER_OF_MASS_FRACTION
+            radius_of_gyration_fraction: LB-QD:DELEVA:F:THIGH:RADIUS_OF_GYRATION_FRACTION
+            length_to: LB-QD:G2392:JOINT:KNEE_R
+          LB:SEG:HAT:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:F:HEAD:MASS_FRACTION]]
+            - [1, [LB-QD:DELEVA:F:TRUNK:MASS_FRACTION]]
+            - [2, [LB-QD:DELEVA:F:UPPER_ARM:MASS_FRACTION, LB-QD:DELEVA:F:FOREARM:MASS_FRACTION, LB-QD:DELEVA:F:HAND:MASS_FRACTION]]
+            shape: scaled_reference
+      male:
+        body_mass: LB-QD:DELEVA:M:BODY_MASS
+        stature: LB-QD:DELEVA:M:STATURE
+        geometry_scale: stature_ratio_to_reference
+        segment_rules:
+          LB:SEG:FOOT_R:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:M:FOOT:MASS_FRACTION]]
+            shape: scaled_reference
+          LB:SEG:SHANK_R:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:M:SHANK:MASS_FRACTION]]
+            center_of_mass_fraction: LB-QD:DELEVA:M:SHANK:CENTER_OF_MASS_FRACTION
+            radius_of_gyration_fraction: LB-QD:DELEVA:M:SHANK:RADIUS_OF_GYRATION_FRACTION
+            length_to: LB-QD:G2392:JOINT:ANKLE_R
+          LB:SEG:THIGH_R:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:M:THIGH:MASS_FRACTION]]
+            center_of_mass_fraction: LB-QD:DELEVA:M:THIGH:CENTER_OF_MASS_FRACTION
+            radius_of_gyration_fraction: LB-QD:DELEVA:M:THIGH:RADIUS_OF_GYRATION_FRACTION
+            length_to: LB-QD:G2392:JOINT:KNEE_R
+          LB:SEG:HAT:
+            rule: scaled_fraction
+            mass_fraction_terms:
+            - [1, [LB-QD:DELEVA:M:HEAD:MASS_FRACTION]]
+            - [1, [LB-QD:DELEVA:M:TRUNK:MASS_FRACTION]]
+            - [2, [LB-QD:DELEVA:M:UPPER_ARM:MASS_FRACTION, LB-QD:DELEVA:M:FOREARM:MASS_FRACTION, LB-QD:DELEVA:M:HAND:MASS_FRACTION]]
+            shape: scaled_reference
+    body_rule_notes: 'direct = the segment''s own Gait2392 body values; composite = the Gait2392 bodies of the merged
+      segments, combined by the parallel-axis theorem with the merged joints at zero; scaled_fraction = mass from de
+      Leva body-mass fractions (sum of count x the listed fractions, in order); with length_to, the centre of mass at
+      the de Leva fraction of the line from the segment frame origin (its first endpoint) to that joint location, and
+      inertia = mass x (radius fraction x length)^2; with shape scaled_reference, centre of mass, contact points and
+      radius of gyration scaled from the reference body''s composite. The geometry scale of a non-reference body is its
+      stature / the reference stature, applied to every joint location and path point (D-058 Amendment 2, D-059 item 7).'
+    assumptions:
+    - sagittal_plane_motion
+    - bilateral_symmetry_one_leg_carries_half_HAT
+    - foot_fixed_flat_to_ground
+    - rigid_segments
+    - low_back_subtalar_and_mtp_joints_locked
+    - prescribed_motion_inverse_dynamics
+    - instantaneous_two_stage_optimization
+    - rigid_tendons
+    - no_passive_fiber_force_in_baseline
+    - fiber_damping_zero
+    - conditional_path_length_jumps_retained
+  squat_d4_iliopsoas:
+    kind: executable_specification
+    extends: squat_d4
+    decision: D-062 item 8
+    description: 'The Stage D4 growth test: squat_d4 with Gait2392''s iliacus_r and psoas_r added as data only (no
+      change to src/ or tools/). Their anatomy was already in hip.yaml with evidence; each has a path point switched
+      by the hip coordinate.'
+    add_actuators:
+    - LB:ACT:G2392:ILIACUS_R
+    - LB:ACT:G2392:PSOAS_R
 sources:
-  SRC:STATPEARLS_THIGH_MUSCLES:
-    title: 'Anatomy, Bony Pelvis and Lower Limb: Thigh Muscles'
-    publisher: StatPearls
-    url: https://statpearls.com/point-of-care/24169
-    supports:
-    - vasti innervation and knee extension
-    - rectus femoris crosses hip and knee
-    retrieval_date: '2026-11-10'
   SRC:STATPEARLS_GASTROCNEMIUS:
     title: 'Anatomy, Bony Pelvis and Lower Limb: Gastrocnemius Muscle'
     publisher: StatPearls (editor M. A. Varacallo; chapter authors not shown on the page read)

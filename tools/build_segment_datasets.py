@@ -24,6 +24,8 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from src.ontology import AnatomyOntology  # noqa: E402
 VENDOR = ROOT / "sources" / "vendor"
 OSIM = VENDOR / "opensim-models" / "gait2392_millard2012muscle.osim"
 BMC = {"female": VENDOR / "bmc" / "BSPfemale_ZdeLeva.txt", "male": VENDOR / "bmc" / "BSPmale_ZdeLeva.txt"}
@@ -95,6 +97,27 @@ JOINTS = {"hip_r": ("LB:JOINT:HIP_R", "LB:FRAME:GAIT2392_PELVIS"),
           "back": ("LB:JOINT:LUMBAR_GAIT2392", "LB:FRAME:GAIT2392_PELVIS")}
 
 
+def _onto():
+    """The ontology (both modules, relationship additions applied), read once."""
+    global _ONTOLOGY
+    if _ONTOLOGY is None:
+        _ONTOLOGY = AnatomyOntology([ROOT / "ontology" / "hip.yaml", ROOT / "ontology" / "lower_limb_sagittal.yaml"])
+    return _ONTOLOGY
+
+
+_ONTOLOGY = None
+
+
+def _joint_target(entity, jname):
+    """Target of a joint-location record; a joint that is itself a model element (class ModelJoint) is also named
+    in model_entity_id (LB-QPS 0.9.0). Anatomical joints have no separate model-joint entity."""
+    target = {"entity_ids": [entity], "anatomical_scope": f"Gait2392 joint '{jname}'", "laterality": None,
+              "computational_representation": f"OpenSim Gait2392 joint '{jname}'"}
+    if _onto().get(entity).get("class") == "ModelJoint":
+        target["model_entity_id"] = entity
+    return target
+
+
 def _claim(location, supports, notes=None):
     c = {"source_id": "SRC:GAIT2392_OSIM", "supports": supports, "evidence_domain": "computational_model",
          "claim_scope": location, "value_directly_reported": True}
@@ -118,7 +141,9 @@ def gait2392():
         b = bodies[body]
         key = body.upper()
         target = {"entity_ids": [seg], "anatomical_scope": f"Gait2392 body '{body}'", "laterality": None,
-                  "computational_representation": f"OpenSim Gait2392 body '{body}'"}
+                  "computational_representation": f"OpenSim Gait2392 body '{body}'",
+                  "model_entity_id": _onto().entity_for_model_element("gait2392", body)}
+        assert target["model_entity_id"] == frame, body
         loc = f"gait2392_millard2012muscle.osim, BodySet/{body}"
         obs[f"LB-QD:G2392:{key}:MASS"] = datum(
             "mass", f"Mass of Gait2392 body '{body}'.", _num(b.findtext("mass")), "kg", "model_derived",
@@ -148,8 +173,7 @@ def gait2392():
             "joint_center_position", f"Location of Gait2392 joint '{jname}' in the parent body frame.",
             [_num(v) for v in _vec(parent.findtext("translation"))], "m", "model_derived",
             [_claim(loc, [f"{jname}_location_in_parent"])], loc,
-            {"entity_ids": [entity], "anatomical_scope": f"Gait2392 joint '{jname}'", "laterality": None,
-             "computational_representation": f"OpenSim Gait2392 joint '{jname}'"},
+            _joint_target(entity, jname),
             G_APPLICABILITY, value_form="vector", frame=frame,
             derivation={"inputs": [], "formula": "published model parameter", "assumptions": []})
     # Knee: Gait2392 moves the tibia along splines of knee angle. D1 fixes the knee centre at the
@@ -221,9 +245,10 @@ def gait2392():
                    "1.66 m (SimTK forum, unanswered). D-058 Amendment 2 uses 1.8 m and lists this as an open concern.")
             if key == "STATURE" else None)
     return {
-        "dataset": {"id": "LB-QD:SEGMENTS:GAIT2392", "version": "0.2.0",
+        "dataset": {"id": "LB-QD:SEGMENTS:GAIT2392", "version": "0.3.0",
                     "description": ("OpenSim Gait2392 body segment parameters and joint locations (reference body and scaling "
-                                    "basis for Stage D1); moving-knee splines for Stage D3 (0.2.0, D-060)."),
+                                    "basis for Stage D1); moving-knee splines for Stage D3 (0.2.0, D-060); "
+                                    "model_entity_id on body and model-joint records (0.3.0, D-062 item 4)."),
                     "generated_by": "python -m tools.build_segment_datasets",
                     "decision": "D-058"},
         "sources": {
@@ -355,25 +380,32 @@ def de_leva():
 
 # ---------------------------------------------------------------------- muscles (D-059)
 # Gait2392 actuator -> (anatomical muscle entity, part of the muscle it represents)
-D2_ACTUATORS = {
-    "glut_max1_r": ("LB:MUS:GLUTEUS_MAXIMUS_R", "superior compartment (Gait2392 part 1 of 3)"),
-    "glut_max2_r": ("LB:MUS:GLUTEUS_MAXIMUS_R", "middle compartment (Gait2392 part 2 of 3)"),
-    "glut_max3_r": ("LB:MUS:GLUTEUS_MAXIMUS_R", "inferior compartment (Gait2392 part 3 of 3)"),
-    "bifemlh_r": ("LB:MUS:BICEPS_FEMORIS_LONG_R", "whole muscle"),
-    "semimem_r": ("LB:MUS:SEMIMEMBRANOSUS_R", "whole muscle"),
-    "semiten_r": ("LB:MUS:SEMITENDINOSUS_R", "whole muscle"),
-    "vas_med_r": ("LB:MUS:VASTUS_MEDIALIS_R", "whole muscle"),
-    "vas_int_r": ("LB:MUS:VASTUS_INTERMEDIUS_R", "whole muscle"),
-    "vas_lat_r": ("LB:MUS:VASTUS_LATERALIS_R", "whole muscle"),
-    "rect_fem_r": ("LB:MUS:RECTUS_FEMORIS_R", "whole muscle"),
-    "med_gas_r": ("LB:MUS:GASTROCNEMIUS_R", "medial head"),
-    "lat_gas_r": ("LB:MUS:GASTROCNEMIUS_R", "lateral head"),
-    "soleus_r": ("LB:MUS:SOLEUS_R", "whole muscle"),
-    "tib_ant_r": ("LB:MUS:TIBIALIS_ANTERIOR_R", "whole muscle"),
-}
-FRAMES = {"pelvis": "LB:FRAME:GAIT2392_PELVIS", "femur_r": "LB:FRAME:GAIT2392_FEMUR_R",
-          "tibia_r": "LB:FRAME:GAIT2392_TIBIA_R", "calcn_r": "LB:FRAME:GAIT2392_CALCN_R"}
-KNEE_COORD = "/jointset/knee_r/knee_angle_r"
+def model_actuators():
+    """Actuators named by the ontology's model views and specifications, in order of first appearance (D-062 item 4):
+    `represents` of a view (squat_d2) and `actuators` of an executable specification (squat_d4 and its extensions).
+    Returns {model element name: actuator entity ID}."""
+    onto, out = _onto(), {}
+    for spec in onto.data["models"].values():
+        for eid in list(spec.get("represents") or []) + list(spec.get("actuators") or []) + list(spec.get("add_actuators") or []):
+            if onto.get(eid).get("class") == "ModelActuator":
+                model, name = onto.model_element(eid)
+                if model == "gait2392":
+                    out.setdefault(name, eid)
+    return out
+
+
+def _coordinate_text(osim_coordinate_path):
+    """Map an OpenSim coordinate path to (ontology coordinate ID, prose) through the coordinates' model_coordinates."""
+    name = osim_coordinate_path.split("/")[-1]
+    onto = _onto()
+    hits = [(eid, m["sign"]) for eid, e in onto.entities.items() for m in e.get("model_coordinates", [])
+            if m["model"] == "gait2392" and m["coordinate"] == name]
+    if len(hits) != 1:
+        raise ValueError(f"{len(hits)} ontology coordinates map to Gait2392 coordinate {name}")
+    dof, sign = hits[0]
+    word = onto.get(dof)["positive_motion"].split("_", 1)[1]
+    return dof, (f"Gait2392 {name} (rad, {word} {'negative' if sign < 0 else 'positive'}) = "
+                 f"{'-' if sign < 0 else ''}{dof}")
 FMAX_DOC = ("OpenSim documentation (version 2.4), 'Gait 2392 Max Isometric Muscle Force': Delp's (1990) values, scaled "
             "upward using Anderson and Pandy (1999) and Carhart (2000, reported in Yamaguchi 2001), not by one uniform "
             "factor (D-059 item 4).")
@@ -403,11 +435,13 @@ def muscles():
     root = ET.parse(OSIM).getroot()
     found = {m.get("name"): m for m in root.iter("Millard2012EquilibriumMuscle")}
     obs = {}
-    for name, (entity, scope) in D2_ACTUATORS.items():
+    for name, actuator in model_actuators().items():
         m = found[name]
         key = name.upper()
-        target = {"entity_ids": [entity], "anatomical_scope": scope, "laterality": "right",
-                  "computational_representation": f"OpenSim Gait2392 actuator '{name}' (LB:ACT:G2392:{key})"}
+        a = _onto().get(actuator)
+        target = {"entity_ids": [a["represents"]], "anatomical_scope": a["represented_scope"], "laterality": a["side"],
+                  "computational_representation": f"OpenSim Gait2392 actuator '{name}' ({actuator})",
+                  "model_entity_id": actuator}
         base = f"gait2392_millard2012muscle.osim, ForceSet/{name}"
         for element, prop, unit, text in PARAMS:
             loc = f"{base}/{element}"
@@ -427,43 +461,49 @@ def muscles():
         points = list(m.find(".//PathPointSet/objects"))
         for k, p in enumerate(points, 1):
             frame_name = p.findtext("socket_parent_frame").split("/")[-1]
+            frame_entity = _onto().entity_for_model_element("gait2392", frame_name)
             loc = f"{base}/GeometryPath/PathPointSet/{p.get('name')}"
             ctx_coord = None
             if p.tag == "PathPoint":
                 value, form = _vec(p.findtext("location")), "vector"
                 text = f"Fixed path point {k} of {len(points)} of '{name}' in the '{frame_name}' frame."
             elif p.tag == "ConditionalPathPoint":
-                assert p.findtext("socket_coordinate") == KNEE_COORD
+                ctx_coord, coord_text = _coordinate_text(p.findtext("socket_coordinate"))
+                coord_name = p.findtext("socket_coordinate").split("/")[-1]
                 lo, hi = _vec(p.findtext("range"))
                 value = {"kind": "conditional", "location": _vec(p.findtext("location")),
-                         "coordinate": "Gait2392 knee_angle_r (rad, flexion negative) = -LB:DOF:KNEE_FLEX_EXT_R",
+                         "coordinate": coord_text,
                          "active_range": [lo, hi],
-                         "activity_rule": "active when lo - 1e-5 <= knee_angle_r <= hi + 1e-5 (OpenSim "
+                         "activity_rule": f"active when lo - 1e-5 <= {coord_name} <= hi + 1e-5 (OpenSim "
                                           "ConditionalPathPoint::isActive at opensim-core 01683ac)"}
-                form, ctx_coord = "function", "LB:DOF:KNEE_FLEX_EXT_R"
+                form = "function"
                 text = f"Conditional path point {k} of {len(points)} of '{name}' in the '{frame_name}' frame."
             elif p.tag == "MovingPathPoint":
-                for ax in "xyz":
-                    assert p.findtext(f"socket_{ax}_coordinate") == KNEE_COORD
+                coords = {p.findtext(f"socket_{ax}_coordinate") for ax in "xyz"}
+                if len(coords) != 1:
+                    raise ValueError(f"{name}: a moving point driven by several coordinates is not supported")
+                ctx_coord, coord_text = _coordinate_text(coords.pop())
                 value = {"kind": "moving",
-                         "coordinate": "Gait2392 knee_angle_r (rad, flexion negative) = -LB:DOF:KNEE_FLEX_EXT_R",
+                         "coordinate": coord_text,
                          **{ax: _function(p.find(f"{ax}_location")) for ax in "xyz"},
                          "evaluation": "OpenSim SimmSpline (opensim-core 01683ac, OpenSim/Common/SimmSpline.cpp)"}
-                form, ctx_coord = "function", "LB:DOF:KNEE_FLEX_EXT_R"
+                form = "function"
                 text = f"Moving path point {k} of {len(points)} of '{name}' in the '{frame_name}' frame."
             else:
                 raise ValueError(p.tag)
             d = datum("attachment_position", text, value, "m", "model_derived", [_claim(loc, [f"{p.get('name')}"])],
-                      loc, target, G_APPLICABILITY, value_form=form, frame=FRAMES[frame_name],
+                      loc, target, G_APPLICABILITY, value_form=form, frame=frame_entity,
                       derivation={"inputs": [], "formula": "published model path point", "assumptions": []})
             d["coordinate_context"]["coordinate_id"] = ctx_coord
             obs[f"LB-QD:G2392:MUS:{key}:PATH:{k:02d}"] = d
     return {
-        "dataset": {"id": "LB-QD:MUSCLES:GAIT2392", "version": "0.1.0",
-                    "description": ("OpenSim Gait2392 parameters and path points of the 14 right-leg actuators of "
-                                    "Stage D2 (D-059 item 4)."),
+        "dataset": {"id": "LB-QD:MUSCLES:GAIT2392", "version": "0.3.0",
+                    "description": (f"OpenSim Gait2392 parameters and path points of the {len(model_actuators())} "
+                                    "actuators named by the ontology's model views and specifications (D-059 item 4; "
+                                    "list read from the ontology and model_entity_id added, 0.2.0, D-062 item 4; "
+                                    "iliacus and psoas added for the growth test, 0.3.0, D-062 item 8)."),
                     "generated_by": "python -m tools.build_segment_datasets",
-                    "decision": "D-059"},
+                    "decision": "D-059, D-062"},
         "sources": {
             "SRC:GAIT2392_OSIM": gait2392()["sources"]["SRC:GAIT2392_OSIM"],
             "SRC:OPENSIM24_GAIT2392_FMAX": {

@@ -21,6 +21,7 @@ class Target(Strict):
     anatomical_scope: Optional[StrictStr] = None
     laterality: Optional[StrictStr] = None
     computational_representation: Optional[StrictStr] = None
+    model_entity_id: Optional[StrictStr] = None      # LB-QPS 0.9.0 (D-062 item 4)
 
 
 class Uncertainty(Strict):
