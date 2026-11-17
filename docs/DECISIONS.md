@@ -3,7 +3,7 @@
 **Project:** Musculoskeletal Digital Twin — Lower-Body Anatomy Ontology (LB-AO)
 **Owner:** Corbin Wright
 **Log started:** 2026-10-07
-**Revision:** 39 (2026-11-17), Q78 recorded; D4-DEMO-02 remainder fixed (custom-input pages make no provenance or verification claim). 38 (2026-11-17), Q77 recorded; ChatGPT's demonstration-page findings D4-DEMO-01 to 03 fixed. 37 (2026-11-17), A-21, Q75 and Q76 recorded; D-062 Amendment 6 accepted and merged; the squat demos named by stage (`SQUAT_DEMO_D3.html`, new `SQUAT_DEMO_D4.html`). 36 (2026-11-17), D-062 Amendment 6 revised for ChatGPT's D4-V01 (type-strict manifest comparison; margin stated as 3.33e-10). 35 (2026-11-16), A-20 and Q74 recorded; Stage D4 build accepted (Q74) and merged (A-20); D-062 Amendment 6 (verification job: rounding-level tolerance in the manifest comparison). 34 (2026-11-16), Q73 recorded; D-062 Amendment 5 (ChatGPT's re-review: D4-B01 remainder and D4-B05 fixed; official runs repeated at `af21e78`). 33 (2026-11-16), Q72 recorded; D-062 Amendment 4 (ChatGPT's D4-B01 to B04 fixed; official runs repeated at `2f5c8a8`; D4 verification job). 32 (2026-11-16), A-19 and Q71 recorded; D-062 Amendment 3 (muscle dataset version 0.3.0; thigh-muscles chapter added to eight entities' evidence). 31 (2026-11-16), D-062 Amendment 2 completed: Stage D4 built in four steps, official runs at `31a9d3f`. 30 (2026-11-16), Q70 recorded; D-062 Accepted; Amendment 2 (Stage D4 build, step 1: ontology and schema). 29 (2026-11-16), Q68 and Q69 recorded; D-062 Amendment 1 (ChatGPT's D062-B01 to B03). 28 (2026-11-11), A-18, Q66 and Q67 recorded; D-061 Amendment 1 (narrowed to Stage D4; ChatGPT's D061-B01 to B03); D-062 (Stage D4 scope) proposed. 27 (2026-11-11): A-17 and Q65 recorded (Stage D3 merged); D-061 (squat proof-of-concept plan) proposed. 26 (2026-11-11): D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
+**Revision:** 40 (2026-11-17), A-22, Q79 and Q80 recorded; D-063 (Stage D5 scope) proposed. 39 (2026-11-17), Q78 recorded; D4-DEMO-02 remainder fixed (custom-input pages make no provenance or verification claim). 38 (2026-11-17), Q77 recorded; ChatGPT's demonstration-page findings D4-DEMO-01 to 03 fixed. 37 (2026-11-17), A-21, Q75 and Q76 recorded; D-062 Amendment 6 accepted and merged; the squat demos named by stage (`SQUAT_DEMO_D3.html`, new `SQUAT_DEMO_D4.html`). 36 (2026-11-17), D-062 Amendment 6 revised for ChatGPT's D4-V01 (type-strict manifest comparison; margin stated as 3.33e-10). 35 (2026-11-16), A-20 and Q74 recorded; Stage D4 build accepted (Q74) and merged (A-20); D-062 Amendment 6 (verification job: rounding-level tolerance in the manifest comparison). 34 (2026-11-16), Q73 recorded; D-062 Amendment 5 (ChatGPT's re-review: D4-B01 remainder and D4-B05 fixed; official runs repeated at `af21e78`). 33 (2026-11-16), Q72 recorded; D-062 Amendment 4 (ChatGPT's D4-B01 to B04 fixed; official runs repeated at `2f5c8a8`; D4 verification job). 32 (2026-11-16), A-19 and Q71 recorded; D-062 Amendment 3 (muscle dataset version 0.3.0; thigh-muscles chapter added to eight entities' evidence). 31 (2026-11-16), D-062 Amendment 2 completed: Stage D4 built in four steps, official runs at `31a9d3f`. 30 (2026-11-16), Q70 recorded; D-062 Accepted; Amendment 2 (Stage D4 build, step 1: ontology and schema). 29 (2026-11-16), Q68 and Q69 recorded; D-062 Amendment 1 (ChatGPT's D062-B01 to B03). 28 (2026-11-11), A-18, Q66 and Q67 recorded; D-061 Amendment 1 (narrowed to Stage D4; ChatGPT's D061-B01 to B03); D-062 (Stage D4 scope) proposed. 27 (2026-11-11): A-17 and Q65 recorded (Stage D3 merged); D-061 (squat proof-of-concept plan) proposed. 26 (2026-11-11): D-060 Amendment 3 (line-ending fix after ChatGPT's re-review; Q64). 25 (2026-11-11): D-060 Amendment 2 (fixes after ChatGPT's D3 build review; Q63). 24 (2026-11-10): D-060 Accepted (Q62); Stage D3 built (Amendment 1). 23 (2026-11-10): D-060 (Stage D3, moving knee) proposed. 22 (2026-11-10): D-059 Amendment 4 (post-merge review fixes). 21 (2026-11-10): Q59 and A-13 recorded (Stage D2 merged; P1 (a) and P2 accepted). 20 (2026-11-10): D-059 Amendment 3 (Stage D2 build record). 19 (2026-11-10): D-059 Accepted (Q58). 18b (2026-11-10), D-059 Amendment 2 after ChatGPT's re-review (PR #32); 18a, Amendment 1 after its review (PR #31). Revision 18 (2026-11-04): D-056 Accepted (Q53); D-059 (Stage D2 scope) proposed with Corbin's direction (Q54, Q55, Q57). See §7 for revision history.
 **Covers:** Design decisions from the original work through Phase D Stage D1 (accepted) and the proposed Stage D2 scope (D-059)
 **Repository:** `https://github.com/Corb1nW/Independent-Study` (canonical, D-051). Baseline `d04fb78` (original work as received); Phase A implementation `4abb4f1`; see `PROJECT_STATE.md` for the current snapshot
 
@@ -192,6 +192,9 @@ Corbin's statements that serve as approval bases. Source: Claude session transcr
 | **Q76** | 2026-11-17 13:29 (answers to Claude's two questions) | Where the D4 showcase should live: “Create a seperate Squat demo one that is clearly labeled D4 and rename the one already in there as D3. We can keep this naming convention to keep our progress as clear as possible”. Audience for the D4 explanation: “Technical reviewers” (selected option: full detail, checks, tolerances, provenance, commits) | Claude's options were a repository page reviewed like other work (recommended), a private shareable page, or a page plus a separate document. Direct: this session. Claude's reading: a new repository page `SQUAT_DEMO_D4.html`; `SQUAT_DEMO.html` renamed `SQUAT_DEMO_D3.html`; one demo page per stage, named for it, from now on; written for technical reviewers; reviewed by ChatGPT and merged by Corbin like other work | `SQUAT_DEMO_D3.html`, `SQUAT_DEMO_D4.html` |
 | **Q77** | 2026-11-17 14:15 | “chat has some proposed amendments, see if you can improve” | After ChatGPT's review of the Stage D4 demonstration page (PR #52: **AMEND** at `3bbd758`; D4-DEMO-01 to 03). Direct: this session. Claude's reading: address the findings or disagree with evidence (as in Q69); Claude agreed with all three and fixed them in PR #51 | Demonstration page fixes |
 | **Q78** | 2026-11-17 14:37 | “still amendments, look at it again” | After ChatGPT's re-review of the demonstration page (PR #52: **AMEND** at `3216c83`; D4-DEMO-01 and 03 resolved, D4-DEMO-02 partly: a page built from an edited `--growth` file still showed its provenance, its verified-input count, A9's manifest pass and “official” descriptions). Direct: this session. Claude agreed and fixed it in PR #51 | Demonstration page fix |
+| **A-22** | 2026-11-17 15:06:02 and 15:06:15 (actions, from GitHub's merge times) | Merged PR #51 (`cc906ca`, the Stage D4 demonstration page and the D3 page's rename, head `8876776`) and PR #52 (`1076704`, ChatGPT's demo review and two re-reviews, AGREE at `8876776`) | — | Owner actions (D-051); `SQUAT_DEMO_D3.html` and `SQUAT_DEMO_D4.html` are on `main` |
+| **Q79** | 2026-11-17 15:06 | “chat approved and I merged. Let me see your proposal for the next step” | After ChatGPT's AGREE on the demonstration page at `8876776` (PR #52). Direct: this session. Claude's reading: the demonstration page is accepted (A-22); Claude proposes the next stage. Claude proposed Stage D5 narrowed to anatomy (all remaining Gait2392 leg muscles as data; passive force and tendons deferred), with defaults on three scope questions (out-of-plane muscles, lumped actuators, muscles crossing only locked joints), and the D6 data-terms check in parallel; alternatives D6 first, D7 first, or swapped roles | Next-stage proposal |
+| **Q80** | 2026-11-17 15:13, and answers to Claude's two questions | “I agree with your scope and default to your suggestions. Start building this out with every muscle in the lower half of the body, even if they don't offer much contribution to our simulated movement currently. We will note that and advance our movement simulation later on”. Answers (selected options): muscle set “All lower-limb muscles (Recommended)” (hip, thigh, leg and foot including foot intrinsics; actuators for all 27 remaining Gait2392 leg muscles; the rest as sourced anatomy only); process “Scope review first (Recommended)” | Claude asked because “every muscle in the lower half of the body” goes beyond Gait2392, and because D-061 starts each stage with a reviewed scope while Corbin said “start building”. Direct: this session. Claude's reading: D5 scope as proposed with Claude's three defaults, widened to every lower-limb muscle (D-063 item 1); ChatGPT reviews D-063 before the build | D-063 (Proposed) |
 
 **Sources for Q20–Q28 (revision 12).** Q20–Q26 are transcribed from Claude's integration record of the protocol candidate (`docs/reviews/2026-10-27_Claude_Protocol_v0.2_Integration_Record_6c8b6ef.md`, from session `https://claude.ai/code/session_01QzLsFRwL41kF7Mg78i73z7`), where they were numbered provisionally with the same IDs; that record's Correction C-P1 explains why two earlier statements were removed. Q27 and Q28 are from session `https://claude.ai/code/session_01QzLsFRiqiXchuYRz3fgwnr`. Times are America/New_York. A-6 times are GitHub's `merged_at` values (23:25:52Z, 23:26:31Z) read through the API.
 
@@ -309,6 +312,7 @@ Current status. Columns: **Decision** / **Implementation** / **Verification**. F
 | D-060 | Stage D3: Gait2392's moving knee for the squat mechanics and muscles | Claude (builder); direction Corbin (Q61) | Accepted (Q62) | Built; merged (A-17) | ChatGPT AGREE after Amendments 2 and 3 (PR #42); run reproduced at `9805d41` |
 | D-061 | Squat proof of concept: plan for Stages D4–D9 (ontology-assembled model, full Gait2392 leg muscles, measured squat and validation, forward simulation, uncertainty, report) | Claude; direction Corbin (Q65) | Direction agreed tentatively (Q66); narrowed to Stage D4 (Q67, Amendment 1) | Not started | ChatGPT: AMEND at `57bfeaa` (PR #46); findings answered in Amendment 1 and D-062 |
 | D-062 | Stage D4: the squat model assembled from the ontology (generic assembler, anatomy–model consistency checks, knee-crossing repair, iliopsoas growth test) | Claude; direction Corbin (Q66, Q67) | Accepted (Q70) at `3dcbb72`; Amendment 1 (Q68, Q69); Amendment 2 (build record); Amendment 3 (Q71); Amendment 4 (Q72); Amendment 5 (Q73); build accepted (Q74); Amendment 6 (Q74) | Built and merged (A-20, `b74d888`); official runs at `af21e78` (earlier `2f5c8a8`, `31a9d3f`) | ChatGPT: AMEND at `551efea`, AGREE at `3dcbb72` (PR #46); build review AMEND at `d1ef9f2`, re-review AMEND at `3c1623b` with both reruns reproduced, AGREE at `0a503d1` (PR #48); Amendment 6: AMEND at `a40e7fb` (PR #50, D4-V01), fixed; AGREE at `c8839e9` (PR #50); accepted (Q75), merged (A-21) |
+| D-063 | Stage D5: the lower limb's anatomy, as data through the D4 pipeline (all lower-limb muscles; 27 Gait2392 actuators) | Claude; direction Corbin (Q79, Q80) | Proposed | Not started | ChatGPT review pending |
 
 ---
 
@@ -2741,6 +2745,88 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 
 ---
 
+### D-063  Stage D5: the lower limb's anatomy, as data through the D4 pipeline
+- **Decision status:** Proposed. Direction and scope choices from Corbin (Q79, Q80); awaiting ChatGPT's review, then Corbin's decision
+- **Implementation status:** Not started (the build waits for the scope review, Q80)
+- **Verification status:** —
+- **Date:** 2026-11-17
+- **Proposed by:** Claude (Phase D builder) · **Reviewed by:** ChatGPT, pending
+- **Approval basis:** Q79 (asked for the next-step proposal), Q80 (agreed to the scope and Claude's defaults; all lower-limb muscles; scope review before the build)
+- **Evidence:**
+  - D-061 (plan, Stage D5) and D-062 with its amendments (the pipeline D5 uses; the growth test showed actuators enter as data);
+  - the vendored Gait2392 model file (`sources/vendor/opensim-models/gait2392_millard2012muscle.osim`): 46 muscles per side, 43 of them leg muscles, 16 of them in `squat_d4_iliopsoas`;
+  - the current ontology: 28 right-side muscle entities; those that cross a modelled joint but have no actuator are 17 in D4's C5 register and 15 in the growth run's;
+  - a source check by Claude, 2026-11-17 (search results only, not yet read): StatPearls chapters exist for the foot muscles (NBK539705: 29 muscles associated with the foot, 10 extrinsic and 19 intrinsic), the leg's posterior compartment (NBK537340), its lateral compartment, the tibialis posterior and the flexor hallucis longus.
+- **Phase:** D (Stage D5)
+
+**Context.** D4 showed that a muscle with sourced anatomy enters the squat as data. D-061 planned D5 to add the rest of Gait2392's leg muscles that way. Corbin widened the anatomy to every lower-limb muscle, including those no model can drive yet, to be recorded as such and used when the movement simulation advances (Q80).
+
+**Decision (proposed).**
+
+1. **Anatomy: every lower-limb muscle, both sides.** The boundary is the muscles named in the StatPearls lower-limb chapters the build reads (hip, thigh, leg compartments, foot). The build lists them, and any muscle it cannot place is reported as a finding, not dropped. That covers:
+   - **9 muscles new to the ontology that Gait2392 models:** biceps femoris short head, tibialis posterior, flexor digitorum longus, flexor hallucis longus, fibularis (peroneus) longus, brevis and tertius, extensor digitorum longus, extensor hallucis longus;
+   - **muscles new to the ontology that Gait2392 does not model:** popliteus, plantaris, and the intrinsic foot muscles (19 per the foot chapter). Serial groups (lumbricals, plantar and dorsal interossei) are proposed as one entity per named group, with the count in the entry;
+   - **muscles already in the ontology:** unchanged, apart from relationship additions where a source supports them.
+
+   Each new entity gets `CROSSES`, `ACTS_ON`, `INNERVATED_BY`, `mechanical_capabilities` and evidence. Every edge's basis is checked against the cited text before it is added, as in D4. New nerves are added where needed (expected: superficial fibular, medial and lateral plantar). The left side mirrors the right, and the mirror and required-edge checks cover it.
+2. **Where it lives.** Leg muscles go in `lower_limb_sagittal.yaml`, beside gastrocnemius, soleus and tibialis anterior. The intrinsic foot muscles go in a new module, `ontology/foot.yaml`, loaded after it. Foot joints that the intrinsic muscles cross but the model does not have are added only as far as the sources require (expected: a lumped interphalangeal joint of the toes, beside the existing lumped metatarsophalangeal joint). They are marked not modelled.
+3. **Actuators: all 27 remaining Gait2392 leg muscles, as data.** These are gluteus medius (3), gluteus minimus (3), adductor longus, adductor brevis, adductor magnus (3), pectineus, gracilis, sartorius, tensor fasciae latae, quadratus femoris, piriformis, the gemelli (`gem_r`, item 5), biceps femoris short head, tibialis posterior, flexor digitorum and flexor hallucis longus, the three fibularis muscles, and the long toe extensors. Specification `squat_d5` extends `squat_d4_iliopsoas`, giving 43 actuators. They are regenerated dataset records and OpenSim references, with no change to model code. Gait2392's three trunk muscles stay out, because the low back stays locked.
+4. **Out-of-plane muscles (Claude's default, Q80).** Hip abductors and rotators (gluteus medius and minimus, tensor fasciae latae, piriformis, gemelli, quadratus femoris) are included. In a sagittal model they can supply flexion or extension torque without the frontal-plane balancing that limits them in a real squat. The run therefore reports each actuator's share of each joint's torque. Where Gait2392's path gives a sagittal moment arm that the ontology does not declare as a capability, the build does not invent the capability. The disagreement goes through C3's reference mechanism (D-062 Amendment 1): it must exist in OpenSim's geometry, it is listed in C5, and it is reported. The register states it as a known artifact of the planar model.
+5. **Lumped actuators (Claude's default, Q80).** Gait2392's `gem_r` stands for more than one muscle. The schema gains a lumped representation: an actuator may represent a list of muscles with `represented_scope: lumped`. C1 then checks the derived crossings against each represented muscle, and C4 requires evidence for each. What `gem_r` represents is taken from the Gait2392 documentation, or recorded as an interpretation if it cannot be confirmed. This schema and check change is the stage's only code change, made first and tested on its own (item 8).
+6. **Muscles crossing only locked or merged joints (Claude's default, Q80).** The long toe flexors and extensors and the fibularis muscles get actuators: they act at the ankle in the model. Their subtalar, metatarsophalangeal and interphalangeal crossings are listed by C1 as "crossed, not modelled". Muscles that cross no modelled joint (the intrinsic foot muscles) get no actuator and are listed in C5 as anatomy without a model actuator.
+7. **Same physics.** Rigid tendons, no passive fibre force, the designed motion and the two-stage recruitment, all as in D4. *(Amends D-061's D5: passive force and tendon compliance move to a later stage or to D8, so that D5 changes the anatomy only.)*
+8. **Reviewable steps:**
+   - (1) the lumped-actuator schema and check change, with tests;
+   - (2) leg muscle anatomy and nerves, with sources;
+   - (3) hip actuators as data;
+   - (4) leg actuators as data;
+   - (5) foot module;
+   - (6) official runs and results;
+   - (7) the Stage D5 demonstration page, `SQUAT_DEMO_D5.html` (Q76's convention).
+9. **Pre-stated hypotheses**, reported either way, not acceptance criteria:
+   - **H2:** on the moving knee, all three bodies stay feasible with 43 actuators (t* = 0 throughout);
+   - **H3:** for the male and Gait2392 bodies, whose middle and lower gluteus maximus reach full activation near the bottom in D4, those parts' peak activation falls below 1.0 once the adductor magnus and the other hip extensors are available;
+   - **H4:** the fixed-knee shortfall of the male and Gait2392 bodies (largest reserve 5.815 and 6.362 N·m in D2 and D4) decreases. Whether it reaches zero is reported.
+
+**Acceptance criteria (stated before the build).**
+- **A1. Geometry.** Every added actuator matches OpenSim 4.6 within D2's tolerances, with coverage OK, on both knee variants.
+- **A2. Data, not code.** The commits of steps 3 to 5 change no file in `src/` or `tools/`.
+- **A3. Consistency.** C1–C5, the required-edge and mirror checks pass on the extended ontology. Every C3 reference-backed disagreement (item 4) is listed in C5.
+- **A4. Evidence.** Every new entity and edge cites a source registered in `sources/SOURCES.md` with status Read. Every lower-limb muscle without an actuator appears in C5.
+- **A5. Nothing else moves.** The official `squat_d4` and `squat_d4_iliopsoas` runs reproduce their `af21e78` manifests (the `d4-verify` job). `hip.yaml` still loads on its own.
+- **A6. Deliberate errors.** A lumped actuator missing evidence for one of its muscles fails C4. A lumped actuator whose path misses a joint that one of its muscles crosses fails C1.
+- **A7. Standard checks.** Full test suite, integrity, probes, dataset check, and provenance-verified manifests.
+- **A8. Results reported:** 43 against 16 actuators per body (activations, reserve, feasibility); each actuator's share of each joint's torque; H2–H4.
+
+**Out of scope.** Passive force and compliant tendons (item 7). Out-of-plane coordinates and foot joints in the model. Measured data (D6). Forward simulation (D7). Changes to the motion or to recruitment. Trunk muscles.
+
+**Defense.**
+- D5 tests Claim B item 2 at scale: 27 actuators enter as data through the D4 route, which the growth test exercised with 2.
+- The anatomy-only entries give the later stages (foot joints, out-of-plane motion, forward simulation) a sourced inventory to build on.
+- The C5 register says exactly which muscles the model cannot yet drive, and why (Corbin's principle, Q50).
+- Keeping the physics fixed means any change in results is due to the anatomy alone.
+- The out-of-plane artifact is reported per actuator instead of hidden.
+
+**Alternatives.**
+- (a) Only Gait2392's 27 muscles, with no anatomy-only entries. Smaller, but it contradicts Q80.
+- (b) Leave out the out-of-plane muscles. Cleaner sagittal results, but the anatomy is incomplete, and leaving them in is the more honest test of the planar model.
+- (c) Split `gem_r` into separate actuators. That would change Gait2392's parameters, so the OpenSim oracle would no longer apply.
+- (d) Add passive force and compliant tendons now (D-061 as written). That mixes a physics change with the anatomy change.
+- (e) Do D6 or D7 first (discussed with Corbin before Q80).
+
+**Open concerns.**
+1. **Size.** Roughly 40 new anatomical entities per side, each with sourced edges, which is the largest anatomy addition so far. The steps keep each review small.
+2. **Undeclared sagittal moment arms** may be many for the hip rotators. If the C5 list grows large, the build will report it rather than declare capabilities without sources.
+3. **What `gem_r` represents** depends on documentation that may be thin.
+4. **The StatPearls chapters** have only been found by search so far. They are read, and listed in `sources/SOURCES.md`, as each is used.
+
+**For Corbin.** Approve D-063 as the Stage D5 scope after ChatGPT's review. Choices he can still change:
+- the anatomy boundary (item 1);
+- the lumped-actuator schema field (item 5);
+- moving passive force and tendons out of D5 (item 7);
+- hypotheses H2–H4.
+
+
 ## 6. Open items
 
 | Item | Owner | Due |
@@ -2801,11 +2887,14 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 | ~~Re-review D-062 Amendment 6's D4-V01 revision at the head of PR #49~~ AGREE at `c8839e9` (PR #50); accepted (Q75); merged (A-21) | ChatGPT; Corbin | Done |
 | ~~Review the Stage D4 demonstration page (`SQUAT_DEMO_D4.html`, its builder and tests) and the D3 page's rename (Q75, Q76) at the head of its PR~~ AMEND at `3bbd758` (PR #52): D4-DEMO-01 to 03, fixed in PR #51 (Q77) | ChatGPT; Claude | Done |
 | ~~Re-review the demonstration page fixes (D4-DEMO-01 to 03) at the head of PR #51~~ AMEND at `3216c83` (PR #52): D4-DEMO-02 remainder, fixed (Q78) | ChatGPT; Claude | Done |
-| Re-review the D4-DEMO-02 remainder at the head of PR #51 | ChatGPT | Next |
+| ~~Re-review the D4-DEMO-02 remainder at the head of PR #51~~ AGREE at `8876776` (PR #52); merged (A-22) | ChatGPT; Corbin | Done |
+| Review D-063 (Stage D5 scope) at the head of its PR, blocking findings only | ChatGPT | Next |
+| Decide D-063 | Corbin | After the review |
+| Confirm the D6 dataset's reuse terms (Scherpereel et al. 2023): Corbin fetches the files or their licence page; Claude checks them | Corbin; Claude | Any time (in parallel with D5) |
 | Decide and merge the demonstration page PR | Corbin | After the review |
 | ~~Decide the Stage D4 build and merge~~ Accepted (Q74); PRs #47 and #48 merged (A-20) | Corbin | Done |
 | ~~Decide whether to add `SRC:STATPEARLS_THIGH_MUSCLES` to the evidence of the four muscles whose knee capabilities cite only `SRC:STATPEARLS_HIP`~~ Added on both sides (Q71, D-062 Amendment 3) | Corbin | Done |
-| Decide the outlook beyond D4 (D-061 Stages D5–D9; D-040 amendment) | Corbin | Now: D4 is done (Q67, Q74) |
+| ~~Decide the outlook beyond D4 (D-061 Stages D5–D9; D-040 amendment)~~ Stage D5 next, scope D-063 (Q79, Q80) | Corbin | Done |
 | Confirm or correct the interpretation of Q59 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q58 (§4) | Corbin | Any time |
 | Confirm or correct the interpretation of Q38 for Stage D2 (§4) | Corbin | Any time |
@@ -2866,6 +2955,7 @@ ChatGPT's re-review at `3c1623b` (PR #48, `docs/reviews/2026-11-16_ChatGPT_D4_Bu
 | 37 | 2026-11-17 | Claude | A-21, Q75 and Q76 added to §4 with readings; D-062 Amendment 6 accepted (Q75) and merged (A-21); index and open items, including the review of the Stage D4 demonstration page | Q75, Q76 |
 | 38 | 2026-11-17 | Claude | Q77 added to §4; open items: ChatGPT's AMEND on the demonstration page (PR #52) answered in PR #51 | Q77 |
 | 39 | 2026-11-17 | Claude | Q78 added to §4; open items: ChatGPT's re-review AMEND (D4-DEMO-02 remainder) answered in PR #51 | Q78 |
+| 40 | 2026-11-17 | Claude | A-22, Q79 and Q80 added to §4 with readings; new D-063 (Stage D5 scope, Proposed); index and open items | Q79, Q80 |
 
 ## 8. References
 
