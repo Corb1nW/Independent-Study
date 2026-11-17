@@ -1,0 +1,845 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LB-AO Squat Demo · Stage D4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Same instrument-panel language as the Phase D viewers, laid out as a single-page presentation. */
+:root {
+  --bg: #f3f5f6; --surface: #fdfefe; --ink: #13202a; --ink-2: #4a5964; --muted: #6f7e88;
+  --line: #dde3e7; --axis: #b9c4cb; --accent: #0f5c8c; --accent-soft: #e3eef5; --ok: #1b7f4b; --flag: #b4471b;
+  --ankle: #2a78d6; --knee: #eb6834; --hip: #1baf7a; --ground: #8a9aa5;
+  --act-0: #d4dce1; --act-1: #c2410c; --bone: #a9b6be; --fixed: #8a6bd1;
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161a; --surface: #171d22; --ink: #e6edf1; --ink-2: #aab7c0; --muted: #85939d;
+  --line: #263037; --axis: #3a4750; --accent: #6db3e3; --accent-soft: #1b2a35; --ok: #4cc28a; --flag: #f08a5d;
+  --ankle: #3987e5; --knee: #d95926; --hip: #199e70; --ground: #6f808b;
+  --act-0: #34414a; --act-1: #ff8a4c; --bone: #56646d; --fixed: #a58ae6; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161a; --surface: #171d22; --ink: #e6edf1; --ink-2: #aab7c0; --muted: #85939d;
+  --line: #263037; --axis: #3a4750; --accent: #6db3e3; --accent-soft: #1b2a35; --ok: #4cc28a; --flag: #f08a5d;
+  --ankle: #3987e5; --knee: #d95926; --hip: #199e70; --ground: #6f808b;
+  --act-0: #34414a; --act-1: #ff8a4c; --bone: #56646d; --fixed: #a58ae6; color-scheme: dark }
+* { box-sizing: border-box }
+html { scroll-behavior: smooth; scroll-padding-top: 64px }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15.5px; line-height: 1.55; margin: 0 }
+a { color: var(--accent) }
+code { font-family: var(--font-data); font-size: .9em; overflow-wrap: anywhere }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+
+nav.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line) }
+nav.top .wrap { display: flex; gap: 4px 18px; align-items: center; overflow-x: auto; scrollbar-width: none; padding-block: 10px }
+nav.top .brand { font-family: var(--font-display); font-weight: 800; font-size: 14px; letter-spacing: .02em; white-space: nowrap; margin-right: 6px }
+nav.top a { font-size: 13.5px; color: var(--ink-2); text-decoration: none; white-space: nowrap; padding: 3px 0; border-bottom: 2px solid transparent }
+nav.top a:hover, nav.top a.on { color: var(--ink); border-bottom-color: var(--accent) }
+
+header.hero { padding-block: 40px 10px; display: grid; gap: 14px }
+.eyebrow { font-family: var(--font-data); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted) }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5.2vw, 52px); line-height: 1.04; margin: 0; letter-spacing: -.015em; text-wrap: balance; max-width: 20ch }
+.lede { margin: 0; max-width: 68ch; color: var(--ink-2); font-size: 17px }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 8px }
+.stat { background: var(--surface); padding: 12px 14px }
+.stat b { display: block; font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums }
+.stat span { font-size: 12.5px; color: var(--muted) }
+.stat.ok b { color: var(--ok) }
+
+section.chapter { padding-block: 44px 8px; display: grid; gap: 18px }
+.chap-head { display: grid; gap: 6px; max-width: 76ch }
+.chap-num { font-family: var(--font-data); font-size: 12px; color: var(--accent); letter-spacing: .08em }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 3.2vw, 30px); line-height: 1.15; margin: 0; letter-spacing: -.01em }
+.chap-head p { margin: 0; color: var(--ink-2) }
+h3 { font-family: var(--font-display); font-weight: 600; font-size: 16px; margin: 0 0 8px; letter-spacing: .005em }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0 }
+.panel p.sub { margin: -4px 0 10px; font-size: 13px; color: var(--muted) }
+.grid2 { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 18px; align-items: start }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; align-items: stretch }
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr } }
+.stack { display: grid; gap: 18px; min-width: 0 }
+svg { display: block; width: 100%; height: auto }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center }
+.seg { display: inline-flex; border: 1px solid var(--axis); border-radius: 8px; overflow: hidden; max-width: 100% }
+.seg button { font: inherit; font-size: 14px; padding: 7px 12px; border: 0; background: var(--surface); color: var(--ink-2); cursor: pointer }
+.seg button + button { border-left: 1px solid var(--axis) }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface) }
+.play { font: inherit; font-weight: 700; font-size: 14px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--surface); cursor: pointer; min-width: 84px }
+.scrub { display: flex; align-items: center; gap: 10px; flex: 1 1 240px; min-width: 0 }
+.scrub input { flex: 1; min-width: 0; accent-color: var(--accent) }
+.time { font-family: var(--font-data); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-2); white-space: nowrap }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+.legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin-top: 6px }
+.legend .ramp { flex: 0 1 140px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--act-0), var(--act-1)) }
+.chips { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--ink-2); margin: 0 0 6px }
+.chips span { display: inline-flex; align-items: center; gap: 6px }
+.chips i { width: 14px; height: 3px; border-radius: 2px; display: inline-block }
+.joints { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px }
+.joint { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font-size: 12px; color: var(--muted) }
+.joint b { display: block; font-family: var(--font-data); font-size: 14px; color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums }
+.joint .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: 0 }
+.howto { font-size: 13.5px; color: var(--ink-2); margin: 0; display: grid; gap: 6px; padding-left: 18px }
+.heat-label { cursor: pointer }
+.heat-label:hover, .heat-label.sel { text-decoration: underline; fill: var(--accent) }
+
+.card-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px }
+@media (max-width: 760px) { .card-grid { grid-template-columns: 1fr } }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; font-size: 13.5px; margin: 0 }
+.facts dt { color: var(--muted) }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere }
+.facts dd.num { font-family: var(--font-data); font-variant-numeric: tabular-nums }
+.idtag { font-family: var(--font-data); font-size: 12px; color: var(--ink-2); background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; overflow-wrap: anywhere }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap }
+.pill.ok { color: var(--ok); border: 1px solid var(--ok) } .pill.flag { color: var(--flag); border: 1px solid var(--flag) } .pill.plain { color: var(--ink-2); border: 1px solid var(--axis) }
+.callout { border-left: 3px solid var(--flag); padding: 8px 12px; background: color-mix(in srgb, var(--flag) 7%, var(--surface)); border-radius: 0 8px 8px 0; font-size: 13.5px; color: var(--ink-2); margin: 10px 0 0 }
+.callout.info { border-left-color: var(--accent); background: var(--accent-soft) }
+.muscle-pick { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px }
+.muscle-pick button { font: inherit; font-size: 12.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer }
+.muscle-pick button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 700 }
+
+.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; align-items: stretch }
+.flow .step { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px 14px; margin-right: 22px; display: grid; align-content: start; gap: 4px }
+.flow .step:last-child { margin-right: 0 }
+.flow .step:not(:last-child)::after { content: ""; position: absolute; right: -17px; top: 50%; width: 12px; height: 12px; border-top: 2px solid var(--axis); border-right: 2px solid var(--axis); transform: translateY(-50%) rotate(45deg) }
+.flow .k { font-family: var(--font-data); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em }
+.flow .n { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.1 }
+.flow .d { font-size: 13px; color: var(--ink-2) }
+@media (max-width: 900px) { .flow { grid-template-columns: 1fr } .flow .step { margin-right: 0; margin-bottom: 20px }
+  .flow .step:last-child { margin-bottom: 0 }
+  .flow .step:not(:last-child)::after { right: auto; left: 50%; top: auto; bottom: -15px; transform: translateX(-50%) rotate(135deg) } }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 13.5px }
+table.t th, table.t td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top }
+table.t thead th { color: var(--muted); font-weight: 400; font-size: 12px; border-bottom-color: var(--axis) }
+table.t td.num, table.t th.num { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap }
+.scroll-x { overflow-x: auto }
+
+.stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px }
+@media (max-width: 900px) { .stages { grid-template-columns: 1fr } }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; border-top: 4px solid var(--c) }
+.stage .tag { font-family: var(--font-data); font-size: 12px; color: var(--muted) }
+.stage h3 { margin: 0; font-size: 18px }
+.stage p { margin: 0; font-size: 14px; color: var(--ink-2) }
+.stage .q { font-style: italic; color: var(--ink) }
+.stage .res { border-top: 1px solid var(--line); padding-top: 8px; font-size: 13.5px }
+
+ul.clean { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--ink-2) }
+ul.tags { list-style: none; padding-left: 0 }
+ul.tags .tag { font-family: var(--font-data); font-size: 11px; color: var(--muted); margin-right: 8px; white-space: nowrap }
+details { font-size: 14px; color: var(--ink-2) } summary { cursor: pointer; color: var(--accent); font-weight: 700; margin-bottom: 8px }
+.goal { display: grid; gap: 10px }
+.goal h3 { font-size: 18px }
+.check { list-style: none; padding: 0; margin: 0; display: grid; gap: 7px; font-size: 14px }
+.check li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; color: var(--ink-2) }
+.check li::before { content: "✓"; color: var(--ok); font-weight: 700 }
+.check li.next::before { content: "→"; color: var(--muted) }
+.roadmap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px }
+.road { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface); font-size: 13px; color: var(--ink-2) }
+.road b { display: block; font-family: var(--font-data); color: var(--ink); font-size: 12.5px; margin-bottom: 2px }
+.road.done { border-color: var(--ok) } .road.done b { color: var(--ok) }
+.road.later { border-style: dashed }
+footer { margin-top: 48px; padding-block: 22px 40px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--muted); display: grid; gap: 6px }
+/* Stage D4 additions */
+.stagebar { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--ink-2) }
+.stagebar .now { font-family: var(--font-data); font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--ink); color: var(--surface) }
+.before-after { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 0; align-items: stretch }
+.before-after .row { display: contents }
+.before-after .cell { background: var(--surface); border: 1px solid var(--line); padding: 10px 12px; font-size: 13.5px; color: var(--ink-2); margin-bottom: 8px; border-radius: 8px }
+.before-after .cell b { color: var(--ink) }
+.before-after .arrow { display: grid; place-items: center; color: var(--muted); font-size: 16px; margin-bottom: 8px }
+.before-after .head { font-family: var(--font-data); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px }
+@media (max-width: 760px) { .before-after { grid-template-columns: 1fr } .before-after .head { display: none } .before-after .arrow { transform: rotate(90deg); margin: -4px 0 4px } }
+.tree { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px }
+.tree .node { border: 1px solid var(--axis); background: var(--surface); border-radius: 8px; padding: 6px 10px; display: grid; gap: 2px }
+.tree .node small { font-family: var(--font-data); font-size: 11px; color: var(--muted) }
+.tree .edge { display: grid; justify-items: center; font-size: 11.5px; color: var(--ink-2); min-width: 64px }
+.tree .edge::after { content: ""; width: 100%; height: 2px; background: var(--axis); margin-top: 3px }
+.tree .ground { border-style: dashed }
+.mat td.cell { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap }
+.mat td.cross { background: var(--accent-soft); color: var(--ink) }
+.mat td.zero { color: var(--muted) }
+.verdict { font-family: var(--font-data); font-size: 11.5px; padding: 1px 7px; border-radius: 4px; white-space: nowrap; border: 1px solid var(--axis); color: var(--ink-2) }
+.verdict.agree, .verdict.accepted, .verdict.merged { border-color: var(--ok); color: var(--ok) }
+.verdict.amend { border-color: var(--flag); color: var(--flag) }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0 }
+.timeline li { display: grid; grid-template-columns: 92px 74px minmax(0, 1fr); gap: 4px 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; color: var(--ink-2) }
+.timeline .d { font-family: var(--font-data); font-size: 12px; color: var(--muted) }
+.timeline .w { font-weight: 700; color: var(--ink) }
+.timeline .ref { display: block; font-family: var(--font-data); font-size: 11.5px; color: var(--muted); margin-top: 3px; overflow-wrap: anywhere }
+@media (max-width: 640px) { .timeline li { grid-template-columns: 1fr } }
+.hatch { fill: url(#hatch) }
+.kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px }
+.kv .k { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--surface) }
+.kv .k span { display: block; font-size: 12px; color: var(--muted) }
+.kv .k b { font-family: var(--font-data); font-weight: 500; font-variant-numeric: tabular-nums }
+.small { font-size: 12.5px; color: var(--muted) }
+.mono { font-family: var(--font-data); font-size: 12.5px; overflow-wrap: anywhere }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--surface)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--line)" stroke-width="3"/></pattern></defs></svg>
+<nav class="top" aria-label="Sections"><div class="wrap">
+  <span class="brand">LB-AO · Stage D4</span>
+  <a href="#sim">1 · Simulation</a><a href="#changed">2 · What changed</a><a href="#assembly">3 · Assembly</a>
+  <a href="#consistency">4 · Anatomy ↔ model</a><a href="#regression">5 · Regression</a><a href="#verification">6 · Verification</a>
+  <a href="#growth">7 · Growth test</a><a href="#record">8 · Review record</a><a href="#limits">9 · Limits</a><a href="#project">10 · What it moves forward</a>
+</div></nav>
+
+<div class="wrap">
+<header class="hero">
+  <div class="stagebar"><span class="eyebrow">Independent Study · LB-AO musculoskeletal digital twin · Phase D</span>
+    <span class="now">Stage D4 · D-062</span><span>Previous stage: <a href="SQUAT_DEMO_D3.html">SQUAT_DEMO_D3.html</a> (D1–D3)</span></div>
+  <h1>Stage D4: the squat, assembled from the ontology</h1>
+  <p class="lede" id="lede">Through Stage D3 the squat's numbers came from sourced datasets, but its <b>structure</b> was written in Python: the segment chain, the joint signs, which frame belongs to which body, how the upper body and foot were combined, and which coordinate switches a muscle path. In Stage D4 the ontology states that structure. Generic code that names no anatomy reads it, builds the model and runs it. The assembled model reproduces every official D1–D3 result at the stored precision. Anatomy and model check each other on every run, and two hip flexors were added as data alone. Everything below is <b>verified</b>, meaning computed correctly. None of it is yet <b>validated</b> against measured people.</p>
+  <div class="stats" id="stats"></div>
+  <p class="callout" id="custom" hidden><b>Custom inputs.</b> This page was built from manifests that are not the official Stage D4 and D3 records. Nothing on it carries their provenance.</p>
+</header>
+
+<!-- 1 -->
+<section class="chapter" id="sim">
+  <div class="chap-head"><span class="chap-num">01 · THE ASSEMBLED MODEL, RUNNING</span>
+    <h2>The same squat, now built by the ontology</h2>
+    <p>The motion is the designed D1 squat: 1.5 s down, 1.5 s up, foot flat. At each of 301 samples the model solves inverse dynamics, then shares the joint torques among the muscles with the two-stage least-effort rule from D2. Switch between the <span id="sim-d4">official</span> D4 model (14 Gait2392 muscles) and the growth run (16, with iliacus and psoas). <span id="sim-source">Both are D4's own official runs at <code id="sim-commit"></code>, with the moving knee.</span></p>
+  </div>
+  <div class="controls" role="group" aria-label="Playback">
+    <div class="seg" id="bodies" role="group" aria-label="Body"></div>
+    <div class="seg" id="sets" role="group" aria-label="Muscle set"></div>
+    <button class="play" id="play" type="button">Pause</button>
+    <div class="scrub"><input id="scrub" type="range" min="0" max="300" value="0" aria-label="Time"><span class="time" id="time"></span></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Side view, facing right</h3>
+      <svg id="figure" viewBox="0 0 400 450" role="img" aria-label="Stick figure squatting with coloured muscle lines"></svg>
+      <div class="legend"><span>Activation 0</span><span class="ramp"></span><span>1</span></div>
+      <div class="joints" id="joints"></div>
+      <p class="small" style="margin:8px 0 0" id="fig-source">The bones are drawn from the official D3 run's joint positions. D4's regression (section 5) showed that the assembled model's positions equal them at the stored precision. The page builder checks that D4's muscle paths equal D3's at every sample.</p>
+    </div>
+    <div class="stack">
+      <div class="panel">
+        <h3>Joint torque per side (N·m)</h3>
+        <p class="sub">From the assembled model's recursive Newton–Euler. Negative knee torque is extension. Click or drag a chart to move in time.</p>
+        <div class="chips" id="tau-legend"></div>
+        <svg id="tau" role="img" aria-label="Ankle, knee and hip torque over time"></svg>
+      </div>
+      <div class="panel">
+        <h3>Muscle activation over the squat</h3>
+        <p class="sub">One row per actuator; hatched rows are not in the selected model. Click a name to trace it from anatomy to model.</p>
+        <svg id="heat" role="img" aria-label="Activation heat map, one row per muscle"></svg>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="muscle-card" aria-live="polite">
+    <h3>One actuator, traced through the checks</h3>
+    <p class="sub">For the selected actuator, this shows what the ontology declares and what D4 derives from the model, side by side. These are the inputs to checks C1–C3 (section 4).</p>
+    <div class="muscle-pick" id="muscle-pick"></div>
+    <div class="card-grid">
+      <div><h3 id="mc-title"></h3><dl class="facts" id="mc-onto"></dl></div>
+      <div><h3>Derived from the assembled model</h3><dl class="facts" id="mc-model"></dl></div>
+    </div>
+    <div id="mc-note"></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="chapter" id="changed">
+  <div class="chap-head"><span class="chap-num">02 · WHAT D4 CHANGED</span>
+    <h2>From structure in code to structure in the ontology</h2>
+    <p>D-062 listed every piece of the D1–D3 model that lived in Python. Each one moved into the ontology or into a generic rule the ontology selects. Numbers stay in the quantitative datasets, as before. The D1–D3 modules are kept unchanged, as the regression oracles that the assembled model is compared against.</p>
+  </div>
+  <div class="panel">
+    <div class="before-after" id="before-after"></div>
+  </div>
+  <div class="grid3">
+    <div class="panel"><h3>New generic code</h3><p class="sub">None of it names a muscle, bone or joint. Test A6 scans these modules for ontology IDs and anatomical terms.</p>
+      <ul class="clean" id="new-code"></ul></div>
+    <div class="panel"><h3>New ontology and schema fields</h3><p class="sub">Additive. <code>hip.yaml</code> still loads on its own (A8).</p>
+      <ul class="clean" id="new-fields"></ul></div>
+    <div class="panel"><h3>Reused unchanged</h3><p class="sub">Already free of anatomy, so D4 calls them as they are.</p>
+      <ul class="clean" id="reused"></ul></div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="chapter" id="assembly">
+  <div class="chap-head"><span class="chap-num">03 · ASSEMBLY</span>
+    <h2>How the ontology builds the model</h2>
+    <p>The executable specification <code id="spec-name"></code> lives in the ontology's <code>models</code> block. It names the segments, the ground segment and its contact points, the modelled joints with their coordinates and location records, the joints merged into segments, and the actuators. The tree is not written down anywhere: it is <b>derived</b> by traversing <code>CONNECTS</code>, <code>REPRESENTED_BY</code> and <code>PART_OF</code>, with the endpoint rule of D-062 Amendment 1.</p>
+  </div>
+  <div class="panel"><h3>The derived tree</h3><p class="sub">Read left to right from the ground. Each edge is a modelled joint with one coordinate.</p>
+    <div class="tree" id="tree"></div>
+    <p class="small" id="tree-merged" style="margin:10px 0 0"></p></div>
+  <div class="grid2">
+    <div class="panel"><h3>Joints and their conventions</h3><p class="sub">The new coordinate fields replace D1's hard-coded sign map. Each modelled joint's location comes from a dataset record; the knee's record depends on the variant.</p>
+      <div class="scroll-x"><table class="t" id="joints-t"></table></div></div>
+    <div class="panel"><h3>Endpoint resolution</h3><p class="sub">How each joint's two segments were found. Joints whose endpoints merge into one segment are locked.</p>
+      <div class="scroll-x"><table class="t" id="endpoints-t"></table></div></div>
+  </div>
+  <div class="panel"><h3>Body parameters by declared rule</h3>
+    <p class="sub">Three generic rules: <b>direct</b> (a segment's own dataset values), <b>composite</b> (parts merged by locked joints, combined by the parallel-axis theorem) and <b>scaled fraction</b> (de Leva mass fractions, lengths scaled by stature). The specification says which applies to each segment of each body. The lines below are the run's own record of how each segment was built (<code>runs[].how_built</code>).</p>
+    <div class="controls" style="margin-bottom:10px"><div class="seg" id="bodies2" role="group" aria-label="Body for parameters"></div></div>
+    <ul class="clean mono" id="how-built" style="font-size:12.5px"></ul>
+    <div class="scroll-x" style="margin-top:12px"><table class="t" id="seg-t"></table></div></div>
+</section>
+
+<!-- 4 -->
+<section class="chapter" id="consistency">
+  <div class="chap-head"><span class="chap-num">04 · ANATOMY ↔ MODEL</span>
+    <h2>The ontology and the model check each other</h2>
+    <p>Every assembly runs these checks and writes them into the manifest. ChatGPT's review of the plan (D061-B01) separated <b>topology</b> from <b>leverage</b>: a path can cross a joint with zero moment arm. So crossing (C1) and leverage (C2) are checked independently, and neither reads the other's answer.</p>
+  </div>
+  <div class="panel scroll-x"><table class="t" id="cons-t"></table></div>
+  <div class="panel"><h3>The repair: the knee gap the D3 page found</h3>
+    <p class="sub">The D3 demo showed four thigh muscles acting at the knee in the model with no knee in their ontology entry: the hamstrings and rectus femoris, both sides. Their entries come from <code>hip.yaml</code>, which has no knee to point to, and must keep loading on its own. D4 adds a <code>relationship_additions</code> block in <code>lower_limb_sagittal.yaml</code>. It can only add edges, each with a controlled predicate, existing targets and evidence. With these additions the required-edge check, C1 and the mirror check all pass. Remove them and the required-edge check and C1 fail (test <code>test_a4_on_the_unrepaired_ontology</code>).</p>
+    <div class="scroll-x"><table class="t" id="add-t"></table></div></div>
+  <div class="grid2">
+    <div class="panel"><h3>C1 · Crossings by topology</h3><p class="sub">For each actuator: the modelled joints on the tree path between the segments carrying its path points, against its muscle's declared <code>CROSSES</code> restricted to modelled joints.</p>
+      <div class="scroll-x"><table class="t" id="c1-t"></table></div></div>
+    <div class="panel"><h3>C2 · Leverage by geometry (largest |moment arm|, mm)</h3><p class="sub">Over the whole motion, all three bodies and both knees, without reading <code>CROSSES</code>. Shaded cells are joints the muscle crosses (C1). A value above 10<sup>−9</sup> m outside a crossing would fail. A crossing under 1 mm would be recorded as negligible leverage.</p>
+      <div class="scroll-x"><table class="t mat" id="c2-t"></table></div></div>
+  </div>
+  <div class="panel"><h3>C3 · Actions and direction</h3>
+    <p class="sub">Structurally, <code>ACTS_ON</code> must be a subset of <code>CROSSES</code>, and every in-plane capability must name a joint in <code>ACTS_ON</code>. For direction, at every pose where a moment arm exceeds numerical zero, its sign must match a declared capability. The one known exception comes from Gait2392 itself, and it is handled against OpenSim, not waved through.</p>
+    <div id="c3"></div></div>
+  <div class="stack">
+    <div class="panel"><h3>C4 · Every structural entity traced</h3><p class="sub">Each joint, coordinate and segment the model uses resolves to dataset records with sources, ontology evidence or a declared convention (D4-B03).</p>
+      <div class="scroll-x"><table class="t" id="c4-t"></table></div></div>
+    <div class="panel"><h3>C5 · Deviation register</h3><p class="sub">Generated from the ontology into the manifest on every run, not written separately: what is represented, simplified and omitted.</p>
+      <div id="c5"></div></div>
+  </div>
+  <div class="panel"><h3>Deliberate errors the checks must catch (A5)</h3><p class="sub">Six failure probes each change one input (an ontology relationship or capability, or the OpenSim reference) with the muscle paths unchanged, and require the named check to fail. One positive control builds a test path through a joint centre and requires that it still counts as a crossing (C1) and passes C2 as negligible leverage. All are in <code>tests/test_phase_d4.py</code>.</p>
+    <ul class="clean" id="a5"></ul></div>
+</section>
+
+<!-- 5 -->
+<section class="chapter" id="regression">
+  <div class="chap-head"><span class="chap-num">05 · REGRESSION</span>
+    <h2 id="reg-h">Nothing was lost: every official D1–D3 result reproduced</h2>
+    <p>Criterion A2 compares the assembled model's output with the official manifests of D1 (<code>dd89fff</code>), D2 (<code>7ac0f2d</code>) and D3 (<code>d3efc56</code>). Every stored series and status is compared at the precision that manifest stores. A stored value with <i>d</i> decimals passes if the new value is within half a unit of the <i>d</i>-th decimal. The <b>excess</b> is how far beyond that half unit the worst value lies: 0 means every number rounds to the stored one. The fixed-knee variant is compared with D1 and D2, and the moving knee with D3. Shapes are checked before values (D4-B01), and the time compared is the time the run emitted.</p>
+  </div>
+  <div class="panel scroll-x"><table class="t" id="reg-t"></table></div>
+  <p class="callout info" id="reg-note"></p>
+</section>
+
+<!-- 6 -->
+<section class="chapter" id="verification">
+  <div class="chap-head"><span class="chap-num">06 · VERIFICATION</span>
+    <h2>The assembled model is computed correctly</h2>
+    <p>The D1–D3 checks run again on the assembled model (A3), at their written tolerances. These include a second dynamics formulation (Kane's method from generic Jacobians), virtual work, energy, Newton's law and forward integration. Geometry and kinematics are compared with OpenSim 4.6 references regenerated by the verification job. The table shows the worst case over all six runs: three bodies, fixed and moving knee.</p>
+  </div>
+  <div class="panel scroll-x"><table class="t" id="mech-t"></table></div>
+  <div class="stack">
+    <div class="panel"><h3>Against OpenSim 4.6</h3><p class="sub">Largest differences on the Gait2392 reference body, from <code>oracle_references</code>.</p>
+      <div class="scroll-x"><table class="t" id="oracle-t"></table></div></div>
+    <div class="panel"><h3>Muscle feasibility, as in D2 and D3</h3><p class="sub">Feasible: the muscles supply every torque without reserve beyond 1 N·m. The fixed knee's shortfall for two bodies is D2's known result, reproduced. It is not a D4 regression.</p>
+      <div class="scroll-x"><table class="t" id="feas-t"></table></div></div>
+  </div>
+  <div class="panel"><h3>Acceptance criteria, stated before the build</h3>
+    <p class="sub">D-062 fixed A1–A9 before any D4 code existed. Where the manifest carries the result, the status is computed from it here. Where a test or record carries it, that record is cited.</p>
+    <div class="scroll-x"><table class="t" id="acc-t"></table></div></div>
+  <p class="callout" id="verif-note"></p>
+</section>
+
+<!-- 7 -->
+<section class="chapter" id="growth">
+  <div class="chap-head"><span class="chap-num">07 · GROWTH TEST</span>
+    <h2>Two muscles added as data, with no code change</h2>
+    <p>Claim B's strongest test is to add anatomy the old code could not handle. Gait2392's iliacus and psoas each have a path point switched by the <b>hip</b> angle. D1–D3 could only switch points by the knee angle. Their anatomy was already in <code>hip.yaml</code> with evidence. Commit <code>7c57224</code> added two actuator entities, a specification that extends <code>squat_d4</code>, regenerated dataset records, OpenSim references and a run configuration. No file in <code>src/</code> or <code>tools/</code> changed (A7).</p>
+  </div>
+  <div class="grid3" id="growth-facts"></div>
+  <div class="panel"><h3>Hypothesis H1, stated before the run</h3>
+    <p class="sub" id="h1-statement"></p>
+    <div class="scroll-x"><table class="t" id="h1-t"></table></div>
+    <div class="chips" id="h1-legend" style="margin-top:12px"></div>
+    <svg id="h1" role="img" aria-label="Gastrocnemius and tibialis anterior activation, 14 and 16 muscles"></svg>
+    <p class="small" id="h1-note" style="margin:6px 0 0"></p></div>
+  <div class="panel"><h3>What else changes with iliopsoas</h3><p class="sub">Peak activation per actuator over the squat, 14 → 16 muscles, for the body selected in section 1. Derived on this page from the two manifests' activation series.</p>
+    <div class="scroll-x"><table class="t" id="peaks-t"></table></div></div>
+</section>
+
+<!-- 8 -->
+<section class="chapter" id="record">
+  <div class="chap-head"><span class="chap-num">08 · REVIEW RECORD</span>
+    <h2>How D4 was decided, built, reviewed and accepted</h2>
+    <p>Claude built and ChatGPT reviewed. Corbin decided and merged. Each review is pinned to a commit and kept in <code>docs/reviews/</code>, and each owner decision is quoted with its time in <code>docs/DECISIONS.md</code>. Every blocking finding was fixed, and none was waived.</p>
+  </div>
+  <div class="panel"><ul class="timeline" id="timeline"></ul></div>
+</section>
+
+<!-- 9 -->
+<section class="chapter" id="limits">
+  <div class="chap-head"><span class="chap-num">09 · LIMITS</span>
+    <h2>What D4 does not show</h2>
+    <p>D4 is a change in how the model is built, not in what it models. It inherits every simplification of D1–D3, and the run lists them itself.</p>
+  </div>
+  <div class="grid3">
+    <div class="panel"><h3>Status</h3><dl class="facts" id="validity"></dl></div>
+    <div class="panel" style="grid-column: span 2; min-width: 0"><h3>Known limits</h3><ul class="clean" id="limits-list"></ul></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="chapter" id="project">
+  <div class="chap-head"><span class="chap-num">10 · WHAT IT MOVES FORWARD</span>
+    <h2>How D4 serves the proof of concept</h2>
+    <p>Corbin's goal for this phase (Q65) is to prove two things: that working with AI can produce legitimate scientific research, and that an ontology of the musculoskeletal system can build a digital twin. The plan (D-061) breaks each into concrete properties. D4 was scoped to show Claim B's first three. It also added to Claim A, because its acceptance criteria and a hypothesis were written down before any result existed.</p>
+  </div>
+  <div class="grid3">
+    <div class="panel goal"><span class="chap-num">CLAIM B</span><h3>An ontology of the musculoskeletal system can build a digital twin</h3><ul class="check" id="goal-b"></ul></div>
+    <div class="panel goal"><span class="chap-num">CLAIM A</span><h3>Working with AI can produce legitimate scientific research</h3><ul class="check" id="goal-a"></ul></div>
+  </div>
+  <div class="panel"><h3>What the next stage inherits</h3>
+    <p style="margin:0;font-size:14px;color:var(--ink-2)">Before D4, every new muscle meant new code paths and new hard-coded tables. Now a muscle enters through the same route the growth test used: an actuator entity linked to its anatomy, dataset records, a line in a specification, and an OpenSim reference. The checks then tell us at once whether anatomy and model agree. D5 would add the rest of Gait2392's leg muscles this way, about 27 more, and test passive force and compliant tendons. The near-standing co-activation that D-061 planned to test in D5 was already tested by D4's H1. Where the project goes next is Corbin's decision (Q67).</p></div>
+  <div class="panel"><h3>The proof-of-concept plan (D-061)</h3><p class="sub">D4 is done. The later stages are a plan that still awaits Corbin's decisions, not a commitment.</p>
+    <div class="roadmap" id="roadmap"></div></div>
+</section>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = __DATA__;
+const JOINTS = [["ankle", "Ankle"], ["knee", "Knee"], ["hip", "Hip"]];
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const svgNS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(svgNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const $ = id => document.getElementById(id);
+const esc = x => String(x).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"})[c]);
+const neg = (v, d=1) => (v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? "−" : "") + Math.abs(v).toFixed(d);
+const sci = v => { if (v === 0) return "0"; const [m, e] = Math.abs(v).toExponential(1).split("e"); return `${v < 0 ? "−" : ""}${m}×10<sup>${+e}</sup>`; };
+const pill = (ok, yes = "pass", no = "fail") => ok ? `<span class="pill ok">${yes}</span>` : `<span class="pill flag">${no}</span>`;
+const short = s => s.replace(/^Right /, "").replace(/ Rigid-Body Segment$/, "");
+const ORDER = DATA.groups.flatMap(g => g[1]);
+const T = DATA.t, N = T.length, BODIES = DATA.bodies;
+const SETS = [["d4", "D4 · 14 muscles"], ["growth", "Growth · 16 muscles"]];
+let body = BODIES[2], set = "d4", i = 0, playing = !matchMedia("(prefers-reduced-motion: reduce)").matches, last = null, selected = "bifemlh_r";
+const run = () => DATA.sets[set][body];
+const inSet = m => m in run().act;
+
+function hex(c) { c = c.replace("#", ""); return [0, 2, 4].map(k => parseInt(c.slice(k, k + 2), 16)); }
+function actColor(a) { const p = hex(css("--act-0")), q = hex(css("--act-1")); const t = Math.max(0, Math.min(1, a));
+  return `rgb(${p.map((v, k) => Math.round(v + (q[k] - v) * t)).join(",")})`; }
+
+// ---------------------------------------------------------------- hero
+const C = DATA.consistency, REG = DATA.regression, G = DATA.growth, H = G.hypothesis;
+const nPass = C.summary.filter(s => s[2]).length;
+const amends = DATA.timeline.filter(x => /^AMEND/.test(x.verdict)).length, agrees = DATA.timeline.filter(x => x.verdict === "AGREE").length;
+$("stats").innerHTML = [
+  [REG.largest_excess === 0 ? "0" : sci(REG.largest_excess), `largest excess over the stored D1–D3 precision (${REG.rows.length} comparisons)`, REG.largest_excess === 0 ? "ok" : ""],
+  [`${nPass} / ${C.summary.length}`, "anatomy–model checks pass", nPass === C.summary.length ? "ok" : ""],
+  [DATA.additions.reduce((n, a) => n + Object.values(a.add).flat().length, 0), "knee edges added to the ontology (P1 repair)"],
+  [`+${G.added.length}`, "muscles added as data, no code changed"],
+  [H.outcome === "supported" ? "Supported" : "Not supported", "pre-stated hypothesis H1", H.outcome === "supported" ? "ok" : ""],
+  [`${agrees} AGREE`, `review verdicts, after ${amends} AMEND verdicts whose findings were all fixed`],
+].map(([b, s, c]) => `<div class="stat ${c || ""}"><b>${b}</b><span>${s}</span></div>`).join("");
+$("sim-commit").textContent = DATA.manifests.assembled[1].slice(0, 7);
+if (!DATA.official) {
+  $("custom").hidden = false; document.title += " (custom inputs)";
+  $("sim-source").textContent = "Both come from manifests supplied as custom inputs, not from the official D4 records; this page claims no provenance or verification for them.";
+}
+if (!DATA.official) {
+  $("lede").innerHTML = "Stage D4 moved the squat model's <b>structure</b> from Python into the ontology: generic code that names no anatomy reads it, builds the model and runs it. <b>This copy of the page was built from custom manifests</b>, so the results shown are whatever those files contain. It makes no claim that they reproduce D1–D3, pass their checks or were verified. Build the page without input options for the official Stage D4 record.";
+  $("sim-d4").textContent = "supplied";
+  $("reg-h").textContent = "Regression to D1–D3, as recorded in the supplied manifest";
+}
+if (!DATA.official) $("fig-source").textContent = "The bones are drawn from the supplied D3 manifest's joint positions; the builder checked that the supplied D4 muscle paths match it at every sample. No provenance is claimed for either.";
+const CUSTOM_PILL = '<span class="pill plain">not claimed: custom inputs</span>';
+
+// ---------------------------------------------------------------- controls
+function segControl(id, items, current, onPick) {
+  const box = $(id); box.replaceChildren();
+  items.forEach(([v, label]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.setAttribute("aria-pressed", v === current);
+    b.onclick = () => { [...box.children].forEach(x => x.setAttribute("aria-pressed", x === b)); onPick(v); }; box.appendChild(b); });
+}
+const bodyItems = BODIES.map(b => [b, DATA.sets.d4[b].label]);
+segControl("bodies", bodyItems, body, v => { body = v; rebuild(); });
+segControl("sets", SETS, set, v => { set = v; if (!inSet(selected)) selected = "bifemlh_r"; rebuild(); });
+const playBtn = $("play");
+function syncPlay() { playBtn.textContent = playing ? "Pause" : "Play"; }
+playBtn.onclick = () => { playing = !playing; if (playing && i >= N - 1) i = 0; syncPlay(); };
+$("scrub").max = N - 1;
+$("scrub").addEventListener("input", e => { i = +e.target.value; playing = false; syncPlay(); frame(); });
+
+// ---------------------------------------------------------------- figure
+const fig = $("figure"), S = 205, X0 = 150, Y0 = 380;
+const px = (x, y) => [X0 + S * x, Y0 - S * y];
+function drawFigure() {
+  const r = run(), p = r.pts, f = r.foot; fig.replaceChildren();
+  const [gx1, gy] = px(-0.7, f.ground_y_m), [gx2] = px(1.2, f.ground_y_m);
+  el("line", {x1: gx1, y1: gy, x2: gx2, y2: gy, stroke: css("--ground"), "stroke-width": 1.5}, fig);
+  for (let k = 0; k < 14; k++) { const x = gx1 + k * 22; el("line", {x1: x, y1: gy, x2: x - 8, y2: gy + 8, stroke: css("--line"), "stroke-width": 1}, fig); }
+  const ank = px(0, 0), heel = px(...f.heel_m), ball = px(...f.ball_m);
+  el("polygon", {points: [ank, heel, ball].map(q => q.join(",")).join(" "), fill: "none", stroke: css("--bone"), "stroke-width": 3, "stroke-linejoin": "round"}, fig);
+  const k = px(p.knee.x[i], p.knee.y[i]), h = px(p.hip.x[i], p.hip.y[i]), top = px(p.hat_drawing_top.x[i], p.hat_drawing_top.y[i]);
+  el("polyline", {points: [ank, k, h].map(q => q.join(",")).join(" "), fill: "none", stroke: css("--bone"), "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round"}, fig);
+  el("line", {x1: h[0], y1: h[1], x2: top[0], y2: top[1], stroke: css("--bone"), "stroke-width": 8, "stroke-linecap": "round"}, fig);
+  el("circle", {cx: top[0], cy: top[1] - 14, r: 13, fill: "none", stroke: css("--bone"), "stroke-width": 3}, fig);
+  const names = r.order.slice().sort((a, b) => (r.act[a][i] + (a === selected ? 2 : 0)) - (r.act[b][i] + (b === selected ? 2 : 0)));
+  for (const m of names) {
+    const pts = r.paths[i][r.order.indexOf(m)].map(([x, y]) => px(x, y).join(",")).join(" "), a = r.act[m][i];
+    if (m === selected) el("polyline", {points: pts, fill: "none", stroke: css("--accent"), "stroke-width": 9 + 3 * a, "stroke-linecap": "round", "stroke-linejoin": "round", opacity: 0.35}, fig);
+    const line = el("polyline", {points: pts, fill: "none", stroke: actColor(a), "stroke-width": 2.5 + 3 * a, "stroke-linecap": "round", "stroke-linejoin": "round", style: "cursor:pointer"}, fig);
+    el("title", {}, line).textContent = `${DATA.names[m]}: activation ${a.toFixed(2)}`;
+    line.addEventListener("click", () => selectMuscle(m));
+  }
+  JOINTS.forEach(([j], n) => { const at = [ank, k, h][n]; el("circle", {cx: at[0], cy: at[1], r: 5.5, fill: css("--" + j), stroke: css("--surface"), "stroke-width": 2}, fig); });
+  el("text", {x: 10, y: 18, "font-size": 11.5, fill: css("--muted"), "font-family": css("--font-data")}, fig).textContent = `${r.label}: ${r.mass} kg, ${r.stature} m · ${r.order.length} muscles`;
+  el("text", {x: 10, y: 36, "font-size": 12, fill: css("--accent"), "font-family": css("--font-body"), "font-weight": 700}, fig).textContent = `Highlighted: ${DATA.names[selected]}`;
+}
+function drawJoints() {
+  const r = run();
+  $("joints").innerHTML = JOINTS.map(([j, name]) => `<div class="joint"><span class="dot" style="background:${css("--" + j)}"></span>${name}
+    <b>${neg(r.q[j][i], 0)}°</b>${neg(r.tau[j][i], 1)} N·m</div>`).join("");
+  $("time").textContent = `${T[i].toFixed(2)} s / ${T[N - 1].toFixed(1)} s`;
+  $("scrub").value = i;
+}
+
+// ---------------------------------------------------------------- charts
+let cursors = [];
+function timeAxis(svg, W, H, L, R) {
+  const tmax = T[N - 1];
+  for (let s = 0; s <= tmax + 1e-9; s += 0.5) {
+    const x = L + (W - L - R) * s / tmax;
+    el("text", {x, y: H - 6, "text-anchor": "middle", "font-size": 11, fill: css("--muted"), "font-family": css("--font-data")}, svg).textContent = s.toFixed(1) + (s === 0 ? " s" : "");
+  }
+}
+function addCursor(svg, L, R, W, T0, B, H) {
+  const tmax = T[N - 1];
+  const cur = el("line", {y1: T0, y2: H - B, stroke: css("--ink"), "stroke-width": 1.2, "stroke-dasharray": "3 3"}, svg);
+  const hit = el("rect", {x: L, y: 0, width: W - L - R, height: H, fill: "transparent", style: "cursor: crosshair"}, svg);
+  const pick = ev => { const b = svg.getBoundingClientRect(); const x = (ev.clientX - b.left) / b.width * W;
+    i = Math.max(0, Math.min(N - 1, Math.round((x - L) / (W - L - R) * (N - 1)))); playing = false; syncPlay(); frame(); };
+  hit.addEventListener("pointerdown", ev => { pick(ev); hit.setPointerCapture(ev.pointerId); });
+  hit.addEventListener("pointermove", ev => { if (ev.buttons) pick(ev); });
+  cursors.push(k => { const x = L + (W - L - R) * T[k] / tmax; cur.setAttribute("x1", x); cur.setAttribute("x2", x); });
+}
+function niceStep(span) { return [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100].find(s => span / s <= 6) || 100; }
+function lineChart(svgId, series, opts = {}) {
+  const svg = $(svgId); svg.replaceChildren();
+  const W = Math.max(300, Math.round(svg.parentElement.clientWidth - 32 || 640)), H = opts.H || 190, L = 44, R = 14, T0 = 10, B = 22;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const all = series.flatMap(s => s.y);
+  let lo = Math.min(0, ...all), hi = Math.max(opts.minTop || 0, ...all);
+  const step = niceStep(hi - lo); lo = Math.floor(lo / step) * step; hi = Math.max(lo + step, Math.ceil(hi / step - 1e-9) * step);
+  const xs = t => L + (W - L - R) * t / T[N - 1], ys = v => T0 + (H - T0 - B) * (hi - v) / (hi - lo);
+  (opts.bands || []).forEach(([a, b]) => el("rect", {x: xs(a), y: T0, width: xs(b) - xs(a), height: H - T0 - B, fill: css("--accent-soft")}, svg));
+  for (let v = lo; v <= hi + 1e-9; v += step) {
+    el("line", {x1: L, x2: W - R, y1: ys(v), y2: ys(v), stroke: Math.abs(v) < 1e-9 ? css("--axis") : css("--line"), "stroke-width": 1}, svg);
+    el("text", {x: L - 6, y: ys(v) + 4, "text-anchor": "end", "font-size": 11, fill: css("--muted"), "font-family": css("--font-data")}, svg).textContent = neg(v, step < 0.1 ? 2 : step < 1 ? 1 : 0);
+  }
+  if (opts.threshold !== undefined) {
+    el("line", {x1: L, x2: W - R, y1: ys(opts.threshold), y2: ys(opts.threshold), stroke: css("--flag"), "stroke-width": 1, "stroke-dasharray": "5 4"}, svg);
+    el("text", {x: W - R, y: ys(opts.threshold) - 4, "text-anchor": "end", "font-size": 11, fill: css("--flag"), "font-family": css("--font-data")}, svg).textContent = opts.thresholdLabel;
+  }
+  timeAxis(svg, W, H, L, R);
+  const dots = [];
+  series.forEach(s => {
+    const d = s.y.map((v, k) => `${k ? "L" : "M"}${xs(T[k]).toFixed(1)},${ys(v).toFixed(1)}`).join("");
+    el("path", {d, fill: "none", stroke: s.color, "stroke-width": s.width || 2.2, "stroke-linejoin": "round", "stroke-dasharray": s.dash || ""}, svg);
+    dots.push({s, dot: el("circle", {r: 3.5, fill: s.color, stroke: css("--surface"), "stroke-width": 1.5}, svg)});
+  });
+  if (opts.legend) $(opts.legend).innerHTML = series.map(s => `<span><i style="background:${s.color}${s.dash ? ";opacity:.6" : ""}"></i>${s.label}</span>`).join("");
+  addCursor(svg, L, R, W, T0, B, H);
+  cursors.push(k => dots.forEach(({s, dot}) => { dot.setAttribute("cx", xs(T[k])); dot.setAttribute("cy", ys(s.y[k])); }));
+}
+function buildTau() { const r = run(); lineChart("tau", JOINTS.map(([j, name]) => ({y: r.tau[j], label: name, color: css("--" + j)})), {legend: "tau-legend"}); }
+function buildHeat() {
+  const svg = $("heat"); svg.replaceChildren(); const r = run();
+  const W = Math.max(300, Math.round(svg.parentElement.clientWidth - 32 || 640));
+  const narrow = W < 500, L = narrow ? 128 : 150, R = 14, T0 = 2, B = 22, rh = 14, gap = 6;
+  const H = T0 + ORDER.length * rh + DATA.groups.length * gap + B;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const cw = (W - L - R) / N; let y = T0;
+  DATA.groups.forEach(([g, ms]) => {
+    y += gap;
+    ms.forEach(m => {
+      const lab = el("text", {x: L - 6, y: y + rh - 3, "text-anchor": "end", "font-size": narrow ? 10 : 12, fill: inSet(m) ? css("--ink-2") : css("--muted"), class: inSet(m) ? "heat-label" + (m === selected ? " sel" : "") : ""}, svg);
+      lab.textContent = DATA.names[m];
+      if (inSet(m)) {
+        lab.addEventListener("click", () => selectMuscle(m));
+        for (let k = 0; k < N; k++) el("rect", {x: (L + k * cw).toFixed(2), y, width: (cw + 0.6).toFixed(2), height: rh - 2, fill: actColor(r.act[m][k])}, svg);
+      } else {
+        el("rect", {x: L, y, width: W - L - R, height: rh - 2, class: "hatch"}, svg);
+        el("text", {x: L + 8, y: y + rh - 4, "font-size": 10.5, fill: css("--muted"), "font-family": css("--font-data")}, svg).textContent = "not in the 14-muscle model";
+      }
+      if (m === selected) el("rect", {x: L - 1, y: y - 1, width: W - L - R + 2, height: rh, fill: "none", stroke: css("--accent"), "stroke-width": 1.5, rx: 2}, svg);
+      y += rh;
+    });
+  });
+  timeAxis(svg, W, H, L, R);
+  addCursor(svg, L, R, W, T0, B, H);
+}
+
+// ---------------------------------------------------------------- muscle card
+function selectMuscle(m) { selected = m; rebuild(); }
+function drawCard() {
+  const m = DATA.muscles[selected], r = run();
+  $("muscle-pick").innerHTML = ORDER.filter(inSet).map(k => `<button type="button" data-m="${k}" aria-pressed="${k === selected}">${esc(DATA.names[k])}</button>`).join("");
+  $("muscle-pick").querySelectorAll("button").forEach(b => b.onclick = () => selectMuscle(b.dataset.m));
+  $("mc-title").textContent = `${m.entity_name} (ontology)`;
+  const ev = m.evidence.map(e => e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title)}</a>` : esc(e.title)).join("; ");
+  const add = m.added_in_d4 ? ` <span class="pill plain">knee added in D4</span>` : "";
+  $("mc-onto").innerHTML = `
+    <dt>Entity</dt><dd><span class="idtag">${esc(m.entity)}</span></dd>
+    <dt>CROSSES</dt><dd>${m.crosses.map(short).map(esc).join(", ")}${add}</dd>
+    <dt>ACTS_ON</dt><dd>${m.acts_on.map(short).map(esc).join(", ")}</dd>
+    <dt>Capabilities</dt><dd>${m.capabilities.map(esc).join(", ")}</dd>
+    <dt>Nerve</dt><dd>${m.nerves.map(esc).join(", ") || "—"}</dd>
+    <dt>Evidence</dt><dd>${ev}</dd>`;
+  const peakA = Math.max(...r.act[selected]), peakF = Math.max(...r.force[selected]);
+  const arms = JOINTS.map(([j, n]) => `${n} ${(m.c2[j] * 1000).toFixed(m.c2[j] < 1e-9 ? 0 : 1)}`).join(" · ");
+  $("mc-model").innerHTML = `
+    <dt>Actuator</dt><dd><span class="idtag">${esc(m.actuator)}</span></dd>
+    <dt>C1 derived</dt><dd>${m.c1.derived.map(short).map(esc).join(", ")} ${pill(m.c1.agrees, "matches CROSSES", "differs")}</dd>
+    <dt>C2 largest |r|</dt><dd class="num">${arms} mm <span class="small">(whole motion, all bodies, both knees)</span></dd>
+    <dt>Parameters</dt><dd class="num">${r.label}: ${r.params[selected].fmax.toFixed(0)} N · ${r.params[selected].lopt_mm} mm optimal fibre · ${r.params[selected].lts_mm} mm tendon slack · ${r.params[selected].penn_deg}° <span class="small">(this body's run; lengths scale with stature)</span></dd>
+    <dt>This squat</dt><dd class="num">${r.label}, ${r.order.length} muscles: peak activation ${peakA.toFixed(2)}, peak force ${peakF.toFixed(0)} N</dd>`;
+  $("mc-note").innerHTML = m.added_in_d4
+    ? `<p class="callout info">D4 added this muscle's knee crossing to the ontology (section 4). On the D3 page the same muscle was flagged as acting at a joint its entry did not list. Here the derived and declared crossings agree.</p>`
+    : (selected === "iliacus_r" || selected === "psoas_r") ? `<p class="callout info">Added in the growth test (section 7). Its third path point is switched by the hip angle, a case the D1–D3 code could not represent. The generic path code handles it unchanged.</p>` : "";
+}
+
+// ---------------------------------------------------------------- frame loop
+function frame() { drawFigure(); drawJoints(); cursors.forEach(c => c(i)); }
+function rebuild() { cursors = []; buildTau(); buildHeat(); buildH1(); drawCard(); peaksTable(); frame(); }
+function tick(ts) {
+  if (playing) { if (last === null) last = ts; const dt = (ts - last) / 1000;
+    const step = T[1] - T[0], adv = Math.floor(dt / step);
+    if (adv > 0) { i = (i + adv) % N; last = ts - (dt - adv * step) * 1000; frame(); } } else last = null;
+  requestAnimationFrame(tick);
+}
+
+// ---------------------------------------------------------------- 2 what changed
+const BA = [
+  ["Segment chain and joint order, in code", "Derived from <code>CONNECTS</code>, <code>REPRESENTED_BY</code> and <code>PART_OF</code>, with the endpoint rule (D-062 Amendment 1)"],
+  ["Joint-angle sign map <code>B_MAP</code>, in code", "<code>positive_motion</code>, <code>negative_motion</code> and <code>model_coordinates</code> (model coordinate and sign) on each retained coordinate"],
+  ["Gait2392 frame-to-body table, in code", "<code>model_element</code> names on frames, joints and actuators; datasets link records to them with <code>target.model_entity_id</code> (schema LB-QPS 0.9.0)"],
+  ["How the upper body and foot are combined, in code", "<code>merged_joints</code> in the specification (low back into the HAT; subtalar and toes into the foot), combined by the composite rule"],
+  ["Female and male body recipes, in code", "Per-body rules the specification selects: direct, composite, scaled fraction"],
+  ["Conditional path points switched only by the knee angle", "Path points on any segment, switched or moved by any named coordinate (needed for iliopsoas)"],
+  ["Hamstrings and rectus femoris with no knee in the ontology", "16 edges added by <code>relationship_additions</code>, with evidence; checked by C1, the mirror and required-edge checks"],
+  ["Actuator lists written in the dataset generator and oracle tool", "Read from the model specification"],
+];
+$("before-after").innerHTML = `<div class="head">Through D3</div><div></div><div class="head">Stage D4</div>` +
+  BA.map(([a, b]) => `<div class="cell">${a}</div><div class="arrow">→</div><div class="cell"><b>${b}</b></div>`).join("");
+$("new-code").innerHTML = [
+  ["src/model_spec.py", "checks a specification and derives the tree"],
+  ["src/model_assembly.py", "assembly by body rules; Newton–Euler and Kane's method; mechanics checks"],
+  ["src/muscle_paths.py", "path geometry on any segment, switched by any coordinate"],
+  ["src/consistency.py", "C1–C5, required edges, mirror"],
+  ["tools/run_phase_d4.py", "runs a specification for every body and variant; writes one manifest"],
+  [".github/workflows/d4-verify.yml", "re-runs everything at a given commit with pinned packages (Amendments 4–6)"],
+].map(([f, d]) => `<li><code>${f}</code>: ${d}</li>`).join("");
+$("new-fields").innerHTML = [
+  "Executable specification <code>squat_d4</code> (and <code>squat_d4_iliopsoas</code>, which extends it)",
+  "Coordinate conventions on the hip, knee and ankle coordinates",
+  "<code>model_element</code> names; schema field <code>target.model_entity_id</code>",
+  "<code>relationship_additions</code>: a later module may add, never remove, relationships to an earlier module's entities",
+  "Regenerated datasets with every value unchanged (checked)",
+].map(x => `<li>${x}</li>`).join("");
+$("reused").innerHTML = [
+  "De Groote force law (<code>src/muscles_d2.py</code>)",
+  "Two-stage recruitment: smallest largest reserve, then least effort; second solvers",
+  "The D1–D3 modules, kept as regression oracles",
+  "OpenSim 4.6 as the independent geometry and kinematics oracle",
+].map(x => `<li>${x}</li>`).join("");
+
+// ---------------------------------------------------------------- 3 assembly
+const SP = DATA.spec;
+$("spec-name").textContent = SP.name;
+const segById = Object.fromEntries(SP.segment_ids.map((id, k) => [id, SP.segments[k]]));
+$("tree").innerHTML = `<div class="node ground">Ground<small>foot fixed flat</small></div><div class="edge">fixed</div>` +
+  SP.tree.map(([j, a, b], k) => (k === 0 ? `<div class="node">${esc(short(a))}<small>ground segment</small></div>` : "") +
+    `<div class="edge">${esc(short(j).replace(" Joint", ""))}</div><div class="node">${esc(short(b))}${b.includes("HAT") ? "<small>pelvis + torso merged</small>" : ""}</div>`).join("");
+$("tree-merged").innerHTML = `Merged or locked: ${SP.merged.map(m => `<b>${esc(m.name)}</b> into ${esc(short(segById[m.into] || m.into))} (${esc(m.state)})`).join("; ")}. Contact points: heel and ball, from the foot frames named in the specification.`;
+$("joints-t").innerHTML = `<thead><tr><th>Joint</th><th>Coordinate: + / −</th><th>Gait2392 coordinate, sign</th><th>Location record</th></tr></thead><tbody>` +
+  SP.coordinates.map(c => `<tr><td>${esc(short(c.joint_name))}</td><td>${esc(c.positive.replace("_", " "))} / ${esc(c.negative.replace("_", " "))}</td>
+    <td class="mono">${c.model.map(m => `${esc(m.coordinate)}, ${m.sign > 0 ? "+1" : "−1"}`).join("; ")}</td>
+    <td class="mono">${typeof c.location === "string" ? esc(c.location) : Object.entries(c.location).map(([v, l]) => `${esc(v)}: ${esc(l)}`).join("<br>")}</td></tr>`).join("") + `</tbody>`;
+$("endpoints-t").innerHTML = `<thead><tr><th>Joint</th><th>Endpoints found</th></tr></thead><tbody>` +
+  SP.endpoints.map(e => `<tr><td>${esc(short(e.joint))}</td><td>${e.endpoints ? e.endpoints.map(short).map(esc).join(" → ") : `<span class="small">${esc(e.note)}</span>`}</td></tr>`).join("") + `</tbody>`;
+let body2 = BODIES[0];
+function drawBuilt() {
+  const r = DATA.sets.d4[body2];
+  $("how-built").innerHTML = r.how_built.map(x => `<li>${esc(x)}</li>`).join("");
+  $("seg-t").innerHTML = `<thead><tr><th>Segment (${esc(r.label)}, per side)</th><th class="num">Mass (kg)</th><th class="num">Centre of mass x, y (m)</th><th class="num">Inertia (kg·m²)</th></tr></thead><tbody>` +
+    SP.segment_ids.map(id => { const s = r.segments[id]; return `<tr><td>${esc(short(segById[id]))}</td><td class="num">${s.mass_kg.toFixed(3)}</td><td class="num">${neg(s.com_m[0], 4)}, ${neg(s.com_m[1], 4)}</td><td class="num">${s.inertia.toFixed(4)}</td></tr>`; }).join("") + `</tbody>`;
+}
+segControl("bodies2", bodyItems, body2, v => { body2 = v; drawBuilt(); });
+drawBuilt();
+
+// ---------------------------------------------------------------- 4 consistency
+const WHAT = {
+  C1: "Joints on the tree path between a muscle's path-point segments equal its declared CROSSES (modelled joints)",
+  C2: "Moment arms from geometry: none above numerical zero outside a crossing; negligible crossings recorded",
+  C3: "ACTS_ON ⊆ CROSSES; capabilities name ACTS_ON joints; moment-arm signs match declared capabilities",
+  C4: "Every represented entity resolves to evidence; every structural entity has a traced basis",
+  RE: "Edges the specification requires (e.g. each thigh muscle → knee) exist; catches symmetric omissions",
+  MI: "Left and right entities have mirrored relationships; catches one-sided changes",
+};
+$("cons-t").innerHTML = `<thead><tr><th>Check</th><th>What it requires</th><th class="num">Failures</th><th></th></tr></thead><tbody>` +
+  C.summary.map(([id, name, ok, n]) => `<tr><td><b>${id}</b> ${esc(name)}</td><td>${esc(WHAT[id])}</td><td class="num">${n}</td><td>${pill(ok)}</td></tr>`).join("") + `</tbody>`;
+$("add-t").innerHTML = `<thead><tr><th>Entity</th><th>Adds</th><th>Basis (the source text that was checked)</th><th>Evidence</th></tr></thead><tbody>` +
+  DATA.additions.map(a => `<tr><td>${esc(a.name)}</td><td class="mono">${Object.entries(a.add).map(([k, v]) => `${k} → ${v.map(short).map(esc).join(", ")}`).join("<br>")}</td>
+    <td style="font-size:13px">${esc(a.basis)}</td><td>${a.evidence.map(e => e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.id)}</a>` : esc(e.id)).join(", ")}</td></tr>`).join("") + `</tbody>`;
+$("c1-t").innerHTML = `<thead><tr><th>Actuator</th><th>Declared (modelled)</th><th>Derived from the path</th><th></th></tr></thead><tbody>` +
+  C.c1.map(x => `<tr><td>${esc(DATA.names[x.actuator] || x.actuator)}</td><td>${x.declared.map(short).map(s => s.replace(" Joint", "")).join(", ")}</td><td>${x.derived.map(short).map(s => s.replace(" Joint", "")).join(", ")}${x.crossed_not_modelled.length ? `<br><span class="small">crossed, not modelled: ${x.crossed_not_modelled.map(short).join(", ")}</span>` : ""}</td><td>${pill(x.agrees, "agrees", "differs")}</td></tr>`).join("") + `</tbody>`;
+const crossesOf = a => (C.c1.find(x => x.actuator === a) || {derived: []}).derived.map(s => s.toLowerCase());
+$("c2-t").innerHTML = `<thead><tr><th>Actuator</th>${JOINTS.map(([, n]) => `<th class="num">${n}</th>`).join("")}</tr></thead><tbody>` +
+  Object.entries(C.c2).map(([a, v]) => `<tr><td>${esc(DATA.names[a] || a)}</td>${JOINTS.map(([j]) => {
+    const x = v[j], cross = crossesOf(a).some(s => s.includes(j)); const cls = cross ? "cell cross" : x < 1e-9 ? "cell zero" : "cell";
+    return `<td class="${cls}">${x < 1e-9 ? (x === 0 ? "0" : sci(x * 1000)) : (x * 1000).toFixed(1)}</td>`; }).join("")}</tr>`).join("") + `</tbody>`;
+{
+  const fixed = Object.entries(C.direction).filter(([, v]) => v.above_zero.length);
+  const fixedRows = fixed.flatMap(([cs, v]) => v.above_zero.map(d => [cs, d]));
+  $("c3").innerHTML = `<p style="margin:0 0 10px;font-size:14px;color:var(--ink-2)">Moving knee, all bodies: <b>no direction disagreement</b>. Fixed knee: the gastrocnemius heads have a small knee-<i>extension</i> moment arm around the deepest pose, although the ontology declares knee flexion. ChatGPT found this in review and confirmed it with matched OpenSim geometry (D062-B01). It is a property of D1's simplified fixed-knee geometry, not an error in the assembly. So the fixed-knee check compares with the OpenSim reference: each disagreement must also exist in OpenSim's fixed-knee geometry, and it must be listed in the C5 register. Any other disagreement fails (tests <code>test_a5_fixed_knee_c3_fails_when_the_reference_lacks_the_disagreement</code> and <code>test_fixed_knee_direction_deviations_are_registered</code>).</p>
+  <div class="scroll-x"><table class="t"><thead><tr><th>Case</th><th>Actuator</th><th>Drives</th><th class="num">Samples</th><th class="num">Range</th><th class="num">Extreme moment arm</th></tr></thead><tbody>` +
+    fixedRows.map(([cs, d]) => `<tr><td>${esc(cs)}</td><td>${esc(DATA.names[d.actuator] || d.actuator)}</td><td>${esc(d.drives.replace("_", " "))}</td><td class="num">${d.samples}</td><td class="num">${T[d.first_sample].toFixed(2)}–${T[d.last_sample].toFixed(2)} s</td><td class="num">${neg(d.extreme_moment_arm_m * 1000, 2)} mm</td></tr>`).join("") +
+    `</tbody></table></div><p class="small" style="margin:8px 0 0">Out-of-plane capabilities, recorded as not represented: ${Object.entries(C.out_of_plane).map(([m, v]) => `${esc(m)} (${v.map(x => x.replace("_", " ")).join(", ")})`).join("; ")}.</p>`;
+}
+$("c4-t").innerHTML = `<thead><tr><th>Entity</th><th>Kind</th><th>Basis</th><th></th></tr></thead><tbody>` +
+  C.c4_basis.map(x => { const b = x.basis; const parts = [];
+    if (b.records) parts.push(b.records.map(r => `<span class="mono">${esc(r.record)}</span> (${r.sources.map(esc).join(", ")})`).join("; "));
+    if (b.evidence) parts.push(`evidence ${b.evidence.map(esc).join(", ")}`);
+    if (b.convention_source) parts.push(`convention ${esc(b.convention_source)}`);
+    if (b.declared_model_convention) parts.push(`declared convention`);
+    Object.keys(b).filter(k => !["records", "evidence", "convention_source", "declared_model_convention"].includes(k)).forEach(k => parts.push(`${esc(k.replace(/_/g, " "))}`));
+    return `<tr><td>${esc(short(x.name))}</td><td>${esc(x.kind)}</td><td style="font-size:12.5px">${parts.join("; ")}</td><td>${pill(x.traced, "traced", "untraced")}</td></tr>`; }).join("") + `</tbody>`;
+{
+  const R5 = C.register;
+  $("c5").innerHTML = `<dl class="facts">
+    <dt>Represented</dt><dd>${Object.keys(R5.represented.actuators).length} actuators of ${new Set(Object.values(R5.represented.actuators)).size} muscles; ${R5.represented.coordinates.length} coordinates; segments ${Object.entries(R5.represented.segments).map(([k, v]) => v.length > 1 ? `${esc(short(k))} (= ${v.map(short).join(" + ")})` : esc(short(k))).join(", ")}</dd>
+    <dt>Simplified</dt><dd>${R5.simplified.locked.map(l => `${esc(short(l.joint))} ${esc(l.state)}`).join("; ")}. Crossed but not modelled: ${Object.entries(R5.simplified.crossed_not_modelled).map(([m, v]) => `${esc(short(m))} (${v.map(short).join(", ")})`).join("; ")}. Assumptions: ${R5.simplified.assumptions.map(a => `<span class="mono">${esc(a)}</span>`).join(", ")}</dd>
+    <dt>Omitted</dt><dd>Coordinates: ${R5.omitted.coordinates.map(short).map(esc).join(", ")}. <b>${R5.omitted.muscles.length} muscles</b> cross a modelled joint with no actuator: ${R5.omitted.muscles.map(short).map(esc).join(", ")}. Out of plane: ${Object.entries(R5.omitted.out_of_plane).map(([m, v]) => `${esc(short(m))} (${v.map(x => x.replace("_", " ")).join(", ")})`).join("; ")}.</dd></dl>
+    <p class="small" style="margin:8px 0 0">This is the 14-muscle register. In the growth run, iliacus and psoas move from omitted to represented.</p>`;
+}
+$("a5").innerHTML = [
+  ["test_a5_deleting_a_crossing_fails_c1_naming_the_muscle", "deleting CROSSES knee from biceps femoris long head fails C1, naming it"],
+  ["test_a5_deleting_an_action_fails_c3", "deleting its ACTS_ON knee fails C3"],
+  ["test_a5_swapping_a_capability_fails_the_direction_check", "swapping knee flexion for knee extension fails the direction check"],
+  ["test_a5_a_path_through_a_joint_centre_crosses_with_negligible_leverage", "positive control: a test path through a joint centre (ChatGPT's counterexample) still crosses the joint (C1) and passes C2, recorded as negligible leverage"],
+  ["test_a5_left_deletion_fails_required_edges_and_mirror", "a one-sided deletion fails the required-edge and mirror checks"],
+  ["test_a5_deletion_on_both_sides_fails_required_edges_and_c1_not_mirror", "a symmetric deletion fails the required-edge check and C1, not the mirror (why D062-B02 added the required-edge check)"],
+  ["test_a5_fixed_knee_c3_fails_when_the_reference_lacks_the_disagreement", "a fixed-knee direction disagreement not present in OpenSim's reference fails C3"],
+].map(([t, d]) => `<li>${esc(d)} <span class="small mono">${t}</span></li>`).join("");
+
+// ---------------------------------------------------------------- 5 regression
+const ROLE = {mechanics: "D1 mechanics", muscles: "D2 muscles", mechanics_and_muscles: "D3 mechanics and muscles"};
+const LAB = Object.fromEntries(BODIES.map(b => [b, DATA.sets.d4[b].label]));
+$("reg-t").innerHTML = `<thead><tr><th>Body</th><th>Knee</th><th>Compared with</th><th>Manifest commit</th><th class="num">Series</th><th class="num">Stored decimals</th><th class="num">Statuses</th><th class="num">Largest excess</th><th></th></tr></thead><tbody>` +
+  REG.rows.map(x => `<tr><td>${LAB[x.body]}</td><td>${x.variant.replace("_", " ")}</td><td>${ROLE[x.role] || esc(x.role)}<br><span class="small" title="${esc(x.series_names.join(", "))}">${x.series_names.slice(0, 4).map(esc).join(", ")}${x.series_names.length > 4 ? ", …" : ""}</span></td>
+    <td class="mono">${x.commit.slice(0, 7)}</td><td class="num">${x.series}</td><td class="num">${x.decimals.join(", ")}</td><td class="num">${x.statuses}${x.statuses_equal ? " equal" : " DIFFER"}</td><td class="num">${x.largest_excess}</td><td>${pill(x.largest_excess === 0 && x.statuses_equal)}</td></tr>`).join("") + `</tbody>`;
+$("reg-note").innerHTML = !DATA.official ? `The table shows the regression as recorded in the supplied custom manifest. This page does not vouch for it. The official records are on the page built without input options.` : `The assembled model reproduces the D1, D2 and D3 official results to the last stored digit, for every body, both knees and every stored series and status. So the verification of D1–D3 carries over to it instead of being redone. That includes ChatGPT's independent re-runs of D1 and D2 and its reproduction of D3. The assembled model's own checks then pass too (section 6). In-process regression (A1) is tighter still: it compares against the D1–D3 modules at 10<sup>−9</sup> N·m and 10<sup>−12</sup> m.`;
+
+// ---------------------------------------------------------------- 6 verification
+const CK = DATA.checks;
+const MECH = {
+  newton_euler_vs_kane_N_m: ["Two formulations", "Recursive Newton–Euler vs Kane's method from generic Jacobians", "N·m"],
+  static_virtual_work_N_m: ["Virtual work", "Static torques vs a separate virtual-work calculation", "N·m"],
+  energy_W: ["Energy", "Joint power equals the rate of change of energy", "W"],
+  newton_identity_per_side_N: ["Newton", "Forces on each side add up", "N"],
+  local_one_step_rad_at_1ms: ["Forward, one step", "Torques fed forward reproduce the motion over 1 ms", "rad"],
+  short_horizon_0p1s_rad_at_1ms: ["Forward, 0.1 s", "The same over a short simulated stretch", "rad"],
+  mass_bookkeeping_relative: ["Mass bookkeeping", "Segment masses add up to the body mass (relative)", "—"],
+};
+$("mech-t").innerHTML = `<thead><tr><th>Check</th><th>What it shows</th><th class="num">Worst of ${CK.runs} runs</th><th class="num">Allowed</th><th>Unit</th><th></th></tr></thead><tbody>` +
+  Object.entries(MECH).map(([k, [n, d, u]]) => { const x = CK.mechanics[k]; return `<tr><td><b>${n}</b></td><td>${d}</td><td class="num">${sci(x.worst)}</td><td class="num">${sci(x.tolerance)}</td><td class="small">${u}</td><td>${pill(x.passed)}</td></tr>`; }).join("") +
+  [["Optimizer optimality", "Largest KKT residual (stationarity, feasibility, complementarity) of either recruitment stage", "largest_kkt_residual", "kkt_tolerance"],
+   ["Second solver, t*", "HiGHS interior point agrees with dual simplex on the smallest largest reserve within tolerance", "second_solver_t_star_difference_N_m", "second_solver_t_star_tolerance"],
+   ["Second solver, activations", "Clarabel agrees with quadprog on the stage-2 activations within tolerance", "second_solver_activation_difference", "second_solver_activation_tolerance"]]
+    .map(([n, d, k, t]) => { const tol = CK.solver_tolerances[t], v = CK.optimizer[k];
+      return `<tr><td><b>${n}</b></td><td>${d}</td><td class="num">${sci(v)}</td><td class="num">${sci(tol.value)}</td><td class="small">${tol.unit === "1" ? "dimensionless" : esc(tol.unit.replace("*", "·"))}</td><td>${pill(CK.optimizer_passed && v <= tol.value)}</td></tr>`; }).join("") + `</tbody>`;
+const OR = DATA.oracle, GO = G.oracle;
+const orRow = (label, o) => `<tr><td>${label}<br><span class="small mono">${esc(o.path)}</span></td><td class="num">${o.actuators_compared.length}</td><td class="num">${sci(o.largest_length_difference_m)}</td><td class="num">${sci(o.largest_moment_arm_difference_m)}</td><td class="num">${o.largest_kinematics_difference_m !== undefined ? sci(o.largest_kinematics_difference_m) : "—"}</td><td>${pill(!o.coverage_problems.length, "coverage OK", "coverage gap")}</td></tr>`;
+$("oracle-t").innerHTML = `<thead><tr><th>Reference</th><th class="num">Actuators</th><th class="num">Length (m)</th><th class="num">Moment arm (m)</th><th class="num">Kinematics (m)</th><th></th></tr></thead><tbody>` +
+  orRow("Fixed knee (D4)", OR.fixed_knee) + orRow("Moving knee (D4)", OR.moving_knee) + orRow("Moving knee, growth", GO.moving_knee) + `</tbody>`;
+$("feas-t").innerHTML = `<thead><tr><th>Body</th><th>Moving knee (baseline)</th><th>Fixed knee (regression)</th></tr></thead><tbody>` +
+  BODIES.map(b => `<tr><td>${LAB[b]}</td>${["moving_knee", "fixed_knee"].map(v => { const s = DATA.status.muscle_feasibility[`${b} | ${v}`]; return `<td>${s === "feasible" ? '<span class="pill ok">feasible</span>' : '<span class="pill flag">flagged</span>'}</td>`; }).join("")}</tr>`).join("") + `</tbody>`;
+$("acc-t").innerHTML = `<thead><tr><th>Criterion</th><th>Requirement</th><th>Evidence</th><th></th></tr></thead><tbody>` +
+  DATA.acceptance.map(a => `<tr><td><b>${a.id}</b> ${esc(a.name)}</td><td style="font-size:13px">${esc(a.text)}</td><td class="small">${esc(a.evidence)}</td><td>${!DATA.official ? CUSTOM_PILL : a.from_manifest ? pill(a.passed, "pass (manifest)", "fail") : '<span class="pill plain">see tests</span>'}</td></tr>`).join("") + `</tbody>`;
+$("verif-note").innerHTML = DATA.official ? `<b>Verified is not the same as validated.</b> ${esc(DATA.what_checks_show)}` : `<b>Custom inputs.</b> The checks above are as recorded in the supplied manifests; this page claims no verification for them. Verified is not the same as validated in any case.`;
+
+// ---------------------------------------------------------------- 7 growth
+$("growth-facts").innerHTML = [
+  `<h3>Added</h3><dl class="facts">${G.added.map(a => `<dt>${esc(DATA.names[a.actuator])}</dt><dd><span class="idtag">${esc(a.id)}</span> represents ${esc(a.muscle_name)}</dd>`).join("")}
+    <dt>Specification</dt><dd><code>squat_d4_iliopsoas</code> extends <code>${esc(G.spec.extends)}</code>; an extension may only add actuators</dd></dl>`,
+  `<h3>Checked</h3><dl class="facts"><dt>OpenSim</dt><dd>${GO.moving_knee.actuators_compared.length} actuators; lengths within ${sci(GO.moving_knee.largest_length_difference_m)} m, moment arms ${sci(GO.moving_knee.largest_moment_arm_difference_m)} m</dd>
+    <dt>C1–C5</dt><dd>${pill(G.consistency_passed)}</dd><dt>Mechanics, optimizer</dt><dd>${pill(G.status.mechanics_verification === "passed")} ${pill(G.status.optimizer_verification === "passed")}</dd>
+    <dt>Provenance</dt><dd${G.provenance ? ' class="mono"' : ""}>${G.provenance ? `${esc(G.provenance)} (${G.input_files} files)` : CUSTOM_PILL}</dd></dl>`,
+  `<h3>Why this is a real test</h3><p style="margin:0;font-size:14px;color:var(--ink-2)">Each new actuator has a path point switched by the hip coordinate (ontology notes on ${G.added.map(a => `<code>${esc(a.id)}</code>`).join(" and ")}). A specification-driven pipeline that only worked because its first data happened to fit the old code would fail here. The new points ran through the generic path code without a code change, and they matched OpenSim to machine precision.</p>`,
+].map(x => `<div class="panel">${x}</div>`).join("");
+$("h1-statement").innerHTML = `<b>${esc(H.id)}:</b> “${esc(H.statement)}” Measure: in the near-standing windows ${H.windows_s.map(w => `${w[0].toFixed(2)}–${w[1].toFixed(2)} s`).join(" and ")}, the larger of the two gastrocnemius activations and the tibialis anterior activation are taken at each sample. The co-activation is the largest value over the windows of the smaller of the two. It counts as removed if it is at most ${H.removed_if_at_most}. ${esc(H.note)}`;
+$("h1-t").innerHTML = `<thead><tr><th>Body</th><th class="num">D3, 14 muscles</th><th class="num">D4 growth, 16 muscles</th><th></th></tr></thead><tbody>` +
+  BODIES.map(b => { const v = H.values[b]; return `<tr><td>${LAB[b]}</td><td class="num">${v.comparison.toFixed(3)}</td><td class="num">${v.this_run.toFixed(3)}</td><td>${pill(v.this_run <= H.removed_if_at_most, "removed", "remains")}</td></tr>`; }).join("") +
+  `<tr><td colspan="3"><b>Outcome</b></td><td>${pill(H.outcome === "supported", "supported", "not supported")}</td></tr></tbody>`;
+function coact(r) { const g = r.act.med_gas_r.map((v, k) => Math.max(v, r.act.lat_gas_r[k])); return [g, r.act.tib_ant_r]; }
+function buildH1() {
+  const a = coact(DATA.sets.d4[body]), b = coact(DATA.sets.growth[body]);
+  lineChart("h1", [
+    {y: a[0], label: "Gastrocnemius (max of heads), 14", color: css("--knee"), width: 2},
+    {y: a[1], label: "Tibialis anterior, 14", color: css("--ankle"), width: 2},
+    {y: b[0], label: "Gastrocnemius, 16", color: css("--knee"), width: 2, dash: "5 4"},
+    {y: b[1], label: "Tibialis anterior, 16", color: css("--ankle"), width: 2, dash: "5 4"}],
+    {H: 170, minTop: 0.2, bands: H.windows_s, legend: "h1-legend"});
+  const inW = k => H.windows_s.some(([a0, b0]) => T[k] >= a0 - 1e-9 && T[k] <= b0 + 1e-9);
+  const wmax = y => Math.max(...y.filter((_, k) => inW(k)));
+  $("h1-note").textContent = `${LAB[body]} (body selected in section 1). Shaded: the pre-stated near-standing windows. With 14 muscles both are active there, working against each other: gastrocnemius up to ${wmax(a[0]).toFixed(3)}, tibialis anterior up to ${wmax(a[1]).toFixed(3)}. With iliopsoas: gastrocnemius up to ${wmax(b[0]).toFixed(3)}, tibialis anterior up to ${wmax(b[1]).toFixed(3)}. The co-activation is the smaller of the two, so it falls to ${H.values[body].this_run.toFixed(3)}.`;
+}
+function peaksTable() {
+  const p = G.peaks[body];
+  $("peaks-t").innerHTML = `<thead><tr><th>Actuator</th><th class="num">14 muscles</th><th class="num">16 muscles</th><th class="num">Change</th></tr></thead><tbody>` +
+    ORDER.filter(m => m in p).map(m => { const [a, b] = p[m]; const d = a === null ? null : b - a;
+      return `<tr><td>${esc(DATA.names[m])}</td><td class="num">${a === null ? "—" : a.toFixed(3)}</td><td class="num">${b.toFixed(3)}</td><td class="num">${d === null ? "new" : (Math.abs(d) < 0.0005 ? "0" : (d > 0 ? "+" : "−") + Math.abs(d).toFixed(3))}</td></tr>`; }).join("") + `</tbody>`;
+}
+
+// ---------------------------------------------------------------- 8 record
+const vclass = v => /^AMEND/.test(v) ? "amend" : v === "AGREE" ? "agree" : v;
+$("timeline").innerHTML = (DATA.official ? "" : `<li><span class="d"></span><span class="w"></span><span class="small">Context from the project records. It describes the official Stage D4 runs, not this page's custom inputs.</span></li>`) + DATA.timeline.map(x => `<li><span class="d">${x.date}</span><span class="w">${esc(x.who)}</span>
+  <span>${esc(x.text)} <span class="verdict ${vclass(x.verdict)}">${esc(x.verdict)}</span><span class="ref">${esc(x.ref)}</span></span></li>`).join("");
+
+// ---------------------------------------------------------------- 9 limits
+const V = DATA.validity, SV = DATA.source_validation;
+$("validity").innerHTML = `
+  <dt>What it is</dt><dd>${esc(V.kind)}</dd>
+  <dt>Physiological</dt><dd><span class="pill plain">${esc(V.physiological_validity)}</span></dd>
+  <dt>Clinical</dt><dd><span class="pill plain">${esc(V.clinical_validity)}</span></dd>
+  <dt>Sources</dt><dd><span class="pill plain">${esc(SV.status)}</span></dd>
+  <dt>Muscles</dt><dd>${esc(SV.muscle_validity)}</dd>`;
+$("limits-list").innerHTML = [
+  `<b>Same model, new route.</b> D4 deliberately changes nothing in what is modelled. Every D1–D3 assumption applies unchanged. ${DATA.official ? "The run's own statement" : "The supplied manifest's statement, not vouched for"}: ${DATA.assumptions.map(a => esc(a.replace(/\.?$/, "."))).join(" ")}`,
+  `<b>Designed motion.</b> The squat is prescribed, not measured, and the model computes backwards from it. Nothing is compared with real people yet (D6), and the model does not yet perform the motion itself (D7).`,
+  `<b>Muscles.</b> 14 (or 16) of Gait2392's 43 leg muscles. ${C.register.omitted.muscles.length} ontology muscles that cross a modelled joint have no actuator (section 4, C5). Tendons are rigid, there is no passive fibre force, and strengths are Gait2392's generic values, scaled in size only.`,
+  `<b>Fixed knee.</b> Kept only for the regression. It reproduces D2's shortfall for the male and Gait2392 bodies and the gastrocnemius direction quirk. The moving knee is the baseline.`,
+  `<b>Sources.</b> De Leva values: ${esc(SV.de_leva_values)}. Gait2392 values: ${esc(SV.gait2392_values)}.`,
+  `<b>The checks test consistency, not truth.</b> C1–C5 show that the ontology and the model agree with each other and with OpenSim. They cannot show that the ontology's anatomy is correct. That rests on its cited sources and, later, on an expert reader.`,
+].map(x => `<li>${x}</li>`).join("");
+
+// ---------------------------------------------------------------- 10 project
+const li = arr => arr.map(([c, t, e]) => `<li class="${c === "next" ? "next" : ""}"><span>${esc(t)}<br><span class="small">${esc(e)}</span></span></li>`).join("");
+$("goal-b").innerHTML = li(DATA.claim_b);
+$("goal-a").innerHTML = li(DATA.claim_a);
+$("roadmap").innerHTML = DATA.roadmap.map(([c, b, t]) => `<div class="road ${c}"><b>${b}</b>${esc(t)}</div>`).join("");
+
+const MAN = DATA.manifests;
+$("foot").innerHTML = (DATA.official ? "" : `<div><b>Custom inputs, not the official records:</b> <code>${esc(MAN.assembled[0])}</code>, <code>${esc(MAN.growth[0])}</code>, <code>${esc(MAN.d3[0])}</code>. No provenance is claimed for this page. The official page is built with <code>python -m tools.build_squat_demo_d4</code> and no input options.</div>`) + (!DATA.official ? "" : `
+  <div><b>Built from</b> the official Stage D4 manifests <code>${MAN.assembled[0]}</code> and <code>${MAN.growth[0]}</code> (commit <code>${MAN.assembled[1].slice(0, 12)}</code>, provenance <code>${esc(DATA.inputs.provenance)}</code>, ${DATA.inputs.assembled} input files including ${DATA.inputs.code_modules} code modules, all hashed), the ontology files exactly as those runs read them, and, for the figure's joint positions, <code>${MAN.d3[0]}</code> (<code>${MAN.d3[1].slice(0, 12)}</code>). Values are rounded for display.</div>`) + `
+  <div>Regenerate with <code>python -m tools.build_squat_demo_d4</code>. It reads only pinned inputs: each manifest is checked against the SHA-256 of its archived official file and, if the working copy differs, taken from its archive commit. So it rebuilds byte for byte. Re-run D4 itself with the <code>d4-verify</code> workflow. Decisions are in <code>docs/DECISIONS.md</code> (D-061, D-062 and its amendments), reviews in <code>docs/reviews/</code>, the current state in <code>PROJECT_STATE.md</code>. The Stage D1–D3 page is <a href="SQUAT_DEMO_D3.html">SQUAT_DEMO_D3.html</a>.</div>
+  <div>Independent Study, Fall 2026, Misericordia University: Corbin Wright with Fanchao Meng. Built with ChatGPT and Claude, under Corbin's decisions.</div>`;
+
+// ---------------------------------------------------------------- nav highlight, start
+const links = [...document.querySelectorAll("nav.top a")];
+const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), {rootMargin: "-40% 0px -55% 0px"});
+document.querySelectorAll("section.chapter").forEach(s => obs.observe(s));
+syncPlay(); rebuild(); requestAnimationFrame(tick);
+let rw = 0; addEventListener("resize", () => { const w = $("heat").parentElement.clientWidth; if (Math.abs(w - rw) > 4) { rw = w; rebuild(); } });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rebuild);
+</script>
+</body>
+</html>
