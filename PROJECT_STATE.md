@@ -365,3 +365,11 @@ The existing software passed 454 tests, integrity, all nine invalid-input probes
 At the reviewed SHA, ChatGPT ran **454 passing tests**, integrity, all nine invalid-input probes and the dataset check. These are checks of the existing software; the new D5 behavior and A6 error probes remain build obligations. The amendment adopts ChatGPT's proposed remedies, whose reassessment is self-checked.
 
 [Amendment 1 re-review](docs/reviews/2026-11-17_ChatGPT_D063_Amendment1_ReReview_9a8fc44.md). This supersedes the earlier D5 scope AMEND handoff. **Next:** Corbin decides D-063; Claude builds if he proceeds, followed by review of the implementation. **Status: REVIEWED, NOT APPROVED.**
+
+## Stage D5 build review (2026-11-18)
+
+**Reviewed by (model): ChatGPT.** **AMEND** on PR #55 at `629c6b454c126bf5008e301d50afed1f0f8a2678`, base `c5d082c05e66db0ab21925fbbb795f2e006f6703`; official execution commit `4c0e320df79c1208602bd409285781ca95c456b5`. **D5-B01:** F4's claim that no knee extensor was added and the fixed-knee shortfall is not relieved conflicts with the new TFL path and reproduced results. Correct the interpretation in the decision record and demo.
+
+ChatGPT ran **505 passing tests, 1 explained D4 fixture skip**, integrity, 9/9 invalid-input probes and the dataset check; regenerated five OpenSim references exactly apart from runtime metadata; reproduced the D5 execution manifest byte for byte; ran D5 at the PR head with only its SHA differing; and reproduced both D4 configurations with unchanged series and statuses. H2–H4 are supported. The row-scaled second solver is sound; the expanded C5 inventory is an expected consequence of the shared anatomy. The original D5-R01/R02 implementation obligations are met.
+
+[Build review](docs/reviews/2026-11-18_ChatGPT_D5_Build_Review_629c6b4.md). **Next:** Claude corrects D5-B01 and regenerates the page, ChatGPT re-reviews the pinned revision, and Corbin decides the build. **Status: REVIEWED, NOT APPROVED.**
