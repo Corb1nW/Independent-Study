@@ -3009,7 +3009,7 @@ Open concern 2: the hip rotators needed 19 declarations, each with a basis, and 
 | ~~Re-review D-063 Amendment 3 (F4 corrected, page regenerated) at the new head of PR #55~~ AGREE at `5e99008` | ChatGPT | Done |
 | ~~Decide the Stage D5 build and merge~~ Accepted (Q84); merged (A-24) | Corbin | Done |
 | Decide the next stage. Claude's proposal (2026-11-18, in the session): (1) D6 next, split into D6a (measured squat data in, mapped to the planar model, no claims) and D6b (comparison against metrics and pass thresholds fixed, reviewed and accepted before any comparison); (2) all 12 subjects or a few first; (3) `hip.yaml` to 0.5.0 in D6a's first commit (ChatGPT's N2). A D6 scope proposal follows Corbin's answers and goes to ChatGPT for review | Corbin | Next |
-| Confirm the D6 dataset's reuse terms (Scherpereel et al. 2023): Corbin fetches the files or their licence page; Claude checks them | Corbin; Claude | Any time (in parallel with D5) |
+| Confirm the D6 dataset's reuse terms (Scherpereel et al. 2023): Corbin fetches the files or their licence page; Claude checks them. Trial intake waits for D6 approval | Corbin; Claude | Any time (in parallel with the D6 decision) |
 | ~~Decide and merge the demonstration page PR~~ Merged (A-22) | Corbin | Done |
 | ~~Decide the Stage D4 build and merge~~ Accepted (Q74); PRs #47 and #48 merged (A-20) | Corbin | Done |
 | ~~Decide whether to add `SRC:STATPEARLS_THIGH_MUSCLES` to the evidence of the four muscles whose knee capabilities cite only `SRC:STATPEARLS_HIP`~~ Added on both sides (Q71, D-062 Amendment 3) | Corbin | Done |
@@ -3078,7 +3078,7 @@ Open concern 2: the hip rotators needed 19 declarations, each with a basis, and 
 | 41 | 2026-11-17 | Claude | Q81 added to §4; D-063 Amendment 1 (ChatGPT's D5-R01 and D5-R02); index and open items | Q81 |
 | 42 | 2026-11-17 | Claude | A-23 and Q82 added to §4 with a reading; D-063 accepted (Q82); D-063 Amendment 2 (Stage D5 build record: steps 1–7, official runs at `4c0e320`, H2–H4, findings F1–F5, acceptance evidence); index and open items | Q82 |
 | 43 | 2026-11-18 | Claude | Q83 added to §4 with a reading; D-063 Amendment 3 (ChatGPT's D5-B01: F4 replaced in Amendment 2 and in the demo builder, `SQUAT_DEMO_D5.html` regenerated); status lines and open items | Q83 |
-| 44 | 2026-11-18 | Claude | Q84 (with a reading), A-24 and Q85 added to §4; D-063 status lines (build accepted and merged; ChatGPT's AGREE at `5e99008`); open items, including Corbin's decision on the next stage; ChatGPT's re-review record brought in from its branch | Q84, Q85 |
+| 44 | 2026-11-18 | Claude | Q84 (with a reading), A-24 and Q85 added to §4; D-063 status lines (build accepted and merged; ChatGPT's AGREE at `5e99008`); open items, including Corbin's decision on the next stage; ChatGPT's re-review record brought in from its branch; after ChatGPT's closeout review (AMEND at `62c7211`, D5-CLOSE-02), the dataset reuse-terms check is again any time, in parallel, with trial intake after D6 approval | Q84, Q85 |
 
 ## 8. References
 
