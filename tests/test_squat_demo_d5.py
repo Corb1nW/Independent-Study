@@ -113,3 +113,16 @@ def test_page_states_review_status_and_names_no_custom_inputs():
     assert "awaiting ChatGPT's review (PR #55)" in html
     assert "--assembled" not in html and "custom inputs" not in html
     assert page_data(html)["manifests"]["d5"]["sha256"] == demo.OFFICIAL["d5"][2]
+
+
+def test_f4_states_the_reported_shortfall_reduction(data, official):
+    """D5-B01: F4 must agree with H4 and F2, not claim that no knee extensor was added."""
+    f4 = next(f for f in data["findings"] if f["id"] == "F4")
+    h4 = next(h for h in official[1]["hypotheses"] if h["id"] == "H4")["values_N_m"]
+    for body in ("male", "gait2392"):
+        for stage in ("d4", "d5"):
+            assert f"{h4[body][stage]:.3f}" in f4["text"]
+    assert "no knee extensor" not in f4["text"] and "cannot relieve" not in f4["text"]
+    assert "TFL" in f4["text"] and "(F2)" in f4["text"]
+    html = PAGE.read_text(encoding="utf-8")
+    assert "no knee extensor" not in html and "cannot relieve" not in html

@@ -138,9 +138,11 @@ FINDINGS = [
     ("F3", "Adductors give hip extension in part of the squat",
      "Adductor longus and brevis have sourced hip flexion; their Gait2392 paths give hip extension in part of the "
      "motion. Declared, reference-confirmed, and reported.", "1510872"),
-    ("F4", "The vasti still saturate",
-     "All three vasti reach full activation near the bottom with 43 actuators, as with 16: Gait2392 adds no knee "
-     "extensor, so D5 cannot relieve them. The hip extensors are relieved (H3).", "a86fbdf"),
+    ("F4", "The vasti still saturate; the shortfall shrinks",
+     "The three vasti still reach full activation near the bottom. D5 reduces the fixed-knee maximum reserve from "
+     "5.815 to 3.372 N·m for the male body and from 6.362 to 3.700 N·m for Gait2392, without eliminating the "
+     "shortfall. The newly added TFL path supplies knee-extension moment in this model, despite its sourced "
+     "knee-flexion action (F2).", "a86fbdf"),
     ("F5", "Foot chapter count",
      "The foot chapter says 19 muscles lie within the foot but describes 12 entries, treating the lumbricals and "
      "interossei as groups (20 if counted one by one). Recorded as found; one entity per named group.", "aaf1cf7"),
