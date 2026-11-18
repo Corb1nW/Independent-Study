@@ -29,9 +29,21 @@ sources:
     - rectus femoris crosses hip and knee
     - insertions of biceps femoris (shared tendon on the fibular head), semimembranosus and semitendinosus below the
       knee; the hamstrings flex the knee; all four quadriceps muscles extend the knee (re-read 2026-11-16, D-062)
+    - 'biceps femoris short head: linea aspera to the fibular head, knee flexion, lateral tibial rotation, common
+      peroneal nerve (the chapter is inconsistent on that nerve); sartorius, gracilis, adductors and pectineus: nerves and
+      sagittal actions (re-read 2026-11-17, D-063)'
     retrieval_date: '2026-11-10'
     note: Registered here since D-062 Amendment 3 (moved from lower_limb_sagittal.yaml), so that hip.yaml entities can
       cite it and hip.yaml still loads on its own.
+  SRC:STATPEARLS_TFL:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Tensor Fasciae Latae Muscle'
+    publisher: StatPearls (2026 edition); authors not shown on the record read
+    url: https://pubmed.ncbi.nlm.nih.gov/29763045/
+    supports:
+    - 'tensor fasciae latae: with the gluteal muscles, hip flexion, abduction and internal rotation; through the
+      iliotibial band''s attachment to the tibia, assists knee flexion and lateral rotation (chapter excerpt on PubMed,
+      read 2026-11-17, D-063; the full chapter was not reachable)'
+    retrieval_date: '2026-11-17'
   SRC:ISB_WU_2002:
     title: 'ISB recommendation on definitions of joint coordinate system: ankle, hip, spine'
     citation: Wu G, et al. Journal of Biomechanics. 2002;35(4):543-548. PMID 11934426.
@@ -1244,6 +1256,8 @@ entities:
     - hip_flexion
     - hip_abduction
     - internal_rotation_contribution
+    - knee_flexion
+    - tibial_lateral_rotation
     model_parameter_schema:
     - maximum_isometric_force
     - optimal_fiber_length
@@ -1253,6 +1267,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_TFL
   LB:MUS:TENSOR_FASCIAE_LATAE_L:
     name: Left Tensor Fasciae Latae
     class: SkeletalMuscle
@@ -1279,6 +1294,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_TFL
   LB:MUS:ILIOPSOAS_PSOAS_MAJOR_R:
     name: Right Psoas Major
     class: SkeletalMuscle
@@ -1454,7 +1470,7 @@ entities:
       - LB:LMK:LINEA_ASPERA_R
     mechanical_capabilities: &id008
     - hip_adduction
-    - hip_flexion_contribution
+    - hip_flexion
     model_parameter_schema:
     - maximum_isometric_force
     - optimal_fiber_length
@@ -1464,6 +1480,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:ADDUCTOR_LONGUS_L:
     name: Left Adductor Longus
     class: SkeletalMuscle
@@ -1489,6 +1506,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:ADDUCTOR_BREVIS_R:
     name: Right Adductor Brevis
     class: SkeletalMuscle
@@ -1508,7 +1526,7 @@ entities:
       - LB:LMK:LINEA_ASPERA_R
     mechanical_capabilities: &id009
     - hip_adduction
-    - hip_flexion_contribution
+    - hip_flexion
     model_parameter_schema:
     - maximum_isometric_force
     - optimal_fiber_length
@@ -1518,6 +1536,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:ADDUCTOR_BREVIS_L:
     name: Left Adductor Brevis
     class: SkeletalMuscle
@@ -1545,6 +1564,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:ADDUCTOR_MAGNUS_R:
     name: Right Adductor Magnus
     class: SkeletalMuscle
@@ -1566,6 +1586,8 @@ entities:
     mechanical_capabilities: &id010
     - hip_adduction
     - fiber_region_dependent_flexion_extension
+    - hip_flexion
+    - hip_extension
     model_parameter_schema:
     - maximum_isometric_force
     - optimal_fiber_length
@@ -1576,6 +1598,7 @@ entities:
     evidence:
     - SRC:STATPEARLS_HIP
     - SRC:STATPEARLS_ADDUCTOR_MAGNUS
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:ADDUCTOR_MAGNUS_L:
     name: Left Adductor Magnus
     class: SkeletalMuscle
@@ -1605,6 +1628,7 @@ entities:
     evidence:
     - SRC:STATPEARLS_HIP
     - SRC:STATPEARLS_ADDUCTOR_MAGNUS
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:GRACILIS_R:
     name: Right Gracilis
     class: SkeletalMuscle
@@ -1621,6 +1645,8 @@ entities:
       - LB:LMK:INFERIOR_PUBIC_RAMUS_R
     mechanical_capabilities: &id011
     - hip_adduction
+    - knee_flexion
+    - tibial_medial_rotation
     model_parameter_schema:
     - maximum_isometric_force
     - optimal_fiber_length
@@ -1630,6 +1656,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:GRACILIS_L:
     name: Left Gracilis
     class: SkeletalMuscle
@@ -1654,6 +1681,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:RECTUS_FEMORIS_R:
     name: Right Rectus Femoris
     class: SkeletalMuscle
@@ -1721,6 +1749,7 @@ entities:
     - hip_flexion
     - hip_abduction
     - external_rotation
+    - knee_flexion
     model_parameter_schema:
     - maximum_isometric_force
     - optimal_fiber_length
@@ -1730,6 +1759,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:SARTORIUS_L:
     name: Left Sartorius
     class: SkeletalMuscle
@@ -1753,6 +1783,7 @@ entities:
     - deactivation_time_constant
     evidence:
     - SRC:STATPEARLS_HIP
+    - SRC:STATPEARLS_THIGH_MUSCLES
   LB:MUS:SEMITENDINOSUS_R:
     name: Right Semitendinosus
     class: SkeletalMuscle

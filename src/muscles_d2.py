@@ -478,12 +478,19 @@ def stage2_second(Cm, tau, band):
     """Independent second solver for stage 2: Clarabel, an interior-point conic solver.
 
     (HiGHS's QP solver was tried first and cycles on degenerate cases such as many
-    identical actuators at their upper bound, so it is not used.)"""
+    identical actuators at their upper bound, so it is not used.)
+
+    Each joint's two band rows are divided by that joint's largest |C| entry before solving. The feasible set and the
+    optimum are unchanged; without it Clarabel stopped at AlmostSolved on badly scaled D5 samples (a 0.03 N m column
+    beside 45 N m ones) and differed from the certified active-set answer by up to 1.3e-3 (D-063 build record)."""
     import clarabel
     import scipy.sparse as sp
     m, n = Cm.shape
-    A = sp.csc_matrix(np.vstack((Cm, -Cm, -np.eye(n), np.eye(n))))
-    b = np.concatenate((tau + band, -(tau - band), np.zeros(n), np.ones(n)))
+    scale = np.max(np.abs(Cm), axis=1)
+    scale = np.where(scale > 0.0, scale, 1.0)
+    Cs, ts, bs = Cm / scale[:, None], tau / scale, band / scale
+    A = sp.csc_matrix(np.vstack((Cs, -Cs, -np.eye(n), np.eye(n))))
+    b = np.concatenate((ts + bs, -(ts - bs), np.zeros(n), np.ones(n)))
     st = clarabel.DefaultSettings()
     st.verbose = False
     st.tol_gap_abs = st.tol_gap_rel = st.tol_feas = 1e-12

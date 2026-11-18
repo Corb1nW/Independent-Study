@@ -1,0 +1,1929 @@
+{
+ "cases": {
+  "female | fixed_knee": {
+   "actuators": {
+    "d4": 16,
+    "d5": 43
+   },
+   "feasibility": {
+    "d4": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    },
+    "d5": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    }
+   },
+   "torque_shares_d5": {
+    "LB:DOF:ANKLE_DORSI_PLANTAR_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.0
+     },
+     "out_of_plane_share": 0.0,
+     "top": [
+      {
+       "actuator": "tib_ant_r",
+       "peak_N_m": 4.917114,
+       "peak_time_s": 2.42,
+       "share": 0.443537
+      },
+      {
+       "actuator": "ext_dig_r",
+       "peak_N_m": 2.37464,
+       "peak_time_s": 0.85,
+       "share": 0.185039
+      },
+      {
+       "actuator": "soleus_r",
+       "peak_N_m": -3.404436,
+       "peak_time_s": 1.25,
+       "share": 0.133912
+      },
+      {
+       "actuator": "med_gas_r",
+       "peak_N_m": -5.695025,
+       "peak_time_s": 1.5,
+       "share": 0.130434
+      },
+      {
+       "actuator": "lat_gas_r",
+       "peak_N_m": -3.044071,
+       "peak_time_s": 1.51,
+       "share": 0.065606
+      }
+     ]
+    },
+    "LB:DOF:HIP_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.00015,
+      "glut_med1_r": 0.001354,
+      "glut_med2_r": 0.006201,
+      "glut_med3_r": 0.013032,
+      "glut_min1_r": 1e-06,
+      "glut_min2_r": 2.8e-05,
+      "glut_min3_r": 0.000281,
+      "peri_r": 0.001733,
+      "quad_fem_r": 0.012894,
+      "tfl_r": 0.00048
+     },
+     "out_of_plane_share": 0.036154,
+     "top": [
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": 22.239564,
+       "peak_time_s": 1.52,
+       "share": 0.485108
+      },
+      {
+       "actuator": "glut_max3_r",
+       "peak_N_m": -7.133778,
+       "peak_time_s": 1.52,
+       "share": 0.137984
+      },
+      {
+       "actuator": "glut_max2_r",
+       "peak_N_m": -7.076618,
+       "peak_time_s": 1.52,
+       "share": 0.10787
+      },
+      {
+       "actuator": "add_mag3_r",
+       "peak_N_m": -5.282507,
+       "peak_time_s": 1.52,
+       "share": 0.10029
+      },
+      {
+       "actuator": "add_mag2_r",
+       "peak_N_m": -5.606141,
+       "peak_time_s": 1.52,
+       "share": 0.056371
+      }
+     ]
+    },
+    "LB:DOF:KNEE_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 6.1e-05
+     },
+     "out_of_plane_share": 6.1e-05,
+     "top": [
+      {
+       "actuator": "vas_lat_r",
+       "peak_N_m": -37.860692,
+       "peak_time_s": 1.07,
+       "share": 0.421082
+      },
+      {
+       "actuator": "vas_med_r",
+       "peak_N_m": -20.672309,
+       "peak_time_s": 1.4,
+       "share": 0.227044
+      },
+      {
+       "actuator": "vas_int_r",
+       "peak_N_m": -20.088861,
+       "peak_time_s": 1.4,
+       "share": 0.220165
+      },
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": -9.013267,
+       "peak_time_s": 2.73,
+       "share": 0.130496
+      },
+      {
+       "actuator": "lat_gas_r",
+       "peak_N_m": -0.342526,
+       "peak_time_s": 1.51,
+       "share": 0.000791
+      }
+     ]
+    }
+   }
+  },
+  "female | moving_knee": {
+   "actuators": {
+    "d4": 16,
+    "d5": 43
+   },
+   "feasibility": {
+    "d4": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    },
+    "d5": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    }
+   },
+   "peak_activation": {
+    "added_in_d5": {
+     "add_brev_r": {
+      "peak": 0.115461,
+      "time_s": 1.54
+     },
+     "add_long_r": {
+      "peak": 0.022712,
+      "time_s": 1.52
+     },
+     "add_mag1_r": {
+      "peak": 0.237859,
+      "time_s": 1.53
+     },
+     "add_mag2_r": {
+      "peak": 0.272318,
+      "time_s": 1.53
+     },
+     "add_mag3_r": {
+      "peak": 0.264985,
+      "time_s": 1.54
+     },
+     "bifemsh_r": {
+      "peak": 0.0,
+      "time_s": 0.0
+     },
+     "ext_dig_r": {
+      "peak": 0.297636,
+      "time_s": 0.96
+     },
+     "ext_hal_r": {
+      "peak": 0.099185,
+      "time_s": 0.95
+     },
+     "flex_dig_r": {
+      "peak": 0.003098,
+      "time_s": 1.51
+     },
+     "flex_hal_r": {
+      "peak": 0.008721,
+      "time_s": 1.51
+     },
+     "gem_r": {
+      "peak": 0.012903,
+      "time_s": 1.54
+     },
+     "glut_med1_r": {
+      "peak": 0.008249,
+      "time_s": 2.41
+     },
+     "glut_med2_r": {
+      "peak": 0.032795,
+      "time_s": 1.7
+     },
+     "glut_med3_r": {
+      "peak": 0.068569,
+      "time_s": 1.55
+     },
+     "glut_min1_r": {
+      "peak": 0.00021,
+      "time_s": 2.72
+     },
+     "glut_min2_r": {
+      "peak": 0.001141,
+      "time_s": 2.7
+     },
+     "glut_min3_r": {
+      "peak": 0.005114,
+      "time_s": 2.07
+     },
+     "grac_r": {
+      "peak": 0.0,
+      "time_s": 0.0
+     },
+     "pect_r": {
+      "peak": 0.004093,
+      "time_s": 0.01
+     },
+     "per_brev_r": {
+      "peak": 0.010807,
+      "time_s": 1.51
+     },
+     "per_long_r": {
+      "peak": 0.028528,
+      "time_s": 1.51
+     },
+     "per_tert_r": {
+      "peak": 0.073145,
+      "time_s": 0.96
+     },
+     "peri_r": {
+      "peak": 0.029317,
+      "time_s": 1.55
+     },
+     "quad_fem_r": {
+      "peak": 0.10189,
+      "time_s": 1.54
+     },
+     "sar_r": {
+      "peak": 0.006493,
+      "time_s": 0.01
+     },
+     "tfl_r": {
+      "peak": 0.00913,
+      "time_s": 2.99
+     },
+     "tib_post_r": {
+      "peak": 0.014613,
+      "time_s": 1.51
+     }
+    },
+    "shared": {
+     "bifemlh_r": {
+      "d4": {
+       "peak": 0.356216,
+       "time_s": 1.53
+      },
+      "d5": {
+       "peak": 0.166384,
+       "time_s": 1.53
+      }
+     },
+     "glut_max1_r": {
+      "d4": {
+       "peak": 0.194768,
+       "time_s": 1.54
+      },
+      "d5": {
+       "peak": 0.12284,
+       "time_s": 1.55
+      }
+     },
+     "glut_max2_r": {
+      "d4": {
+       "peak": 0.488011,
+       "time_s": 1.54
+      },
+      "d5": {
+       "peak": 0.307392,
+       "time_s": 1.55
+      }
+     },
+     "glut_max3_r": {
+      "d4": {
+       "peak": 0.489429,
+       "time_s": 1.54
+      },
+      "d5": {
+       "peak": 0.308199,
+       "time_s": 1.54
+      }
+     },
+     "iliacus_r": {
+      "d4": {
+       "peak": 0.04417,
+       "time_s": 0.01
+      },
+      "d5": {
+       "peak": 0.038831,
+       "time_s": 0.0
+      }
+     },
+     "lat_gas_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "med_gas_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "psoas_r": {
+      "d4": {
+       "peak": 0.045851,
+       "time_s": 0.01
+      },
+      "d5": {
+       "peak": 0.040308,
+       "time_s": 0.0
+      }
+     },
+     "rect_fem_r": {
+      "d4": {
+       "peak": 0.456347,
+       "time_s": 1.53
+      },
+      "d5": {
+       "peak": 0.448612,
+       "time_s": 1.53
+      }
+     },
+     "semimem_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "semiten_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "soleus_r": {
+      "d4": {
+       "peak": 0.13607,
+       "time_s": 1.51
+      },
+      "d5": {
+       "peak": 0.126338,
+       "time_s": 1.5
+      }
+     },
+     "tib_ant_r": {
+      "d4": {
+       "peak": 0.807205,
+       "time_s": 1.05
+      },
+      "d5": {
+       "peak": 0.267051,
+       "time_s": 0.83
+      }
+     },
+     "vas_int_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.44
+      },
+      "d5": {
+       "peak": 0.916696,
+       "time_s": 1.53
+      }
+     },
+     "vas_lat_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.3
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.33
+      }
+     },
+     "vas_med_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.4
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.49
+      }
+     }
+    }
+   },
+   "torque_shares_d5": {
+    "LB:DOF:ANKLE_DORSI_PLANTAR_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.0
+     },
+     "out_of_plane_share": 0.0,
+     "top": [
+      {
+       "actuator": "tib_ant_r",
+       "peak_N_m": 5.679697,
+       "peak_time_s": 2.44,
+       "share": 0.534533
+      },
+      {
+       "actuator": "ext_dig_r",
+       "peak_N_m": 4.434396,
+       "peak_time_s": 0.95,
+       "share": 0.321365
+      },
+      {
+       "actuator": "soleus_r",
+       "peak_N_m": -3.833518,
+       "peak_time_s": 1.5,
+       "share": 0.082248
+      },
+      {
+       "actuator": "ext_hal_r",
+       "peak_N_m": 0.494673,
+       "peak_time_s": 0.94,
+       "share": 0.036668
+      },
+      {
+       "actuator": "per_tert_r",
+       "peak_N_m": 0.268482,
+       "peak_time_s": 0.94,
+       "share": 0.019165
+      }
+     ]
+    },
+    "LB:DOF:HIP_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.000148,
+      "glut_med1_r": 0.000463,
+      "glut_med2_r": 0.003834,
+      "glut_med3_r": 0.009109,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 8e-06,
+      "glut_min3_r": 0.000134,
+      "peri_r": 0.001375,
+      "quad_fem_r": 0.012552,
+      "tfl_r": 0.000646
+     },
+     "out_of_plane_share": 0.028269000000000002,
+     "top": [
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": 22.523272,
+       "peak_time_s": 1.54,
+       "share": 0.475825
+      },
+      {
+       "actuator": "glut_max3_r",
+       "peak_N_m": -5.768784,
+       "peak_time_s": 1.54,
+       "share": 0.119626
+      },
+      {
+       "actuator": "glut_max2_r",
+       "peak_N_m": -5.73843,
+       "peak_time_s": 1.55,
+       "share": 0.098412
+      },
+      {
+       "actuator": "add_mag3_r",
+       "peak_N_m": -4.264483,
+       "peak_time_s": 1.54,
+       "share": 0.089312
+      },
+      {
+       "actuator": "add_mag2_r",
+       "peak_N_m": -4.519015,
+       "peak_time_s": 1.52,
+       "share": 0.055874
+      }
+     ]
+    },
+    "LB:DOF:KNEE_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.000108
+     },
+     "out_of_plane_share": 0.000108,
+     "top": [
+      {
+       "actuator": "vas_lat_r",
+       "peak_N_m": -30.763382,
+       "peak_time_s": 1.28,
+       "share": 0.387636
+      },
+      {
+       "actuator": "vas_med_r",
+       "peak_N_m": -21.545268,
+       "peak_time_s": 1.49,
+       "share": 0.229296
+      },
+      {
+       "actuator": "vas_int_r",
+       "peak_N_m": -17.662254,
+       "peak_time_s": 1.53,
+       "share": 0.218264
+      },
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": -12.011916,
+       "peak_time_s": 1.54,
+       "share": 0.158418
+      },
+      {
+       "actuator": "bifemlh_r",
+       "peak_N_m": 1.589896,
+       "peak_time_s": 1.54,
+       "share": 0.006275
+      }
+     ]
+    }
+   }
+  },
+  "gait2392 | fixed_knee": {
+   "actuators": {
+    "d4": 16,
+    "d5": 43
+   },
+   "feasibility": {
+    "d4": {
+     "feasible_throughout": false,
+     "flagged_samples": 28,
+     "muscle_feasibility": "flagged",
+     "t_star_max_N_m": 6.361827,
+     "t_star_max_time_s": 1.52
+    },
+    "d5": {
+     "feasible_throughout": false,
+     "flagged_samples": 18,
+     "muscle_feasibility": "flagged",
+     "t_star_max_N_m": 3.70021,
+     "t_star_max_time_s": 1.52
+    }
+   },
+   "torque_shares_d5": {
+    "LB:DOF:ANKLE_DORSI_PLANTAR_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.0
+     },
+     "out_of_plane_share": 0.0,
+     "top": [
+      {
+       "actuator": "tib_ant_r",
+       "peak_N_m": 6.75073,
+       "peak_time_s": 2.99,
+       "share": 0.313639
+      },
+      {
+       "actuator": "ext_dig_r",
+       "peak_N_m": 13.479842,
+       "peak_time_s": 1.62,
+       "share": 0.201832
+      },
+      {
+       "actuator": "med_gas_r",
+       "peak_N_m": -25.243047,
+       "peak_time_s": 1.52,
+       "share": 0.193145
+      },
+      {
+       "actuator": "lat_gas_r",
+       "peak_N_m": -16.673246,
+       "peak_time_s": 1.41,
+       "share": 0.141011
+      },
+      {
+       "actuator": "soleus_r",
+       "peak_N_m": -5.275377,
+       "peak_time_s": 1.73,
+       "share": 0.080482
+      }
+     ]
+    },
+    "LB:DOF:HIP_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.000159,
+      "glut_med1_r": 0.000993,
+      "glut_med2_r": 0.004929,
+      "glut_med3_r": 0.011099,
+      "glut_min1_r": 1e-06,
+      "glut_min2_r": 2.1e-05,
+      "glut_min3_r": 0.000208,
+      "peri_r": 0.00155,
+      "quad_fem_r": 0.012826,
+      "tfl_r": 0.006533
+     },
+     "out_of_plane_share": 0.038319,
+     "top": [
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": 46.517702,
+       "peak_time_s": 1.64,
+       "share": 0.484802
+      },
+      {
+       "actuator": "glut_max3_r",
+       "peak_N_m": -13.918731,
+       "peak_time_s": 1.62,
+       "share": 0.130919
+      },
+      {
+       "actuator": "glut_max2_r",
+       "peak_N_m": -13.794455,
+       "peak_time_s": 1.62,
+       "share": 0.107446
+      },
+      {
+       "actuator": "add_mag3_r",
+       "peak_N_m": -10.269362,
+       "peak_time_s": 1.62,
+       "share": 0.095837
+      },
+      {
+       "actuator": "add_mag2_r",
+       "peak_N_m": -10.320226,
+       "peak_time_s": 1.41,
+       "share": 0.062344
+      }
+     ]
+    },
+    "LB:DOF:KNEE_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.000376
+     },
+     "out_of_plane_share": 0.000376,
+     "top": [
+      {
+       "actuator": "vas_lat_r",
+       "peak_N_m": -46.276384,
+       "peak_time_s": 1.07,
+       "share": 0.397584
+      },
+      {
+       "actuator": "vas_med_r",
+       "peak_N_m": -25.914085,
+       "peak_time_s": 1.93,
+       "share": 0.222935
+      },
+      {
+       "actuator": "vas_int_r",
+       "peak_N_m": -23.884723,
+       "peak_time_s": 1.29,
+       "share": 0.216588
+      },
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": -16.976268,
+       "peak_time_s": 1.64,
+       "share": 0.158571
+      },
+      {
+       "actuator": "lat_gas_r",
+       "peak_N_m": -1.818207,
+       "peak_time_s": 1.49,
+       "share": 0.003079
+      }
+     ]
+    }
+   }
+  },
+  "gait2392 | moving_knee": {
+   "actuators": {
+    "d4": 16,
+    "d5": 43
+   },
+   "feasibility": {
+    "d4": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    },
+    "d5": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    }
+   },
+   "peak_activation": {
+    "added_in_d5": {
+     "add_brev_r": {
+      "peak": 0.213526,
+      "time_s": 1.53
+     },
+     "add_long_r": {
+      "peak": 0.042011,
+      "time_s": 1.52
+     },
+     "add_mag1_r": {
+      "peak": 0.440017,
+      "time_s": 1.53
+     },
+     "add_mag2_r": {
+      "peak": 0.503763,
+      "time_s": 1.53
+     },
+     "add_mag3_r": {
+      "peak": 0.490033,
+      "time_s": 1.54
+     },
+     "bifemsh_r": {
+      "peak": 0.0,
+      "time_s": 0.0
+     },
+     "ext_dig_r": {
+      "peak": 0.325603,
+      "time_s": 0.94
+     },
+     "ext_hal_r": {
+      "peak": 0.108844,
+      "time_s": 0.93
+     },
+     "flex_dig_r": {
+      "peak": 0.005118,
+      "time_s": 1.51
+     },
+     "flex_hal_r": {
+      "peak": 0.014406,
+      "time_s": 1.51
+     },
+     "gem_r": {
+      "peak": 0.023862,
+      "time_s": 1.54
+     },
+     "glut_med1_r": {
+      "peak": 0.009546,
+      "time_s": 2.4
+     },
+     "glut_med2_r": {
+      "peak": 0.057337,
+      "time_s": 1.59
+     },
+     "glut_med3_r": {
+      "peak": 0.126708,
+      "time_s": 1.55
+     },
+     "glut_min1_r": {
+      "peak": 0.000228,
+      "time_s": 2.72
+     },
+     "glut_min2_r": {
+      "peak": 0.001239,
+      "time_s": 2.7
+     },
+     "glut_min3_r": {
+      "peak": 0.006067,
+      "time_s": 2.07
+     },
+     "grac_r": {
+      "peak": 0.0,
+      "time_s": 0.0
+     },
+     "pect_r": {
+      "peak": 0.004953,
+      "time_s": 0.01
+     },
+     "per_brev_r": {
+      "peak": 0.017852,
+      "time_s": 1.51
+     },
+     "per_long_r": {
+      "peak": 0.047124,
+      "time_s": 1.51
+     },
+     "per_tert_r": {
+      "peak": 0.080146,
+      "time_s": 0.94
+     },
+     "peri_r": {
+      "peak": 0.054192,
+      "time_s": 1.54
+     },
+     "quad_fem_r": {
+      "peak": 0.18846,
+      "time_s": 1.53
+     },
+     "sar_r": {
+      "peak": 0.007906,
+      "time_s": 0.01
+     },
+     "tfl_r": {
+      "peak": 0.011664,
+      "time_s": 2.99
+     },
+     "tib_post_r": {
+      "peak": 0.024139,
+      "time_s": 1.51
+     }
+    },
+    "shared": {
+     "bifemlh_r": {
+      "d4": {
+       "peak": 0.634665,
+       "time_s": 1.6
+      },
+      "d5": {
+       "peak": 0.27554,
+       "time_s": 1.53
+      }
+     },
+     "glut_max1_r": {
+      "d4": {
+       "peak": 0.964775,
+       "time_s": 1.53
+      },
+      "d5": {
+       "peak": 0.226995,
+       "time_s": 1.55
+      }
+     },
+     "glut_max2_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.48
+      },
+      "d5": {
+       "peak": 0.568296,
+       "time_s": 1.54
+      }
+     },
+     "glut_max3_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.48
+      },
+      "d5": {
+       "peak": 0.569947,
+       "time_s": 1.54
+      }
+     },
+     "iliacus_r": {
+      "d4": {
+       "peak": 0.053485,
+       "time_s": 0.01
+      },
+      "d5": {
+       "peak": 0.046985,
+       "time_s": 0.0
+      }
+     },
+     "lat_gas_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "med_gas_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "psoas_r": {
+      "d4": {
+       "peak": 0.05552,
+       "time_s": 0.01
+      },
+      "d5": {
+       "peak": 0.048772,
+       "time_s": 0.0
+      }
+     },
+     "rect_fem_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.46
+      },
+      "d5": {
+       "peak": 0.920327,
+       "time_s": 1.53
+      }
+     },
+     "semimem_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "semiten_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "soleus_r": {
+      "d4": {
+       "peak": 0.22477,
+       "time_s": 1.51
+      },
+      "d5": {
+       "peak": 0.20869,
+       "time_s": 1.51
+      }
+     },
+     "tib_ant_r": {
+      "d4": {
+       "peak": 0.820201,
+       "time_s": 1.01
+      },
+      "d5": {
+       "peak": 0.30695,
+       "time_s": 0.82
+      }
+     },
+     "vas_int_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.3
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.34
+      }
+     },
+     "vas_lat_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.21
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.23
+      }
+     },
+     "vas_med_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.28
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.31
+      }
+     }
+    }
+   },
+   "torque_shares_d5": {
+    "LB:DOF:ANKLE_DORSI_PLANTAR_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.0
+     },
+     "out_of_plane_share": 0.0,
+     "top": [
+      {
+       "actuator": "tib_ant_r",
+       "peak_N_m": 7.172796,
+       "peak_time_s": 2.47,
+       "share": 0.526481
+      },
+      {
+       "actuator": "ext_dig_r",
+       "peak_N_m": 5.062312,
+       "peak_time_s": 0.93,
+       "share": 0.288839
+      },
+      {
+       "actuator": "soleus_r",
+       "peak_N_m": -6.567473,
+       "peak_time_s": 1.5,
+       "share": 0.125166
+      },
+      {
+       "actuator": "ext_hal_r",
+       "peak_N_m": 0.568245,
+       "peak_time_s": 0.92,
+       "share": 0.033257
+      },
+      {
+       "actuator": "per_tert_r",
+       "peak_N_m": 0.307412,
+       "peak_time_s": 0.92,
+       "share": 0.017231
+      }
+     ]
+    },
+    "LB:DOF:HIP_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.000151,
+      "glut_med1_r": 0.000354,
+      "glut_med2_r": 0.003325,
+      "glut_med3_r": 0.008324,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 6e-06,
+      "glut_min3_r": 0.000107,
+      "peri_r": 0.001291,
+      "quad_fem_r": 0.012321,
+      "tfl_r": 0.000615
+     },
+     "out_of_plane_share": 0.026494,
+     "top": [
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": 47.922678,
+       "peak_time_s": 1.53,
+       "share": 0.478322
+      },
+      {
+       "actuator": "glut_max3_r",
+       "peak_N_m": -11.067787,
+       "peak_time_s": 1.54,
+       "share": 0.115793
+      },
+      {
+       "actuator": "glut_max2_r",
+       "peak_N_m": -11.00376,
+       "peak_time_s": 1.54,
+       "share": 0.097745
+      },
+      {
+       "actuator": "add_mag3_r",
+       "peak_N_m": -8.1826,
+       "peak_time_s": 1.53,
+       "share": 0.086562
+      },
+      {
+       "actuator": "add_mag2_r",
+       "peak_N_m": -8.672306,
+       "peak_time_s": 1.52,
+       "share": 0.05853
+      }
+     ]
+    },
+    "LB:DOF:KNEE_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.00012
+     },
+     "out_of_plane_share": 0.00012,
+     "top": [
+      {
+       "actuator": "vas_lat_r",
+       "peak_N_m": -37.554018,
+       "peak_time_s": 1.22,
+       "share": 0.367979
+      },
+      {
+       "actuator": "vas_med_r",
+       "peak_N_m": -26.187022,
+       "peak_time_s": 1.31,
+       "share": 0.22343
+      },
+      {
+       "actuator": "vas_int_r",
+       "peak_N_m": -22.683776,
+       "peak_time_s": 1.34,
+       "share": 0.218852
+      },
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": -25.552819,
+       "peak_time_s": 1.53,
+       "share": 0.181768
+      },
+      {
+       "actuator": "bifemlh_r",
+       "peak_N_m": 2.731571,
+       "peak_time_s": 1.54,
+       "share": 0.007849
+      }
+     ]
+    }
+   }
+  },
+  "male | fixed_knee": {
+   "actuators": {
+    "d4": 16,
+    "d5": 43
+   },
+   "feasibility": {
+    "d4": {
+     "feasible_throughout": false,
+     "flagged_samples": 27,
+     "muscle_feasibility": "flagged",
+     "t_star_max_N_m": 5.81468,
+     "t_star_max_time_s": 1.52
+    },
+    "d5": {
+     "feasible_throughout": false,
+     "flagged_samples": 18,
+     "muscle_feasibility": "flagged",
+     "t_star_max_N_m": 3.371648,
+     "t_star_max_time_s": 1.52
+    }
+   },
+   "torque_shares_d5": {
+    "LB:DOF:ANKLE_DORSI_PLANTAR_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.0
+     },
+     "out_of_plane_share": 0.0,
+     "top": [
+      {
+       "actuator": "tib_ant_r",
+       "peak_N_m": 6.226184,
+       "peak_time_s": 2.99,
+       "share": 0.318609
+      },
+      {
+       "actuator": "ext_dig_r",
+       "peak_N_m": 13.038003,
+       "peak_time_s": 1.62,
+       "share": 0.207878
+      },
+      {
+       "actuator": "med_gas_r",
+       "peak_N_m": -23.129966,
+       "peak_time_s": 1.52,
+       "share": 0.184316
+      },
+      {
+       "actuator": "lat_gas_r",
+       "peak_N_m": -16.126734,
+       "peak_time_s": 1.41,
+       "share": 0.142977
+      },
+      {
+       "actuator": "soleus_r",
+       "peak_N_m": -4.727248,
+       "peak_time_s": 1.73,
+       "share": 0.075763
+      }
+     ]
+    },
+    "LB:DOF:HIP_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.000159,
+      "glut_med1_r": 0.001041,
+      "glut_med2_r": 0.005032,
+      "glut_med3_r": 0.011247,
+      "glut_min1_r": 1e-06,
+      "glut_min2_r": 2.2e-05,
+      "glut_min3_r": 0.000214,
+      "peri_r": 0.00156,
+      "quad_fem_r": 0.012781,
+      "tfl_r": 0.006489
+     },
+     "out_of_plane_share": 0.038546000000000004,
+     "top": [
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": 44.802025,
+       "peak_time_s": 1.64,
+       "share": 0.48542
+      },
+      {
+       "actuator": "glut_max3_r",
+       "peak_N_m": -13.362056,
+       "peak_time_s": 1.62,
+       "share": 0.131155
+      },
+      {
+       "actuator": "glut_max2_r",
+       "peak_N_m": -13.242751,
+       "peak_time_s": 1.62,
+       "share": 0.107344
+      },
+      {
+       "actuator": "add_mag3_r",
+       "peak_N_m": -9.858643,
+       "peak_time_s": 1.62,
+       "share": 0.095886
+      },
+      {
+       "actuator": "add_mag2_r",
+       "peak_N_m": -9.812128,
+       "peak_time_s": 1.42,
+       "share": 0.062043
+      }
+     ]
+    },
+    "LB:DOF:KNEE_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.000368
+     },
+     "out_of_plane_share": 0.000368,
+     "top": [
+      {
+       "actuator": "vas_lat_r",
+       "peak_N_m": -44.579063,
+       "peak_time_s": 1.07,
+       "share": 0.398614
+      },
+      {
+       "actuator": "vas_med_r",
+       "peak_N_m": -24.853418,
+       "peak_time_s": 1.93,
+       "share": 0.223237
+      },
+      {
+       "actuator": "vas_int_r",
+       "peak_N_m": -23.101835,
+       "peak_time_s": 1.29,
+       "share": 0.216871
+      },
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": -16.350146,
+       "peak_time_s": 1.64,
+       "share": 0.157093
+      },
+      {
+       "actuator": "lat_gas_r",
+       "peak_N_m": -1.75861,
+       "peak_time_s": 1.49,
+       "share": 0.003031
+      }
+     ]
+    }
+   }
+  },
+  "male | moving_knee": {
+   "actuators": {
+    "d4": 16,
+    "d5": 43
+   },
+   "feasibility": {
+    "d4": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    },
+    "d5": {
+     "feasible_throughout": true,
+     "flagged_samples": 0,
+     "muscle_feasibility": "feasible",
+     "t_star_max_N_m": 0.0,
+     "t_star_max_time_s": 0.0
+    }
+   },
+   "peak_activation": {
+    "added_in_d5": {
+     "add_brev_r": {
+      "peak": 0.209021,
+      "time_s": 1.53
+     },
+     "add_long_r": {
+      "peak": 0.041123,
+      "time_s": 1.52
+     },
+     "add_mag1_r": {
+      "peak": 0.430733,
+      "time_s": 1.53
+     },
+     "add_mag2_r": {
+      "peak": 0.493134,
+      "time_s": 1.53
+     },
+     "add_mag3_r": {
+      "peak": 0.479695,
+      "time_s": 1.54
+     },
+     "bifemsh_r": {
+      "peak": 0.0,
+      "time_s": 0.0
+     },
+     "ext_dig_r": {
+      "peak": 0.333974,
+      "time_s": 0.95
+     },
+     "ext_hal_r": {
+      "peak": 0.111503,
+      "time_s": 0.94
+     },
+     "flex_dig_r": {
+      "peak": 0.004367,
+      "time_s": 1.51
+     },
+     "flex_hal_r": {
+      "peak": 0.01229,
+      "time_s": 1.51
+     },
+     "gem_r": {
+      "peak": 0.023359,
+      "time_s": 1.54
+     },
+     "glut_med1_r": {
+      "peak": 0.009642,
+      "time_s": 2.4
+     },
+     "glut_med2_r": {
+      "peak": 0.056095,
+      "time_s": 1.59
+     },
+     "glut_med3_r": {
+      "peak": 0.124031,
+      "time_s": 1.55
+     },
+     "glut_min1_r": {
+      "peak": 0.00025,
+      "time_s": 2.73
+     },
+     "glut_min2_r": {
+      "peak": 0.00134,
+      "time_s": 2.7
+     },
+     "glut_min3_r": {
+      "peak": 0.006028,
+      "time_s": 2.07
+     },
+     "grac_r": {
+      "peak": 0.0,
+      "time_s": 0.0
+     },
+     "pect_r": {
+      "peak": 0.004744,
+      "time_s": 0.01
+     },
+     "per_brev_r": {
+      "peak": 0.01523,
+      "time_s": 1.51
+     },
+     "per_long_r": {
+      "peak": 0.040203,
+      "time_s": 1.51
+     },
+     "per_tert_r": {
+      "peak": 0.082145,
+      "time_s": 0.94
+     },
+     "peri_r": {
+      "peak": 0.053049,
+      "time_s": 1.54
+     },
+     "quad_fem_r": {
+      "peak": 0.184483,
+      "time_s": 1.53
+     },
+     "sar_r": {
+      "peak": 0.00757,
+      "time_s": 0.01
+     },
+     "tfl_r": {
+      "peak": 0.011148,
+      "time_s": 2.99
+     },
+     "tib_post_r": {
+      "peak": 0.020594,
+      "time_s": 1.51
+     }
+    },
+    "shared": {
+     "bifemlh_r": {
+      "d4": {
+       "peak": 0.632755,
+       "time_s": 1.59
+      },
+      "d5": {
+       "peak": 0.267445,
+       "time_s": 1.53
+      }
+     },
+     "glut_max1_r": {
+      "d4": {
+       "peak": 0.728311,
+       "time_s": 1.53
+      },
+      "d5": {
+       "peak": 0.222198,
+       "time_s": 1.55
+      }
+     },
+     "glut_max2_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.49
+      },
+      "d5": {
+       "peak": 0.556306,
+       "time_s": 1.54
+      }
+     },
+     "glut_max3_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.49
+      },
+      "d5": {
+       "peak": 0.557922,
+       "time_s": 1.54
+      }
+     },
+     "iliacus_r": {
+      "d4": {
+       "peak": 0.051227,
+       "time_s": 0.01
+      },
+      "d5": {
+       "peak": 0.045007,
+       "time_s": 0.0
+      }
+     },
+     "lat_gas_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "med_gas_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "psoas_r": {
+      "d4": {
+       "peak": 0.053176,
+       "time_s": 0.01
+      },
+      "d5": {
+       "peak": 0.046718,
+       "time_s": 0.0
+      }
+     },
+     "rect_fem_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.47
+      },
+      "d5": {
+       "peak": 0.907301,
+       "time_s": 1.53
+      }
+     },
+     "semimem_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "semiten_r": {
+      "d4": {
+       "peak": 0.0,
+       "time_s": 0.0
+      },
+      "d5": {
+       "peak": 0.0,
+       "time_s": 0.0
+      }
+     },
+     "soleus_r": {
+      "d4": {
+       "peak": 0.191757,
+       "time_s": 1.51
+      },
+      "d5": {
+       "peak": 0.178038,
+       "time_s": 1.51
+      }
+     },
+     "tib_ant_r": {
+      "d4": {
+       "peak": 0.868779,
+       "time_s": 1.03
+      },
+      "d5": {
+       "peak": 0.308253,
+       "time_s": 0.82
+      }
+     },
+     "vas_int_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.3
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.35
+      }
+     },
+     "vas_lat_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.21
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.24
+      }
+     },
+     "vas_med_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.28
+      },
+      "d5": {
+       "peak": 1.0,
+       "time_s": 1.32
+      }
+     }
+    }
+   },
+   "torque_shares_d5": {
+    "LB:DOF:ANKLE_DORSI_PLANTAR_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.0
+     },
+     "out_of_plane_share": 0.0,
+     "top": [
+      {
+       "actuator": "tib_ant_r",
+       "peak_N_m": 6.834277,
+       "peak_time_s": 2.46,
+       "share": 0.533041
+      },
+      {
+       "actuator": "ext_dig_r",
+       "peak_N_m": 5.009094,
+       "peak_time_s": 0.94,
+       "share": 0.303091
+      },
+      {
+       "actuator": "soleus_r",
+       "peak_N_m": -5.419947,
+       "peak_time_s": 1.5,
+       "share": 0.103505
+      },
+      {
+       "actuator": "ext_hal_r",
+       "peak_N_m": 0.56071,
+       "peak_time_s": 0.93,
+       "share": 0.03477
+      },
+      {
+       "actuator": "per_tert_r",
+       "peak_N_m": 0.303795,
+       "peak_time_s": 0.93,
+       "share": 0.018077
+      }
+     ]
+    },
+    "LB:DOF:HIP_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.000151,
+      "glut_med1_r": 0.000389,
+      "glut_med2_r": 0.003415,
+      "glut_med3_r": 0.008464,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 7e-06,
+      "glut_min3_r": 0.000113,
+      "peri_r": 0.001302,
+      "quad_fem_r": 0.012319,
+      "tfl_r": 0.000579
+     },
+     "out_of_plane_share": 0.026739,
+     "top": [
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": 45.695874,
+       "peak_time_s": 1.53,
+       "share": 0.479418
+      },
+      {
+       "actuator": "glut_max3_r",
+       "peak_N_m": -10.479163,
+       "peak_time_s": 1.54,
+       "share": 0.116295
+      },
+      {
+       "actuator": "glut_max2_r",
+       "peak_N_m": -10.418542,
+       "peak_time_s": 1.54,
+       "share": 0.097884
+      },
+      {
+       "actuator": "add_mag3_r",
+       "peak_N_m": -7.747393,
+       "peak_time_s": 1.53,
+       "share": 0.086836
+      },
+      {
+       "actuator": "add_mag2_r",
+       "peak_N_m": -8.210707,
+       "peak_time_s": 1.52,
+       "share": 0.058348
+      }
+     ]
+    },
+    "LB:DOF:KNEE_FLEX_EXT_R": {
+     "out_of_plane_by_actuator": {
+      "gem_r": 0.0,
+      "glut_med1_r": 0.0,
+      "glut_med2_r": 0.0,
+      "glut_med3_r": 0.0,
+      "glut_min1_r": 0.0,
+      "glut_min2_r": 0.0,
+      "glut_min3_r": 0.0,
+      "peri_r": 0.0,
+      "quad_fem_r": 0.0,
+      "tfl_r": 0.000112
+     },
+     "out_of_plane_share": 0.000112,
+     "top": [
+      {
+       "actuator": "vas_lat_r",
+       "peak_N_m": -36.165385,
+       "peak_time_s": 1.23,
+       "share": 0.369022
+      },
+      {
+       "actuator": "vas_med_r",
+       "peak_N_m": -25.167652,
+       "peak_time_s": 1.31,
+       "share": 0.223925
+      },
+      {
+       "actuator": "vas_int_r",
+       "peak_N_m": -21.828945,
+       "peak_time_s": 1.34,
+       "share": 0.21923
+      },
+      {
+       "actuator": "rect_fem_r",
+       "peak_N_m": -24.365467,
+       "peak_time_s": 1.53,
+       "share": 0.180125
+      },
+      {
+       "actuator": "bifemlh_r",
+       "peak_N_m": 2.564489,
+       "peak_time_s": 1.54,
+       "share": 0.007583
+      }
+     ]
+    }
+   }
+  }
+ },
+ "decision": "D-063 (item 9, A8)",
+ "hypotheses": [
+  {
+   "id": "H2",
+   "measure": "largest t* per body, compared with the solver band delta 1e-06 N m",
+   "outcome": "supported",
+   "statement": "On the moving knee, all three bodies stay feasible with 43 actuators (t* = 0 throughout).",
+   "values_N_m": {
+    "female": 0.0,
+    "gait2392": 0.0,
+    "male": 0.0
+   }
+  },
+  {
+   "id": "H3",
+   "measure": "peak activation over the whole moving-knee squat (a full-run peak, stricter than 'near the bottom'); full means within 1e-6 of 1.0",
+   "outcome": "supported",
+   "premise_holds_in_d4": true,
+   "statement": "For the male and Gait2392 bodies, whose middle and lower gluteus maximus reach full activation near the bottom in D4, those parts' peak activation falls below 1.0 once the adductor magnus and the other hip extensors are available.",
+   "values": {
+    "gait2392": {
+     "glut_max2_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.48
+      },
+      "d5": {
+       "peak": 0.568296,
+       "time_s": 1.54
+      }
+     },
+     "glut_max3_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.48
+      },
+      "d5": {
+       "peak": 0.569947,
+       "time_s": 1.54
+      }
+     }
+    },
+    "male": {
+     "glut_max2_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.49
+      },
+      "d5": {
+       "peak": 0.556306,
+       "time_s": 1.54
+      }
+     },
+     "glut_max3_r": {
+      "d4": {
+       "peak": 1.0,
+       "time_s": 1.49
+      },
+      "d5": {
+       "peak": 0.557922,
+       "time_s": 1.54
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "H4",
+   "measure": "largest t* on the fixed knee, D4 against D5",
+   "outcome": "supported",
+   "reaches_zero": {
+    "gait2392": false,
+    "male": false
+   },
+   "statement": "The fixed-knee shortfall of the male and Gait2392 bodies (largest reserve 5.815 and 6.362 N m in D2 and D4) decreases. Whether it reaches zero is reported.",
+   "values_N_m": {
+    "gait2392": {
+     "d4": 6.361827,
+     "d5": 3.70021
+    },
+    "male": {
+     "d4": 5.81468,
+     "d5": 3.371648
+    }
+   }
+  }
+ ],
+ "inputs": {
+  "d4_manifest": {
+   "commit_sha": "af21e7881825f426f82f3591623a49d5ef8f9734",
+   "path": "results/phase_d/2026-11-16_d4_iliopsoas_runs_af21e78.json",
+   "sha256": "6121e2e3c8220e2a7e51ea36e9abbd9a919e817196b2966fd5f2fb8b222b32ca"
+  },
+  "d5_manifest": {
+   "commit_sha": "4c0e320df79c1208602bd409285781ca95c456b5",
+   "path": "results/phase_d/2026-11-17_d5_runs_4c0e320.json",
+   "sha256": "1c887873e2ce34027354d64498d9c7b0f50564ede7fb4207a8d7ebf1b52c8663"
+  }
+ },
+ "note": "Pre-stated hypotheses, reported either way; not acceptance criteria. A demonstration under stated assumptions; physiological validity not established.",
+ "out_of_plane_actuators": [
+  "glut_med1_r",
+  "glut_med2_r",
+  "glut_med3_r",
+  "glut_min1_r",
+  "glut_min2_r",
+  "glut_min3_r",
+  "peri_r",
+  "gem_r",
+  "quad_fem_r",
+  "tfl_r"
+ ],
+ "report": "PHASE_D5_RESULTS"
+}

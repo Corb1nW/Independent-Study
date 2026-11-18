@@ -1,0 +1,46 @@
+# Stage D5 run (D-063 with Amendment 1): squat_d4_iliopsoas plus Gait2392's 27 remaining leg actuators, added as data.
+# Same physics, motion, contact, force law and recruitment as D4 (item 7). Results, H2-H4 and the comparison with the
+# 16-actuator run are reported from the manifests by the step-6 report (A8); they are not acceptance criteria.
+model_id: PHASE_D5_FULL_LEG_SQUAT_DEMONSTRATION
+decision: D-063
+specification: squat_d5
+baseline_variant: moving_knee
+d1_config: config/phase_d1_squat.yaml
+d2_config: config/phase_d2_muscles.yaml
+d3_config: config/phase_d3_moving_knee.yaml
+bodies: [female, male, gait2392]
+variants: [moving_knee, fixed_knee]
+report_torque_shares: true        # A8: each actuator's share of each coordinate's muscle moment
+references:
+  fixed_knee:
+    path: tests/data/d5_fixed_oracle_reference.json     # all 43 actuators, written with --knee fixed --spec squat_d5
+    coverage_mode: fixed
+  moving_knee:
+    path: tests/data/d5_moving_oracle_reference.json    # all 43 actuators, written with --knee moving --spec squat_d5
+    coverage_mode: moving
+    kinematics:
+      knee_m: [origin, LB:SEG:SHANK_R]
+      hip_m: [origin, LB:SEG:THIGH_R]
+      pelvis_origin_m: [origin, LB:SEG:HAT]
+      femur_com_m: [com, LB:SEG:THIGH_R]
+      tibia_com_m: [com, LB:SEG:SHANK_R]
+# Both variants confirm declared direction deviations against their own reference (D-063 Amendment 1).
+direction_check_reference_variants: [fixed_knee, moving_knee]
+regression:
+  coordinate_labels:
+    LB:DOF:ANKLE_DORSI_PLANTAR_R: ankle
+    LB:DOF:KNEE_FLEX_EXT_R: knee
+    LB:DOF:HIP_FLEX_EXT_R: hip
+  point_labels: {}
+  series: {}
+  statuses: {}
+  manifests: {}        # D5 changes the anatomy; it is compared with D4 in the report, not regressed to it (A8)
+hypotheses: []         # H2-H4 (D-063 item 9) need measures this runner does not have; reported by the step-6 report
+assumptions:
+  - "Model: the squat_d5 specification (squat_d4_iliopsoas plus Gait2392's 27 remaining leg actuators), assembled by the same generic code"
+  - "Baseline: Gait2392's moving knee (D-060); the fixed-knee variant is run for the consistency checks and H4"
+  - "Motion, contact, force law and recruitment exactly as configured for D1 and D2; rigid tendons, no passive fibre force (D-063 item 7)"
+  - "Hip abductors and rotators are included; in this sagittal model they can supply flexion or extension torque without the frontal-plane balance that limits them in a real squat (D-063 item 4); their torque shares are reported"
+omitted_physics:
+  status: deliberate_demonstration_simplifications
+  listed_in: "the manifest's consistency.C5_deviation_register, generated from the ontology (D-062 item 7, D-063 Amendment 1)"

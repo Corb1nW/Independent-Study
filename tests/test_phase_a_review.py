@@ -112,7 +112,8 @@ def test_integrity_check_catches_dangling_observation_reference(tmp_path):
     """The project-wide check validates each observation against its own dataset."""
     for sub in ("ontology", "ontology/quantitative_data"):
         (tmp_path / sub).mkdir(parents=True, exist_ok=True)
-    for name in ("hip.yaml", "lower_limb_sagittal.yaml", "quantitative_schema.yaml"):  # module file added in D-058
+    modules = yaml.safe_load((ROOT / "ontology" / "quantitative_schema.yaml").read_text(encoding="utf-8"))["ontology"]
+    for name in [*modules, "quantitative_schema.yaml"]:  # every module file the schema names (D-058, D-063)
         (tmp_path / "ontology" / name).write_text((ROOT / "ontology" / name).read_text(encoding="utf-8"),
                                                  encoding="utf-8")
     raw = yaml.safe_load(GMAX.read_text(encoding="utf-8"))

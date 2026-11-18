@@ -98,3 +98,26 @@ def moment_arm_series(model, q):
         for j, a in enumerate(model.actuators):
             R[j, :, i] = path(model, a, q[:, i], frames)[1]
     return [a.id for a in model.actuators], R
+
+
+def torque_shares(actuators, coordinates, t, force, moment_arms):
+    """Each actuator's share of each coordinate's muscle moment over a motion (D-063 A8).
+
+    Contribution of actuator j to coordinate k: F_j(t) R_jk(t) (the recruitment's own C a). Share: the time integral of
+    |F_j R_jk| over the sum of those integrals for all actuators at that coordinate. Also the signed peak contribution
+    and its time. Returns {coordinate: {actuator: {share, peak_N_m, peak_time_s}}}, zero shares omitted."""
+    t = np.asarray(t, float)
+    out = {}
+    for k, c in enumerate(coordinates):
+        contrib = force * moment_arms[:, k, :]                    # actuators x samples
+        integral = np.trapezoid(np.abs(contrib), t, axis=1)
+        total = float(integral.sum())
+        row = {}
+        for j, a in enumerate(actuators):
+            if integral[j] <= 0.0:
+                continue
+            n = int(np.argmax(np.abs(contrib[j])))
+            row[a] = {"share": round(float(integral[j] / total), 6) if total > 0 else 0.0,
+                      "peak_N_m": round(float(contrib[j, n]), 6), "peak_time_s": round(float(t[n]), 9)}
+        out[c] = row
+    return out

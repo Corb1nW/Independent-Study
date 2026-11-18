@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history: the demonstration-page builders read official files and pinned inputs from the
+          # commits that archived them (D-062 Amendment 4, D-063 step 7); a shallow clone lacks those blobs.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"

@@ -2,7 +2,7 @@
 ontology_module:
   extends: LB-AO
   module: lower_limb_sagittal
-  version: 0.3.1
+  version: 0.6.0
   description: Knee, ankle, foot, shank and upper-body segments, coordinates and model frames for the planar squat
     (Phase D, D-058); muscles and model actuators for Stage D2 (D-059, 0.2.0).
   decision: D-058, D-059
@@ -681,6 +681,9 @@ entities:
     class: PeripheralNerveOrNerveSource
     evidence:
     - SRC:STATPEARLS_GASTROCNEMIUS
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: The larger terminal branch of the sciatic nerve; supplies the whole posterior compartment of the leg (StatPearls,
+      Leg Posterior Compartment).
   LB:NERVE:DEEP_FIBULAR:
     name: Deep Fibular (Peroneal) Nerve
     class: PeripheralNerveOrNerveSource
@@ -913,6 +916,957 @@ entities:
       major, so the anatomical origin is not compared here (D-062 item 7, C5).
     evidence:
     - SRC:GAIT2392_OSIM
+  # Stage D5 step 2 (D-063 item 1): leg muscles, nerves and the toe interphalangeal joint, both sides.
+  LB:JOINT:TOE_IP_R:
+    name: Right Interphalangeal Joints of the Toes (lumped)
+    class: SynovialJoint
+    side: right
+    note: Lumped as one joint, like the metatarsophalangeal joints. Crossed by the long toe flexors (StatPearls, Leg Posterior
+      Compartment); not in Gait2392 or the model (D-063 item 2).
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+  LB:JOINT:TOE_IP_L:
+    name: Left Interphalangeal Joints of the Toes (lumped)
+    class: SynovialJoint
+    side: left
+    note: Lumped as one joint, like the metatarsophalangeal joints. Crossed by the long toe flexors (StatPearls, Leg Posterior
+      Compartment); not in Gait2392 or the model (D-063 item 2).
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+  LB:NERVE:COMMON_FIBULAR:
+    name: Common Fibular (Peroneal) Nerve
+    class: PeripheralNerveOrNerveSource
+    note: Terminal branch of the sciatic nerve at or near the apex of the popliteal fossa (StatPearls, Leg Posterior Compartment);
+      supplies the biceps femoris short head (StatPearls, Thigh Muscles).
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    - SRC:STATPEARLS_THIGH_MUSCLES
+  LB:NERVE:SUPERFICIAL_FIBULAR:
+    name: Superficial Fibular (Peroneal) Nerve
+    class: PeripheralNerveOrNerveSource
+    note: Runs within fibularis longus and supplies the lateral compartment (StatPearls, Leg Lateral Compartment).
+    evidence:
+    - SRC:STATPEARLS_LEG_LATERAL
+  LB:MUS:BICEPS_FEMORIS_SHORT_R:
+    name: Right Biceps Femoris Short Head
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      ACTS_ON:
+      - LB:JOINT:KNEE_R
+      INNERVATED_BY:
+      - LB:NERVE:COMMON_FIBULAR
+    REPRESENTED_BY:
+    - LB:ACT:G2392:BIFEMSH_R
+    mechanical_capabilities:
+    - knee_flexion
+    - tibial_lateral_rotation
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'From the linea aspera of the femur to the head of the fibula through the tendon shared with the long head; flexes
+      the knee and, with the long head, rotates the tibia laterally (out of plane); does not cross the hip (StatPearls, Thigh
+      Muscles). That chapter is inconsistent on its nerve: one passage excludes it from the tibial-nerve hamstrings, another
+      names the common peroneal nerve; recorded as the common fibular nerve.'
+  LB:MUS:POPLITEUS_R:
+    name: Right Popliteus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      ACTS_ON:
+      - LB:JOINT:KNEE_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - knee_unlocking_rotation
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the lateral femoral condyle to the posterior tibia above the soleus; acts only at the knee, unlocking it by
+      rotating the tibia on the femur (or the femur on the tibia when weight-bearing), which initiates knee flexion (StatPearls,
+      Leg Posterior Compartment). No Gait2392 actuator.
+  LB:MUS:PLANTARIS_R:
+    name: Right Plantaris
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_R
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the lateral supracondylar line of the femur to the calcaneal tuberosity beside the calcaneal tendon; a weak
+      plantarflexor (StatPearls, Leg Posterior Compartment). The knee crossing follows from those attachments; the chapter
+      states no knee action. No Gait2392 actuator.
+  LB:MUS:TIBIALIS_POSTERIOR_R:
+    name: Right Tibialis Posterior
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      - LB:JOINT:SUBTALAR_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      - LB:JOINT:SUBTALAR_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    REPRESENTED_BY:
+    - LB:ACT:G2392:TIB_POST_R
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - foot_inversion
+    - medial_arch_support
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the posterior interosseous membrane to the navicular tuberosity and cuneiforms; plantarflexes the ankle, inverts
+      the subtalar joint (out of plane) and supports the medial longitudinal arch (StatPearls, Leg Posterior Compartment).
+  LB:MUS:FLEXOR_DIGITORUM_LONGUS_R:
+    name: Right Flexor Digitorum Longus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    REPRESENTED_BY:
+    - LB:ACT:G2392:FLEX_DIG_R
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - toe_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the posterior middle third of the tibia to the distal phalanges of toes 2-5; flexes their metatarsophalangeal
+      and interphalangeal joints and assists ankle plantarflexion (StatPearls, Leg Posterior Compartment).
+  LB:MUS:FLEXOR_HALLUCIS_LONGUS_R:
+    name: Right Flexor Hallucis Longus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      - LB:JOINT:MTP_R
+      - LB:JOINT:TOE_IP_R
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    REPRESENTED_BY:
+    - LB:ACT:G2392:FLEX_HAL_R
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - great_toe_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the posterior distal two-thirds of the fibula to the base of the distal phalanx of the hallux; plantarflexes
+      the talocrural joint and flexes the hallux's metatarsophalangeal and interphalangeal joints (StatPearls, Leg Posterior
+      Compartment).
+  LB:MUS:FIBULARIS_LONGUS_R:
+    name: Right Fibularis (Peroneus) Longus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:SUPERFICIAL_FIBULAR
+    REPRESENTED_BY:
+    - LB:ACT:G2392:PER_LONG_R
+    mechanical_capabilities:
+    - foot_eversion
+    - ankle_plantarflexion
+    - transverse_and_lateral_arch_support
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_LATERAL
+    note: From the fibular head and proximal two-thirds of the lateral fibula to the base of the first metatarsal; primarily
+      everts the foot and ankle (out of plane), secondarily plantarflexes, and supports the transverse and lateral arches
+      (StatPearls, Leg Lateral Compartment). The chapter does not name the subtalar joint, so no crossing of it is recorded.
+  LB:MUS:FIBULARIS_BREVIS_R:
+    name: Right Fibularis (Peroneus) Brevis
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:SUPERFICIAL_FIBULAR
+    REPRESENTED_BY:
+    - LB:ACT:G2392:PER_BREV_R
+    mechanical_capabilities:
+    - foot_eversion
+    - ankle_plantarflexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_LATERAL
+    note: From the lower two-thirds of the lateral fibula to the tuberosity of the fifth metatarsal base; primarily everts
+      the foot and ankle (out of plane), secondarily plantarflexes (StatPearls, Leg Lateral Compartment). The chapter does
+      not name the subtalar joint, so no crossing of it is recorded.
+  LB:MUS:EXTENSOR_DIGITORUM_LONGUS_R:
+    name: Right Extensor Digitorum Longus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    REPRESENTED_BY:
+    - LB:ACT:G2392:EXT_DIG_R
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    - toe_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: From the lateral tibial condyle, anterior fibula and interosseous membrane to the dorsal expansions of toes 2-5;
+      extends toes 2-5 and assists dorsiflexion (StatPearls, Leg Anterior Compartment). The chapter does not name the toe
+      joints, so only the ankle crossing is recorded.
+  LB:MUS:EXTENSOR_HALLUCIS_LONGUS_R:
+    name: Right Extensor Hallucis Longus
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    REPRESENTED_BY:
+    - LB:ACT:G2392:EXT_HAL_R
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    - great_toe_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: From the middle anterior fibula and interosseous membrane to the dorsal distal phalanx of the hallux; extends the
+      hallux and assists dorsiflexion (StatPearls, Leg Anterior Compartment). The chapter does not name the toe joints, so
+      only the ankle crossing is recorded.
+  LB:MUS:FIBULARIS_TERTIUS_R:
+    name: Right Fibularis (Peroneus) Tertius
+    class: SkeletalMuscle
+    side: right
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_R
+      ACTS_ON:
+      - LB:JOINT:ANKLE_R
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    REPRESENTED_BY:
+    - LB:ACT:G2392:PER_TERT_R
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    - foot_eversion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: From the distal anterior fibula and interosseous membrane, often as a distal extension of extensor digitorum longus,
+      to the dorsal base of the fifth metatarsal; weakly assists dorsiflexion and contributes to eversion (out of plane) (StatPearls,
+      Leg Anterior Compartment).
+  LB:MUS:BICEPS_FEMORIS_SHORT_L:
+    name: Left Biceps Femoris Short Head
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      ACTS_ON:
+      - LB:JOINT:KNEE_L
+      INNERVATED_BY:
+      - LB:NERVE:COMMON_FIBULAR
+    mechanical_capabilities:
+    - knee_flexion
+    - tibial_lateral_rotation
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_THIGH_MUSCLES
+    note: 'From the linea aspera of the femur to the head of the fibula through the tendon shared with the long head; flexes
+      the knee and, with the long head, rotates the tibia laterally (out of plane); does not cross the hip (StatPearls, Thigh
+      Muscles). That chapter is inconsistent on its nerve: one passage excludes it from the tibial-nerve hamstrings, another
+      names the common peroneal nerve; recorded as the common fibular nerve.'
+  LB:MUS:POPLITEUS_L:
+    name: Left Popliteus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      ACTS_ON:
+      - LB:JOINT:KNEE_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - knee_unlocking_rotation
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the lateral femoral condyle to the posterior tibia above the soleus; acts only at the knee, unlocking it by
+      rotating the tibia on the femur (or the femur on the tibia when weight-bearing), which initiates knee flexion (StatPearls,
+      Leg Posterior Compartment). No Gait2392 actuator.
+  LB:MUS:PLANTARIS_L:
+    name: Left Plantaris
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:KNEE_L
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the lateral supracondylar line of the femur to the calcaneal tuberosity beside the calcaneal tendon; a weak
+      plantarflexor (StatPearls, Leg Posterior Compartment). The knee crossing follows from those attachments; the chapter
+      states no knee action. No Gait2392 actuator.
+  LB:MUS:TIBIALIS_POSTERIOR_L:
+    name: Left Tibialis Posterior
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      - LB:JOINT:SUBTALAR_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      - LB:JOINT:SUBTALAR_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - foot_inversion
+    - medial_arch_support
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the posterior interosseous membrane to the navicular tuberosity and cuneiforms; plantarflexes the ankle, inverts
+      the subtalar joint (out of plane) and supports the medial longitudinal arch (StatPearls, Leg Posterior Compartment).
+  LB:MUS:FLEXOR_DIGITORUM_LONGUS_L:
+    name: Left Flexor Digitorum Longus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - toe_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the posterior middle third of the tibia to the distal phalanges of toes 2-5; flexes their metatarsophalangeal
+      and interphalangeal joints and assists ankle plantarflexion (StatPearls, Leg Posterior Compartment).
+  LB:MUS:FLEXOR_HALLUCIS_LONGUS_L:
+    name: Left Flexor Hallucis Longus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      - LB:JOINT:MTP_L
+      - LB:JOINT:TOE_IP_L
+      INNERVATED_BY:
+      - LB:NERVE:TIBIAL
+    mechanical_capabilities:
+    - ankle_plantarflexion
+    - great_toe_flexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_POSTERIOR
+    note: From the posterior distal two-thirds of the fibula to the base of the distal phalanx of the hallux; plantarflexes
+      the talocrural joint and flexes the hallux's metatarsophalangeal and interphalangeal joints (StatPearls, Leg Posterior
+      Compartment).
+  LB:MUS:FIBULARIS_LONGUS_L:
+    name: Left Fibularis (Peroneus) Longus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:SUPERFICIAL_FIBULAR
+    mechanical_capabilities:
+    - foot_eversion
+    - ankle_plantarflexion
+    - transverse_and_lateral_arch_support
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_LATERAL
+    note: From the fibular head and proximal two-thirds of the lateral fibula to the base of the first metatarsal; primarily
+      everts the foot and ankle (out of plane), secondarily plantarflexes, and supports the transverse and lateral arches
+      (StatPearls, Leg Lateral Compartment). The chapter does not name the subtalar joint, so no crossing of it is recorded.
+  LB:MUS:FIBULARIS_BREVIS_L:
+    name: Left Fibularis (Peroneus) Brevis
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:SUPERFICIAL_FIBULAR
+    mechanical_capabilities:
+    - foot_eversion
+    - ankle_plantarflexion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_LATERAL
+    note: From the lower two-thirds of the lateral fibula to the tuberosity of the fifth metatarsal base; primarily everts
+      the foot and ankle (out of plane), secondarily plantarflexes (StatPearls, Leg Lateral Compartment). The chapter does
+      not name the subtalar joint, so no crossing of it is recorded.
+  LB:MUS:EXTENSOR_DIGITORUM_LONGUS_L:
+    name: Left Extensor Digitorum Longus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    - toe_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: From the lateral tibial condyle, anterior fibula and interosseous membrane to the dorsal expansions of toes 2-5;
+      extends toes 2-5 and assists dorsiflexion (StatPearls, Leg Anterior Compartment). The chapter does not name the toe
+      joints, so only the ankle crossing is recorded.
+  LB:MUS:EXTENSOR_HALLUCIS_LONGUS_L:
+    name: Left Extensor Hallucis Longus
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    - great_toe_extension
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: From the middle anterior fibula and interosseous membrane to the dorsal distal phalanx of the hallux; extends the
+      hallux and assists dorsiflexion (StatPearls, Leg Anterior Compartment). The chapter does not name the toe joints, so
+      only the ankle crossing is recorded.
+  LB:MUS:FIBULARIS_TERTIUS_L:
+    name: Left Fibularis (Peroneus) Tertius
+    class: SkeletalMuscle
+    side: left
+    relationships:
+      CROSSES:
+      - LB:JOINT:ANKLE_L
+      ACTS_ON:
+      - LB:JOINT:ANKLE_L
+      INNERVATED_BY:
+      - LB:NERVE:DEEP_FIBULAR
+    mechanical_capabilities:
+    - ankle_dorsiflexion
+    - foot_eversion
+    model_parameter_schema:
+    - maximum_isometric_force
+    - optimal_fiber_length
+    - tendon_slack_length
+    - pennation_angle_at_optimal
+    - maximum_contraction_velocity
+    evidence:
+    - SRC:STATPEARLS_LEG_ANTERIOR
+    note: From the distal anterior fibula and interosseous membrane, often as a distal extension of extensor digitorum longus,
+      to the dorsal base of the fifth metatarsal; weakly assists dorsiflexion and contributes to eversion (out of plane) (StatPearls,
+      Leg Anterior Compartment).
+  # Stage D5 steps 3-4 (D-063 item 3): Gait2392's 27 remaining leg actuators.
+  LB:ACT:G2392:GLUT_MED1_R:
+    name: Gait2392 actuator glut_med1_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_med1_r
+    side: right
+    represents: LB:MUS:GLUTEUS_MEDIUS_R
+    represented_scope: Gait2392 part 1 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MED2_R:
+    name: Gait2392 actuator glut_med2_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_med2_r
+    side: right
+    represents: LB:MUS:GLUTEUS_MEDIUS_R
+    represented_scope: Gait2392 part 2 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MED3_R:
+    name: Gait2392 actuator glut_med3_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_med3_r
+    side: right
+    represents: LB:MUS:GLUTEUS_MEDIUS_R
+    represented_scope: Gait2392 part 3 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MIN1_R:
+    name: Gait2392 actuator glut_min1_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_min1_r
+    side: right
+    represents: LB:MUS:GLUTEUS_MINIMUS_R
+    represented_scope: Gait2392 part 1 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MIN2_R:
+    name: Gait2392 actuator glut_min2_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_min2_r
+    side: right
+    represents: LB:MUS:GLUTEUS_MINIMUS_R
+    represented_scope: Gait2392 part 2 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GLUT_MIN3_R:
+    name: Gait2392 actuator glut_min3_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: glut_min3_r
+    side: right
+    represents: LB:MUS:GLUTEUS_MINIMUS_R
+    represented_scope: Gait2392 part 3 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:BIFEMSH_R:
+    name: Gait2392 actuator bifemsh_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: bifemsh_r
+    side: right
+    represents: LB:MUS:BICEPS_FEMORIS_SHORT_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:SAR_R:
+    name: Gait2392 actuator sar_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: sar_r
+    side: right
+    represents: LB:MUS:SARTORIUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ADD_LONG_R:
+    name: Gait2392 actuator add_long_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: add_long_r
+    side: right
+    represents: LB:MUS:ADDUCTOR_LONGUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ADD_BREV_R:
+    name: Gait2392 actuator add_brev_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: add_brev_r
+    side: right
+    represents: LB:MUS:ADDUCTOR_BREVIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ADD_MAG1_R:
+    name: Gait2392 actuator add_mag1_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: add_mag1_r
+    side: right
+    represents: LB:MUS:ADDUCTOR_MAGNUS_R
+    represented_scope: Gait2392 part 1 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ADD_MAG2_R:
+    name: Gait2392 actuator add_mag2_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: add_mag2_r
+    side: right
+    represents: LB:MUS:ADDUCTOR_MAGNUS_R
+    represented_scope: Gait2392 part 2 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:ADD_MAG3_R:
+    name: Gait2392 actuator add_mag3_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: add_mag3_r
+    side: right
+    represents: LB:MUS:ADDUCTOR_MAGNUS_R
+    represented_scope: Gait2392 part 3 of 3
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:TFL_R:
+    name: Gait2392 actuator tfl_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: tfl_r
+    side: right
+    represents: LB:MUS:TENSOR_FASCIAE_LATAE_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:PECT_R:
+    name: Gait2392 actuator pect_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: pect_r
+    side: right
+    represents: LB:MUS:PECTINEUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GRAC_R:
+    name: Gait2392 actuator grac_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: grac_r
+    side: right
+    represents: LB:MUS:GRACILIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:QUAD_FEM_R:
+    name: Gait2392 actuator quad_fem_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: quad_fem_r
+    side: right
+    represents: LB:MUS:QUADRATUS_FEMORIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:GEM_R:
+    name: Gait2392 actuator gem_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: gem_r
+    side: right
+    represents:
+    - LB:MUS:SUPERIOR_GEMELLUS_R
+    - LB:MUS:INFERIOR_GEMELLUS_R
+    represented_scope: lumped
+    note: A lumped computational actuator (D-063 item 5). Delp's parameter table (ISB data set) names this actuator 'gemelli'
+      without saying which muscles it covers; read as the superior and inferior gemellus (an interpretation). Obturator internus,
+      which the gemelli flank, is not among Delp's 43 actuators and has none.
+    evidence:
+    - SRC:GAIT2392_OSIM
+    - SRC:DELP_ISB_PARAMETERS
+  LB:ACT:G2392:PERI_R:
+    name: Gait2392 actuator peri_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: peri_r
+    side: right
+    represents: LB:MUS:PIRIFORMIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:TIB_POST_R:
+    name: Gait2392 actuator tib_post_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: tib_post_r
+    side: right
+    represents: LB:MUS:TIBIALIS_POSTERIOR_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:FLEX_DIG_R:
+    name: Gait2392 actuator flex_dig_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: flex_dig_r
+    side: right
+    represents: LB:MUS:FLEXOR_DIGITORUM_LONGUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:FLEX_HAL_R:
+    name: Gait2392 actuator flex_hal_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: flex_hal_r
+    side: right
+    represents: LB:MUS:FLEXOR_HALLUCIS_LONGUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:PER_BREV_R:
+    name: Gait2392 actuator per_brev_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: per_brev_r
+    side: right
+    represents: LB:MUS:FIBULARIS_BREVIS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:PER_LONG_R:
+    name: Gait2392 actuator per_long_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: per_long_r
+    side: right
+    represents: LB:MUS:FIBULARIS_LONGUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:PER_TERT_R:
+    name: Gait2392 actuator per_tert_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: per_tert_r
+    side: right
+    represents: LB:MUS:FIBULARIS_TERTIUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:EXT_DIG_R:
+    name: Gait2392 actuator ext_dig_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: ext_dig_r
+    side: right
+    represents: LB:MUS:EXTENSOR_DIGITORUM_LONGUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
+  LB:ACT:G2392:EXT_HAL_R:
+    name: Gait2392 actuator ext_hal_r
+    class: ModelActuator
+    model_element:
+      model: gait2392
+      name: ext_hal_r
+    side: right
+    represents: LB:MUS:EXTENSOR_HALLUCIS_LONGUS_R
+    represented_scope: whole muscle
+    note: A computational actuator of OpenSim Gait2392 added in Stage D5 (D-063 item 3), in the squat_d5 specification; added
+      as data, with no change to src/ or tools/ (A2).
+    evidence:
+    - SRC:GAIT2392_OSIM
 relationship_additions:
 # D-062 item 5 (the demo review's P1): knee edges for four muscles defined in hip.yaml, which cannot refer to the
 # knee joints defined here. Checked against SRC:STATPEARLS_THIGH_MUSCLES (statpearls.com/point-of-care/24169) on
@@ -1000,6 +1954,66 @@ relationship_additions:
   - SRC:STATPEARLS_THIGH_MUSCLES
   basis: 'StatPearls, Thigh Muscles (read 2026-11-16): rectus femoris is one of the four quadriceps muscles, all of which extend the knee (the source is already registered as supporting that rectus femoris crosses hip and knee).'
   decision: D-062 item 5
+- entity: LB:MUS:GRACILIS_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-17): the gracilis medially rotates the tibia on the femur and flexes the knee.'
+  decision: D-063 step 3
+- entity: LB:MUS:GRACILIS_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-17): the gracilis medially rotates the tibia on the femur and flexes the knee.'
+  decision: D-063 step 3
+- entity: LB:MUS:SARTORIUS_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-17): the sartorius flexes and laterally rotates the hip and flexes the knee.'
+  decision: D-063 step 3
+- entity: LB:MUS:SARTORIUS_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_THIGH_MUSCLES
+  basis: 'StatPearls, Thigh Muscles (read 2026-11-17): the sartorius flexes and laterally rotates the hip and flexes the knee.'
+  decision: D-063 step 3
+- entity: LB:MUS:TENSOR_FASCIAE_LATAE_R
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_R
+    ACTS_ON:
+    - LB:JOINT:KNEE_R
+  evidence:
+  - SRC:STATPEARLS_TFL
+  basis: 'StatPearls, Tensor Fasciae Latae Muscle (excerpt read 2026-11-17): through the iliotibial band''s attachment to the tibia it assists knee flexion and lateral rotation.'
+  decision: D-063 step 3
+- entity: LB:MUS:TENSOR_FASCIAE_LATAE_L
+  add:
+    CROSSES:
+    - LB:JOINT:KNEE_L
+    ACTS_ON:
+    - LB:JOINT:KNEE_L
+  evidence:
+  - SRC:STATPEARLS_TFL
+  basis: 'StatPearls, Tensor Fasciae Latae Muscle (excerpt read 2026-11-17): through the iliotibial band''s attachment to the tibia it assists knee flexion and lateral rotation.'
+  decision: D-063 step 3
 models:
   squat_d1:
     represents:
@@ -1238,6 +2252,16 @@ models:
     - no_passive_fiber_force_in_baseline
     - fiber_damping_zero
     - conditional_path_length_jumps_retained
+    expected_direction_deviations:   # D-063 Amendment 1 (ChatGPT D5-R01): declared, and confirmed by the OpenSim reference;
+    # only disagreements of at least 1 mm need a declaration (medial gastrocnemius peaks at 0.61 mm and is recorded in C5)
+    - actuator: LB:ACT:G2392:LAT_GAS_R
+      coordinate: LB:DOF:KNEE_FLEX_EXT_R
+      variants: [fixed_knee]
+      drives: knee_extension
+      basis: 'Model basis: with D1''s fixed knee centre, Gait2392''s lateral gastrocnemius path has a small knee-extension
+        moment arm near the deepest pose, although the muscle''s declared knee action is flexion (D-062 Amendment 1,
+        ChatGPT D062-B01, confirmed with matched OpenSim 4.6 geometry). Attributed to the simplified fixed knee: with
+        the moving knee the disagreement does not occur.'
   squat_d4_iliopsoas:
     kind: executable_specification
     extends: squat_d4
@@ -1248,6 +2272,136 @@ models:
     add_actuators:
     - LB:ACT:G2392:ILIACUS_R
     - LB:ACT:G2392:PSOAS_R
+  squat_d5:
+    kind: executable_specification
+    extends: squat_d4_iliopsoas
+    decision: D-063
+    description: 'The Stage D5 squat: squat_d4_iliopsoas with Gait2392''s 27 remaining leg actuators, added as data
+      (no change to src/ or tools/, A2). 43 actuators; the same physics as D4 (item 7).'
+    add_actuators:
+    - LB:ACT:G2392:GLUT_MED1_R
+    - LB:ACT:G2392:GLUT_MED2_R
+    - LB:ACT:G2392:GLUT_MED3_R
+    - LB:ACT:G2392:GLUT_MIN1_R
+    - LB:ACT:G2392:GLUT_MIN2_R
+    - LB:ACT:G2392:GLUT_MIN3_R
+    - LB:ACT:G2392:BIFEMSH_R
+    - LB:ACT:G2392:SAR_R
+    - LB:ACT:G2392:ADD_LONG_R
+    - LB:ACT:G2392:ADD_BREV_R
+    - LB:ACT:G2392:ADD_MAG1_R
+    - LB:ACT:G2392:ADD_MAG2_R
+    - LB:ACT:G2392:ADD_MAG3_R
+    - LB:ACT:G2392:TFL_R
+    - LB:ACT:G2392:PECT_R
+    - LB:ACT:G2392:GRAC_R
+    - LB:ACT:G2392:QUAD_FEM_R
+    - LB:ACT:G2392:GEM_R
+    - LB:ACT:G2392:PERI_R
+    - LB:ACT:G2392:TIB_POST_R
+    - LB:ACT:G2392:FLEX_DIG_R
+    - LB:ACT:G2392:FLEX_HAL_R
+    - LB:ACT:G2392:PER_BREV_R
+    - LB:ACT:G2392:PER_LONG_R
+    - LB:ACT:G2392:PER_TERT_R
+    - LB:ACT:G2392:EXT_DIG_R
+    - LB:ACT:G2392:EXT_HAL_R
+    expected_direction_deviations:   # D-063 Amendment 1: each confirmed by the matched OpenSim reference
+    - actuator: LB:ACT:G2392:ADD_BREV_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model and source disagree: Gait2392''s adductor brevis path has a hip-extension moment arm in part of the squat, while the chapter read (StatPearls, Thigh Muscles) states that the adductors ''adduct and flex the thigh''. Recorded as found; neither the anatomy nor the model is changed (D-063 Amendment 1).'
+    - actuator: LB:ACT:G2392:ADD_LONG_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model and source disagree: Gait2392''s adductor longus path has a hip-extension moment arm in part of the squat, while the chapter read (StatPearls, Thigh Muscles) states that the adductors ''adduct and flex the thigh''. Recorded as found; neither the anatomy nor the model is changed (D-063 Amendment 1).'
+    - actuator: LB:ACT:G2392:GEM_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s the gemelli (lumped) path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GEM_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_flexion
+      basis: 'Model basis: the sagittal projection of Gait2392''s the gemelli (lumped) path gives a hip flexion moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip flexion torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MED1_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus medius path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MED1_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_flexion
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus medius path gives a hip flexion moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip flexion torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MED2_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus medius path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MED3_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus medius path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MIN1_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus minimus path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MIN1_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_flexion
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus minimus path gives a hip flexion moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip flexion torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MIN2_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus minimus path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MIN2_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_flexion
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus minimus path gives a hip flexion moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip flexion torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GLUT_MIN3_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s gluteus minimus path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:GRAC_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: Gait2392''s gracilis path has a hip-extension moment arm through most of the squat. The chapter read (StatPearls, Thigh Muscles) states adduction, knee flexion and medial tibial rotation and no hip flexion or extension, so none is declared (D-063 item 4).'
+    - actuator: LB:ACT:G2392:PERI_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s piriformis path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:QUAD_FEM_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_extension
+      basis: 'Model basis: the sagittal projection of Gait2392''s quadratus femoris path gives a hip extension moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip extension torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:QUAD_FEM_R
+      coordinate: LB:DOF:HIP_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: hip_flexion
+      basis: 'Model basis: the sagittal projection of Gait2392''s quadratus femoris path gives a hip flexion moment arm. The chapters read (StatPearls Hip; Gluteus Medius) state only abduction and rotation for this muscle, so no sagittal capability is declared; in this planar model the actuator can supply hip flexion torque without the frontal-plane balance that limits it in a real squat (D-063 item 4).'
+    - actuator: LB:ACT:G2392:SAR_R
+      coordinate: LB:DOF:KNEE_FLEX_EXT_R
+      variants: [moving_knee]
+      drives: knee_extension
+      basis: 'Model and source disagree: with the moving knee, Gait2392''s sartorius path has a small knee-extension moment arm in part of the squat, while the chapter read (StatPearls, Thigh Muscles) states that it flexes the knee. Recorded as found (D-063 Amendment 1).'
+    - actuator: LB:ACT:G2392:TFL_R
+      coordinate: LB:DOF:KNEE_FLEX_EXT_R
+      variants: [moving_knee, fixed_knee]
+      drives: knee_extension
+      basis: 'Model and source disagree: Gait2392''s tensor fasciae latae path has a knee-extension moment arm at every pose, while the chapter read (StatPearls, Tensor Fasciae Latae Muscle, excerpt) says it assists knee flexion through the iliotibial band. Recorded as found; neither the anatomy nor the model is changed (D-063 Amendment 1).'
 sources:
   SRC:STATPEARLS_GASTROCNEMIUS:
     title: 'Anatomy, Bony Pelvis and Lower Limb: Gastrocnemius Muscle'
@@ -1263,9 +2417,43 @@ sources:
     url: https://www.statpearls.com/point-of-care/34034
     supports:
     - tibialis anterior attachments, deep fibular nerve, ankle dorsiflexion
+    - 'extensor digitorum longus, extensor hallucis longus and fibularis tertius: attachments, deep fibular nerve,
+      dorsiflexion, toe extension and eversion (re-read 2026-11-17, D-063; update shown 2026-06-08)'
     retrieval_date: '2026-11-10'
   SRC:GAIT2392_OSIM:
     title: OpenSim Gait2392 model file (gait2392_millard2012muscle.osim)
     url: https://github.com/opensim-org/opensim-models/blob/master/Models/Gait2392_Simbody/gait2392_millard2012muscle.osim
     supports:
     - model actuators of the squat_d2 view
+  SRC:STATPEARLS_LEG_POSTERIOR:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Leg Posterior Compartment'
+    publisher: StatPearls / NCBI Bookshelf (R. Abuqubo, S. B. Graefe, J. La Rose; last update 2026-05-13)
+    url: https://www.ncbi.nlm.nih.gov/books/NBK537340/
+    supports:
+    - 'popliteus, plantaris, flexor digitorum longus, flexor hallucis longus and tibialis posterior: attachments and actions'
+    - tibial nerve supplies the whole posterior compartment; it and the common fibular nerve are the sciatic nerve's terminal
+      branches
+    retrieval_date: '2026-11-17'
+  SRC:STATPEARLS_LEG_LATERAL:
+    title: 'Anatomy, Bony Pelvis and Lower Limb: Leg Lateral Compartment'
+    publisher: StatPearls (editor M. Varacallo; chapter authors not shown on the page read; update shown 2023-08-14)
+    url: https://www.statpearls.com/point-of-care/32240
+    supports:
+    - 'fibularis longus and brevis: attachments, superficial fibular nerve, eversion and plantarflexion'
+    retrieval_date: '2026-11-17'
+  SRC:DELP_ISB_PARAMETERS:
+    title: Parameters for a model of the lower limb (Delp's lower-limb data set; muscle parameter summary table)
+    publisher: International Society of Biomechanics data resources (S. L. Delp; model developed 1987-1990)
+    url: https://media.isbweb.org/data/delp/Muscle_parameter_table.txt
+    supports:
+    - 'the 43 muscles of Delp''s lower-limb model by name, including the single entry ''gemelli'' (no statement of
+      which muscles it covers) and no obturator internus (read 2026-11-17, D-063)'
+    retrieval_date: '2026-11-17'
+  SRC:STATPEARLS_GLUTEUS_MEDIUS:
+    title: Anatomy, Bony Pelvis and Lower Limb, Gluteus Medius Muscle
+    publisher: StatPearls / NCBI Bookshelf (A. Shah, B. Bordoni; last update 2023-02-17)
+    url: https://www.ncbi.nlm.nih.gov/books/NBK557509/
+    supports:
+    - 'gluteus medius: primary hip abductor; anterior fibres internal rotation, posterior fibres lateral rotation; no hip
+      flexion or extension stated (read 2026-11-17, D-063; cited in squat_d5 declared-deviation bases)'
+    retrieval_date: '2026-11-17'
